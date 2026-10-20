@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributors do
   alias Operately.Projects.Project
   alias Operately.Projects.Permissions
   alias Operately.Access.Binding
+  alias Operately.People
   alias Operately.Operations.ProjectContributorsAddition, as: Operation
 
   inputs do
@@ -25,9 +26,10 @@ defmodule OperatelyWeb.Api.Projects.CreateContributors do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:contribs, fn -> decode_contributors(inputs.contributors) end)
-    |> run(:project, fn ctx -> Project.get(ctx.me, id: inputs.project_id) end)
+    |> run(:project, fn ctx -> Project.get(ctx.me, id: inputs.project_id, company_id: ctx.me.company_id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:validate_permission_levels, fn ctx -> validate_permission_levels(ctx.project.request_info.access_level, ctx.contribs) end)
+    |> run(:company_members, fn ctx -> validate_company_members(ctx.project, ctx.contribs) end)
     |> run(:operation, fn ctx -> Operation.run(ctx.me, ctx.project, ctx.contribs) end)
     |> run(:serialized, fn -> {:ok, %{success: true}} end)
     |> respond()
@@ -42,6 +44,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributors do
       {:error, :project, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :validate_permission_levels, _} -> {:error, :forbidden}
+      {:error, :company_members, _} -> {:error, :bad_request}
       {:error, :operation, %{error: %Ecto.Changeset{} = changeset}} -> map_changeset_error(changeset)
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
@@ -82,6 +85,13 @@ defmodule OperatelyWeb.Api.Projects.CreateContributors do
       {:ok, :allowed}
     else
       {:error, :forbidden}
+    end
+  end
+
+  defp validate_company_members(project, contributors) do
+    case People.validate_active_company_members(project.company_id, Enum.map(contributors, & &1.person_id)) do
+      :ok -> {:ok, :valid}
+      error -> error
     end
   end
 end

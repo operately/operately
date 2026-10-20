@@ -368,6 +368,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members([inputs.reviewer_id])
       |> Steps.update_project_reviewer(inputs.reviewer_id)
       |> Steps.save_activity(:project_reviewer_updating, fn changes ->
         %{

@@ -1,12 +1,50 @@
 defmodule OperatelyWeb.Api.Projects.UpdateContributorTest do
   use OperatelyWeb.TurboCase
 
+  import Operately.Support.Api.ProjectAccessHelpers
+
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
 
   alias Operately.Projects
   alias Operately.Access.Binding
+
+  describe "company member boundaries" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space, company_permissions: Binding.no_access())
+      |> Factory.add_project(:project, :space, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+      |> Factory.add_project_contributor(:contributor, :project)
+      |> Factory.log_in_person(:creator)
+    end
+
+    test "rejects a foreign person without changing project access", ctx do
+      foreign_person = Factory.setup(%{}).creator
+      assert {:error, :not_found} = Operately.Projects.Project.get(foreign_person, id: ctx.project.id)
+      before = project_access_snapshot(ctx.project)
+
+      assert {400, _} = mutation(ctx.conn, [:projects, :update_contributor], boundary_inputs(ctx, foreign_person.id))
+      assert project_access_snapshot(ctx.project) == before
+    end
+
+    test "validates the existing person when no replacement is supplied", ctx do
+      foreign_id = Factory.setup(%{}).creator.id
+      ctx.contributor |> Ecto.Changeset.change(person_id: foreign_id) |> Repo.update!()
+      before = project_access_snapshot(ctx.project)
+
+      for attrs <- [%{}, %{person_id: nil}] do
+        inputs = Map.merge(%{contrib_id: ctx.contributor.id, permissions: "edit_access"}, attrs)
+        assert {400, _} = mutation(ctx.conn, [:projects, :update_contributor], inputs)
+        assert project_access_snapshot(ctx.project) == before
+      end
+    end
+  end
+
+  defp boundary_inputs(ctx, person_id) do
+    %{contrib_id: ctx.contributor.id, person_id: person_id, permissions: "edit_access"}
+  end
 
   describe "security" do
     test "it requires authentication", ctx do
