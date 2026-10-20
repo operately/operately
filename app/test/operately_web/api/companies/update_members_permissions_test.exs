@@ -1,6 +1,22 @@
 defmodule OperatelyWeb.Api.Companies.UpdateMembersPermissionsTest do
   use OperatelyWeb.TurboCase
 
+  import Operately.Support.Api.CompanyAccessHelpers
+
+  describe "company member boundaries" do
+    test "rejects a mixed-company batch without partial writes", ctx do
+      ctx = ctx |> Factory.setup() |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+      foreign_person = Factory.setup(%{}).creator
+      assert {:error, :not_found} = Operately.Companies.Company.get(foreign_person, id: ctx.company.id)
+      before = company_access_snapshot(ctx.company)
+
+      assert {400, _} = mutation(ctx.conn, [:companies, :update_members_permissions], %{
+        members: [%{id: ctx.member.id, access_level: "edit_access"}, %{id: foreign_person.id, access_level: "edit_access"}]
+      })
+      assert company_access_snapshot(ctx.company) == before
+    end
+  end
+
   import Operately.PeopleFixtures
 
   alias OperatelyWeb.Paths

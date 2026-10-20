@@ -20,6 +20,79 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     |> Factory.add_project_task(:task, :milestone)
   end
 
+  describe "assignee company boundaries" do
+    setup ctx do
+      ctx
+      |> Factory.create_space_task(:space_task, :engineering)
+      |> Factory.add_task_assignee(:existing_assignee, :task, :creator)
+      |> Factory.add_task_assignee(:existing_space_assignee, :space_task, :creator)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_api_token(:write_token, :creator, read_only: false)
+    end
+
+    for type <- [:project, :space], endpoint <- [:create, :update_assignee] do
+      @task_type type
+      @endpoint endpoint
+
+      test "#{@endpoint} rejects foreign #{@task_type} task assignees without writes", ctx do
+        foreign_person = Factory.setup(%{}).creator
+        assert {:error, :not_found} = Operately.Projects.Project.get(foreign_person, id: ctx.project.id)
+        before = task_access_snapshot()
+
+        for assignees <- [%{assignee_id: foreign_person.id}, %{assignee_ids: [ctx.new_champion.id, foreign_person.id]}] do
+          inputs = Map.merge(task_boundary_inputs(ctx, @task_type, @endpoint), assignees)
+          assert {400, _} = mutation(ctx.conn, [:tasks, @endpoint], inputs)
+          assert task_access_snapshot() == before
+          assert {400, _} = external_mutation(ctx.conn, ctx.write_token, "tasks/#{@endpoint}", inputs)
+          assert task_access_snapshot() == before
+        end
+      end
+    end
+
+    test "rejects foreign task destinations despite existing access", ctx do
+      foreign =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_space(:engineering)
+        |> Factory.add_project(:project, :engineering)
+        |> Factory.add_project_milestone(:milestone, :project)
+        |> Factory.add_project_task(:task, :milestone)
+        |> Factory.create_space_task(:space_task, :engineering)
+
+      for scope <- [[project_id: foreign.project.id], [group_id: foreign.engineering.id]] do
+        context = Operately.Access.get_context!(scope)
+        {:ok, _} = Operately.Access.bind_person(context, ctx.creator.id, Binding.full_access())
+      end
+
+      before = task_access_snapshot()
+
+      for type <- [:project, :space], endpoint <- [:create, :update_assignee] do
+        inputs = task_boundary_inputs(foreign, type, endpoint) |> Map.put(:assignee_id, ctx.creator.id)
+        assert {404, _} = mutation(ctx.conn, [:tasks, endpoint], inputs)
+        assert task_access_snapshot() == before
+      end
+    end
+  end
+
+  defp task_boundary_inputs(ctx, type, :create) do
+    id = if type == :project, do: ctx.project.id, else: ctx.engineering.id
+    %{type: Atom.to_string(type), id: id, name: "New task", due_date: nil}
+  end
+
+  defp task_boundary_inputs(ctx, type, :update_assignee) do
+    task = if type == :project, do: ctx.task, else: ctx.space_task
+    %{type: Atom.to_string(type), task_id: task.id}
+  end
+
+  defp task_access_snapshot do
+    [
+      Operately.Tasks.Task, Operately.Tasks.Assignee, Contributor, Binding,
+      Operately.Notifications.SubscriptionList, Operately.Notifications.Subscription,
+      Operately.Activities.Activity, Operately.Access.GroupMembership
+    ]
+    |> Enum.map(fn schema -> Repo.all(from(row in schema, order_by: row.id)) end)
+  end
+
   describe "list tasks" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:tasks, :list], %{})
