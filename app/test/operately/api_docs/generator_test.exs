@@ -300,27 +300,50 @@ defmodule Operately.ApiDocs.GeneratorTest do
     refute File.exists?(Path.join(out_dir, "help/api/documents/create_file.mdx"))
   end
 
-  test "hidden catalog endpoints stay in the catalog but are excluded from docs", %{out_dir: out_dir} do
+  test "KPI endpoints are visible in the catalog and generated docs", %{out_dir: out_dir} do
     catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
     kpi_endpoints = Enum.filter(catalog.endpoints, &(&1.namespace == :kpis))
 
     assert kpi_endpoints != []
-    assert Enum.all?(kpi_endpoints, & &1.hidden)
+    refute Enum.any?(kpi_endpoints, &Map.get(&1, :hidden, false))
 
     payload = Catalog.payload(catalog, "/api/external/v1")
     kpi_payload = Enum.filter(payload.endpoints, &(&1.namespace == "kpis"))
 
     assert kpi_payload != []
-    assert Enum.all?(kpi_payload, &(&1.hidden == true))
+    refute Enum.any?(kpi_payload, &Map.get(&1, :hidden, false))
 
     Generator.generate(out_dir: out_dir)
 
-    refute File.exists?(Path.join(out_dir, "help/api/kpis/index.mdx"))
-    refute File.exists?(Path.join(out_dir, "help/api/kpis/list_kpis.mdx"))
-    refute File.exists?(Path.join(out_dir, "help/api/kpis/get_kpi.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/kpis/index.mdx"))
+
+    for endpoint <- kpi_endpoints do
+      assert File.exists?(Path.join(out_dir, "help/api/kpis/#{endpoint.name}.mdx"))
+    end
 
     index = File.read!(Path.join(out_dir, "help/api/index.mdx"))
-    refute index =~ "./kpis"
+    assert index =~ "./kpis"
+  end
+
+  test "hidden catalog endpoints stay in the catalog but are excluded from docs", %{out_dir: out_dir} do
+    api_module = Operately.ApiDocs.GeneratorTest.HiddenCatalogApi
+    catalog = Generator.build_catalog(api_module, "/api/external/v1")
+
+    assert %{hidden: true} = Enum.find(catalog.endpoints, &(&1.full_name == "hidden_examples/list"))
+
+    payload = Catalog.payload(catalog, "/api/external/v1")
+    assert %{hidden: true} = Enum.find(payload.endpoints, &(&1.full_name == "hidden_examples/list"))
+
+    Generator.generate(out_dir: out_dir, api_module: api_module)
+
+    assert File.exists?(Path.join(out_dir, "help/api/examples/index.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/examples/list.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/hidden_examples/index.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/hidden_examples/list.mdx"))
+
+    index = File.read!(Path.join(out_dir, "help/api/index.mdx"))
+    assert index =~ "./examples"
+    refute index =~ "./hidden_examples"
   end
 
   test "raises when catalog option is not a supported atom" do
@@ -349,4 +372,16 @@ defmodule Operately.ApiDocs.GeneratorTest.InvalidCatalogApi do
   use TurboConnect.Api
 
   query(:bad, Operately.ApiDocs.GeneratorTest.ExampleQuery, catalog: false)
+end
+
+defmodule Operately.ApiDocs.GeneratorTest.HiddenCatalogApi do
+  use TurboConnect.Api
+
+  namespace(:examples) do
+    query(:list, Operately.ApiDocs.GeneratorTest.ExampleQuery)
+  end
+
+  namespace(:hidden_examples, catalog: :hidden) do
+    query(:list, Operately.ApiDocs.GeneratorTest.ExampleQuery)
+  end
 end

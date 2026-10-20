@@ -30433,8 +30433,7 @@
       "full_name": "kpis/add_kpi_annotation",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Marks a date on a KPI chart with a short event title.",
-      "hidden": true
+      "docstring": "Marks a date on a KPI chart with a short event title."
     },
     {
       "name": "create_kpi",
@@ -30525,8 +30524,7 @@
       "full_name": "kpis/create_kpi",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Creates a KPI in a space. Any space member with edit access may create one.",
-      "hidden": true
+      "docstring": "Creates a KPI in a space. Any space member with edit access may create one."
     },
     {
       "name": "delete_kpi",
@@ -30562,8 +30560,7 @@
       "full_name": "kpis/delete_kpi",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Deletes a KPI. Any space member with edit access may delete one.",
-      "hidden": true
+      "docstring": "Deletes a KPI. Any space member with edit access may delete one."
     },
     {
       "name": "delete_kpi_annotation",
@@ -30599,8 +30596,7 @@
       "full_name": "kpis/delete_kpi_annotation",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Removes a KPI chart annotation.",
-      "hidden": true
+      "docstring": "Removes a KPI chart annotation."
     },
     {
       "name": "delete_kpi_entry",
@@ -30636,8 +30632,7 @@
       "full_name": "kpis/delete_kpi_entry",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Deletes a logged KPI value. Any space member with edit access may delete one.",
-      "hidden": true
+      "docstring": "Deletes a logged KPI value. Any space member with edit access may delete one."
     },
     {
       "name": "edit_kpi",
@@ -30728,8 +30723,7 @@
       "full_name": "kpis/edit_kpi",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Edits a KPI. Any space member with edit access may edit one.",
-      "hidden": true
+      "docstring": "Edits a KPI. Any space member with edit access may edit one."
     },
     {
       "name": "edit_kpi_annotation",
@@ -30787,8 +30781,7 @@
       "full_name": "kpis/edit_kpi_annotation",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Edits a KPI chart annotation's date or title.",
-      "hidden": true
+      "docstring": "Edits a KPI chart annotation's date or title."
     },
     {
       "name": "edit_kpi_entry",
@@ -30846,8 +30839,7 @@
       "full_name": "kpis/edit_kpi_entry",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Edits a logged KPI value. Previous values are kept so the change is visible.",
-      "hidden": true
+      "docstring": "Edits a logged KPI value. Previous values are kept so the change is visible."
     },
     {
       "name": "get_kpi",
@@ -30883,8 +30875,7 @@
       "full_name": "kpis/get_kpi",
       "method": "GET",
       "namespace": "kpis",
-      "docstring": "Retrieves a KPI together with its entries (history) for charting.",
-      "hidden": true
+      "docstring": "Retrieves a KPI together with its entries (history) for charting."
     },
     {
       "name": "list_kpis",
@@ -30923,8 +30914,7 @@
       "full_name": "kpis/list_kpis",
       "method": "GET",
       "namespace": "kpis",
-      "docstring": "Lists the KPIs of a space.",
-      "hidden": true
+      "docstring": "Lists the KPIs of a space."
     },
     {
       "name": "log_kpi_entry",
@@ -30982,8 +30972,7 @@
       "full_name": "kpis/log_kpi_entry",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Logs a value for a KPI in a given period. Any space member with edit access may log.",
-      "hidden": true
+      "docstring": "Logs a value for a KPI in a given period. Any space member with edit access may log."
     },
     {
       "name": "get_unread_count",
