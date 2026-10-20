@@ -69,6 +69,7 @@ defmodule Operately.GroupsTest do
       assert group.tools.tasks_enabled == false
       assert group.tools.discussions_enabled == true
       assert group.tools.resource_hub_enabled == true
+      assert group.tools.kpis_enabled == true
       assert group.tools.templates_enabled == true
     end
 
@@ -102,6 +103,7 @@ defmodule Operately.GroupsTest do
       assert group.tools.tasks_enabled == true
       assert group.tools.discussions_enabled == false
       assert group.tools.resource_hub_enabled == false
+      assert group.tools.kpis_enabled == true
       assert group.tools.templates_enabled == true
     end
 
