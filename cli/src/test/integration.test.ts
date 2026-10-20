@@ -4,6 +4,7 @@ import { spawn } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import type { Catalog } from "../types/catalog";
 
 const { version: packageVersion } = require("../../package.json") as { version: string };
 
@@ -70,17 +71,17 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("Authentication & Setup:"));
       assert.ok(result.stdout.includes("auth create-company"));
       assert.ok(result.stdout.includes("auth join"));
-      assert.ok(!result.stdout.includes("  kpis"));
+      assert.ok(result.stdout.includes("  kpis"));
     });
 
-    it("shows hidden namespace help with --help flag", async () => {
+    it("shows KPI namespace help with --help flag", async () => {
       const result = await runCLI(["kpis", "--help"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("kpis namespace"));
       assert.ok(result.stdout.includes("list_kpis"));
     });
 
-    it("shows hidden command help with --help flag", async () => {
+    it("shows KPI command help with --help flag", async () => {
       const result = await runCLI(["kpis", "list_kpis", "--help"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("Command: kpis list_kpis"));
@@ -683,8 +684,18 @@ describe("CLI Integration Tests", () => {
       assert.ok(!commandsDoc.includes("create_avatar_blob"));
       assert.ok(!commandsDoc.includes("create_blob"));
       assert.ok(!commandsDoc.includes("mark_blob_uploaded"));
-      assert.ok(!commandsDoc.includes("`kpis list_kpis`"));
-      assert.ok(!commandsDoc.includes("`kpis create_kpi`"));
+    });
+
+    it("includes all KPI commands in generated commands docs", () => {
+      const commandsDocPath = path.join(__dirname, "../../docs/commands.md");
+      const commandsDoc = fs.readFileSync(commandsDocPath, "utf8");
+      const catalog: Catalog = JSON.parse(fs.readFileSync(path.join(__dirname, "../generated/api-catalog.json"), "utf8"));
+      const kpiEndpoints = catalog.endpoints.filter((endpoint) => endpoint.namespace === "kpis");
+
+      assert.ok(kpiEndpoints.length > 0);
+      for (const endpoint of kpiEndpoints) {
+        assert.ok(commandsDoc.includes(`\`kpis ${endpoint.name}\``));
+      }
     });
   });
 
