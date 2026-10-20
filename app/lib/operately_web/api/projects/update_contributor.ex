@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateContributor do
   alias Operately.Projects.{Contributor, Permissions, Project}
   alias Operately.Operations.ProjectContributorEdited
   alias Operately.Access.Binding
+  alias Operately.People
 
   inputs do
     field :contrib_id, :id, null: false
@@ -28,7 +29,9 @@ defmodule OperatelyWeb.Api.Projects.UpdateContributor do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:contrib, fn ctx -> Contributor.get(ctx.me, id: ctx.attrs[:contrib_id], opts: [preload: :person]) end)
+    |> run(:project, fn ctx -> Project.get(ctx.me, id: ctx.contrib.project_id, company_id: ctx.me.company_id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.contrib.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
+    |> run(:company_member, fn ctx -> validate_company_member(ctx.project, ctx.attrs[:person_id] || ctx.contrib.person_id) end)
     |> run(:contrib_access_level, fn ctx -> get_contributor_current_access_level(ctx.contrib) end)
     |> run(:validate_can_edit_permissions, fn ctx -> validate_can_edit_permissions(ctx.contrib.request_info.access_level, ctx.contrib_access_level, ctx.attrs[:permissions]) end)
     |> run(:validate_permission_level, fn ctx -> validate_permission_level(ctx.contrib.request_info.access_level, ctx.attrs[:permissions]) end)
@@ -42,8 +45,10 @@ defmodule OperatelyWeb.Api.Projects.UpdateContributor do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :contrib, _} -> {:error, :not_found}
+      {:error, :project, _} -> {:error, :not_found}
       {:error, :contrib_project, _} -> {:error, :internal_server_error}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :company_member, _} -> {:error, :bad_request}
       {:error, :validate_can_edit_permissions, _} -> {:error, :forbidden}
       {:error, :validate_permission_level, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
@@ -56,6 +61,13 @@ defmodule OperatelyWeb.Api.Projects.UpdateContributor do
       {:ok, %{inputs | permissions: Binding.from_atom(inputs.permissions)}}
     else
       {:ok, inputs}
+    end
+  end
+
+  defp validate_company_member(project, person_id) do
+    case People.validate_active_company_members(project.company_id, [person_id]) do
+      :ok -> {:ok, :valid}
+      error -> error
     end
   end
 
