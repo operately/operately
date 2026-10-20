@@ -330,6 +330,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.validate_assignees(assignee_ids)
       |> Steps.update_task_assignees(assignee_ids)
       |> Steps.save_activity(:task_assignee_updating, &build_activity_content(inputs, &1))
       |> Steps.commit()
@@ -487,6 +488,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.find_project(inputs.id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.validate_milestone_belongs_to_project(inputs[:milestone_id])
+      |> Steps.validate_assignees(Steps.assignee_ids(inputs))
       |> Steps.create_task(inputs)
       |> Steps.save_activity(:task_adding, fn changes ->
         %{
@@ -514,6 +516,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_space(inputs.id)
       |> Steps.check_permissions(:can_edit)
+      |> Steps.validate_assignees(Steps.assignee_ids(inputs))
       |> Steps.create_task(inputs)
       |> SpaceSync.sync_after_task_create(inputs.id)
       |> Steps.save_activity(:task_adding, fn changes ->
@@ -807,6 +810,21 @@ defmodule OperatelyWeb.Api.Tasks do
       ids
       |> Enum.reject(&is_nil/1)
       |> Enum.uniq()
+    end
+
+    def validate_assignees(multi, person_ids) do
+      Ecto.Multi.run(multi, :company_members, fn _repo, changes ->
+        case get_context_from_changes(changes) do
+          %{company_id: company_id} when company_id == changes.me.company_id ->
+            case Operately.People.validate_active_company_members(company_id, person_ids) do
+              :ok -> {:ok, :valid}
+              {:error, :invalid_company_member} -> {:error, :bad_request}
+            end
+
+          _ ->
+            {:error, :not_found}
+        end
+      end)
     end
 
     def update_task_assignee(multi, new_assignee_id) do
@@ -1148,6 +1166,9 @@ defmodule OperatelyWeb.Api.Tasks do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
+
+        {:error, _failed_operation, :bad_request, _changes} ->
+          {:error, :bad_request}
 
         {:error, _failed_operation, {:bad_request, message}, _changes} ->
           {:error, :bad_request, message}
