@@ -300,27 +300,29 @@ defmodule Operately.ApiDocs.GeneratorTest do
     refute File.exists?(Path.join(out_dir, "help/api/documents/create_file.mdx"))
   end
 
-  test "hidden catalog endpoints stay in the catalog but are excluded from docs", %{out_dir: out_dir} do
+  test "KPI endpoints are visible in the catalog and generated docs", %{out_dir: out_dir} do
     catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
     kpi_endpoints = Enum.filter(catalog.endpoints, &(&1.namespace == :kpis))
 
     assert kpi_endpoints != []
-    assert Enum.all?(kpi_endpoints, & &1.hidden)
+    refute Enum.any?(kpi_endpoints, &Map.get(&1, :hidden, false))
 
     payload = Catalog.payload(catalog, "/api/external/v1")
     kpi_payload = Enum.filter(payload.endpoints, &(&1.namespace == "kpis"))
 
     assert kpi_payload != []
-    assert Enum.all?(kpi_payload, &(&1.hidden == true))
+    refute Enum.any?(kpi_payload, &Map.get(&1, :hidden, false))
 
     Generator.generate(out_dir: out_dir)
 
-    refute File.exists?(Path.join(out_dir, "help/api/kpis/index.mdx"))
-    refute File.exists?(Path.join(out_dir, "help/api/kpis/list_kpis.mdx"))
-    refute File.exists?(Path.join(out_dir, "help/api/kpis/get_kpi.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/kpis/index.mdx"))
+
+    for endpoint <- kpi_endpoints do
+      assert File.exists?(Path.join(out_dir, "help/api/kpis/#{endpoint.name}.mdx"))
+    end
 
     index = File.read!(Path.join(out_dir, "help/api/index.mdx"))
-    refute index =~ "./kpis"
+    assert index =~ "./kpis"
   end
 
   test "raises when catalog option is not a supported atom" do

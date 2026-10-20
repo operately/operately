@@ -212,7 +212,7 @@ defmodule OperatelyWeb.Api do
       end
 
       @doc "Get, list, create and manage Space KPIs"
-      namespace(:kpis, catalog: :hidden) do
+      namespace(:kpis) do
         query(:list_kpis, OperatelyWeb.Api.Kpis.ListKpis)
         query(:get_kpi, OperatelyWeb.Api.Kpis.GetKpi)
 
