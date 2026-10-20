@@ -6,6 +6,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
   use OperatelyWeb.TurboCase
   use Operately.Support.Notifications
 
+  import Operately.Support.Api.ProjectAccessHelpers, only: [project_access_snapshot: 1]
+
   setup ctx do
     ctx
     |> Factory.setup()
@@ -1267,7 +1269,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       test "rejects a #{invalid_champion} champion without changing assignments", ctx do
         ctx = Factory.log_in_person(ctx, :creator)
         champion_id = invalid_champion_id(ctx, unquote(invalid_champion))
-        before = champion_assignment_snapshot(ctx.project)
+        before = project_access_snapshot(ctx.project)
 
         assert {400, %{message: "The request was malformed"}} =
                  mutation(ctx.conn, [:projects, :update_champion], %{
@@ -1275,14 +1277,14 @@ defmodule OperatelyWeb.Api.ProjectsTest do
                    champion_id: champion_id
                  })
 
-        assert champion_assignment_snapshot(ctx.project) == before
+        assert project_access_snapshot(ctx.project) == before
       end
     end
 
     test "rejects a project from another company", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
       other = Factory.setup(%{}) |> Factory.add_space(:space) |> Factory.add_project(:project, :space)
-      before = champion_assignment_snapshot(other.project)
+      before = project_access_snapshot(other.project)
 
       assert {404, _} =
                mutation(ctx.conn, [:projects, :update_champion], %{
@@ -1290,7 +1292,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
                  champion_id: Paths.person_id(ctx.new_champion)
                })
 
-      assert champion_assignment_snapshot(other.project) == before
+      assert project_access_snapshot(other.project) == before
     end
 
     test "accepts an active guest without space access", ctx do
@@ -1369,7 +1371,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "rejects updates when the company is read-only", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
       put_company_in_read_only(ctx.company)
-      before = champion_assignment_snapshot(ctx.project)
+      before = project_access_snapshot(ctx.project)
 
       assert {403, _} =
                mutation(ctx.conn, [:projects, :update_champion], %{
@@ -1377,13 +1379,13 @@ defmodule OperatelyWeb.Api.ProjectsTest do
                  champion_id: Paths.person_id(ctx.new_champion)
                })
 
-      assert champion_assignment_snapshot(ctx.project) == before
+      assert project_access_snapshot(ctx.project) == before
     end
 
     test "a write token cannot assign a foreign champion", ctx do
       ctx = Factory.add_api_token(ctx, :token, :creator, read_only: false)
       other = Factory.setup(%{})
-      before = champion_assignment_snapshot(ctx.project)
+      before = project_access_snapshot(ctx.project)
 
       assert {400, %{message: "The request was malformed"}} =
                external_mutation(ctx.conn, ctx.token, "projects/update_champion", %{
@@ -1391,12 +1393,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
                  champion_id: Paths.person_id(other.creator)
                })
 
-      assert champion_assignment_snapshot(ctx.project) == before
+      assert project_access_snapshot(ctx.project) == before
     end
 
     test "a read-only token cannot update the champion", ctx do
       ctx = Factory.add_api_token(ctx, :token, :creator, read_only: true)
-      before = champion_assignment_snapshot(ctx.project)
+      before = project_access_snapshot(ctx.project)
 
       assert {403, "Read-only API tokens cannot execute mutations"} =
                external_mutation(ctx.conn, ctx.token, "projects/update_champion", %{
@@ -1404,7 +1406,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
                  champion_id: Paths.person_id(ctx.new_champion)
                })
 
-      assert champion_assignment_snapshot(ctx.project) == before
+      assert project_access_snapshot(ctx.project) == before
     end
   end
 
@@ -1545,6 +1547,20 @@ defmodule OperatelyWeb.Api.ProjectsTest do
   end
 
   describe "update reviewer" do
+    test "rejects a foreign person without changing project access", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      foreign_person = Factory.setup(%{}).creator
+      assert {:error, :not_found} = Operately.Projects.Project.get(foreign_person, id: ctx.project.id)
+      before = project_access_snapshot(ctx.project)
+
+      assert {400, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
+        project_id: ctx.project.id,
+        reviewer_id: foreign_person.id
+      })
+
+      assert project_access_snapshot(ctx.project) == before
+    end
+
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{})
     end
@@ -2455,33 +2471,6 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     assert person.account_id == ctx.creator.account_id
     assert person.company_id != ctx.company.id
     Paths.person_id(person)
-  end
-
-  defp champion_assignment_snapshot(project) do
-    project = Repo.reload(project) |> Repo.preload(:champion)
-    context_id = Operately.Access.get_context!(project_id: project.id).id
-
-    %{
-      champion_id: project.champion && project.champion.id,
-      project: Map.take(project, [:name, :company_id, :group_id, :updated_at]),
-      contributors: assignment_rows(Operately.Projects.Contributor, :project_id, project.id, [:id, :person_id, :role]),
-      bindings: assignment_rows(Operately.Access.Binding, :context_id, context_id, [:id, :group_id, :access_level, :tag]),
-      subscriptions:
-        assignment_rows(Operately.Notifications.Subscription, :subscription_list_id, project.subscription_list_id, [
-          :id,
-          :person_id,
-          :type,
-          :canceled
-        ]),
-      activities: count_activities(project.id, "project_champion_updating"),
-      memberships: Repo.aggregate(Operately.Access.GroupMembership, :count),
-      space_members: Repo.aggregate(Operately.Groups.Member, :count)
-    }
-  end
-
-  defp assignment_rows(schema, field, id, columns) do
-    from(row in schema, where: field(row, ^field) == ^id, order_by: row.id, select: map(row, ^columns))
-    |> Repo.all()
   end
 
   defp put_company_in_read_only(company) do
