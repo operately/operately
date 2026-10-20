@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Goals do
   alias Operately.Goals.{Goal, Target}
   alias Operately.Access
   alias Operately.Access.Binding
+  alias Operately.People
   alias OperatelyWeb.Api.Serializer
 
   defmodule SearchParentGoal do
@@ -479,6 +480,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members([inputs.champion_id])
       |> Steps.update_goal_champion(inputs.champion_id)
       |> Steps.save_activity(:goal_champion_updating, fn changes ->
         %{
@@ -515,6 +517,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members([inputs.reviewer_id])
       |> Steps.update_goal_reviewer(inputs.reviewer_id)
       |> Steps.save_activity(:goal_reviewer_updating, fn changes ->
         %{
@@ -614,6 +617,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members(Enum.map(inputs.members, & &1.id))
       |> Steps.add_access_members(inputs.members)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
@@ -642,6 +646,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members([inputs.person_id])
       |> Steps.update_access_member(inputs.person_id, inputs.access_level)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
@@ -731,6 +736,19 @@ defmodule OperatelyWeb.Api.Goals do
         case Operately.Goals.Goal.get(me, id: goal_id, opts: [preload: [:access_context]]) do
           {:ok, goal} -> {:ok, goal}
           {:error, _} -> {:error, {:not_found, gettext("Goal not found")}}
+        end
+      end)
+    end
+
+    def validate_selected_company_members(multi, person_ids) do
+      Ecto.Multi.run(multi, :company_members, fn _repo, %{me: me, goal: goal} ->
+        if goal.company_id != me.company_id do
+          {:error, :not_found}
+        else
+          case People.validate_active_company_members(goal.company_id, person_ids) do
+            :ok -> {:ok, :valid}
+            {:error, :invalid_company_member} -> {:error, :bad_request}
+          end
         end
       end)
     end

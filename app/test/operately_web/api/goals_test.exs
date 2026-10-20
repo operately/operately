@@ -50,6 +50,65 @@ defmodule OperatelyWeb.Api.GoalsTest do
     |> Factory.add_goal(:goal, :marketing)
   end
 
+  describe "company member boundaries" do
+    setup ctx do
+      ctx
+      |> Factory.add_company_member(:new_member)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_api_token(:write_token, :creator, read_only: false)
+    end
+
+    for endpoint <- [:update_champion, :update_reviewer, :create_access_members, :update_access_member] do
+      @endpoint endpoint
+
+      test "#{@endpoint} rejects a foreign person without changing goal access", ctx do
+        foreign_person = Factory.setup(%{}).creator
+        assert {:error, :not_found} = Operately.Goals.Goal.get(foreign_person, id: ctx.goal.id)
+        before = goal_access_snapshot(ctx.goal)
+        inputs = goal_boundary_inputs(@endpoint, ctx.goal.id, foreign_person.id, ctx.new_member.id)
+
+        assert {400, _} = mutation(ctx.conn, [:goals, @endpoint], inputs)
+        assert goal_access_snapshot(ctx.goal) == before
+        assert {400, _} = external_mutation(ctx.conn, ctx.write_token, "goals/#{@endpoint}", inputs)
+        assert goal_access_snapshot(ctx.goal) == before
+      end
+    end
+
+    test "rejects a foreign goal even when the caller already has full access", ctx do
+      foreign = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+      context = Access.get_context!(goal_id: foreign.goal.id)
+      {:ok, _} = Access.bind_person(context, ctx.creator.id, Binding.full_access())
+      assert {:ok, _} = Operately.Goals.Goal.get(ctx.creator, id: foreign.goal.id)
+      before = goal_access_snapshot(foreign.goal)
+
+      for endpoint <- [:update_champion, :update_reviewer, :create_access_members, :update_access_member] do
+        inputs = goal_boundary_inputs(endpoint, foreign.goal.id, ctx.creator.id, ctx.new_member.id)
+        assert {404, _} = mutation(ctx.conn, [:goals, endpoint], inputs)
+        assert goal_access_snapshot(foreign.goal) == before
+      end
+    end
+  end
+
+  defp goal_boundary_inputs(:update_champion, goal_id, person_id, _member_id), do: %{goal_id: goal_id, champion_id: person_id}
+  defp goal_boundary_inputs(:update_reviewer, goal_id, person_id, _member_id), do: %{goal_id: goal_id, reviewer_id: person_id}
+  defp goal_boundary_inputs(:update_access_member, goal_id, person_id, _member_id), do: %{goal_id: goal_id, person_id: person_id, access_level: Binding.edit_access()}
+
+  defp goal_boundary_inputs(:create_access_members, goal_id, person_id, member_id) do
+    %{goal_id: goal_id, members: [%{id: member_id, access_level: Binding.edit_access()}, %{id: person_id, access_level: Binding.edit_access()}]}
+  end
+
+  defp goal_access_snapshot(goal) do
+    context = Access.get_context!(goal_id: goal.id)
+
+    %{
+      goal: Repo.reload(goal),
+      bindings: Repo.all(from(b in Binding, where: b.context_id == ^context.id, order_by: b.id)),
+      activities: Repo.aggregate(Activity, :count),
+      subscriptions: Repo.aggregate(Operately.Notifications.Subscription, :count),
+      memberships: Repo.aggregate(Operately.Access.GroupMembership, :count)
+    }
+  end
+
   describe "goals/update_parent_goal destination authorization" do
     setup ctx do
       ctx
