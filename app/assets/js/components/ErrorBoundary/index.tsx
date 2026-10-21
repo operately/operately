@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import { captureException } from "@sentry/react";
 
 type Props = {
@@ -23,7 +24,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     console.error(error, info.componentStack);
 
-    if (window.appConfig?.sentry?.enabled) {
+    // Axios interceptors handle API error reporting; skip duplicate reports here.
+    if (window.appConfig?.sentry?.enabled && !axios.isAxiosError(error)) {
       captureException(error, {
         extra: { componentStack: info.componentStack },
       });

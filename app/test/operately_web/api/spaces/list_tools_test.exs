@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
   use OperatelyWeb.TurboCase
 
+  import Mock
+
   import Operately.GroupsFixtures
   import Operately.ResourceHubsFixtures
   import Operately.MessagesFixtures
@@ -557,5 +559,44 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
     end
 
     goal
+  end
+
+  @tag :parallel_failure
+  test "parallel queue failure reaches the HTTP error handler", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.log_in_person(:creator)
+    owner = self()
+    error = %DBConnection.ConnectionError{reason: :queue_timeout, message: "private diagnostic"}
+
+    with_mock Operately.Repo, [:passthrough],
+      all: fn query ->
+        if self() == owner, do: :meck.passthrough([query]), else: raise(error)
+      end do
+      ExUnit.CaptureLog.capture_log(fn ->
+        {503, _, body} =
+          Phoenix.ConnTest.assert_error_sent(503, fn ->
+            Phoenix.ConnTest.dispatch(ctx.conn, OperatelyWeb.Endpoint, :get, "/api/v2/spaces/list_tools", %{space_id: Paths.space_id(ctx.space)})
+          end)
+
+        assert Jason.decode!(body)["code"] == "database_connection_queue_timeout"
+      end)
+    end
+  end
+
+  @tag :parallel_failure
+  test "parallel unrelated failure reaches the HTTP error handler", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.log_in_person(:creator)
+    owner = self()
+    error = %RuntimeError{message: "private diagnostic"}
+
+    with_mock Operately.Repo, [:passthrough],
+      all: fn query ->
+        if self() == owner, do: :meck.passthrough([query]), else: raise(error)
+      end do
+      ExUnit.CaptureLog.capture_log(fn ->
+        conn = Phoenix.ConnTest.dispatch(ctx.conn, OperatelyWeb.Endpoint, :get, "/api/v2/spaces/list_tools", %{space_id: Paths.space_id(ctx.space)})
+        assert conn.status == 500
+        refute Map.has_key?(Jason.decode!(conn.resp_body), "code")
+      end)
+    end
   end
 end

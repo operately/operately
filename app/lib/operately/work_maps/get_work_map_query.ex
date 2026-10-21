@@ -29,13 +29,13 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     - only_completed (optional): A boolean indicating whether to return only completed items. Defaults to false
   """
   def execute(person, args) do
+    [goals, projects] =
+      Operately.Parallel.run([
+        fn -> get_goals(person, args) end,
+        fn -> get_projects(person, args) end
+      ])
+
     try do
-      goals_task = Task.async(fn -> get_goals(person, args) end)
-      projects_task = Task.async(fn -> get_projects(person, args) end)
-
-      goals = Task.await(goals_task)
-      projects = Task.await(projects_task)
-
       work_map = build_work_map(goals, projects, args)
 
       {:ok, work_map}
@@ -64,15 +64,14 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   they match the filter criteria directly.
   """
   def execute(person, args, :flat) do
+    [goals, projects, tasks] =
+      Operately.Parallel.run([
+        fn -> get_goals(person, args) end,
+        fn -> get_projects(person, args) end,
+        fn -> get_tasks(person, args) end
+      ])
+
     try do
-      goals_task = Task.async(fn -> get_goals(person, args) end)
-      projects_task = Task.async(fn -> get_projects(person, args) end)
-      tasks_task = Task.async(fn -> get_tasks(person, args) end)
-
-      goals = Task.await(goals_task)
-      projects = Task.await(projects_task)
-      tasks = Task.await(tasks_task)
-
       flat_items = build_flat_work_map(goals, projects, tasks, args)
 
       {:ok, flat_items}

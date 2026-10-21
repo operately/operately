@@ -5958,9 +5958,9 @@ msgstr "Une erreur inattendue s’est produite."
 
 #.elixir
 #: lib/turbo_connect/plugs/dispatch.ex:50
-#: lib/turbo_connect/plugs/dispatch.ex:57
-#: lib/turbo_connect/plugs/dispatch.ex:63
-#: lib/turbo_connect/plugs/dispatch.ex:71
+#: lib/turbo_connect/plugs/dispatch.ex:55
+#: lib/turbo_connect/plugs/dispatch.ex:60
+#: lib/turbo_connect/plugs/dispatch.ex:74
 msgid "An unexpected error occurred"
 msgstr "Une erreur inattendue s’est produite"
 
@@ -6295,7 +6295,7 @@ msgstr "Au moins 12 caractères"
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:13
 #: lib/operately_web/api/project_templates/helpers.ex:25
-#: lib/operately_web/api/projects.ex:781
+#: lib/operately_web/api/projects.ex:782
 #: lib/operately_web/api/spaces.ex:363
 msgid "At least one task status is required"
 msgstr "Au moins un statut de tâche est requis"
@@ -11519,7 +11519,7 @@ msgstr "Le nom de l’objectif ne peut pas être vide"
 
 #.elixir
 #: lib/operately_web/api/goal_checks.ex:188
-#: lib/operately_web/api/goals.ex:733
+#: lib/operately_web/api/goals.ex:738
 #: lib/operately_web/api/queries/list_goal_check_ins.ex:26
 msgid "Goal not found"
 msgstr "Objectif introuvable"
@@ -12009,8 +12009,8 @@ msgid "Invalid profile update"
 msgstr "Mise à jour du profil invalide"
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:743
-#: lib/operately_web/api/tasks.ex:749
+#: lib/operately_web/api/tasks.ex:746
+#: lib/operately_web/api/tasks.ex:752
 msgid "Invalid reminders"
 msgstr "Rappels invalides"
 
@@ -12034,7 +12034,7 @@ msgstr "Paramètres de message système invalides"
 #.elixir
 #: lib/operately/operations/kanban_state_updating.ex:57
 #: lib/operately/operations/kanban_state_updating.ex:69
-#: lib/operately_web/api/tasks.ex:1099
+#: lib/operately_web/api/tasks.ex:1117
 msgid "Invalid status"
 msgstr "Statut invalide"
 
@@ -13158,8 +13158,8 @@ msgstr "Le jalon n’est pas %{name}"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:55
-#: lib/operately_web/api/tasks.ex:883
-#: lib/operately_web/api/tasks.ex:903
+#: lib/operately_web/api/tasks.ex:901
+#: lib/operately_web/api/tasks.ex:921
 msgid "Milestone must belong to the same project as the task"
 msgstr "Le jalon doit appartenir au même projet que la tâche"
 
@@ -13187,10 +13187,10 @@ msgstr "Jalon non supprimé"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:49
-#: lib/operately_web/api/projects.ex:635
-#: lib/operately_web/api/projects.ex:650
+#: lib/operately_web/api/projects.ex:636
+#: lib/operately_web/api/projects.ex:651
 #: lib/operately_web/api/projects/milestones.ex:285
-#: lib/operately_web/api/tasks.ex:671
+#: lib/operately_web/api/tasks.ex:674
 msgid "Milestone not found"
 msgstr "Jalon introuvable"
 
@@ -15870,15 +15870,15 @@ msgid "Project name cannot be empty"
 msgstr "Le nom du projet ne peut pas être vide"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:596
-#: lib/operately_web/api/projects.ex:611
-#: lib/operately_web/api/projects.ex:641
-#: lib/operately_web/api/projects.ex:676
+#: lib/operately_web/api/projects.ex:597
+#: lib/operately_web/api/projects.ex:612
+#: lib/operately_web/api/projects.ex:642
+#: lib/operately_web/api/projects.ex:677
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:276
-#: lib/operately_web/api/tasks.ex:623
-#: lib/operately_web/api/tasks.ex:662
-#: lib/operately_web/api/tasks.ex:677
+#: lib/operately_web/api/tasks.ex:626
+#: lib/operately_web/api/tasks.ex:665
+#: lib/operately_web/api/tasks.ex:680
 msgid "Project not found"
 msgstr "Projet introuvable"
 
@@ -16669,7 +16669,7 @@ msgid "Replacement"
 msgstr "Remplacement"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:809
+#: lib/operately_web/api/projects.ex:810
 #: lib/operately_web/api/spaces.ex:397
 msgid "Replacement statuses must be existing statuses that are not being deleted"
 msgstr "Les statuts de remplacement doivent déjà exister et ne pas être en cours de suppression"
@@ -18406,7 +18406,7 @@ msgid "Space members will have full access."
 msgstr "Les membres de l’espace disposeront d’un accès complet."
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:632
+#: lib/operately_web/api/tasks.ex:635
 msgid "Space not found"
 msgstr "Espace introuvable"
 
@@ -18908,7 +18908,7 @@ msgid "Target"
 msgstr "Valeur cible"
 
 #.elixir
-#: lib/operately_web/api/goals.ex:986
+#: lib/operately_web/api/goals.ex:1004
 msgid "Target not found"
 msgstr "Indicateur introuvable"
 
@@ -19034,12 +19034,12 @@ msgid "Task not deleted"
 msgstr "Tâche non supprimée"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:605
-#: lib/operately_web/api/projects.ex:620
+#: lib/operately_web/api/projects.ex:606
+#: lib/operately_web/api/projects.ex:621
 #: lib/operately_web/api/projects/milestones.ex:297
 #: lib/operately_web/api/spaces.ex:313
-#: lib/operately_web/api/tasks.ex:644
-#: lib/operately_web/api/tasks.ex:656
+#: lib/operately_web/api/tasks.ex:647
+#: lib/operately_web/api/tasks.ex:659
 msgid "Task not found"
 msgstr "Tâche introuvable"
 
@@ -19140,12 +19140,12 @@ msgid "Team member"
 msgstr "Membre de l’équipe"
 
 #.elixir
-#: lib/operately_web/api/mutations/new_invitation_token.ex:48
+#: lib/operately_web/api/mutations/new_invitation_token.ex:49
 msgid "Team member doesn't have an open invitation."
 msgstr "Ce membre de l’équipe n’a pas d’invitation en cours."
 
 #.elixir
-#: lib/operately_web/api/mutations/new_invitation_token.ex:45
+#: lib/operately_web/api/mutations/new_invitation_token.ex:32
 msgid "Team member not found."
 msgstr "Membre de l’équipe introuvable."
 
@@ -19292,7 +19292,7 @@ msgid "The \"%{title}\" milestone due date was updated"
 msgstr "L’échéance du jalon « %{title} » a été modifiée"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:75
+#: lib/operately_web/mcp/executor.ex:93
 msgid "The %{name} tool is not implemented yet."
 msgstr "L’outil %{name} n’est pas encore disponible."
 
@@ -19741,7 +19741,7 @@ msgid "The requested resource was not found"
 msgstr "La ressource demandée est introuvable"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:82
+#: lib/operately_web/mcp/executor.ex:100
 msgid "The requested resource was not found or is not accessible."
 msgstr "La ressource demandée est introuvable ou inaccessible."
 
@@ -19756,12 +19756,12 @@ msgid "The reviewer was changed to %{personName}."
 msgstr "Le rôle de référent a été confié à %{personName}."
 
 #.elixir
-#: lib/operately_web/api/goals/create.ex:51
+#: lib/operately_web/api/goals/create.ex:54
 msgid "The selected champion doesn't have access to the selected space"
 msgstr "Le responsable sélectionné n’a pas accès à l’espace sélectionné"
 
 #.elixir
-#: lib/operately_web/api/goals/create.ex:52
+#: lib/operately_web/api/goals/create.ex:55
 msgid "The selected reviewer doesn't have access to the selected space"
 msgstr "Le référent sélectionné n’a pas accès à l’espace sélectionné"
 
@@ -19769,6 +19769,11 @@ msgstr "Le référent sélectionné n’a pas accès à l’espace sélectionné
 #: lib/operately_web/api/rich_content/set_task_item_checked.ex:52
 msgid "The selected task item no longer exists"
 msgstr "L’élément de tâche sélectionné n’existe plus"
+
+#.elixir
+#: lib/operately_web/database_errors.ex:54
+msgid "The service is temporarily unavailable. Please try again."
+msgstr "Le service est temporairement indisponible. Veuillez réessayer."
 
 #.frontend
 #: assets/js/pages/SpacePage/page.tsx:182
@@ -19893,12 +19898,12 @@ msgid "The token request is missing required parameters or contains invalid valu
 msgstr "La demande de jeton ne contient pas tous les paramètres requis ou contient des valeurs invalides."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:96
+#: lib/operately_web/mcp/executor.ex:114
 msgid "The tool could not complete the request with the provided data."
 msgstr "L’outil n’a pas pu traiter la demande avec les données fournies."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:103
+#: lib/operately_web/mcp/executor.ex:121
 msgid "The tool could not complete the request."
 msgstr "L’outil n’a pas pu traiter la demande."
 
@@ -20372,8 +20377,8 @@ msgid "This password reset link will expire in 24 hours for security reasons."
 msgstr "Ce lien de réinitialisation du mot de passe expirera dans 24 heures pour des raisons de sécurité."
 
 #.elixir
-#: lib/operately_web/api/projects/create_contributor.ex:87
-#: lib/operately_web/api/projects/create_contributors.ex:53
+#: lib/operately_web/api/projects/create_contributor.ex:90
+#: lib/operately_web/api/projects/create_contributors.ex:56
 msgid "This person is already a contributor on this project"
 msgstr "Cette personne contribue déjà à ce projet"
 
@@ -22473,7 +22478,7 @@ msgid "You cannot delete the general space"
 msgstr "Vous ne pouvez pas supprimer l’espace général"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:89
+#: lib/operately_web/mcp/executor.ex:107
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr "Vous n’avez pas l’autorisation d’effectuer cette opération, ou l’entreprise est en lecture seule."
 

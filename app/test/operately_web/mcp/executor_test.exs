@@ -30,6 +30,29 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
     def call(_conn, _arguments), do: {:error, :not_found, "Private resource details"}
   end
 
+  defmodule FailingTool do
+    def call(conn, _arguments), do: raise(conn.assigns.failure)
+  end
+
+  test "queue failures return a localized tool error", %{conn: conn} do
+    conn = Conn.assign(conn, :failure, %DBConnection.ConnectionError{reason: :queue_timeout, message: "private diagnostic"})
+    definition = Definition.new!(name: "failing", implementation: FailingTool, input_schema: %{"type" => "object", "properties" => %{}})
+
+    Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+      assert {:ok, result} = Executor.execute(conn, definition, %{})
+      assert result == %{"isError" => true, "content" => [%{"type" => "text", "text" => "O serviço está temporariamente indisponível. Tente novamente."}]}
+    end)
+  end
+
+  test "unrelated exceptions retain their existing propagation", %{conn: conn} do
+    definition = Definition.new!(name: "failing", implementation: FailingTool, input_schema: %{"type" => "object", "properties" => %{}})
+
+    for error <- [%RuntimeError{message: "unrelated"}, %DBConnection.ConnectionError{reason: :error, message: "connection lost"}] do
+      conn = Conn.assign(conn, :failure, error)
+      assert assert_raise(error.__struct__, fn -> Executor.execute(conn, definition, %{}) end) == error
+    end
+  end
+
   defmodule RichTextTool do
     def call(_conn, %{"content" => content}) do
       send(self(), {:tool_source, content})

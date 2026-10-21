@@ -47,6 +47,11 @@ function shouldCaptureAxiosError(error: unknown): boolean {
     return true;
   }
 
+  // The server reports the original exception with its database stack.
+  if (status === 503 && error.response?.data?.code === "database_connection_queue_timeout") {
+    return false;
+  }
+
   return !IGNORED_AXIOS_STATUSES.has(status);
 }
 
