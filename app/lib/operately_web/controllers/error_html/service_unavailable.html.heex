@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang={@locale} class="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{gettext("Temporarily unavailable")} · Operately</title>
+    <link rel="stylesheet" href={~p"/assets/app.css"} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="antialiased">
+    <%!-- Match TurboUI's ErrorPage without booting React or querying the database. --%>
+    <main class="absolute inset-0 flex justify-center items-center gap-16" data-status="503">
+      <div class="flex flex-col text-center sm:-mt-64 min-w-0 max-w-full px-4">
+        <div class="font-extrabold" style="font-size: 10rem">503</div>
+        <h1 class="text-3xl font-bold mt-4">{gettext("Temporarily unavailable")}</h1>
+        <p class="text-lg font-medium my-4">{gettext("We can't load this page right now. Please try again.")}</p>
+        <div class="flex w-full justify-center mt-4">
+          <a
+            href="/"
+            class="relative flex-grow-0 flex-shrink-0 font-semibold text-center inline-block transition-all duration-100 border border-brand-1 text-brand-1 hover:text-white-1 hover:bg-brand-1 cursor-pointer px-4 py-2 rounded-md"
+          >
+            {gettext("Go back to Lobby")}
+          </a>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

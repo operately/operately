@@ -68,7 +68,8 @@ defmodule OperatelyWeb.DatabaseErrors do
 
     case conn.private[:phoenix_format] do
       "html" ->
-        {"text/html", message |> Phoenix.HTML.html_escape() |> Phoenix.HTML.safe_to_string()}
+        body = Phoenix.Template.render_to_string(OperatelyWeb.ErrorHTML, "503", "html", %{})
+        {"text/html", body}
 
       _ ->
         body = %{error: "Service Unavailable", code: "database_connection_queue_timeout", message: message}

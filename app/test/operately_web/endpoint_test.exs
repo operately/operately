@@ -243,7 +243,10 @@ defmodule OperatelyWeb.EndpointTest do
       {503, headers, body} = assert_error_sent(503, request)
       assert {"content-type", "text/html; charset=utf-8"} in headers
       assert {"cache-control", "no-store"} in headers
-      assert body == "The service is temporarily unavailable. Please try again."
+      html = Floki.parse_document!(body)
+      assert Floki.attribute(html, "main", "data-status") == ["503"]
+      assert Floki.attribute(html, "a", "href") == ["/"]
+      refute body =~ "sensitive diagnostic"
     end)
   end
 

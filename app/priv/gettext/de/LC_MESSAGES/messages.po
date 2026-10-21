@@ -5953,7 +5953,7 @@ msgid "An admin or owner needs to review billing or free up member space before 
 msgstr "Eine Person mit Admin- oder Inhaberrechten muss die Abrechnung prüfen oder Platz für Mitglieder schaffen, bevor weitere Personen beitreten können."
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:28
+#: ../turboui/src/ErrorPage/index.tsx:22
 msgid "An unexpected error has occurred."
 msgstr "Ein unerwarteter Fehler ist aufgetreten."
 
@@ -6496,7 +6496,7 @@ msgid "Backfills add missing entries. Reconciliation performs a complete repair.
 msgstr "Das Ergänzen fügt fehlende Einträge hinzu. Der Abgleich führt eine vollständige Reparatur durch."
 
 #.elixir
-#: lib/operately_web/controllers/error_html.ex:5
+#: lib/operately_web/controllers/error_html.ex:7
 msgid "Bad Request"
 msgstr "Ungültige Anfrage"
 
@@ -10281,7 +10281,7 @@ msgid "Error"
 msgstr "Fehler"
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:39
+#: ../turboui/src/ErrorPage/index.tsx:51
 msgid "Error Stack Trace"
 msgstr "Fehler-Stacktrace"
 
@@ -11263,7 +11263,7 @@ msgid "For projects: The upcoming milestone (by due date)"
 msgstr "Für Projekte: Der nächste Meilenstein (nach Fälligkeitsdatum)"
 
 #.elixir
-#: lib/operately_web/controllers/error_html.ex:7
+#: lib/operately_web/controllers/error_html.ex:9
 msgid "Forbidden"
 msgstr "Zugriff verweigert"
 
@@ -11426,12 +11426,14 @@ msgid "Global"
 msgstr "Global"
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:33
+#: ../turboui/src/ErrorPage/index.tsx:45
 msgid "Go back to Home"
 msgstr "Zurück zur Startseite"
 
+#.elixir
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:33
+#: ../turboui/src/ErrorPage/index.tsx:45
+#: lib/operately_web/controllers/error_html/service_unavailable.html.heex:22
 msgid "Go back to Lobby"
 msgstr "Zurück zur Unternehmensauswahl"
 
@@ -11853,7 +11855,7 @@ msgid "Internal"
 msgstr "Intern"
 
 #.elixir
-#: lib/operately_web/controllers/error_html.ex:9
+#: lib/operately_web/controllers/error_html.ex:11
 msgid "Internal Server Error"
 msgstr "Interner Serverfehler"
 
@@ -14324,7 +14326,7 @@ msgstr "Keine (unternehmensweites Projekt)"
 
 #.elixir
 #: lib/operately_web/controllers/cli_login_controller.ex:147
-#: lib/operately_web/controllers/error_html.ex:8
+#: lib/operately_web/controllers/error_html.ex:10
 msgid "Not Found"
 msgstr "Nicht gefunden"
 
@@ -14649,7 +14651,7 @@ msgid "Ooops, something went wrong while loading the feed"
 msgstr "Beim Laden des Feeds ist etwas schiefgelaufen"
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:23
+#: ../turboui/src/ErrorPage/index.tsx:21
 msgid "Oops! Something went wrong."
 msgstr "Etwas ist schiefgelaufen."
 
@@ -14951,7 +14953,7 @@ msgid "Package"
 msgstr "Datenpaket"
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:23
+#: ../turboui/src/ErrorPage/index.tsx:17
 msgid "Page Not Found"
 msgstr "Seite nicht gefunden"
 
@@ -18286,7 +18288,7 @@ msgid "Something went wrong. Please try again."
 msgstr "Etwas ist schiefgelaufen. Versuche es erneut."
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:27
+#: ../turboui/src/ErrorPage/index.tsx:18
 msgid "Sorry, we couldn't find that page you were looking for."
 msgstr "Leider konnten wir die gesuchte Seite nicht finden."
 
@@ -19242,6 +19244,14 @@ msgstr "Vorlagen"
 msgid "Temporarily enable elevated support access for troubleshooting issues with this company's account. You will view the account as if you were an owner."
 msgstr "Aktiviere vorübergehend erweiterten Supportzugriff, um Probleme mit dem Konto dieses Unternehmens zu beheben. Du siehst das Konto mit Inhaberrechten."
 
+#.elixir
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:25
+#: lib/operately_web/controllers/error_html/service_unavailable.html.heex:6
+#: lib/operately_web/controllers/error_html/service_unavailable.html.heex:15
+msgid "Temporarily unavailable"
+msgstr "Vorübergehend nicht verfügbar"
+
 #.frontend
 #: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:76
 msgid "Test email"
@@ -20191,7 +20201,7 @@ msgid "This email is already registered. Use a different address."
 msgstr "Diese E-Mail-Adresse ist bereits registriert. Verwende eine andere Adresse."
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:41
+#: ../turboui/src/ErrorPage/index.tsx:53
 msgid "This error is visible only in dev and test environments."
 msgstr "Dieser Fehler ist nur in Entwicklungs- und Testumgebungen sichtbar."
 
@@ -20992,7 +21002,7 @@ msgid "Unassigned"
 msgstr "Nicht zugewiesen"
 
 #.elixir
-#: lib/operately_web/controllers/error_html.ex:6
+#: lib/operately_web/controllers/error_html.ex:8
 msgid "Unauthorized"
 msgstr "Nicht autorisiert"
 
@@ -21963,6 +21973,13 @@ msgstr "Wurde dieses Ziel erreicht?"
 #: ../turboui/src/DateField/components/InlineCalendar.tsx:115
 msgid "We"
 msgstr "Mi"
+
+#.elixir
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:26
+#: lib/operately_web/controllers/error_html/service_unavailable.html.heex:16
+msgid "We can't load this page right now. Please try again."
+msgstr "Diese Seite kann gerade nicht geladen werden. Bitte versuche es erneut."
 
 #.frontend
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:147

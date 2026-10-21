@@ -5942,7 +5942,7 @@ msgid "An admin or owner needs to review billing or free up member space before 
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:28
+#: ../turboui/src/ErrorPage/index.tsx:22
 msgid "An unexpected error has occurred."
 msgstr ""
 
@@ -6475,7 +6475,7 @@ msgid "Backfills add missing entries. Reconciliation performs a complete repair.
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/error_html.ex:5
+#: lib/operately_web/controllers/error_html.ex:7
 msgid "Bad Request"
 msgstr ""
 
@@ -10250,7 +10250,7 @@ msgid "Error"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:39
+#: ../turboui/src/ErrorPage/index.tsx:51
 msgid "Error Stack Trace"
 msgstr ""
 
@@ -11227,7 +11227,7 @@ msgid "For projects: The upcoming milestone (by due date)"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/error_html.ex:7
+#: lib/operately_web/controllers/error_html.ex:9
 msgid "Forbidden"
 msgstr ""
 
@@ -11390,12 +11390,14 @@ msgid "Global"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:33
+#: ../turboui/src/ErrorPage/index.tsx:45
 msgid "Go back to Home"
 msgstr ""
 
+#.elixir
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:33
+#: ../turboui/src/ErrorPage/index.tsx:45
+#: lib/operately_web/controllers/error_html/service_unavailable.html.heex:22
 msgid "Go back to Lobby"
 msgstr ""
 
@@ -11817,7 +11819,7 @@ msgid "Internal"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/error_html.ex:9
+#: lib/operately_web/controllers/error_html.ex:11
 msgid "Internal Server Error"
 msgstr ""
 
@@ -14263,7 +14265,7 @@ msgstr ""
 
 #.elixir
 #: lib/operately_web/controllers/cli_login_controller.ex:147
-#: lib/operately_web/controllers/error_html.ex:8
+#: lib/operately_web/controllers/error_html.ex:10
 msgid "Not Found"
 msgstr ""
 
@@ -14588,7 +14590,7 @@ msgid "Ooops, something went wrong while loading the feed"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:23
+#: ../turboui/src/ErrorPage/index.tsx:21
 msgid "Oops! Something went wrong."
 msgstr ""
 
@@ -14890,7 +14892,7 @@ msgid "Package"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:23
+#: ../turboui/src/ErrorPage/index.tsx:17
 msgid "Page Not Found"
 msgstr ""
 
@@ -18197,7 +18199,7 @@ msgid "Something went wrong. Please try again."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:27
+#: ../turboui/src/ErrorPage/index.tsx:18
 msgid "Sorry, we couldn't find that page you were looking for."
 msgstr ""
 
@@ -19153,6 +19155,14 @@ msgstr ""
 msgid "Temporarily enable elevated support access for troubleshooting issues with this company's account. You will view the account as if you were an owner."
 msgstr ""
 
+#.elixir
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:25
+#: lib/operately_web/controllers/error_html/service_unavailable.html.heex:6
+#: lib/operately_web/controllers/error_html/service_unavailable.html.heex:15
+msgid "Temporarily unavailable"
+msgstr ""
+
 #.frontend
 #: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:76
 msgid "Test email"
@@ -20097,7 +20107,7 @@ msgid "This email is already registered. Use a different address."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ErrorPage/index.tsx:41
+#: ../turboui/src/ErrorPage/index.tsx:53
 msgid "This error is visible only in dev and test environments."
 msgstr ""
 
@@ -20892,7 +20902,7 @@ msgid "Unassigned"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/error_html.ex:6
+#: lib/operately_web/controllers/error_html.ex:8
 msgid "Unauthorized"
 msgstr ""
 
@@ -21862,6 +21872,13 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DateField/components/InlineCalendar.tsx:115
 msgid "We"
+msgstr ""
+
+#.elixir
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:26
+#: lib/operately_web/controllers/error_html/service_unavailable.html.heex:16
+msgid "We can't load this page right now. Please try again."
 msgstr ""
 
 #.frontend
