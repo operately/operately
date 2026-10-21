@@ -277,6 +277,9 @@ defmodule OperatelyWeb.Api.GoalChecks do
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
 
+        {:error, operation, %Ecto.Changeset{valid?: false, errors: [{_field, error} | _]}, _changes} when operation in [:added_check, :updated_check] ->
+          {:error, :bad_request, Operately.I18n.ValidationErrors.translate(error)}
+
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Unexpected error in goal checks: #{inspect(reason)}")
           {:error, :internal_server_error}

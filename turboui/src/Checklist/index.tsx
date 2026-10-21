@@ -11,8 +11,9 @@ import {
   useSortableItem,
 } from "../utils/PragmaticDragAndDrop";
 
-import { useForm } from "react-hook-form";
+import { useForm, type UseFormRegister } from "react-hook-form";
 import classNames from "../utils/classnames";
+import { CHECKLIST_NAME_MAX_LENGTH, limitChecklistName } from "./limitChecklistName";
 import { ChecklistItemState, State, useChecklistState } from "./useChecklistState";
 
 import { Checkbox } from "../Checkbox";
@@ -319,7 +320,7 @@ function ChecklistItemAdd({ state }: { state: State }) {
           placeholder={t("e.g. Sign the contract")}
           error={errors.name?.message as string}
           onKeyDown={handleKeyDown}
-          {...register("name", { required: t("Can't be empty") })}
+          {...checklistNameField(register, t("Can't be empty"))}
         />
         <div className="flex items-center mt-4">
           <SwitchToggle value={createMore} setValue={setCreateMore} label={t("Create more")} />
@@ -370,7 +371,7 @@ function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemS
           label={t("Check")}
           error={errors.name?.message as string}
           onKeyDown={handleKeyDown}
-          {...register("name", { required: t("Can't be empty") })}
+          {...checklistNameField(register, t("Can't be empty"))}
         />
         <div className="flex items-center gap-2 justify-end mt-4">
           <SecondaryButton size="xs" onClick={() => state.cancelEdit(item.id)} type="button">
@@ -383,6 +384,18 @@ function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemS
       </form>
     </InlineModal>
   );
+}
+
+function checklistNameField(register: UseFormRegister<{ name: string }>, requiredMessage: string) {
+  const registration = register("name", { required: requiredMessage });
+
+  return {
+    ...registration,
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+      event.target.value = limitChecklistName(event.target.value, CHECKLIST_NAME_MAX_LENGTH);
+      return registration.onChange(event);
+    },
+  };
 }
 
 function InlineModal({ index, children }: { index: number; children: React.ReactNode }) {
@@ -458,7 +471,7 @@ function ChecklistItemView({
 }
 
 function ChecklistItemName({ item }: { item: ChecklistItemState }) {
-  const className = classNames("flex-1 font-medium", {
+  const className = classNames("flex-1 font-medium min-w-0 break-words", {
     "line-through text-content-dimmed": item.completed,
   });
 

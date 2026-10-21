@@ -22,6 +22,10 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
     def call(_conn, _arguments), do: {:error, :bad_request}
   end
 
+  defmodule DetailedBadRequestTool do
+    def call(_conn, %{"message" => message}), do: {:error, :bad_request, message}
+  end
+
   defmodule NotFoundTool do
     def call(_conn, _arguments), do: {:error, :not_found}
   end
@@ -104,10 +108,12 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
 
   test "localized tool errors retain protocol fields and literal tool names", %{conn: conn} do
     definition = Definition.new!(name: "literal_tool", implementation: StubTool, input_schema: %{"type" => "object", "properties" => %{}})
+
     Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
       assert {:ok, result} = Executor.execute(conn, definition, %{})
       assert result == %{"isError" => true, "content" => [%{"type" => "text", "text" => "A ferramenta literal_tool ainda não foi implementada."}]}
     end)
+
     Gettext.with_locale(OperatelyWeb.Gettext, "nl", fn ->
       assert {:ok, result} = Executor.execute(conn, definition, %{})
       assert hd(result["content"])["text"] == "The literal_tool tool is not implemented yet."
@@ -152,6 +158,20 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
     assert {:ok, result} = Executor.execute(conn, definition, %{})
     assert result["isError"] == true
     assert result["content"] == [%{"type" => "text", "text" => "The tool could not complete the request with the provided data."}]
+  end
+
+  test "returns the translated message for a detailed bad request", %{conn: conn} do
+    definition =
+      Definition.new!(
+        name: "bad_request_tool",
+        input_schema: %{"type" => "object", "properties" => %{"message" => %{"type" => "string"}}, "additionalProperties" => false},
+        implementation: DetailedBadRequestTool
+      )
+
+    message = "should be at most 2000 character(s)"
+    assert {:ok, result} = Executor.execute(conn, definition, %{"message" => message})
+    assert result["isError"] == true
+    assert result["content"] == [%{"type" => "text", "text" => message}]
   end
 
   test "returns unknown tool for missing wrappers" do

@@ -139,6 +139,18 @@ export const Empty: Story = {
   },
 };
 
+export const LongNames: Story = {
+  render: () => (
+    <div className="w-80 p-8">
+      <Checklist
+        items={mockItems.map((item) => ({ ...item, name: item.name.repeat(20) }))}
+        canEdit={true}
+        {...createMockHandlers()}
+      />
+    </div>
+  ),
+};
+
 export const ReadOnly: Story = {
   render: () => {
     return (
