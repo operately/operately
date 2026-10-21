@@ -31,6 +31,36 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:comments, :list], %{})
     end
+
+    test "it rejects a logged-in request without company context", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space)
+        |> Factory.add_goal_discussion(:discussion, :goal)
+
+      conn = delete_req_header(ctx.conn, "x-company-id")
+
+      assert {400, %{code: "missing_company_context"}} =
+               query(conn, [:comments, :list], %{entity_id: Paths.comment_thread_id(ctx.discussion), entity_type: "goal_discussion"})
+    end
+
+    test "it rejects a company the account does not belong to", ctx do
+      ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+      other = Factory.setup(%{})
+      conn = put_req_header(ctx.conn, "x-company-id", Paths.company_id(other.company))
+
+      assert {404, _} = query(conn, [:comments, :list], %{})
+    end
+
+    test "it rejects an unknown company", ctx do
+      ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+      conn = put_req_header(ctx.conn, "x-company-id", "not-a-company")
+
+      assert {404, _} = query(conn, [:comments, :list], %{})
+    end
   end
 
   describe "permissions - project check-in" do
