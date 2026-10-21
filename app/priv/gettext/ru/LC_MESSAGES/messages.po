@@ -19907,6 +19907,7 @@ msgstr "Отвечает за завершение проекта. Планир�
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:328
+#: lib/operately_web/api/plugs/require_company_context.ex:20
 #: lib/turbo_connect/plugs/dispatch.ex:29
 msgid "The request was malformed"
 msgstr "Запрос имеет неверный формат"
@@ -19927,6 +19928,7 @@ msgid "The requested resource does not match this MCP server."
 msgstr "Запрашиваемый ресурс не соответствует этому MCP-серверу."
 
 #.elixir
+#: lib/operately_web/api/plugs/require_company_context.ex:24
 #: lib/turbo_connect/plugs/dispatch.ex:23
 #: lib/turbo_connect/plugs/parse_inputs.ex:186
 msgid "The requested resource was not found"
