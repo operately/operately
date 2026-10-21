@@ -64,6 +64,11 @@ defmodule TurboConnect.Plugs.Dispatch do
     end
   rescue
     e ->
+      # Let the outer database error boundary return 503 instead of the generic 500 below.
+      if OperatelyWeb.DatabaseErrors.queue_timeout?(e) do
+        reraise e, __STACKTRACE__
+      end
+
       Logger.error("\nErorr while processing #{conn.assigns.turbo_req_name} \n")
       Logger.error(Exception.format_banner(:error, e))
       Logger.error(Exception.format_stacktrace(__STACKTRACE__))

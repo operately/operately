@@ -5960,7 +5960,7 @@ msgstr "Une erreur inattendue s’est produite."
 #: lib/turbo_connect/plugs/dispatch.ex:50
 #: lib/turbo_connect/plugs/dispatch.ex:57
 #: lib/turbo_connect/plugs/dispatch.ex:63
-#: lib/turbo_connect/plugs/dispatch.ex:71
+#: lib/turbo_connect/plugs/dispatch.ex:75
 msgid "An unexpected error occurred"
 msgstr "Une erreur inattendue s’est produite"
 
@@ -19771,7 +19771,7 @@ msgid "The selected task item no longer exists"
 msgstr "L’élément de tâche sélectionné n’existe plus"
 
 #.elixir
-#: lib/operately_web/database_errors.ex:37
+#: lib/operately_web/database_errors.ex:54
 msgid "The service is temporarily unavailable. Please try again."
 msgstr "Le service est temporairement indisponible. Veuillez réessayer."
 

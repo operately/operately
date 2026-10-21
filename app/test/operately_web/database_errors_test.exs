@@ -73,6 +73,18 @@ defmodule OperatelyWeb.DatabaseErrorsTest do
     end)
   end
 
+  test "returns HTML for browser routes without requiring fetched params" do
+    conn = Plug.Test.conn(:get, "/") |> Phoenix.Controller.put_format("html")
+
+    Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+      assert {:ok, response} = DatabaseErrors.respond(conn, queue_error())
+      assert response.status == 503
+      assert get_resp_header(response, "content-type") == ["text/html; charset=utf-8"]
+      assert get_resp_header(response, "cache-control") == ["no-store"]
+      assert response.resp_body == "O serviço está temporariamente indisponível. Tente novamente."
+    end)
+  end
+
   test "leaves unrelated responses to the caller's existing error handling" do
     conn = Plug.Test.conn(:get, "/") |> resp(403, "existing denial")
     assert DatabaseErrors.respond(conn, :forbidden) == :unhandled
