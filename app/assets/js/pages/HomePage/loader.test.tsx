@@ -69,3 +69,27 @@ it("does not load work items for a company that has completed setup", async () =
   expect(result.current.hasWorkItems).toBe(false);
   expect(axios.get).not.toHaveBeenCalledWith(expect.stringContaining("get_work_map"), expect.anything());
 });
+
+it.each(["companies/get", "spaces/list", "companies/get_work_map"])(
+  "preserves loader and observer failures from %s",
+  async (endpoint) => {
+    const error = Object.assign(new Error("Service unavailable"), { response: { status: 503 } });
+    const data = { ...response, company: { ...response.company, setupCompleted: false }, workMap: [] };
+    jest.mocked(axios.get).mockResolvedValue({ data });
+    const inputs = await loader();
+    jest.mocked(Pages.useLoadedData).mockReturnValue(inputs);
+    queryClient.clear();
+    jest
+      .mocked(axios.get)
+      .mockImplementation((url) => (url.endsWith(endpoint) ? Promise.reject(error) : Promise.resolve({ data })));
+    await expect(loader()).rejects.toBe(error);
+    const log = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      expect(() => renderHook(useLoadedData, { initialProps: undefined, wrapper })).toThrow(
+        expect.objectContaining({ response: { status: 503 } }),
+      );
+    } finally {
+      log.mockRestore();
+    }
+  },
+);

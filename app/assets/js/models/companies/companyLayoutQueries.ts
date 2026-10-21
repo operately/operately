@@ -79,8 +79,8 @@ export function useCompanyLayoutQueries(inputs: CompanyLayoutInputs) {
   const options = useMemo(() => companyLayoutOptions(inputs), [inputs]);
   const company = useLoadedQuery(options.company);
   const spaces = useLoadedQuery(options.spaces);
-  const siteMessages = useLoadedQuery(options.siteMessages);
-  const billing = useLoadedQuery(options.billing);
+  const siteMessages = useLoadedQuery({ ...options.siteMessages, throwOnError: false });
+  const billing = useLoadedQuery({ ...options.billing, throwOnError: false });
   assertPresent(company.data?.company, "Company is unavailable");
 
   return {
