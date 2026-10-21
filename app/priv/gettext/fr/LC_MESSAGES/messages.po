@@ -19715,6 +19715,7 @@ msgstr "Responsable de la réalisation du projet. Planifie, attribue les respons
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:328
+#: lib/operately_web/api/plugs/require_company_context.ex:20
 #: lib/turbo_connect/plugs/dispatch.ex:29
 msgid "The request was malformed"
 msgstr "La requête est mal formée"
@@ -19735,6 +19736,7 @@ msgid "The requested resource does not match this MCP server."
 msgstr "La ressource demandée ne correspond pas à ce serveur MCP."
 
 #.elixir
+#: lib/operately_web/api/plugs/require_company_context.ex:24
 #: lib/turbo_connect/plugs/dispatch.ex:23
 #: lib/turbo_connect/plugs/parse_inputs.ex:186
 msgid "The requested resource was not found"
