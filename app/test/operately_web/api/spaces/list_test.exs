@@ -14,11 +14,11 @@ defmodule OperatelyWeb.Api.Spaces.ListTest do
       assert {401, _} = query(ctx.conn, [:spaces, :list], %{})
     end
 
-    test "it returns not found when the company header is missing", ctx do
+    test "it returns bad request when the company header is missing", ctx do
       ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
       conn = delete_req_header(ctx.conn, "x-company-id")
 
-      assert query(conn, [:spaces, :list], %{include_access_levels: true}) == not_found_response()
+      assert {400, %{code: "missing_company_context"}} = query(conn, [:spaces, :list], %{include_access_levels: true})
     end
 
     test "it returns not found when the account is not a company member", ctx do
