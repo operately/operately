@@ -10,6 +10,7 @@ import Api from "@/api";
 import { queryClient } from "@/api/queryClient";
 import { loader, projectQueryInput, useLoadedData } from "./loader";
 import { resourceHubDocsInputs, prefetchResourceHubDocs } from "@/models/resourceHubs/docsQueries";
+import { renderHook } from "@/__tests__/renderHook";
 
 jest.mock("axios");
 jest.mock("turboui", () => ({}));
@@ -142,6 +143,33 @@ it("supports calls without a request and refreshes invalidated core queries", as
   jest.mocked(axios.get).mockClear();
   await visit("overview");
   expect(requestedPaths()).toEqual(["/api/v2/projects/get"]);
+});
+
+it("keeps the loaded project visible when the optional space request fails before mounting", async () => {
+  const error = Object.assign(new Error("Service unavailable"), { response: { status: 503 } });
+  jest
+    .mocked(axios.get)
+    .mockImplementation((path) =>
+      path.endsWith("/spaces/get") ? Promise.reject(error) : Promise.resolve(response(path)),
+    );
+  jest.mocked(Pages.useLoadedData).mockReturnValue(await visit("overview"));
+  const spaceKey = Api.spaces.getQueryKey({ id: project.spaceId, includePermissions: true });
+  expect(queryClient.getQueryState(spaceKey)).toMatchObject({ data: undefined, error });
+  jest.mocked(axios.get).mockClear();
+
+  const log = jest.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    const { result, unmount } = renderHook(useLoadedData, {
+      initialProps: undefined,
+      wrapper: ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
+    });
+    expect(result.current.data.project).toEqual(project);
+    expect(result.current.data.space).toBeNull();
+    expect(axios.get).not.toHaveBeenCalled();
+    unmount();
+  } finally {
+    log.mockRestore();
+  }
 });
 
 it("subscribes to cached core data and follows space changes without old space placeholders", async () => {

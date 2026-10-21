@@ -81,7 +81,13 @@ defmodule OperatelyWeb.DatabaseErrorsTest do
       assert response.status == 503
       assert get_resp_header(response, "content-type") == ["text/html; charset=utf-8"]
       assert get_resp_header(response, "cache-control") == ["no-store"]
-      assert response.resp_body == "O serviço está temporariamente indisponível. Tente novamente."
+      html = Floki.parse_document!(response.resp_body)
+      assert Floki.attribute(html, "html", "lang") == ["pt-BR"]
+      assert Floki.attribute(html, "main", "data-status") == ["503"]
+      assert Floki.attribute(html, "a", "href") == ["/"]
+      assert Floki.text(Floki.find(html, "h1")) == "Temporariamente indisponível"
+      assert Floki.find(html, "script") == []
+      refute response.resp_body =~ "Sensitive database diagnostic"
     end)
   end
 

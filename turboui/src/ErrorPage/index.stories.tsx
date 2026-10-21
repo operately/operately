@@ -16,6 +16,10 @@ export const NotFound: Story = {};
 
 export const ServerError: Story = { args: { status: 500, homePath: "/company" } };
 
+export const ServiceUnavailable: Story = { args: { status: 503, homePath: "/company" } };
+
+export const ServiceUnavailableWithoutCompany: Story = { args: { status: 503 } };
+
 export const Diagnostics: Story = {
   args: { status: 500, diagnostics: { stack: "Error: Literal diagnostic details" } },
 };

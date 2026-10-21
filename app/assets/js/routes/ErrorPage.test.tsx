@@ -136,3 +136,38 @@ it("handles missing errors in development without crashing", async () => {
     await act(async () => root.unmount());
   }
 });
+
+it.each([
+  [{ isAxiosError: true, response: { status: 503 } }, 503],
+  [{ isAxiosError: true, status: 503 }, 503],
+  [{ status: 503 }, 503],
+  [{ isAxiosError: true, response: { status: 404 } }, 404],
+  [{ isAxiosError: true, response: { status: 500 } }, 500],
+  [{ isAxiosError: true }, 500],
+])("renders the HTTP error status (%#)", async (error, status) => {
+  await applyLanguage("en");
+  window.appConfig = { environment: "prod" } as typeof window.appConfig;
+  jest.mocked(useRouteError).mockReturnValue(error);
+  jest.mocked(useRouteLoaderData).mockReturnValue(undefined);
+  const log = jest.spyOn(console, "error").mockImplementation(() => {});
+  const element = document.createElement("div");
+  const root = createRoot(element);
+  try {
+    await act(async () =>
+      root.render(
+        <MemoryRouter>
+          <ErrorPage />
+        </MemoryRouter>,
+      ),
+    );
+    if (status === 404) {
+      expect(element.querySelector('[data-test-id="not-found"]')).not.toBeNull();
+    } else {
+      expect(element.querySelector('[data-test-id="error-page"]')?.getAttribute("data-status")).toBe(String(status));
+      expect(element.querySelector("a")?.getAttribute("href")).toBe("/");
+    }
+  } finally {
+    await act(async () => root.unmount());
+    log.mockRestore();
+  }
+});
