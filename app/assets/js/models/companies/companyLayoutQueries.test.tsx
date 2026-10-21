@@ -132,3 +132,17 @@ it("refreshes the mounted billing overview when the layout receives a billing up
   await act(() => result.current.refresh());
   await waitFor(() => expect(result.current.overview.data?.billing.account.status).toBe("active"));
 });
+
+it("keeps optional failures nonfatal on the first load", async () => {
+  jest.mocked(axios.get).mockImplementation(async (url) => {
+    if (url.endsWith("/list_active") || url.endsWith("/get_access_state")) throw new Error("Unavailable");
+    return { data: url.endsWith("/companies/get") ? { company: { id: "company", name: "Company" } } : { count: 1 } };
+  });
+  const inputs = companyLayoutInputs();
+  await prefetchCompanyLayout(inputs);
+  const { result } = renderHook(() => useCompanyLayoutQueries(inputs), { initialProps: undefined, wrapper });
+  expect(result.current.company.name).toBe("Company");
+  expect(result.current.siteMessages).toEqual([]);
+  expect(result.current.billingAccessState).toBeNull();
+  expect(axios.get).toHaveBeenCalledTimes(4);
+});

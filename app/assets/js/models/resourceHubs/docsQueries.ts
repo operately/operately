@@ -41,15 +41,21 @@ export function useResourceHubDocsQueries(resourceHubId: string | null | undefin
   const client = useQueryClient();
   const inputs = useMemo(() => resourceHubDocsInputs(resourceHubId), [resourceHubId]);
 
-  const hub = useLoadedQuery({ ...Api.resource_hubs.getQueryOptions(inputs.hubInput), enabled: inputs.enabled });
+  const hub = useLoadedQuery({
+    ...Api.resource_hubs.getQueryOptions(inputs.hubInput),
+    enabled: inputs.enabled,
+    throwOnError: false,
+  });
   const nodes = useLoadedQuery({
     ...Api.resource_hubs.listNodesQueryOptions(inputs.nodesInput),
     enabled: inputs.enabled,
+    throwOnError: false,
   });
 
   const drafts = useLoadedQuery({
     ...Api.resource_hubs.listDraftsQueryOptions(inputs.draftsInput),
     enabled: inputs.enabled,
+    throwOnError: false,
   });
 
   const data = useMemo<ResourceHubDocsAndFilesData | null>(() => {

@@ -4,7 +4,7 @@ import { GhostButton } from "../Button";
 
 export namespace ErrorPage {
   export interface Props {
-    status: 404 | 500;
+    status: 404 | 500 | 503;
     homePath?: string;
     diagnostics?: { stack?: string };
   }
@@ -12,21 +12,33 @@ export namespace ErrorPage {
 
 export function ErrorPage({ status, homePath, diagnostics }: ErrorPage.Props) {
   const { t } = useTranslation();
+  const { title, description } = {
+    404: {
+      title: t("Page Not Found"),
+      description: t("Sorry, we couldn't find that page you were looking for."),
+    },
+    500: {
+      title: t("Oops! Something went wrong."),
+      description: t("An unexpected error has occurred."),
+    },
+    503: {
+      title: t("Temporarily unavailable"),
+      description: t("We can't load this page right now. Please try again."),
+    },
+  }[status];
 
   return (
-    <div className="absolute inset-0 flex justify-center items-center gap-16">
-      <div className="flex flex-col text-center -mt-64 min-w-0 max-w-full px-4">
+    <main
+      className="absolute inset-0 flex justify-center items-center gap-16"
+      data-test-id="error-page"
+      data-status={status}
+    >
+      <div className={`flex flex-col text-center min-w-0 max-w-full px-4 ${status === 503 ? "sm:-mt-64" : "-mt-64"}`}>
         <div className="font-extrabold" style={{ fontSize: "10rem" }}>
           {status}
         </div>
-        <div className="text-3xl font-bold mt-4">
-          {status === 404 ? t("Page Not Found") : t("Oops! Something went wrong.")}
-        </div>
-        <div className="text-lg font-medium my-4">
-          {status === 404
-            ? t("Sorry, we couldn't find that page you were looking for.")
-            : t("An unexpected error has occurred.")}
-        </div>
+        <h1 className="text-3xl font-bold mt-4">{title}</h1>
+        <p className="text-lg font-medium my-4">{description}</p>
 
         <div className="flex w-full justify-center mt-4">
           <GhostButton linkTo={homePath ?? "/"} testId="back-to-lobby">
@@ -42,6 +54,6 @@ export function ErrorPage({ status, homePath, diagnostics }: ErrorPage.Props) {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

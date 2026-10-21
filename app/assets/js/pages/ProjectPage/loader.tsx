@@ -69,6 +69,7 @@ export function useLoadedData() {
   const spaceQuery = useLoadedQuery({
     ...Api.spaces.getQueryOptions({ id: spaceId ?? "", includePermissions: true }),
     enabled: Boolean(spaceId),
+    throwOnError: false,
   });
 
   const project = projectQuery.data?.project;
