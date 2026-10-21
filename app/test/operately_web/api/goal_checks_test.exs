@@ -6,6 +6,8 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
   alias Operately.Activities.Activity
   alias Operately.Goals.Check
 
+  @reported_name "Do 23. 9. 2026 máme schválený plán jarního i podzimního běhu kurzu 2027, který stanovuje cílový počet organizací, očekávané příjmy a náklady a potřebnou placenou kapacitu pro realizaci obou běhů (delivery manager). K 23.9. známe výši úvazku a odměny pro tuto roli."
+
   setup ctx do
     ctx
     |> Factory.setup()
@@ -53,6 +55,48 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       assert check.completed == false
       assert check.completed_at == nil
       assert check.index == 1
+    end
+
+    test "it persists long names and records the full name in the activity", ctx do
+      ctx = ctx |> Factory.add_api_token(:token, :creator, read_only: false) |> Factory.log_in_person(:creator)
+      assert String.length(@reported_name) == 264
+
+      for name <- [@reported_name, String.duplicate("č", 2000), String.duplicate("😀", 2000)] do
+        assert {200, %{success: true, check_id: check_id}} =
+                 mutation(ctx.conn, [:goals, :create_check], %{goal_id: Paths.goal_id(ctx.goal), name: name})
+
+        assert Repo.get!(Check, Paths.decode_id(check_id)).name == name
+
+        assert {200, %{success: true, check_id: external_check_id}} =
+                 external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/create_check", %{goal_id: Paths.goal_id(ctx.goal), name: name})
+
+        assert Repo.get!(Check, Paths.decode_id(external_check_id)).name == name
+        assert Repo.exists?(from(a in Activity, where: a.action == "goal_check_adding" and a.content["goal_id"] == ^ctx.goal.id and a.content["name"] == ^name))
+      end
+    end
+
+    test "it rejects oversized names with a localized bad request without inserting a check or activity", ctx do
+      ctx = ctx |> Factory.add_api_token(:token, :creator, read_only: false) |> Factory.log_in_person(:creator)
+      activities_before = Repo.aggregate(Activity, :count)
+
+      for name <- [String.duplicate("č", 2001), String.duplicate("😀", 2001)] do
+        inputs = %{goal_id: Paths.goal_id(ctx.goal), name: name}
+
+        for {language, message} <- [{"en", "should be at most 2000 character(s)"}, {"pt-BR", "deve ter no máximo 2000 caracteres"}] do
+          {:ok, _} = Operately.People.update_person(ctx.creator, %{language: language})
+          assert {400, %{error: "Bad request", message: ^message}} = mutation(ctx.conn, [:goals, :create_check], inputs)
+          assert {400, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/create_check", inputs)
+          refute Repo.exists?(from(c in Check, where: c.goal_id == ^ctx.goal.id))
+          assert Repo.aggregate(Activity, :count) == activities_before
+        end
+      end
+    end
+
+    test "it rejects a blank name", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, _} = mutation(ctx.conn, [:goals, :create_check], %{goal_id: Paths.goal_id(ctx.goal), name: ""})
+      refute Repo.exists?(from(c in Check, where: c.goal_id == ^ctx.goal.id))
     end
 
     test "it sets the correct index for multiple checks", ctx do
@@ -265,6 +309,42 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
 
       check = Repo.get(Operately.Goals.Check, ctx.check.id)
       assert check.name == "Updated Check Name"
+    end
+
+    test "it renames a check to a long name without truncating it", ctx do
+      ctx = ctx |> Factory.add_api_token(:token, :creator, read_only: false) |> Factory.log_in_person(:creator)
+
+      for name <- [@reported_name, String.duplicate("č", 2000), String.duplicate("😀", 2000)] do
+        inputs = %{goal_id: Paths.goal_id(ctx.goal), check_id: Paths.goal_check_id(ctx.check), name: name}
+        assert {200, %{success: true}} = mutation(ctx.conn, [:goals, :update_check], inputs)
+        assert Repo.get!(Check, ctx.check.id).name == name
+        {:ok, _} = Repo.update(Check.changeset(Repo.get!(Check, ctx.check.id), %{name: ctx.check.name}))
+        assert {200, %{success: true}} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/update_check", inputs)
+        assert Repo.get!(Check, ctx.check.id).name == name
+      end
+    end
+
+    test "it rejects oversized names with a localized bad request without updating the check", ctx do
+      ctx = ctx |> Factory.add_api_token(:token, :creator, read_only: false) |> Factory.log_in_person(:creator)
+
+      for name <- [String.duplicate("č", 2001), String.duplicate("😀", 2001)] do
+        inputs = %{goal_id: Paths.goal_id(ctx.goal), check_id: Paths.goal_check_id(ctx.check), name: name}
+
+        for {language, message} <- [{"en", "should be at most 2000 character(s)"}, {"pt-BR", "deve ter no máximo 2000 caracteres"}] do
+          {:ok, _} = Operately.People.update_person(ctx.creator, %{language: language})
+          assert {400, %{error: "Bad request", message: ^message}} = mutation(ctx.conn, [:goals, :update_check], inputs)
+          assert {400, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/update_check", inputs)
+          assert Repo.get!(Check, ctx.check.id) == ctx.check
+        end
+      end
+    end
+
+    test "it rejects a blank name without updating the check", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), check_id: Paths.goal_check_id(ctx.check), name: ""}
+
+      assert {400, _} = mutation(ctx.conn, [:goals, :update_check], inputs)
+      assert Repo.get!(Check, ctx.check.id) == ctx.check
     end
 
     test "it requires edit permission on the goal", ctx do
