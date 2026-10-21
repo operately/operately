@@ -76,7 +76,7 @@ defmodule OperatelyWeb.Endpoint do
     end
   end
 
-  plug OperatelyWeb.Router
+  plug OperatelyWeb.Plugs.DatabaseErrorBoundary
 
   alias OperatelyWeb.Certification, as: Cert
 

@@ -1,6 +1,8 @@
 defmodule Operately.WorkMaps.GetWorkMapQueryTest do
   use Operately.DataCase
 
+  import Mock
+
   alias Operately.Access.Binding
   alias Operately.WorkMaps.GetWorkMapQuery
 
@@ -1189,5 +1191,17 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
         acc
       end
     end)
+  end
+
+  @tag :parallel_failure
+  test "flat work map preserves a worker's queue failure" do
+    ctx = Factory.setup(%{})
+    error = %DBConnection.ConnectionError{reason: :queue_timeout, message: "queue diagnostic"}
+
+    with_mock Operately.Repo, [:passthrough], all: fn _ -> raise error end do
+      assert assert_raise(DBConnection.ConnectionError, fn ->
+               GetWorkMapQuery.execute(ctx.creator, %{company_id: ctx.company.id, include_tasks: true}, :flat)
+             end) == error
+    end
   end
 end

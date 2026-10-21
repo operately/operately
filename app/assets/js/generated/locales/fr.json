@@ -3079,6 +3079,7 @@
   "The selected champion doesn't have access to the selected space": "Le responsable sélectionné n’a pas accès à l’espace sélectionné",
   "The selected reviewer doesn't have access to the selected space": "Le référent sélectionné n’a pas accès à l’espace sélectionné",
   "The selected task item no longer exists": "L’élément de tâche sélectionné n’existe plus",
+  "The service is temporarily unavailable. Please try again.": "Le service est temporairement indisponible. Veuillez réessayer.",
   "The space and its content were deleted.": "L’espace et son contenu ont été supprimés.",
   "The start date was set to <date/>.": "La date de début a été fixée au <date/>.",
   "The supplied authorization grant is invalid, expired, or has already been used.": "L’autorisation fournie est invalide, a expiré ou a déjà été utilisée.",
