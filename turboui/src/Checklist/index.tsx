@@ -314,6 +314,7 @@ function ChecklistItemAdd({ state }: { state: State }) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textfield
           testId="checklist-item-name"
+          maxLength={2000}
           label={t("Check")}
           autoFocus
           placeholder={t("e.g. Sign the contract")}
@@ -368,6 +369,7 @@ function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemS
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textfield
           label={t("Check")}
+          maxLength={2000}
           error={errors.name?.message as string}
           onKeyDown={handleKeyDown}
           {...register("name", { required: t("Can't be empty") })}
@@ -458,7 +460,7 @@ function ChecklistItemView({
 }
 
 function ChecklistItemName({ item }: { item: ChecklistItemState }) {
-  const className = classNames("flex-1 font-medium", {
+  const className = classNames("flex-1 font-medium min-w-0 break-words", {
     "line-through text-content-dimmed": item.completed,
   });
 

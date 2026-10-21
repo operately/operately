@@ -18,10 +18,23 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateCheckTest do
              UpdateCheck.call(ToolConnHelper.conn(ctx), %{
                "goal_id" => Paths.goal_id(ctx.goal),
                "check_id" => Paths.goal_check_id(ctx.check),
-               "name" => "Ship the onboarding rewrite"
+               "name" => String.duplicate("č", 2000)
              })
 
-    assert ToolConnHelper.reload(ctx.check).name == "Ship the onboarding rewrite"
+    assert ToolConnHelper.reload(ctx.check).name == String.duplicate("č", 2000)
+  end
+
+  test "returns a bad request for an oversized name without updating the check" do
+    ctx = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space) |> Factory.add_goal_check(:check, :goal)
+
+    assert {:error, :bad_request, _message} =
+             UpdateCheck.call(ToolConnHelper.conn(ctx), %{
+               "goal_id" => Paths.goal_id(ctx.goal),
+               "check_id" => Paths.goal_check_id(ctx.check),
+               "name" => String.duplicate("č", 2001)
+             })
+
+    assert ToolConnHelper.reload(ctx.check) == ctx.check
   end
 
   test "returns invalid_arguments for a malformed check id" do

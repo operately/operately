@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheck do
       name: "create_goal_check",
       title: "Create Goal Checklist Item",
       description:
-        "Adds one success-criteria item to a goal checklist. Completed checklist items count toward goal completion. This is separate from goal check-ins and numeric targets. Use this instead of listing success criteria in the goal description or creating tasks.",
+        "Adds one success-criteria item to a goal checklist. The item name can contain up to 2000 characters. Completed checklist items count toward goal completion. This is separate from goal check-ins and numeric targets. Use this instead of listing success criteria in the goal description or creating tasks.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateCheck do
       name: "update_goal_check",
       title: "Update Goal Checklist Item",
       description:
-        "Renames one goal checklist item. Checklist items are success criteria, and completed items count toward goal completion. This is separate from goal check-ins and numeric targets.",
+        "Renames one goal checklist item. The item name can contain up to 2000 characters. Checklist items are success criteria, and completed items count toward goal completion. This is separate from goal check-ins and numeric targets.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,
