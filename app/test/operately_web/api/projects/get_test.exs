@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert {401, _} = query(ctx.conn, [:projects, :get], %{})
     end
 
-    test "returns 404 for an authenticated request without a company header", ctx do
+    test "returns 400 for an authenticated request without a company header", ctx do
       ctx =
         ctx
         |> Factory.setup()
@@ -50,7 +50,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
 
       conn = Plug.Conn.delete_req_header(ctx.conn, "x-company-id")
 
-      assert {404, _} = query(conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
+      assert {400, %{code: "missing_company_context"}} = query(conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
     end
 
     test "returns 400 for extra query keys that are not existing atoms", ctx do
