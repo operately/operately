@@ -3154,6 +3154,7 @@
   "The selected champion doesn't have access to the selected space": "Выбранный ответственный не имеет доступа к выбранному пространству",
   "The selected reviewer doesn't have access to the selected space": "Выбранный куратор не имеет доступа к выбранному пространству",
   "The selected task item no longer exists": "Выбранного пункта задачи больше не существует",
+  "The service is temporarily unavailable. Please try again.": "Сервис временно недоступен. Пожалуйста, попробуйте ещё раз.",
   "The space and its content were deleted.": "Пространство и его содержимое были удалены.",
   "The start date was set to <date/>.": "Дата начала была установлена на <date/>.",
   "The supplied authorization grant is invalid, expired, or has already been used.": "Предоставленное разрешение на авторизацию недействительно, срок его действия истёк или оно уже использовано.",
