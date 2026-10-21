@@ -57,61 +57,16 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
   end
 
   defp load_tools_data(space, me) do
-    projects_task = Task.async(fn -> load_projects(space.id, me) end)
-    goals_task = Task.async(fn -> load_goals(space.id, me) end)
-
-    tasks_task =
-      Task.async(fn ->
-        if space.tools.tasks_enabled do
-          load_tasks(space.id, me)
-        else
-          {:ok, []}
-        end
-      end)
-
-    messages_boards_task =
-      Task.async(fn ->
-        if space.tools.discussions_enabled do
-          load_messages_boards(space.id, me)
-        else
-          {:ok, []}
-        end
-      end)
-
-    resource_hubs_task =
-      Task.async(fn ->
-        if space.tools.resource_hub_enabled do
-          load_resource_hubs(space.id, me)
-        else
-          {:ok, []}
-        end
-      end)
-
-    kpis_task =
-      Task.async(fn ->
-        if space.tools.kpis_enabled do
-          load_kpis(space.id, me)
-        else
-          {:ok, []}
-        end
-      end)
-
-    templates_task =
-      Task.async(fn ->
-        if space.tools.templates_enabled do
-          load_templates(space, me)
-        else
-          {:ok, []}
-        end
-      end)
-
-    {:ok, projects} = Task.await(projects_task)
-    {:ok, goals} = Task.await(goals_task)
-    {:ok, tasks} = Task.await(tasks_task)
-    {:ok, messages_boards} = Task.await(messages_boards_task)
-    {:ok, resource_hubs} = Task.await(resource_hubs_task)
-    {:ok, kpis} = Task.await(kpis_task)
-    {:ok, templates} = Task.await(templates_task)
+    [{:ok, projects}, {:ok, goals}, {:ok, tasks}, {:ok, messages_boards}, {:ok, resource_hubs}, {:ok, kpis}, {:ok, templates}] =
+      Operately.Parallel.run([
+        fn -> load_projects(space.id, me) end,
+        fn -> load_goals(space.id, me) end,
+        fn -> if space.tools.tasks_enabled, do: load_tasks(space.id, me), else: {:ok, []} end,
+        fn -> if space.tools.discussions_enabled, do: load_messages_boards(space.id, me), else: {:ok, []} end,
+        fn -> if space.tools.resource_hub_enabled, do: load_resource_hubs(space.id, me), else: {:ok, []} end,
+        fn -> if space.tools.kpis_enabled, do: load_kpis(space.id, me), else: {:ok, []} end,
+        fn -> if space.tools.templates_enabled, do: load_templates(space, me), else: {:ok, []} end
+      ])
 
     {:ok,
      %{

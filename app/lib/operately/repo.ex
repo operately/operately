@@ -51,6 +51,7 @@ defmodule Operately.Repo do
   if the schema in the from clause has a deleted_at column
   NOTE: will not exclude soft deleted records if :with_deleted option passed as true
   """
+  @impl true
   def prepare_query(_operation, query, opts) do
     schema_module = get_schema_module_from_query(query)
     fields = if schema_module, do: schema_module.__schema__(:fields), else: []

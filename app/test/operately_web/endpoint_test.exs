@@ -175,6 +175,13 @@ defmodule OperatelyWeb.EndpointTest do
     end
   end
 
+  test "parallel task timeouts remain HTTP 500", %{conn: conn} do
+    with_mock OperatelyWeb.Api.Queries.GetTheme, [:passthrough],
+      call: fn _, _ -> Operately.Parallel.run([fn -> Process.sleep(:infinity) end], 50) end do
+      capture_log(fn -> assert_error_sent(500, fn -> get(conn, "/api/v2/get_theme") end) end)
+    end
+  end
+
   defp assert_json_unavailable(request) do
     capture_log(fn ->
       {503, headers, body} = assert_error_sent(503, request)

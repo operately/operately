@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.GetWorkMapTest do
   use OperatelyWeb.TurboCase
 
+  import Mock
+
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
 
@@ -567,6 +569,65 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMapTest do
       assert project.progress == nil
       assert project.next_step == ""
       assert project.milestones == []
+    end
+  end
+
+  @tag :parallel_failure
+  test "parallel queue failure reaches the HTTP error handler", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+    owner = self()
+    error = %DBConnection.ConnectionError{reason: :queue_timeout, message: "private diagnostic"}
+
+    with_mock Operately.Repo, [:passthrough],
+      all: fn query ->
+        if self() == owner, do: :meck.passthrough([query]), else: raise(error)
+      end do
+      ExUnit.CaptureLog.capture_log(fn ->
+        {503, _, body} =
+          Phoenix.ConnTest.assert_error_sent(503, fn ->
+            Phoenix.ConnTest.dispatch(ctx.conn, OperatelyWeb.Endpoint, :get, "/api/v2/companies/get_work_map", %{})
+          end)
+
+        assert Jason.decode!(body)["code"] == "database_connection_queue_timeout"
+      end)
+    end
+  end
+
+  @tag :parallel_failure
+  test "parallel unrelated failure reaches the HTTP error handler", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+    owner = self()
+    error = %RuntimeError{message: "private diagnostic"}
+
+    with_mock Operately.Repo, [:passthrough],
+      all: fn query ->
+        if self() == owner, do: :meck.passthrough([query]), else: raise(error)
+      end do
+      ExUnit.CaptureLog.capture_log(fn ->
+        conn = Phoenix.ConnTest.dispatch(ctx.conn, OperatelyWeb.Endpoint, :get, "/api/v2/companies/get_work_map", %{})
+        assert conn.status == 500
+        refute Map.has_key?(Jason.decode!(conn.resp_body), "code")
+      end)
+    end
+  end
+
+  @tag :parallel_failure
+  test "external work-map requests return 503 for worker queue failures", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_api_token(:token, :creator)
+    conn = Phoenix.ConnTest.build_conn() |> put_req_header("authorization", "Bearer #{ctx.token}")
+    owner = self()
+    error = %DBConnection.ConnectionError{reason: :queue_timeout, message: "private diagnostic"}
+
+    with_mock Operately.Repo, [:passthrough],
+      all: fn query -> if self() == owner, do: :meck.passthrough([query]), else: raise(error) end do
+      ExUnit.CaptureLog.capture_log(fn ->
+        {503, _, body} =
+          Phoenix.ConnTest.assert_error_sent(503, fn ->
+            Phoenix.ConnTest.dispatch(conn, OperatelyWeb.Endpoint, :get, "/api/external/v1/companies/get_work_map", %{})
+          end)
+
+        assert Jason.decode!(body)["code"] == "database_connection_queue_timeout"
+      end)
     end
   end
 end
