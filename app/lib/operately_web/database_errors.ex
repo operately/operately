@@ -50,8 +50,21 @@ defmodule OperatelyWeb.DatabaseErrors do
 
   def respond(%Plug.Conn{}, _error), do: :unhandled
 
+  @doc "Localized recovery message shared by HTTP and MCP responses."
+  def message, do: gettext("The service is temporarily unavailable. Please try again.")
+
+  @doc "Adds queue-failure metadata for the request's existing Sentry capture path."
+  def put_sentry_context(conn) do
+    Sentry.Context.set_tags_context(%{error_code: "database_connection_queue_timeout"})
+
+    Sentry.Context.set_extra_context(%{
+      request_id: List.first(get_resp_header(conn, "x-request-id")),
+      endpoint: conn.request_path
+    })
+  end
+
   defp response_body(conn) do
-    message = gettext("The service is temporarily unavailable. Please try again.")
+    message = message()
 
     case conn.private[:phoenix_format] do
       "html" ->

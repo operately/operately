@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.McpControllerTest do
   use OperatelyWeb.ConnCase
 
+  import Mock
+
   import Operately.CompaniesFixtures
   import Operately.GoalsFixtures
   import Operately.GroupsFixtures
@@ -231,6 +233,54 @@ defmodule OperatelyWeb.McpControllerTest do
       })
 
     assert closed_ping_conn.status == 404
+  end
+
+  for {stage, module, function} <- [
+        {:execution, OperatelyWeb.Api.Companies.Get, :call},
+        {:inputs, OperatelyWeb.Api.RichContent.Preparation, :prepare_inputs},
+        {:output, OperatelyWeb.Api.RichContent.Preparation, :prepare_response}
+      ] do
+    test "queue failure during tool #{stage} returns a protocol error and reports once", ctx do
+      %{access_token: access_token} = authorize_and_issue_tokens(ctx.account, ctx.company, ctx.client)
+      {_conn, session_id} = initialize_session(access_token)
+      owner = self()
+      error = %DBConnection.ConnectionError{reason: :queue_timeout, message: "private diagnostic"}
+
+      with_mocks [
+        {unquote(module), [:passthrough], [{unquote(function), fn _, _ -> raise error end}]},
+        {Sentry, [:passthrough],
+         [
+           capture_exception: fn exception, opts ->
+             send(owner, {:captured, exception, opts, Sentry.Context.get_all()})
+             {:ok, "event"}
+           end
+         ]}
+      ] do
+        conn =
+          build_conn()
+          |> session_headers(access_token, session_id)
+          |> post("/mcp", %{
+            "jsonrpc" => "2.0",
+            "id" => "queue-failure",
+            "method" => "tools/call",
+            "params" => %{"name" => "get_current_company"}
+          })
+
+        assert conn.status == 200
+        body = Jason.decode!(conn.resp_body)
+        assert body["id"] == "queue-failure"
+        assert body["result"]["isError"] == true
+        refute Map.has_key?(body["result"], "structuredContent")
+        refute conn.resp_body =~ "private diagnostic"
+        assert_received {:captured, ^error, opts, context}
+        assert opts[:stacktrace] != []
+        assert opts[:tags][:mcp_tool] == "get_current_company"
+        assert context.tags.error_code == "database_connection_queue_timeout"
+        assert context.extra.endpoint == "/mcp"
+        assert context.extra.request_id == hd(get_resp_header(conn, "x-request-id"))
+        refute_received {:captured, _, _, _}
+      end
+    end
   end
 
   test "executes get_current_company through tools/call", %{account: account, company: company, client: client} do

@@ -5958,9 +5958,9 @@ msgstr "Une erreur inattendue s’est produite."
 
 #.elixir
 #: lib/turbo_connect/plugs/dispatch.ex:50
-#: lib/turbo_connect/plugs/dispatch.ex:57
-#: lib/turbo_connect/plugs/dispatch.ex:63
-#: lib/turbo_connect/plugs/dispatch.ex:75
+#: lib/turbo_connect/plugs/dispatch.ex:55
+#: lib/turbo_connect/plugs/dispatch.ex:60
+#: lib/turbo_connect/plugs/dispatch.ex:74
 msgid "An unexpected error occurred"
 msgstr "Une erreur inattendue s’est produite"
 
@@ -19292,7 +19292,7 @@ msgid "The \"%{title}\" milestone due date was updated"
 msgstr "L’échéance du jalon « %{title} » a été modifiée"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:75
+#: lib/operately_web/mcp/executor.ex:93
 msgid "The %{name} tool is not implemented yet."
 msgstr "L’outil %{name} n’est pas encore disponible."
 
@@ -19741,7 +19741,7 @@ msgid "The requested resource was not found"
 msgstr "La ressource demandée est introuvable"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:82
+#: lib/operately_web/mcp/executor.ex:100
 msgid "The requested resource was not found or is not accessible."
 msgstr "La ressource demandée est introuvable ou inaccessible."
 
@@ -19898,12 +19898,12 @@ msgid "The token request is missing required parameters or contains invalid valu
 msgstr "La demande de jeton ne contient pas tous les paramètres requis ou contient des valeurs invalides."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:96
+#: lib/operately_web/mcp/executor.ex:114
 msgid "The tool could not complete the request with the provided data."
 msgstr "L’outil n’a pas pu traiter la demande avec les données fournies."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:103
+#: lib/operately_web/mcp/executor.ex:121
 msgid "The tool could not complete the request."
 msgstr "L’outil n’a pas pu traiter la demande."
 
@@ -22478,7 +22478,7 @@ msgid "You cannot delete the general space"
 msgstr "Vous ne pouvez pas supprimer l’espace général"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:89
+#: lib/operately_web/mcp/executor.ex:107
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr "Vous n’avez pas l’autorisation d’effectuer cette opération, ou l’entreprise est en lecture seule."
 

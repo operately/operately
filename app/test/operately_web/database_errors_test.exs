@@ -105,6 +105,43 @@ defmodule OperatelyWeb.DatabaseErrorsTest do
     end
   end
 
+  test "a real exhausted pool produces the classified 503 without querying the database to render it" do
+    options =
+      Operately.Repo.config()
+      |> Keyword.take([:hostname, :port, :username, :password, :database, :socket_dir, :ssl, :socket_options])
+      |> Keyword.merge(pool_size: 1, queue_target: 1, queue_interval: 10)
+
+    pool = start_supervised!({Postgrex, options})
+    Postgrex.query!(pool, "SELECT 1", [])
+    owner = self()
+
+    holder =
+      Task.async(fn ->
+        DBConnection.run(pool, fn _ ->
+          send(owner, :checked_out)
+
+          receive do
+            :release -> :ok
+          end
+        end)
+      end)
+
+    assert_receive :checked_out
+
+    try do
+      assert {:error, error} = Postgrex.query(pool, "SELECT 1", [], timeout: 2_000)
+      assert DatabaseErrors.queue_timeout?(error)
+      assert {:ok, conn} = DatabaseErrors.respond(Plug.Test.conn(:get, "/"), error)
+      assert conn.status == 503
+      assert Jason.decode!(conn.resp_body)["code"] == "database_connection_queue_timeout"
+    after
+      send(holder.pid, :release)
+      Task.await(holder)
+    end
+
+    assert {:ok, _} = Postgrex.query(pool, "SELECT 1", [])
+  end
+
   defp queue_error do
     %DBConnection.ConnectionError{reason: :queue_timeout, message: "Sensitive database diagnostic"}
   end

@@ -6055,9 +6055,9 @@ msgstr "Ocorreu um erro inesperado."
 
 #.elixir
 #: lib/turbo_connect/plugs/dispatch.ex:50
-#: lib/turbo_connect/plugs/dispatch.ex:57
-#: lib/turbo_connect/plugs/dispatch.ex:63
-#: lib/turbo_connect/plugs/dispatch.ex:75
+#: lib/turbo_connect/plugs/dispatch.ex:55
+#: lib/turbo_connect/plugs/dispatch.ex:60
+#: lib/turbo_connect/plugs/dispatch.ex:74
 msgid "An unexpected error occurred"
 msgstr "Ocorreu um erro inesperado"
 
@@ -19773,7 +19773,7 @@ msgid "The \"%{title}\" milestone due date was updated"
 msgstr "A data de conclusão do marco \"%{title}\" foi atualizada"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:75
+#: lib/operately_web/mcp/executor.ex:93
 msgid "The %{name} tool is not implemented yet."
 msgstr "A ferramenta %{name} ainda não foi implementada."
 
@@ -20232,7 +20232,7 @@ msgid "The requested resource was not found"
 msgstr "O recurso solicitado não foi encontrado"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:82
+#: lib/operately_web/mcp/executor.ex:100
 msgid "The requested resource was not found or is not accessible."
 msgstr "O recurso solicitado não foi encontrado ou não está acessível."
 
@@ -20394,12 +20394,12 @@ msgid "The token request is missing required parameters or contains invalid valu
 msgstr "A solicitação de token não contém parâmetros obrigatórios ou contém valores inválidos."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:96
+#: lib/operately_web/mcp/executor.ex:114
 msgid "The tool could not complete the request with the provided data."
 msgstr "A ferramenta não conseguiu concluir a solicitação com os dados fornecidos."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:103
+#: lib/operately_web/mcp/executor.ex:121
 msgid "The tool could not complete the request."
 msgstr "A ferramenta não conseguiu concluir a solicitação."
 
@@ -23067,7 +23067,7 @@ msgid "You cannot delete the general space"
 msgstr "Você não pode excluir o espaço geral"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:89
+#: lib/operately_web/mcp/executor.ex:107
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr "Você não tem permissão para realizar esta operação ou a empresa está no modo somente leitura."
 

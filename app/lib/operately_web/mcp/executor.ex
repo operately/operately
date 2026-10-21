@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Mcp.Executor do
 
   use Gettext, backend: OperatelyWeb.Gettext
 
+  alias OperatelyWeb.DatabaseErrors
   alias OperatelyWeb.Api.RichContent.Preparation
   alias Jason.EncodeError
   alias Plug.Conn
@@ -50,6 +51,23 @@ defmodule OperatelyWeb.Mcp.Executor do
       {:error, :internal_server_error} -> {:ok, internal_error_result()}
       {:error, _reason} -> {:ok, internal_error_result()}
     end
+  rescue
+    error ->
+      if DatabaseErrors.queue_timeout?(error) do
+        DatabaseErrors.put_sentry_context(conn)
+
+        {exception, stack} =
+          case error do
+            %Plug.Conn.WrapperError{reason: reason, stack: stack} -> {reason, stack}
+            _ -> {error, __STACKTRACE__}
+          end
+
+        # This failure becomes a tool result, so PlugCapture will not see it.
+        Sentry.capture_exception(exception, stacktrace: stack, tags: %{mcp_tool: definition.name})
+        {:ok, %{"isError" => true, "content" => [text_content(DatabaseErrors.message())]}}
+      else
+        reraise error, __STACKTRACE__
+      end
   end
 
   defp ensure_authenticated_conn(conn) do

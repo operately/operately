@@ -19,7 +19,9 @@ defmodule OperatelyWeb.Plugs.DatabaseErrorBoundary do
   rescue
     error ->
       if DatabaseErrors.queue_timeout?(error) do
-        send_unavailable(latest_conn(conn, error), error)
+        conn = latest_conn(conn, error)
+        DatabaseErrors.put_sentry_context(conn)
+        send_unavailable(conn, error)
       end
 
       reraise error, __STACKTRACE__

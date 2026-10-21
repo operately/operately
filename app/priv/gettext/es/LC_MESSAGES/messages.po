@@ -5958,9 +5958,9 @@ msgstr "Ha ocurrido un error inesperado."
 
 #.elixir
 #: lib/turbo_connect/plugs/dispatch.ex:50
-#: lib/turbo_connect/plugs/dispatch.ex:57
-#: lib/turbo_connect/plugs/dispatch.ex:63
-#: lib/turbo_connect/plugs/dispatch.ex:75
+#: lib/turbo_connect/plugs/dispatch.ex:55
+#: lib/turbo_connect/plugs/dispatch.ex:60
+#: lib/turbo_connect/plugs/dispatch.ex:74
 msgid "An unexpected error occurred"
 msgstr "Se produjo un error inesperado"
 
@@ -19292,7 +19292,7 @@ msgid "The \"%{title}\" milestone due date was updated"
 msgstr "Se actualizó la fecha de vencimiento del hito «%{title}»"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:75
+#: lib/operately_web/mcp/executor.ex:93
 msgid "The %{name} tool is not implemented yet."
 msgstr "La herramienta %{name} aún no está implementada."
 
@@ -19741,7 +19741,7 @@ msgid "The requested resource was not found"
 msgstr "No se encontró el recurso solicitado"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:82
+#: lib/operately_web/mcp/executor.ex:100
 msgid "The requested resource was not found or is not accessible."
 msgstr "No se encontró el recurso solicitado o no se puede acceder a él."
 
@@ -19898,12 +19898,12 @@ msgid "The token request is missing required parameters or contains invalid valu
 msgstr "La solicitud de token no incluye todos los parámetros obligatorios o contiene valores no válidos."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:96
+#: lib/operately_web/mcp/executor.ex:114
 msgid "The tool could not complete the request with the provided data."
 msgstr "La herramienta no pudo completar la solicitud con los datos proporcionados."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:103
+#: lib/operately_web/mcp/executor.ex:121
 msgid "The tool could not complete the request."
 msgstr "La herramienta no pudo completar la solicitud."
 
@@ -22478,7 +22478,7 @@ msgid "You cannot delete the general space"
 msgstr "No puedes eliminar el espacio general"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:89
+#: lib/operately_web/mcp/executor.ex:107
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr "No tienes permiso para realizar esta operación o la empresa está en modo de solo lectura."
 

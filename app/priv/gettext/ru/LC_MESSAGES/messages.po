@@ -6121,9 +6121,9 @@ msgstr "Произошла непредвиденная ошибка."
 
 #.elixir
 #: lib/turbo_connect/plugs/dispatch.ex:50
-#: lib/turbo_connect/plugs/dispatch.ex:57
-#: lib/turbo_connect/plugs/dispatch.ex:63
-#: lib/turbo_connect/plugs/dispatch.ex:75
+#: lib/turbo_connect/plugs/dispatch.ex:55
+#: lib/turbo_connect/plugs/dispatch.ex:60
+#: lib/turbo_connect/plugs/dispatch.ex:74
 msgid "An unexpected error occurred"
 msgstr "Произошла непредвиденная ошибка"
 
@@ -19478,7 +19478,7 @@ msgid "The \"%{title}\" milestone due date was updated"
 msgstr "Срок выполнения вехи «%{title}» обновлён"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:75
+#: lib/operately_web/mcp/executor.ex:93
 msgid "The %{name} tool is not implemented yet."
 msgstr "Инструмент %{name} пока не реализован."
 
@@ -19933,7 +19933,7 @@ msgid "The requested resource was not found"
 msgstr "Запрошенный ресурс не найден"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:82
+#: lib/operately_web/mcp/executor.ex:100
 msgid "The requested resource was not found or is not accessible."
 msgstr "Запрошенный ресурс не был найден или недоступен."
 
@@ -20090,12 +20090,12 @@ msgid "The token request is missing required parameters or contains invalid valu
 msgstr "В запросе токена отсутствуют требуемые параметры или содержатся недействительные значения."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:96
+#: lib/operately_web/mcp/executor.ex:114
 msgid "The tool could not complete the request with the provided data."
 msgstr "Инструмент не смог выполнить запрос с предоставленными данными."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:103
+#: lib/operately_web/mcp/executor.ex:121
 msgid "The tool could not complete the request."
 msgstr "Инструмент не смог выполнить запрос."
 
@@ -22704,7 +22704,7 @@ msgid "You cannot delete the general space"
 msgstr "Вы не можете удалить общее пространство"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:89
+#: lib/operately_web/mcp/executor.ex:107
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr "У вас нет прав на эту операцию или компания доступна только для чтения."
 

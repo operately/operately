@@ -93,6 +93,18 @@ describe("installSentryAxiosInterceptor", () => {
     expect(Sentry.captureException).not.toHaveBeenCalled();
   });
 
+  it.each([
+    [503, "database_connection_queue_timeout", false],
+    [503, "unknown_failure", true],
+    [500, "database_connection_queue_timeout", true],
+  ])("handles status %s and code %s without duplicating confirmed queue reports", async (status, code, report) => {
+    const client = installSentryAxiosInterceptor(axios.create());
+    const error = { isAxiosError: true, response: { status, data: { code } } };
+
+    await expect(getRejectedHandler(client)(error)).rejects.toBe(error);
+    expect(Sentry.captureException).toHaveBeenCalledTimes(report ? 1 : 0);
+  });
+
   it("reports network errors without a response", async () => {
     const client = axios.create();
     installSentryAxiosInterceptor(client);

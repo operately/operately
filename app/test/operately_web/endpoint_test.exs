@@ -118,6 +118,7 @@ defmodule OperatelyWeb.EndpointTest do
   end
 
   test "retains the original exception and stack for Sentry capture", %{conn: conn} do
+    enable_sentry_logger()
     test_pid = self()
     error = queue_error()
 
@@ -126,15 +127,52 @@ defmodule OperatelyWeb.EndpointTest do
       {Sentry, [:passthrough],
        [
          capture_exception: fn exception, opts ->
-           send(test_pid, {:captured, exception, opts})
+           send(test_pid, {:captured, exception, opts, Sentry.Context.get_all()})
            {:ok, "event"}
          end
        ]}
     ] do
       assert_json_unavailable(fn -> get(conn, "/api/v2/get_theme") end)
-      assert_received {:captured, ^error, opts}
+      assert_received {:captured, ^error, opts, context}
       assert opts[:stacktrace] != []
-      refute_received {:captured, _, _}
+      assert context.tags.error_code == "database_connection_queue_timeout"
+      assert context.extra.endpoint == "/api/v2/get_theme"
+      assert is_binary(context.extra.request_id)
+      refute_received {:captured, _, _, _}
+    end
+  end
+
+  test "dispatcher exceptions produce one structured Sentry report", %{conn: conn} do
+    enable_sentry_logger()
+    owner = self()
+    error = %RuntimeError{message: "private diagnostic"}
+
+    with_mocks [
+      {OperatelyWeb.Api.Queries.GetTheme, [:passthrough], [call: fn _, _ -> raise error end]},
+      {Sentry, [:passthrough],
+       [
+         capture_exception: fn exception, opts ->
+           send(owner, {:exception, exception, opts})
+           {:ok, "event"}
+         end,
+         capture_message: fn message, _opts ->
+           send(owner, {:message, message})
+           {:ok, "event"}
+         end
+       ]}
+    ] do
+      capture_log(fn ->
+        response = get(conn, "/api/v2/get_theme")
+        assert response.status == 500
+        refute response.resp_body =~ "private diagnostic"
+        assert_received {:exception, ^error, opts}
+        assert opts[:stacktrace] != []
+        assert opts[:tags][:error_code] == "internal_server_error"
+        assert opts[:extra][:endpoint] == "/api/v2/get_theme"
+        assert opts[:extra][:logger_metadata][:request_id] == hd(get_resp_header(response, "x-request-id"))
+        refute_received {:exception, _, _}
+        refute_received {:message, _}
+      end)
     end
   end
 
@@ -180,6 +218,13 @@ defmodule OperatelyWeb.EndpointTest do
       call: fn _, _ -> Operately.Parallel.run([fn -> Process.sleep(:infinity) end], 50) end do
       capture_log(fn -> assert_error_sent(500, fn -> get(conn, "/api/v2/get_theme") end) end)
     end
+  end
+
+  defp enable_sentry_logger do
+    handler = Operately.Sentry.logger_handler_id()
+    existing = :logger.get_handler_config(handler)
+    :ok = Operately.Sentry.setup_logger_handler()
+    if match?({:error, _}, existing), do: on_exit(fn -> :logger.remove_handler(handler) end)
   end
 
   defp assert_json_unavailable(request) do
