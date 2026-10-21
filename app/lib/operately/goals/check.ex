@@ -24,5 +24,6 @@ defmodule Operately.Goals.Check do
     target
     |> cast(attrs, [:goal_id, :creator_id, :name, :completed, :completed_at, :index])
     |> validate_required([:name, :goal_id, :creator_id, :index])
+    |> validate_length(:name, max: 2000)
   end
 end
