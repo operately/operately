@@ -83,6 +83,39 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       assert {403, res} = mutation(ctx.conn, [:goals, :create_check], inputs)
       assert res.message == "You don't have permission to perform this action"
     end
+
+    test "rejects oversized names without changing checks or activities through either API", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      ctx = Factory.add_api_token(ctx, :token, :creator, read_only: false)
+      activities_before = Repo.aggregate(Activity, :count)
+
+      for name <- [String.duplicate("a", 256), String.duplicate("e\u0301", 128)] do
+        inputs = %{goal_id: Paths.goal_id(ctx.goal), name: name}
+        assert {400, response} = mutation(ctx.conn, [:goals, :create_check], inputs)
+        assert response.message =~ "255"
+        assert {400, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/create_check", inputs)
+        assert Repo.aggregate(Check, :count) == 0
+        assert Repo.aggregate(Activity, :count) == activities_before
+      end
+    end
+
+    test "accepts 255 Unicode characters", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      name = String.duplicate("😀", 255)
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), name: name}
+      assert {200, _} = mutation(ctx.conn, [:goals, :create_check], inputs)
+      assert Repo.get_by!(Check, goal_id: ctx.goal.id).name == name
+    end
+
+    test "rejects blank names as validation errors", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), name: "   "}
+      assert {400, _} = mutation(ctx.conn, [:goals, :create_check], inputs)
+      assert Repo.aggregate(Check, :count) == 0
+    end
   end
 
   describe "delete" do
@@ -279,6 +312,39 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
 
       assert {403, res} = mutation(ctx.conn, [:goals, :update_check], inputs)
       assert res.message == "You don't have permission to perform this action"
+    end
+
+    test "rejects oversized names without changing checks or activities through either API", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      ctx = Factory.add_api_token(ctx, :token, :creator, read_only: false)
+      activities_before = Repo.aggregate(Activity, :count)
+
+      for name <- [String.duplicate("a", 256), String.duplicate("e\u0301", 128)] do
+        inputs = %{check_id: Paths.goal_check_id(ctx.check), goal_id: Paths.goal_id(ctx.goal), name: name}
+        assert {400, response} = mutation(ctx.conn, [:goals, :update_check], inputs)
+        assert response.message =~ "255"
+        assert {400, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/update_check", inputs)
+        assert Repo.reload!(ctx.check).name == ctx.check.name
+        assert Repo.aggregate(Activity, :count) == activities_before
+      end
+    end
+
+    test "accepts 255 Unicode characters", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      name = String.duplicate("😀", 255)
+      inputs = %{check_id: Paths.goal_check_id(ctx.check), goal_id: Paths.goal_id(ctx.goal), name: name}
+      assert {200, _} = mutation(ctx.conn, [:goals, :update_check], inputs)
+      assert Repo.reload!(ctx.check).name == name
+    end
+
+    test "rejects blank names as validation errors", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{check_id: Paths.goal_check_id(ctx.check), goal_id: Paths.goal_id(ctx.goal), name: "   "}
+      assert {400, _} = mutation(ctx.conn, [:goals, :update_check], inputs)
+      assert Repo.reload!(ctx.check).name == ctx.check.name
     end
   end
 
