@@ -205,6 +205,7 @@ function TargetCard({ state, target, containerId }: { state: State; target: Targ
 
 function TargetAdd({ state }: { state: State }) {
   const { t } = useTranslation();
+  const textValidation = useTargetTextValidation();
   const [createMore, setCreateMore] = React.useState(false);
 
   const {
@@ -221,7 +222,7 @@ function TargetAdd({ state }: { state: State }) {
     },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: { name: string; from: string; to: string; unit: string }) => {
     state.addTarget({
       name: data.name,
       from: parseFloat(data.from),
@@ -244,8 +245,8 @@ function TargetAdd({ state }: { state: State }) {
           label={t("Name")}
           autoFocus
           placeholder={t("e.g. Increase monthly signup count")}
-          error={errors.name?.message as string}
-          {...register("name", { required: t("Can't be empty") })}
+          error={errors.name?.message}
+          {...register("name", textValidation)}
         />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
           <Textfield
@@ -271,8 +272,8 @@ function TargetAdd({ state }: { state: State }) {
           <Textfield
             testId={"target-unit"}
             label={t("Unit")}
-            error={errors.unit?.message as string}
-            {...register("unit", { required: t("Can't be empty") })}
+            error={errors.unit?.message}
+            {...register("unit", textValidation)}
             placeholder={t("e.g. users")}
           />
         </div>
@@ -341,6 +342,7 @@ function TargetUpdate({ state, target }: { state: State; target: TargetState }) 
 
 function TargetEdit({ state, target }: { state: State; target: TargetState }) {
   const { t } = useTranslation();
+  const textValidation = useTargetTextValidation();
   const {
     register,
     handleSubmit,
@@ -354,7 +356,7 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
     },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: { name: string; from: string; to: string; unit: string }) => {
     state.saveEdit(target.id, {
       name: data.name,
       from: parseFloat(data.from),
@@ -367,14 +369,16 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
     <InlineModal index={target.index}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textarea
+          testId="target-name"
           label={t("Name")}
           autoFocus
-          error={errors.name?.message as string}
-          {...register("name", { required: t("Can't be empty") })}
+          error={errors.name?.message}
+          {...register("name", textValidation)}
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
           <Textfield
+            testId="target-from"
             label={t("Start")}
             error={errors.from?.message as string}
             {...register("from", {
@@ -383,6 +387,7 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
             })}
           />
           <Textfield
+            testId="target-to"
             label={t("Target")}
             error={errors.to?.message as string}
             {...register("to", {
@@ -391,22 +396,35 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
             })}
           />
           <Textfield
+            testId="target-unit"
             label={t("Unit")}
-            error={errors.unit?.message as string}
-            {...register("unit", { required: t("Can't be empty") })}
+            error={errors.unit?.message}
+            {...register("unit", textValidation)}
           />
         </div>
         <div className="flex items-center gap-2 justify-end mt-4">
           <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)} type="button">
             {t("Cancel")}
           </SecondaryButton>
-          <PrimaryButton size="xs" type="submit">
+          <PrimaryButton size="xs" type="submit" testId="save">
             {t("Save")}
           </PrimaryButton>
         </div>
       </form>
     </InlineModal>
   );
+}
+
+function useTargetTextValidation() {
+  const { t } = useTranslation();
+
+  return {
+    validate: (value: string) => {
+      if (!value.trim()) return t("Can't be empty");
+      // Match PostgreSQL's character limit, including emoji and combining characters.
+      return Array.from(value).length <= 255 || t("Must be at most {{maxLength}} characters long", { maxLength: 255 });
+    },
+  };
 }
 
 function TargetDelete({ state, target }: { state: State; target: TargetState }) {

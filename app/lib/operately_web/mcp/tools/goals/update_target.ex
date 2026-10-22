@@ -33,10 +33,10 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateTarget do
           %{
             "goal_id" => JsonSchema.string("The goal identifier."),
             "target_id" => JsonSchema.string("The target identifier."),
-            "name" => JsonSchema.string("The new target name. Omit it to leave the name unchanged."),
+            "name" => JsonSchema.string("The new target name. Omit it to leave the name unchanged. Maximum 255 characters.") |> Map.put("maxLength", 255),
             "start_value" => JsonSchema.number("The new starting value. Omit it to leave the starting value unchanged."),
             "target_value" => JsonSchema.number("The new target value. Omit it to leave the target value unchanged."),
-            "unit" => JsonSchema.string("The new unit. Omit it to leave the unit unchanged.")
+            "unit" => JsonSchema.string("The new unit. Omit it to leave the unit unchanged. Maximum 255 characters.") |> Map.put("maxLength", 255)
           },
           required: ["goal_id", "target_id"]
         ),

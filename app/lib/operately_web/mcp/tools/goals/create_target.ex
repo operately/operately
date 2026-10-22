@@ -34,10 +34,10 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateTarget do
         JsonSchema.object(
           %{
             "goal_id" => JsonSchema.string("The goal identifier."),
-            "name" => JsonSchema.string("The target name."),
+            "name" => JsonSchema.string("The target name. Maximum 255 characters.") |> Map.put("maxLength", 255),
             "start_value" => JsonSchema.number("The starting value of the target."),
             "target_value" => JsonSchema.number("The value the target is aiming for."),
-            "unit" => JsonSchema.string("The unit for the target values, for example USD or percent.")
+            "unit" => JsonSchema.string("The unit for the target values, for example USD or percent. Maximum 255 characters.") |> Map.put("maxLength", 255)
           },
           required: ["goal_id", "name", "start_value", "target_value", "unit"]
         ),

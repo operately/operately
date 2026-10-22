@@ -1097,6 +1097,9 @@ defmodule OperatelyWeb.Api.Goals do
         {:error, _failed_operation, :bad_request, _changes} ->
           {:error, :bad_request}
 
+        {:error, operation, %Ecto.Changeset{errors: [{field, error} | _]}, _changes} when operation in [:added_target, :updated_target] and field in [:name, :unit] ->
+          {:error, :bad_request, Operately.I18n.ValidationErrors.translate(error)}
+
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Transaction failed: #{inspect(reason)}")
           {:error, :internal_server_error}
