@@ -48,6 +48,7 @@ defmodule OperatelyWeb.Mcp.Executor do
       {:error, :not_found, _message} -> {:ok, not_found_result()}
       {:error, :forbidden} -> {:ok, forbidden_result()}
       {:error, :bad_request} -> {:ok, bad_request_result()}
+      {:error, :bad_request, message} when is_binary(message) -> {:ok, bad_request_result(message)}
       {:error, :internal_server_error} -> {:ok, internal_error_result()}
       {:error, _reason} -> {:ok, internal_error_result()}
     end
@@ -108,10 +109,10 @@ defmodule OperatelyWeb.Mcp.Executor do
     }
   end
 
-  defp bad_request_result do
+  defp bad_request_result(message \\ gettext("The tool could not complete the request with the provided data.")) do
     %{
       "isError" => true,
-      "content" => [text_content(gettext("The tool could not complete the request with the provided data."))]
+      "content" => [text_content(message)]
     }
   end
 

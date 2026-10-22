@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheckTest do
   alias Operately.Goals.Check
   alias Operately.People
   alias Operately.Support.Factory
+  alias OperatelyWeb.Mcp.Executor
   alias OperatelyWeb.Mcp.Tools.Goals.CreateCheck
   alias OperatelyWeb.Mcp.ToolConnHelper
   alias OperatelyWeb.Paths
@@ -77,5 +78,30 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheckTest do
 
     assert message =~ "255"
     assert CreateCheck.definition().input_schema["properties"]["name"]["maxLength"] == 255
+  end
+
+  test "executor returns localized validation errors for invalid names without creating checks" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space)
+
+    conn = ToolConnHelper.conn(ctx)
+    assert {:ok, definition} = Executor.fetch_definition("create_goal_check")
+    checks_before = Repo.aggregate(Check, :count)
+    activities_before = Repo.aggregate(Operately.Activities.Activity, :count)
+
+    for locale <- ["en", "pt_BR"], name <- ["", "   ", String.duplicate("a", 256)] do
+      Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
+        arguments = %{"goal_id" => Paths.goal_id(ctx.goal), "name" => name}
+        assert {:error, :bad_request, message} = CreateCheck.call(conn, arguments)
+
+        assert {:ok, result} = Executor.execute(conn, definition, arguments)
+        assert result == %{"isError" => true, "content" => [%{"type" => "text", "text" => message}]}
+        assert Repo.aggregate(Check, :count) == checks_before
+        assert Repo.aggregate(Operately.Activities.Activity, :count) == activities_before
+      end)
+    end
   end
 end
