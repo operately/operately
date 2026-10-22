@@ -5496,7 +5496,7 @@ msgid "Add Space"
 msgstr "Добавить пространство"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:286
+#: ../turboui/src/GoalTargetList/index.tsx:287
 msgid "Add Target"
 msgstr "Добавить показатель"
 
@@ -6948,15 +6948,12 @@ msgstr "Может просматривать проект, в том числе
 #: ../turboui/src/Checklist/index.tsx:395
 #: ../turboui/src/Forms/validation.ts:24
 #: ../turboui/src/Forms/validation.ts:42
-#: ../turboui/src/GoalTargetList/index.tsx:248
-#: ../turboui/src/GoalTargetList/index.tsx:256
-#: ../turboui/src/GoalTargetList/index.tsx:266
-#: ../turboui/src/GoalTargetList/index.tsx:275
-#: ../turboui/src/GoalTargetList/index.tsx:325
-#: ../turboui/src/GoalTargetList/index.tsx:373
-#: ../turboui/src/GoalTargetList/index.tsx:381
-#: ../turboui/src/GoalTargetList/index.tsx:389
-#: ../turboui/src/GoalTargetList/index.tsx:396
+#: ../turboui/src/GoalTargetList/index.tsx:257
+#: ../turboui/src/GoalTargetList/index.tsx:267
+#: ../turboui/src/GoalTargetList/index.tsx:326
+#: ../turboui/src/GoalTargetList/index.tsx:385
+#: ../turboui/src/GoalTargetList/index.tsx:394
+#: ../turboui/src/GoalTargetList/index.tsx:423
 #: assets/js/features/goals/GoalTargetsV2/targetErrors.tsx:76
 msgid "Can't be empty"
 msgstr "Поле не может быть пустым"
@@ -6991,10 +6988,10 @@ msgstr "Куратор и ответственный не могут быть о
 #: ../turboui/src/Forms/Submit.tsx:24
 #: ../turboui/src/GoalPage/DeleteModal.tsx:40
 #: ../turboui/src/GoalPage/DeleteModal.tsx:78
-#: ../turboui/src/GoalTargetList/index.tsx:283
-#: ../turboui/src/GoalTargetList/index.tsx:331
-#: ../turboui/src/GoalTargetList/index.tsx:401
-#: ../turboui/src/GoalTargetList/index.tsx:423
+#: ../turboui/src/GoalTargetList/index.tsx:284
+#: ../turboui/src/GoalTargetList/index.tsx:332
+#: ../turboui/src/GoalTargetList/index.tsx:407
+#: ../turboui/src/GoalTargetList/index.tsx:441
 #: ../turboui/src/InviteMemberForm/index.tsx:113
 #: ../turboui/src/InvitePeoplePage/index.tsx:168
 #: ../turboui/src/MilestoneList/AddMilestoneForm.tsx:107
@@ -8702,7 +8699,7 @@ msgstr "Создать веху"
 
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:326
-#: ../turboui/src/GoalTargetList/index.tsx:280
+#: ../turboui/src/GoalTargetList/index.tsx:281
 #: ../turboui/src/MilestoneList/AddMilestoneForm.tsx:103
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:105
 #: ../turboui/src/TaskCreationModal/index.tsx:382
@@ -8890,7 +8887,7 @@ msgid "Curated templates"
 msgstr "Подобранные шаблоны"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:567
+#: ../turboui/src/GoalTargetList/index.tsx:585
 #: assets/js/features/goals/GoalTargetsV2/components/TargetDetails.tsx:44
 msgid "Current"
 msgstr "Текущее"
@@ -9089,7 +9086,7 @@ msgid "Delete %{name}"
 msgstr "Удалить %{name}"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:417
+#: ../turboui/src/GoalTargetList/index.tsx:435
 msgid "Delete %{name} target?"
 msgstr "Удалить показатель «%{name}»?"
 
@@ -11492,13 +11489,13 @@ msgid "From"
 msgstr "От"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:543
+#: ../turboui/src/GoalTargetList/index.tsx:561
 #: assets/js/features/goals/GoalTargetsV2/components/TargetDetails.tsx:28
 msgid "From <from>%{from}</from> down to <to>%{to}</to>%{unit}"
 msgstr "Снижение с <from>%{from}</from> до <to>%{to}</to>%{unit}"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:553
+#: ../turboui/src/GoalTargetList/index.tsx:571
 #: assets/js/features/goals/GoalTargetsV2/components/TargetDetails.tsx:34
 msgid "From <from>%{from}</from> to <to>%{to}</to>%{unit}"
 msgstr "От <from>%{from}</from> до <to>%{to}</to>%{unit}"
@@ -13584,11 +13581,11 @@ msgid "Moved the project from %{oldSpace} to %{newSpace}"
 msgstr "Проект перемещён из «%{oldSpace}» в «%{newSpace}»"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:257
-#: ../turboui/src/GoalTargetList/index.tsx:267
-#: ../turboui/src/GoalTargetList/index.tsx:326
-#: ../turboui/src/GoalTargetList/index.tsx:382
-#: ../turboui/src/GoalTargetList/index.tsx:390
+#: ../turboui/src/GoalTargetList/index.tsx:258
+#: ../turboui/src/GoalTargetList/index.tsx:268
+#: ../turboui/src/GoalTargetList/index.tsx:327
+#: ../turboui/src/GoalTargetList/index.tsx:386
+#: ../turboui/src/GoalTargetList/index.tsx:395
 msgid "Must be a number"
 msgstr "Требуется число"
 
@@ -13605,6 +13602,7 @@ msgstr "Минимальная длина: %{minLength}"
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:397
 #: ../turboui/src/Forms/validation.ts:62
+#: ../turboui/src/GoalTargetList/index.tsx:425
 msgid "Must be at most %{maxLength} characters long"
 msgstr "Максимальная длина: %{maxLength}"
 
@@ -13654,8 +13652,8 @@ msgstr "Оценка NPS"
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:34
 #: ../turboui/src/GoalAddForm/index.tsx:93
 #: ../turboui/src/GoalTargetList/index.tsx:180
-#: ../turboui/src/GoalTargetList/index.tsx:244
-#: ../turboui/src/GoalTargetList/index.tsx:370
+#: ../turboui/src/GoalTargetList/index.tsx:245
+#: ../turboui/src/GoalTargetList/index.tsx:373
 #: ../turboui/src/ProfileEditPage/index.tsx:99
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:46
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:176
@@ -13797,7 +13795,7 @@ msgid "New Project"
 msgstr "Новый проект"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:320
+#: ../turboui/src/GoalTargetList/index.tsx:321
 msgid "New Value"
 msgstr "Новое значение"
 
@@ -17386,8 +17384,8 @@ msgstr "Как в системе"
 #: ../turboui/src/Checklist/index.tsx:382
 #: ../turboui/src/FileEditPage/index.tsx:52
 #: ../turboui/src/Forms/Submit.tsx:23
-#: ../turboui/src/GoalTargetList/index.tsx:334
-#: ../turboui/src/GoalTargetList/index.tsx:404
+#: ../turboui/src/GoalTargetList/index.tsx:335
+#: ../turboui/src/GoalTargetList/index.tsx:410
 #: ../turboui/src/LinkEditPage/index.tsx:71
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:128
 #: ../turboui/src/PageDescription/index.tsx:195
@@ -18636,8 +18634,8 @@ msgid "Specific companies"
 msgstr "Конкретные компании"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:253
-#: ../turboui/src/GoalTargetList/index.tsx:378
+#: ../turboui/src/GoalTargetList/index.tsx:254
+#: ../turboui/src/GoalTargetList/index.tsx:382
 #: assets/js/features/goals/GoalTargetsV2/EditTargetCard.tsx:63
 msgid "Start"
 msgstr "Начальное значение"
@@ -19085,9 +19083,9 @@ msgstr "Нажмите +, чтобы добавить задачу."
 
 #.elixir
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:263
-#: ../turboui/src/GoalTargetList/index.tsx:386
-#: ../turboui/src/GoalTargetList/index.tsx:540
+#: ../turboui/src/GoalTargetList/index.tsx:264
+#: ../turboui/src/GoalTargetList/index.tsx:391
+#: ../turboui/src/GoalTargetList/index.tsx:558
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:490
 #: assets/js/features/goals/GoalTargetsV2/EditTargetCard.tsx:64
 #: assets/js/features/goals/GoalTargetsV2/components/TargetDetails.tsx:25
@@ -20759,7 +20757,7 @@ msgid "This will remove %{name}'s team-member permissions. They will have access
 msgstr "У участника %{name} будут отозваны права участника команды. Ему останется доступ только к работе, в которую он явно приглашён."
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:419
+#: ../turboui/src/GoalTargetList/index.tsx:437
 msgid "This will remove your target and all associated progress tracking."
 msgstr "Показатель и вся история его прогресса будут удалены."
 
@@ -21256,8 +21254,8 @@ msgstr "Неожиданная ошибка"
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:65
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:37
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:57
-#: ../turboui/src/GoalTargetList/index.tsx:273
-#: ../turboui/src/GoalTargetList/index.tsx:394
+#: ../turboui/src/GoalTargetList/index.tsx:274
+#: ../turboui/src/GoalTargetList/index.tsx:400
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:250
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:77
 #: assets/js/features/goals/GoalTargetsV2/EditTargetCard.tsx:66
@@ -21408,7 +21406,7 @@ msgid "Update"
 msgstr "Обновить"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:313
+#: ../turboui/src/GoalTargetList/index.tsx:314
 msgid "Update %{name}"
 msgstr "Обновить «%{name}»"
 
@@ -22644,7 +22642,7 @@ msgid "Yes"
 msgstr "Да"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:427
+#: ../turboui/src/GoalTargetList/index.tsx:445
 msgid "Yes, Delete"
 msgstr "Да, удалить"
 
@@ -23579,12 +23577,12 @@ msgid "e.g Product Manager, Designer, CEO"
 msgstr "Например, менеджер по продукту, дизайнер, генеральный директор"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:259
+#: ../turboui/src/GoalTargetList/index.tsx:260
 msgid "e.g. 10000"
 msgstr "например, 10000"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:269
+#: ../turboui/src/GoalTargetList/index.tsx:270
 msgid "e.g. 15000"
 msgstr "Например, 15000"
 
@@ -23621,7 +23619,7 @@ msgid "e.g. Implement new website design"
 msgstr "Например, внедрить новый дизайн сайта"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:246
+#: ../turboui/src/GoalTargetList/index.tsx:247
 msgid "e.g. Increase monthly signup count"
 msgstr "Например, увеличить число регистраций в месяц"
 
@@ -23701,7 +23699,7 @@ msgid "e.g. john@yourcompany.com"
 msgstr "например, john@yourcompany.com"
 
 #.frontend
-#: ../turboui/src/GoalTargetList/index.tsx:276
+#: ../turboui/src/GoalTargetList/index.tsx:277
 msgid "e.g. users"
 msgstr "например, пользователи"
 

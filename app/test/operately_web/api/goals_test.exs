@@ -1143,6 +1143,42 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert target.goal_id == ctx.goal.id
       assert target.value == inputs.start_value
     end
+
+    test "rejects oversized names and units without changes through either API", ctx do
+      ctx = ctx |> Factory.add_api_token(:token, :creator, read_only: false) |> Factory.log_in_person(:creator)
+      targets_before = Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id))
+      activities_before = Repo.aggregate(Activity, :count)
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), name: "Revenue", start_value: 0, target_value: 100, unit: "USD"}
+
+      for value <- [String.duplicate("a", 256), String.duplicate("e\u0301", 128)], fields <- [[:name], [:unit], [:name, :unit]] do
+        invalid_inputs = Enum.reduce(fields, inputs, &Map.put(&2, &1, value))
+        assert {400, response} = mutation(ctx.conn, [:goals, :create_target], invalid_inputs)
+        assert response.message =~ "255"
+        assert {400, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/create_target", invalid_inputs)
+        assert Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id)) == targets_before
+        assert Repo.aggregate(Activity, :count) == activities_before
+      end
+    end
+
+    test "accepts names and units of 255 Unicode characters", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      value = String.duplicate("😀", 255)
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), name: value, start_value: 0, target_value: 100, unit: value}
+      assert {200, _} = mutation(ctx.conn, [:goals, :create_target], inputs)
+      target = Repo.get_by!(Target, goal_id: ctx.goal.id, name: value)
+      assert target.unit == value
+    end
+
+    test "rejects blank names and units as validation errors", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), name: "Revenue", start_value: 0, target_value: 100, unit: "USD"}
+      targets_before = Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id))
+
+      for field <- [:name, :unit] do
+        assert {400, _} = mutation(ctx.conn, [:goals, :create_target], Map.put(inputs, field, "   "))
+        assert Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id)) == targets_before
+      end
+    end
   end
 
   describe "create target - permissions" do
@@ -1507,6 +1543,42 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert target.to == original_target.to
       assert target.unit == original_target.unit
       assert target.updated_at == original_target.updated_at
+    end
+
+    test "rejects oversized names and units without changes through either API", ctx do
+      ctx = ctx |> Factory.add_api_token(:token, :creator, read_only: false) |> Factory.log_in_person(:creator)
+      targets_before = Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id))
+      activities_before = Repo.aggregate(Activity, :count)
+      inputs = %{target_id: Paths.target_id(ctx.target), goal_id: Paths.goal_id(ctx.goal), name: "Revenue", start_value: 0, target_value: 100, unit: "USD"}
+
+      for value <- [String.duplicate("a", 256), String.duplicate("e\u0301", 128)], fields <- [[:name], [:unit], [:name, :unit]] do
+        invalid_inputs = Enum.reduce(fields, inputs, &Map.put(&2, &1, value))
+        assert {400, response} = mutation(ctx.conn, [:goals, :update_target], invalid_inputs)
+        assert response.message =~ "255"
+        assert {400, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/update_target", invalid_inputs)
+        assert Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id)) == targets_before
+        assert Repo.aggregate(Activity, :count) == activities_before
+      end
+    end
+
+    test "accepts names and units of 255 Unicode characters", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      value = String.duplicate("😀", 255)
+      inputs = %{target_id: Paths.target_id(ctx.target), goal_id: Paths.goal_id(ctx.goal), name: value, start_value: 0, target_value: 100, unit: value}
+      assert {200, _} = mutation(ctx.conn, [:goals, :update_target], inputs)
+      target = Repo.get_by!(Target, goal_id: ctx.goal.id, name: value)
+      assert target.unit == value
+    end
+
+    test "rejects blank names and units as validation errors", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      inputs = %{target_id: Paths.target_id(ctx.target), goal_id: Paths.goal_id(ctx.goal), name: "Revenue", start_value: 0, target_value: 100, unit: "USD"}
+      targets_before = Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id))
+
+      for field <- [:name, :unit] do
+        assert {400, _} = mutation(ctx.conn, [:goals, :update_target], Map.put(inputs, field, "   "))
+        assert Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id)) == targets_before
+      end
     end
   end
 
