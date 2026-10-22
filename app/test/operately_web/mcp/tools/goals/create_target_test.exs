@@ -89,4 +89,32 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateTargetTest do
     assert {:ok, definition} = Executor.fetch_definition("create_goal_target")
     assert {:ok, %{"isError" => true}} = Executor.execute(ToolConnHelper.conn(ctx), definition, arguments)
   end
+
+  test "returns validation errors for oversized names and units" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space, targets: [])
+
+    arguments = %{
+      "goal_id" => Paths.goal_id(ctx.goal),
+      "name" => "Revenue",
+      "start_value" => 0,
+      "target_value" => 100,
+      "unit" => "USD"
+    }
+
+    assert {:ok, definition} = Executor.fetch_definition("create_goal_target")
+
+    for field <- ["name", "unit"] do
+      invalid_arguments = Map.put(arguments, field, String.duplicate("a", 256))
+      assert {:error, :bad_request, message} = CreateTarget.call(ToolConnHelper.conn(ctx), invalid_arguments)
+      assert {:ok, result} = Executor.execute(ToolConnHelper.conn(ctx), definition, invalid_arguments)
+      assert result == %{"isError" => true, "content" => [%{"type" => "text", "text" => message}]}
+
+      assert message =~ "255"
+      assert CreateTarget.definition().input_schema["properties"][field]["maxLength"] == 255
+    end
+  end
 end
