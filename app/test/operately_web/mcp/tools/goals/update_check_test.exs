@@ -38,4 +38,23 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateCheckTest do
                "name" => "Ship the onboarding rewrite"
              })
   end
+
+  test "returns a validation error for an oversized name" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.add_goal_check(:check, :goal)
+
+    assert {:error, :bad_request, message} =
+             UpdateCheck.call(ToolConnHelper.conn(ctx), %{
+               "goal_id" => Paths.goal_id(ctx.goal),
+               "check_id" => Paths.goal_check_id(ctx.check),
+               "name" => String.duplicate("a", 256)
+             })
+
+    assert message =~ "255"
+    assert UpdateCheck.definition().input_schema["properties"]["name"]["maxLength"] == 255
+  end
 end
