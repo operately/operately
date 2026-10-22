@@ -5449,7 +5449,7 @@ msgid "Add Admininstrators"
 msgstr "Добавить администраторов"
 
 #.frontend
-#: ../turboui/src/Checklist/index.tsx:332
+#: ../turboui/src/Checklist/index.tsx:333
 msgid "Add Check"
 msgstr "Добавить пункт чек-листа"
 
@@ -6945,8 +6945,7 @@ msgid "Can view the project, including its details, tasks, and comments. Cannot 
 msgstr "Может просматривать проект, в том числе его описание, задачи и комментарии. Не может редактировать, комментировать, завершать или архивировать проект."
 
 #.frontend
-#: ../turboui/src/Checklist/index.tsx:322
-#: ../turboui/src/Checklist/index.tsx:373
+#: ../turboui/src/Checklist/index.tsx:395
 #: ../turboui/src/Forms/validation.ts:24
 #: ../turboui/src/Forms/validation.ts:42
 #: ../turboui/src/GoalTargetList/index.tsx:248
@@ -6973,8 +6972,8 @@ msgstr "Куратор и ответственный не могут быть о
 #: ../turboui/src/AccountChangeEmailPage/FormElements.tsx:48
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:290
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:151
-#: ../turboui/src/Checklist/index.tsx:329
-#: ../turboui/src/Checklist/index.tsx:377
+#: ../turboui/src/Checklist/index.tsx:330
+#: ../turboui/src/Checklist/index.tsx:379
 #: ../turboui/src/CommentSection/CommentInput.tsx:186
 #: ../turboui/src/CommentSection/CommentItem.tsx:316
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:37
@@ -7294,8 +7293,8 @@ msgid "Changed the project timeline"
 msgstr "График проекта изменён"
 
 #.frontend
-#: ../turboui/src/Checklist/index.tsx:317
-#: ../turboui/src/Checklist/index.tsx:370
+#: ../turboui/src/Checklist/index.tsx:318
+#: ../turboui/src/Checklist/index.tsx:372
 msgid "Check"
 msgstr "Отметить как выполненный"
 
@@ -8702,7 +8701,7 @@ msgid "Create milestone"
 msgstr "Создать веху"
 
 #.frontend
-#: ../turboui/src/Checklist/index.tsx:325
+#: ../turboui/src/Checklist/index.tsx:326
 #: ../turboui/src/GoalTargetList/index.tsx:280
 #: ../turboui/src/MilestoneList/AddMilestoneForm.tsx:103
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:105
@@ -9039,7 +9038,7 @@ msgstr "Деактивировать учётную запись"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:398
 #: ../turboui/src/AccountApiTokensPage/index.tsx:524
-#: ../turboui/src/Checklist/index.tsx:516
+#: ../turboui/src/Checklist/index.tsx:530
 #: ../turboui/src/CommentSection/CommentItem.tsx:225
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:77
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:113
@@ -9882,7 +9881,7 @@ msgid "Earlier version"
 msgstr "Более ранняя версия"
 
 #.frontend
-#: ../turboui/src/Checklist/index.tsx:506
+#: ../turboui/src/Checklist/index.tsx:520
 #: ../turboui/src/CommentSection/CommentItem.tsx:216
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:68
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
@@ -13604,6 +13603,7 @@ msgid "Must be at least %{minLength} characters long"
 msgstr "Минимальная длина: %{minLength}"
 
 #.frontend
+#: ../turboui/src/Checklist/index.tsx:397
 #: ../turboui/src/Forms/validation.ts:62
 msgid "Must be at most %{maxLength} characters long"
 msgstr "Максимальная длина: %{maxLength}"
@@ -17383,7 +17383,7 @@ msgstr "Как в системе"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:478
-#: ../turboui/src/Checklist/index.tsx:380
+#: ../turboui/src/Checklist/index.tsx:382
 #: ../turboui/src/FileEditPage/index.tsx:52
 #: ../turboui/src/Forms/Submit.tsx:23
 #: ../turboui/src/GoalTargetList/index.tsx:334
@@ -23671,7 +23671,7 @@ msgid "e.g. Product launch"
 msgstr "Например, запуск продукта"
 
 #.frontend
-#: ../turboui/src/Checklist/index.tsx:319
+#: ../turboui/src/Checklist/index.tsx:320
 msgid "e.g. Sign the contract"
 msgstr "Например, подписать договор"
 

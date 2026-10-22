@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheck do
         JsonSchema.object(
           %{
             "goal_id" => JsonSchema.string("The goal identifier."),
-            "name" => JsonSchema.string("The checklist item name.")
+            "name" => JsonSchema.string("The checklist item name (at most 255 characters).") |> Map.put("maxLength", 255)
           },
           required: ["goal_id", "name"]
         ),

@@ -33,7 +33,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateCheck do
           %{
             "goal_id" => JsonSchema.string("The goal identifier."),
             "check_id" => JsonSchema.string("The checklist item identifier."),
-            "name" => JsonSchema.string("The new checklist item name.")
+            "name" => JsonSchema.string("The new checklist item name (at most 255 characters).") |> Map.put("maxLength", 255)
           },
           required: ["goal_id", "check_id", "name"]
         ),

@@ -61,4 +61,21 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheckTest do
                "name" => "Launch the onboarding rewrite"
              })
   end
+
+  test "returns a validation error for an oversized name" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space)
+
+    assert {:error, :bad_request, message} =
+             CreateCheck.call(ToolConnHelper.conn(ctx), %{
+               "goal_id" => Paths.goal_id(ctx.goal),
+               "name" => String.duplicate("a", 256)
+             })
+
+    assert message =~ "255"
+    assert CreateCheck.definition().input_schema["properties"]["name"]["maxLength"] == 255
+  end
 end
