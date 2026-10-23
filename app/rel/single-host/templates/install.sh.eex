@@ -1,5 +1,11 @@
 set -euo pipefail
 
+if [ -e operately.env ]; then
+  echo "operately.env already exists. Edit the existing configuration or use ./operately update to upgrade."
+  echo "To resume a failed setup, follow the recovery steps in the single-host installation guide."
+  exit 1
+fi
+
 BLUE="\033[0;34m"
 LBLUE="\033[1;34m"
 CLEAR="\033[0m"
@@ -27,21 +33,50 @@ echo -e "2. Do you want Operately to issue and auto-renew a Let's Encrypt SSL ce
 read -p "   Manage SSL certs? (y/n): " MANAGE_CERTS_YN
 
 case $MANAGE_CERTS_YN in
-        y|yes|Y) read -p "   Administrator email for Let's Encrypt: " ADMIN_EMAIL ;;
-        *) ;;
+        y|yes|Y)
+                read -r -p "   Administrator email for Let's Encrypt: " ADMIN_EMAIL
+                OPERATELY_URL_SCHEME="https"
+                OPERATELY_URL_PORT="443"
+                ;;
+        *)
+                read -r -p "   Public URL scheme (http/https) [http]: " OPERATELY_URL_SCHEME
+                OPERATELY_URL_SCHEME=${OPERATELY_URL_SCHEME:-http}
+                case $OPERATELY_URL_SCHEME in
+                        http) DEFAULT_URL_PORT=80 ;;
+                        https) DEFAULT_URL_PORT=443 ;;
+                        *) echo "OPERATELY_URL_SCHEME must be http or https"; exit 1 ;;
+                esac
+
+                read -r -p "   Public URL port [${DEFAULT_URL_PORT}]: " OPERATELY_URL_PORT
+                OPERATELY_URL_PORT=${OPERATELY_URL_PORT:-$DEFAULT_URL_PORT}
+                if ! [[ "$OPERATELY_URL_PORT" =~ ^[0-9]{1,5}$ ]] ||
+                   (( 10#$OPERATELY_URL_PORT < 1 || 10#$OPERATELY_URL_PORT > 65535 )); then
+                        echo "OPERATELY_URL_PORT must be an integer between 1 and 65535"
+                        exit 1
+                fi
+                OPERATELY_URL_PORT=$((10#$OPERATELY_URL_PORT))
+                ;;
 esac
+
+PUBLIC_URL="${OPERATELY_URL_SCHEME}://${DOMAIN}"
+if [[ "$OPERATELY_URL_SCHEME:$OPERATELY_URL_PORT" != "http:80" &&
+      "$OPERATELY_URL_SCHEME:$OPERATELY_URL_PORT" != "https:443" ]]; then
+        PUBLIC_URL="${PUBLIC_URL}:${OPERATELY_URL_PORT}"
+fi
 
 echo -e ""
 echo -e "Please verify the following:"
 echo -e ""
+echo -e "- Operately will be accessible from: ${LBLUE}${PUBLIC_URL}${CLEAR}"
 case $MANAGE_CERTS_YN in
         y|yes|Y)
-                echo -e "- Operately will be accessible from: ${LBLUE}https://${DOMAIN}${CLEAR}"
                 echo -e "- Operately will issue and auto-renew SSL certificates from Let's Encrypt."
                 echo -e "- Let's Encrypt will send emails to ${ADMIN_EMAIL}"
                 ;;
         *)
-                echo -e "- Operately will be accessible from: ${LBLUE}http://${DOMAIN}${CLEAR}"
+                if [ "$OPERATELY_URL_SCHEME" = "https" ]; then
+                        echo "- Configure your reverse proxy to terminate HTTPS and forward requests to Operately over HTTP."
+                fi
                 ;;
 esac
 
@@ -63,14 +98,11 @@ case $MANAGE_CERTS_YN in
                 CERT_DOMAIN=${DOMAIN}
                 CERT_AUTO_RENEW="yes"
                 CERT_EMAILS=$ADMIN_EMAIL
-                OPERATELY_URL_SCHEME="https"
                 ;;
         *)
                 CERT_DOMAIN=""
                 CERT_AUTO_RENEW="no"
                 CERT_EMAILS=""
-                OPERATELY_URL_SCHEME="http"
-                sed -i '/443:4001/d' docker-compose.yml
                 ;;
 esac
 OPERATELY_BLOB_TOKEN_SECRET_KEY=$(openssl rand -base64 32)
@@ -86,23 +118,37 @@ ALLOW_LOGIN_WITH_EMAIL="yes"
 ALLOW_SIGNUP_WITH_EMAIL="yes"
 OPERATELY_BEACON_ENABLED="true"
 
-echo "OPERATELY_HOST=\"${DOMAIN}\"" >> operately.env
-echo "OPERATELY_BLOB_TOKEN_SECRET_KEY=\"${OPERATELY_BLOB_TOKEN_SECRET_KEY}\"" >> operately.env
-echo "OPERATELY_INSTALLATION_ID=\"${OPERATELY_INSTALLATION_ID}\"" >> operately.env
-echo "CERT_DOMAIN=\"${CERT_DOMAIN}\"" >> operately.env
-echo "CERT_AUTO_RENEW=\"${CERT_AUTO_RENEW}\"" >> operately.env
-echo "CERT_EMAILS=\"${CERT_EMAILS}\"" >> operately.env
-echo "OPERATELY_URL_SCHEME=\"${OPERATELY_URL_SCHEME}\"" >> operately.env
-echo "SECRET_KEY_BASE=\"${SECRET_KEY_BASE}\"" >> operately.env
-echo "SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${SYSTEM_SETTINGS_ENCRYPTION_KEYS}\"" >> operately.env
+CONFIG_TEMP=$(mktemp ./operately.env.XXXXXX)
+trap 'rm -f "$CONFIG_TEMP"' EXIT
 
-echo "DB_USERNAME=\"${DB_USERNAME}\"" >> operately.env
-echo "POSTGRES_USER=\"${POSTGRES_USER}\"" >> operately.env
-echo "POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\"" >> operately.env
-echo "DATABASE_URL=\"${DATABASE_URL}\"" >> operately.env
-echo "ALLOW_LOGIN_WITH_EMAIL=\"${ALLOW_LOGIN_WITH_EMAIL}\"" >> operately.env
-echo "ALLOW_SIGNUP_WITH_EMAIL=\"${ALLOW_SIGNUP_WITH_EMAIL}\"" >> operately.env
-echo "OPERATELY_BEACON_ENABLED=\"${OPERATELY_BEACON_ENABLED}\"" >> operately.env
+{
+  echo "OPERATELY_HOST=\"${DOMAIN}\""
+  echo "OPERATELY_BLOB_TOKEN_SECRET_KEY=\"${OPERATELY_BLOB_TOKEN_SECRET_KEY}\""
+  echo "OPERATELY_INSTALLATION_ID=\"${OPERATELY_INSTALLATION_ID}\""
+  echo "CERT_DOMAIN=\"${CERT_DOMAIN}\""
+  echo "CERT_AUTO_RENEW=\"${CERT_AUTO_RENEW}\""
+  echo "CERT_EMAILS=\"${CERT_EMAILS}\""
+  echo "OPERATELY_URL_PORT=\"${OPERATELY_URL_PORT}\""
+  echo "OPERATELY_URL_SCHEME=\"${OPERATELY_URL_SCHEME}\""
+  echo "SECRET_KEY_BASE=\"${SECRET_KEY_BASE}\""
+  echo "SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${SYSTEM_SETTINGS_ENCRYPTION_KEYS}\""
+
+  echo "DB_USERNAME=\"${DB_USERNAME}\""
+  echo "POSTGRES_USER=\"${POSTGRES_USER}\""
+  echo "POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\""
+  echo "DATABASE_URL=\"${DATABASE_URL}\""
+  echo "ALLOW_LOGIN_WITH_EMAIL=\"${ALLOW_LOGIN_WITH_EMAIL}\""
+  echo "ALLOW_SIGNUP_WITH_EMAIL=\"${ALLOW_SIGNUP_WITH_EMAIL}\""
+  echo "OPERATELY_BEACON_ENABLED=\"${OPERATELY_BEACON_ENABLED}\""
+} > "$CONFIG_TEMP"
+mv "$CONFIG_TEMP" operately.env
+
+if [ "$CERT_AUTO_RENEW" = "no" ]; then
+  sed -i '/443:4001/d' docker-compose.yml
+  if [ "$OPERATELY_URL_SCHEME" = "http" ]; then
+    sed -i "s/80:4000/${OPERATELY_URL_PORT}:4000/" docker-compose.yml
+  fi
+fi
 
 # Pulling and building docker images --------------------------------------------------
 
