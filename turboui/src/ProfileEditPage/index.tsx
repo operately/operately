@@ -186,7 +186,7 @@ function AboutMeEditor({
     onChange(editor.editor.getJSON());
   }, [editor.editor, editor.localDraftRestored]);
 
-  return <Editor editor={editor} />;
+  return <Editor editor={editor} compactToolbar />;
 }
 
 function AvatarSection(props: ProfileEditPage.Props) {
