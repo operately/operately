@@ -113,8 +113,9 @@ custom public port. `PORT` controls the internal HTTP listener (default: 4000).
 
 For proxy HTTPS, forward to Operately over HTTP, preserve `Host`, and set
 `X-Forwarded-Proto: https`. Handle HTTPS redirects at the proxy. If it shares the
-host, change Operately's Docker mapping to an available port, such as
-`127.0.0.1:8080:4000`, and point the proxy there.
+host, replace Operately's entire `ports` list in `docker-compose.yml` with an available
+HTTP mapping, such as `127.0.0.1:8080:4000`, and point the proxy there. Remove any
+`443:4001` mapping so the proxy can bind port 443.
 
 After editing existing settings, remove duplicate entries and recreate the app:
 
