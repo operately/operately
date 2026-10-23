@@ -172,6 +172,28 @@ SMTP_SSL=false
 **Important Notes:**
 - Mailjet requires TLS; with the configuration above (`SMTP_SSL=false` and port 587), STARTTLS will be used automatically
 
+### Groundmail
+
+Groundmail is a transactional email service with an SMTP relay on ports 587 and 2525 (STARTTLS):
+
+```bash
+# Environment variables for Groundmail
+SMTP_SERVER=smtp.groundmail.dev
+SMTP_PORT=587
+SMTP_USERNAME=groundmail
+SMTP_PASSWORD=your-groundmail-smtp-credential
+SMTP_SSL=false
+```
+
+**Setup steps:**
+1. Sign up for Groundmail and add your sending domain
+2. Verify the domain and add a payment method (the Free plan isn't charged). Until both are done, Groundmail only sends from `noreply@mail.groundmail.dev` to your own account email
+3. Create an SMTP credential under **SMTP** in the Groundmail dashboard and use it as `SMTP_PASSWORD` (it starts with `gmsmtp_`)
+4. Keep `SMTP_USERNAME=groundmail` (the literal word)
+5. Optionally use port `2525` instead of `587` if your environment blocks 587
+
+See the [Groundmail SMTP documentation](https://docs.groundmail.dev/smtp) for details.
+
 ## Development and Testing
 
 ### MailHog (Local Development)
