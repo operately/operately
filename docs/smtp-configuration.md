@@ -187,7 +187,7 @@ SMTP_SSL=false
 
 **Setup steps:**
 1. Sign up for Groundmail and add your sending domain
-2. Verify the domain and add a payment method (the Free plan isn't charged). Until both are done, Groundmail only sends from `noreply@mail.groundmail.dev` to your own account email
+2. Verify the domain and add a payment method. Until you do, Groundmail only sends from `noreply@mail.groundmail.dev` to your own account email; other recipients are rejected
 3. Create an SMTP credential under **SMTP** in the Groundmail dashboard and use it as `SMTP_PASSWORD` (it starts with `gmsmtp_`)
 4. Keep `SMTP_USERNAME=groundmail` (the literal word)
 5. Optionally use port `2525` instead of `587` if your environment blocks 587
