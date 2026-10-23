@@ -131,6 +131,11 @@ if config_env() == :prod do
   port = String.to_integer(System.get_env("PORT") || "4000")
   scheme = System.get_env("OPERATELY_URL_SCHEME") || "https"
 
+  # The public URL can differ from the internal listener behind Docker or a proxy.
+  default_url_port = if scheme == "https", do: "443", else: "80"
+
+  url_port = String.to_integer(System.get_env("OPERATELY_URL_PORT", default_url_port))
+
   if host == nil do
     raise """
     environment variable OPERATELY_HOST is missing.
@@ -138,7 +143,7 @@ if config_env() == :prod do
   end
 
   config :operately, OperatelyWeb.Endpoint,
-    url: [host: host, port: 443, scheme: scheme],
+    url: [host: host, port: url_port, scheme: scheme],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
