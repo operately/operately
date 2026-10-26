@@ -60,7 +60,7 @@ defmodule Operately.MixProject do
       {:hackney, "~> 4.5", override: true},
       {:sweet_xml, "~> 0.7"},
       {:mint, "~> 1.10"},
-      {:hpax, "~> 1.0.4"},
+      {:hpax, "~> 1.1.0"},
       {:req, "~> 0.7.5"},
       {:tesla, "~> 1.18"},
       {:telemetry_metrics_statsd, "~> 0.7.0"},
