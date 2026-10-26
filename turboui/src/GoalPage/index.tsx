@@ -87,6 +87,7 @@ export namespace GoalPage {
     status: BadgeStatus;
     state?: "draft" | "scheduled" | "published" | null;
     scheduledAt?: string | null;
+    acknowledgedAt?: string | null;
   }
 
   export interface Discussion {

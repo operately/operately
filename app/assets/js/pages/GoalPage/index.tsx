@@ -434,6 +434,7 @@ function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage
       status: checkIn.status!,
       state: checkIn.state,
       scheduledAt: checkIn.scheduledAt,
+      acknowledgedAt: checkIn.acknowledgedAt,
     };
   });
 }
