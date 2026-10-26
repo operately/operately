@@ -51,7 +51,7 @@ defmodule Operately.MixProject do
       {:plug_cowboy, "~> 2.8"},
       {:ueberauth, "~> 0.10"},
       {:ueberauth_google, "~> 0.12"},
-      {:inflex, "~> 2.0.0"},
+      {:inflex, "~> 2.1.0"},
       {:ex_aws, "~> 2.7"},
       {:ex_aws_s3, "~> 2.5"},
       {:custom_base, "~> 0.2"},
