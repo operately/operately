@@ -704,12 +704,12 @@ msgid "%{author} added you to the %{space_name} space."
 msgstr "%{author} adicionou você ao espaço %{space_name}."
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:43
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:44
 msgid "%{author} archived <task>%{taskName}</task>"
 msgstr "%{author} arquivou <task>%{taskName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:28
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:29
 msgid "%{author} archived <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr "%{author} arquivou <task>%{taskName}</task> em <location>%{locationName}</location>"
 
@@ -2319,12 +2319,12 @@ msgid "%{author} restored <document>%{documentName}</document> to a previous ver
 msgstr "%{author} restaurou <document>%{documentName}</document> para uma versão anterior no espaço <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:45
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:46
 msgid "%{author} restored <task>%{taskName}</task> to the board"
 msgstr "%{author} restaurou <task>%{taskName}</task> no quadro"
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:34
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:35
 msgid "%{author} restored <task>%{taskName}</task> to the board in <location>%{locationName}</location>"
 msgstr "%{author} restaurou <task>%{taskName}</task> no quadro em <location>%{locationName}</location>"
 
@@ -5330,7 +5330,7 @@ msgstr "Trabalho em andamento"
 #: ../turboui/src/GoalPage/Activity.tsx:9
 #: ../turboui/src/GoalPage/index.tsx:255
 #: ../turboui/src/ProfilePage/index.tsx:146
-#: ../turboui/src/ProjectPage/index.tsx:337
+#: ../turboui/src/ProjectPage/index.tsx:338
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:57
 #: assets/js/pages/SpacePage/page.tsx:108
 #: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:59
@@ -6209,7 +6209,7 @@ msgstr "Arquivar produto"
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:499
 #: ../turboui/src/TaskPage/Sidebar.tsx:501
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:64
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:74
 msgid "Archive task"
 msgstr "Arquivar tarefa"
 
@@ -7381,7 +7381,7 @@ msgid "Check-In"
 msgstr "Check-in"
 
 #.frontend
-#: ../turboui/src/CheckInCard/index.tsx:56
+#: ../turboui/src/CheckInCard/index.tsx:58
 #: ../turboui/src/CheckInHeader/index.tsx:33
 #: assets/js/pages/GoalCheckInNewPage/index.tsx:45
 msgid "Check-In for <date/>"
@@ -9794,7 +9794,7 @@ msgid "Download file"
 msgstr "Baixar arquivo"
 
 #.frontend
-#: ../turboui/src/CheckInCard/index.tsx:72
+#: ../turboui/src/CheckInCard/index.tsx:74
 #: ../turboui/src/CheckInHeader/index.tsx:38
 #: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:77
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:60
@@ -14821,6 +14821,7 @@ msgid "Not sure? Start with a project - you can always set goals later."
 msgstr "Não tem certeza? Comece com um projeto — você pode definir objetivos depois."
 
 #.frontend
+#: ../turboui/src/CheckInCard/index.tsx:106
 #: ../turboui/src/CheckInHeader/index.tsx:102
 #: assets/js/pages/GoalActivityPage/AckCTA.tsx:56
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:135
@@ -17349,7 +17350,7 @@ msgstr "Restaurar esta versão?"
 
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:457
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:64
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:74
 msgid "Restore to board"
 msgstr "Restaurar no quadro"
 
@@ -18603,8 +18604,8 @@ msgid "Show all"
 msgstr "Mostrar todos"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:98
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:102
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:96
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:100
 msgid "Show closed statuses"
 msgstr "Mostrar status encerrados"
 
