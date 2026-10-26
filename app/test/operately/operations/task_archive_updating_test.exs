@@ -85,6 +85,15 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
       assert archived.task_status.closed
     end
 
+    test "records the current name when given a stale task", ctx do
+      task = close_task(ctx.task, ctx.project.task_statuses)
+      {:ok, renamed} = Operately.Tasks.update_task(task, %{name: "Renamed task"})
+
+      assert {:ok, _} = TaskArchiveUpdating.run(ctx.creator, task, true)
+      assert [activity] = archive_activities(task)
+      assert activity.content["name"] == renamed.name
+    end
+
     test "repeated requests with a stale task preserve the timestamp and create only one activity", ctx do
       task = close_task(ctx.task, ctx.project.task_statuses)
       archived_at = ~N[2026-01-01 12:00:00]
@@ -100,6 +109,47 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
   end
 
   describe "restoring" do
+    test "records the current project and space after a task moves", ctx do
+      ctx = ctx |> Factory.add_space(:destination_space) |> Factory.add_project(:destination_project, :destination_space)
+      task = ctx.task |> Ecto.Changeset.change(archived_at: ~N[2026-01-01 12:00:00]) |> Repo.update!()
+
+      {:ok, moved} =
+        Operately.Tasks.update_task(task, %{
+          project_id: ctx.destination_project.id,
+          milestone_id: nil,
+          name: "Moved task"
+        })
+
+      assert {:ok, restored} = TaskArchiveUpdating.run(ctx.creator, task, false)
+      assert is_nil(restored.archived_at)
+      assert restored.project_id == moved.project_id
+      assert [activity] = archive_activities(task)
+      assert activity.content["name"] == moved.name
+      assert activity.content["project_id"] == ctx.destination_project.id
+      assert activity.content["space_id"] == ctx.destination_space.id
+      assert activity.access_context_id == Operately.Access.get_context!(project_id: ctx.destination_project.id).id
+    end
+
+    test "records the current space after a task moves out of a project", ctx do
+      ctx = Factory.add_space(ctx, :destination_space)
+      task = ctx.task |> Ecto.Changeset.change(archived_at: ~N[2026-01-01 12:00:00]) |> Repo.update!()
+
+      {:ok, _} =
+        Operately.Tasks.update_task(task, %{
+          project_id: nil,
+          milestone_id: nil,
+          space_id: ctx.destination_space.id
+        })
+
+      assert {:ok, restored} = TaskArchiveUpdating.run(ctx.creator, task, false)
+      assert is_nil(restored.archived_at)
+      assert restored.space_id == ctx.destination_space.id
+      assert [activity] = archive_activities(task)
+      assert is_nil(activity.content["project_id"])
+      assert activity.content["space_id"] == ctx.destination_space.id
+      assert activity.access_context_id == Operately.Access.get_context!(group_id: ctx.destination_space.id).id
+    end
+
     test "restores a task without changing its other attributes and records an activity", ctx do
       task = close_task(ctx.task, ctx.project.task_statuses)
       assert {:ok, archived} = TaskArchiveUpdating.run(ctx.creator, task, true)

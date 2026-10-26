@@ -26,13 +26,15 @@ defmodule Operately.Operations.TaskArchiveUpdating do
       if previous.archived_at == updated.archived_at do
         Multi.new()
       else
+        updated = Repo.preload(updated, :project)
+
         Activities.insert_sync(Multi.new(), author.id, :task_archive_updating, fn _ ->
           %{
             company_id: author.company_id,
-            space_id: task.space_id || task.project.group_id,
-            project_id: task.project_id,
-            task_id: task.id,
-            name: task.name,
+            space_id: updated.space_id || updated.project.group_id,
+            project_id: updated.project_id,
+            task_id: updated.id,
+            name: updated.name,
             archived: archived
           }
         end)
