@@ -82,6 +82,8 @@ and ask you for the following information:
     - For AWS SES users: Set `SMTP_PROVIDER=aws-ses` in your environment for optimized configuration
   - If you choose **Configure later**: Email delivery will be skipped and can be configured later
 - **SSL certificates**: Whether you want Operately to automatically manage SSL certificates via Let's Encrypt
+- **Public URL scheme**: If you decline managed certificates, choose `https` when a
+  reverse proxy terminates HTTPS, or `http` for plain HTTP.
 
 ### Start Operately
 
@@ -122,6 +124,12 @@ After editing existing settings, remove duplicate entries and recreate the app:
 ```bash
 docker compose up -d --force-recreate app
 ```
+
+### Recovering an interrupted installation
+
+The installer refuses to overwrite `operately.env`, preserving existing secrets.
+After fixing a setup failure, keep that file and run the remaining Docker commands
+from `install.sh` manually. For upgrades, use `./operately update`.
 
 ### Optional database timeout tuning
 
