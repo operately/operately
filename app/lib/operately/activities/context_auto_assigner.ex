@@ -112,6 +112,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "task_reopening",
     "task_size_change",
     "task_status_updating",
+    "task_archive_updating",
   ]
 
   @resource_hub_actions [

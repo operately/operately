@@ -856,6 +856,10 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_task_archive_updating",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_task_status_updating",
           "kind": "named"
         },
@@ -8983,6 +8987,17 @@
             "name": "updated_at",
             "type": {
               "name": "date",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "archived_at",
+            "type": {
+              "name": "datetime",
               "kind": "named"
             },
             "optional": true,
@@ -23784,6 +23799,76 @@
             "has_default": false
           }
         ]
+      },
+      "activity_content_task_archive_updating": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "task",
+            "type": {
+              "name": "task",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "archived",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
       }
     }
   },
@@ -23805,7 +23890,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 254,
+  "endpoint_count": 255,
   "endpoints": [
     {
       "name": "create",
@@ -40395,6 +40480,53 @@
       "docstring": "Moves a task from one project or space to another."
     },
     {
+      "name": "update_archive",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/update_archive",
+      "handler": "OperatelyWeb.Api.Tasks.UpdateArchive",
+      "outputs": [
+        {
+          "default": null,
+          "name": "task",
+          "type": {
+            "name": "task",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "task_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "archived",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/update_archive",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Archives a closed task or restores an archived task to its board."
+    },
+    {
       "name": "update_assignee",
       "type": "mutation",
       "path": "/api/external/v1/tasks/update_assignee",
@@ -40891,6 +41023,6 @@
     }
   ],
   "query_count": 76,
-  "mutation_count": 178,
+  "mutation_count": 179,
   "schema_version": 1
 }

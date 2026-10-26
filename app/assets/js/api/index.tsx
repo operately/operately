@@ -1085,6 +1085,15 @@ export interface ActivityContentTaskAdding {
   taskName: string;
 }
 
+export interface ActivityContentTaskArchiveUpdating {
+  __typename: "activity_content_task_archive_updating";
+  space: Space;
+  project: Project | null;
+  task: Task | null;
+  name: string;
+  archived: boolean;
+}
+
 export interface ActivityContentTaskAssigneeAssignment {
   __typename: "activity_content_task_assignee_assignment";
   companyId?: string | null;
@@ -2702,6 +2711,7 @@ export interface Task {
   name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
+  archivedAt?: string | null;
   closedAt?: string | null;
   dueDate?: ContextualDate | null;
   reminders?: TaskReminder[] | null;
@@ -2996,6 +3006,7 @@ export type ActivityContent =
   | ActivityContentTaskReopening
   | ActivityContentTaskSizeChange
   | ActivityContentTaskStatusChange
+  | ActivityContentTaskArchiveUpdating
   | ActivityContentTaskStatusUpdating
   | ActivityContentTaskUpdate;
 
@@ -6640,6 +6651,15 @@ export interface TasksMoveResult {
   destinationId: Id;
 }
 
+export interface TasksUpdateArchiveInput {
+  taskId: Id;
+  archived: boolean;
+}
+
+export interface TasksUpdateArchiveResult {
+  task: Task;
+}
+
 export interface TasksUpdateAssigneeInput {
   taskId: Id;
   assigneeId?: Id | null;
@@ -7311,6 +7331,10 @@ class ApiNamespaceTasks {
 
   async move(input: TasksMoveInput): Promise<TasksMoveResult> {
     return this.client.post("/tasks/move", input);
+  }
+
+  async updateArchive(input: TasksUpdateArchiveInput): Promise<TasksUpdateArchiveResult> {
+    return this.client.post("/tasks/update_archive", input);
   }
 
   async updateAssignee(input: TasksUpdateAssigneeInput): Promise<TasksUpdateAssigneeResult> {
@@ -10555,6 +10579,16 @@ export default {
     updateMilestoneMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: TasksUpdateMilestoneInput) => defaultApiClient.apiNamespaceTasks.updateMilestone(input),
+      }),
+
+    updateArchive: (input: TasksUpdateArchiveInput) => defaultApiClient.apiNamespaceTasks.updateArchive(input),
+    useUpdateArchive: () =>
+      useMutation<TasksUpdateArchiveInput, TasksUpdateArchiveResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.updateArchive(input),
+      ),
+    updateArchiveMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateArchiveInput) => defaultApiClient.apiNamespaceTasks.updateArchive(input),
       }),
 
     updateDescription: (input: TasksUpdateDescriptionInput) =>

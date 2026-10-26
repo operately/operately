@@ -147,6 +147,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "task_size_change",
     "task_status_change",
     "task_status_updating",
+    "task_archive_updating",
     "task_update",
     "resource_hub_created",
     "resource_hub_document_deleted",
