@@ -56,7 +56,7 @@ defmodule Operately.MixProject do
       {:ex_aws_s3, "~> 2.5"},
       {:custom_base, "~> 0.2"},
       {:oban, "~> 2.14"},
-      {:site_encrypt, "~> 0.6.0"},
+      {:site_encrypt, "~> 0.7.0"},
       {:hackney, "~> 4.5", override: true},
       {:sweet_xml, "~> 0.7"},
       {:mint, "~> 1.10"},
