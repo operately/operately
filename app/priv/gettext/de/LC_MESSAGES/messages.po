@@ -698,6 +698,16 @@ msgstr "%{author} hat dich zum Arbeitsbereich „%{space_name}“ hinzugefügt"
 msgid "%{author} added you to the %{space_name} space."
 msgstr "%{author} hat dich zum Arbeitsbereich „%{space_name}“ hinzugefügt."
 
+#.frontend
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:43
+msgid "%{author} archived <task>%{taskName}</task>"
+msgstr "%{author} hat <task>%{taskName}</task> archiviert"
+
+#.frontend
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:28
+msgid "%{author} archived <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgstr "%{author} hat <task>%{taskName}</task> in <location>%{locationName}</location> archiviert"
+
 #.elixir
 #: lib/operately_email/templates/goal_archived.html.eex:1
 msgid "%{author} archived the %{goal_name} goal"
@@ -2304,6 +2314,16 @@ msgid "%{author} restored <document>%{documentName}</document> to a previous ver
 msgstr "%{author} hat eine frühere Version von <document>%{documentName}</document> im Arbeitsbereich <parent>%{parentName}</parent> wiederhergestellt"
 
 #.frontend
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:45
+msgid "%{author} restored <task>%{taskName}</task> to the board"
+msgstr "%{author} hat <task>%{taskName}</task> auf dem Board wiederhergestellt"
+
+#.frontend
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:34
+msgid "%{author} restored <task>%{taskName}</task> to the board in <location>%{locationName}</location>"
+msgstr "%{author} hat <task>%{taskName}</task> in <location>%{locationName}</location> auf dem Board wiederhergestellt"
+
+#.frontend
 #: assets/js/features/activities/ResourceHubDocumentVersionRestored/index.tsx:45
 msgid "%{author} restored a document to a previous version"
 msgstr "%{author} hat eine frühere Version eines Dokuments wiederhergestellt"
@@ -3018,7 +3038,7 @@ msgid "%{role} on <location>%{location}</location>"
 msgstr "%{role} in <location>%{location}</location>"
 
 #.frontend
-#: ../turboui/src/SpaceKanbanPage/index.tsx:64
+#: ../turboui/src/SpaceKanbanPage/index.tsx:65
 msgid "%{space} Tasks"
 msgstr "Aufgaben in %{space}"
 
@@ -4719,72 +4739,82 @@ msgid "<author/> <text>updated the milestone</text>"
 msgstr "<author/> <text>hat den Meilenstein aktualisiert</text>"
 
 #.frontend
+#: ../turboui/src/Timeline/TaskActivities.tsx:156
+msgid "<author/> archived this task"
+msgstr "<author/> hat diese Aufgabe archiviert"
+
+#.frontend
 #: ../turboui/src/Timeline/TaskActivities.tsx:113
 msgid "<author/> assigned %{taskName} to <assignee>%{name}</assignee>"
 msgstr "<author/> hat „%{taskName}“ <assignee>%{name}</assignee> zugewiesen"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:177
+#: ../turboui/src/Timeline/TaskActivities.tsx:184
 msgid "<author/> attached %{taskName} to milestone <text>%{name}</text>"
 msgstr "<author/> hat „%{taskName}“ dem Meilenstein <text>%{name}</text> zugeordnet"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:157
+#: ../turboui/src/Timeline/TaskActivities.tsx:164
 msgid "<author/> changed status of %{taskName} from <text>%{formatStatus}</text> to <text2>%{formatStatus2}</text2>"
 msgstr "<author/> hat den Status von „%{taskName}“ von <text>%{formatStatus}</text> auf <text2>%{formatStatus2}</text2> geändert"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:224
+#: ../turboui/src/Timeline/TaskActivities.tsx:231
 msgid "<author/> changed the due date of %{taskName} from <text><date/></text> to <text2><date2/></text2>"
 msgstr "<author/> hat das Fälligkeitsdatum von „%{taskName}“ von <text><date/></text> auf <text2><date2/></text2> geändert"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:292
+#: ../turboui/src/Timeline/TaskActivities.tsx:299
 msgid "<author/> changed the title of a task from <from>\"%{fromTitle}\"</from> to <to>\"%{toTitle}\"</to>"
 msgstr "<author/> hat den Titel einer Aufgabe von <from>„%{fromTitle}“</from> in <to>„%{toTitle}“</to> geändert"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:280
+#: ../turboui/src/Timeline/TaskActivities.tsx:287
 msgid "<author/> changed the title of this task from <from>\"%{fromTitle}\"</from> to <to>\"%{toTitle}\"</to>"
 msgstr "<author/> hat den Titel dieser Aufgabe von <from>„%{fromTitle}“</from> in <to>„%{toTitle}“</to> geändert"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:310
+#: ../turboui/src/Timeline/TaskActivities.tsx:317
 msgid "<author/> created %{taskName}"
 msgstr "<author/> hat „%{taskName}“ erstellt"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:272
+#: ../turboui/src/Timeline/TaskActivities.tsx:279
 msgid "<author/> deleted a comment on %{taskName}"
 msgstr "<author/> hat einen Kommentar zu „%{taskName}“ gelöscht"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:187
+#: ../turboui/src/Timeline/TaskActivities.tsx:194
 msgid "<author/> detached %{taskName} from milestone <text>%{name}</text>"
 msgstr "<author/> hat „%{taskName}“ vom Meilenstein <text>%{name}</text> getrennt"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:317
+#: ../turboui/src/Timeline/TaskActivities.tsx:324
 msgid "<author/> performed an action"
 msgstr "<author/> hat eine Aktion ausgeführt"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:214
+#: ../turboui/src/Timeline/TaskActivities.tsx:221
 msgid "<author/> removed due date from %{taskName}"
 msgstr "<author/> hat das Fälligkeitsdatum von „%{taskName}“ entfernt"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:258
+#: ../turboui/src/Timeline/TaskActivities.tsx:265
 msgid "<author/> removed the description "
 msgstr "<author/> hat die Beschreibung entfernt "
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:260
+#: ../turboui/src/Timeline/TaskActivities.tsx:267
 msgid "<author/> removed the description from %{taskName}"
 msgstr "<author/> hat die Beschreibung von „%{taskName}“ entfernt"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:200
+#: ../turboui/src/Timeline/TaskActivities.tsx:158
+msgid "<author/> restored this task to the board"
+msgstr "<author/> hat diese Aufgabe auf dem Board wiederhergestellt"
+
+#.frontend
+#: ../turboui/src/Timeline/TaskActivities.tsx:207
 msgid "<author/> set the due date for %{taskName} to <text><date/></text>"
 msgstr "<author/> hat das Fälligkeitsdatum für „%{taskName}“ auf <text><date/></text> festgelegt"
 
@@ -4794,17 +4824,17 @@ msgid "<author/> unassigned <assignee>%{name}</assignee> from %{taskName}"
 msgstr "<author/> hat die Zuweisung von <assignee>%{name}</assignee> zu „%{taskName}“ aufgehoben"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:240
+#: ../turboui/src/Timeline/TaskActivities.tsx:247
 msgid "<author/> updated due date"
 msgstr "<author/> hat das Fälligkeitsdatum aktualisiert"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:249
+#: ../turboui/src/Timeline/TaskActivities.tsx:256
 msgid "<author/> updated the description "
 msgstr "<author/> hat die Beschreibung aktualisiert "
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:251
+#: ../turboui/src/Timeline/TaskActivities.tsx:258
 msgid "<author/> updated the description of %{taskName}"
 msgstr "<author/> hat die Beschreibung von „%{taskName}“ aktualisiert"
 
@@ -4853,7 +4883,7 @@ msgstr "<icon/>Als gelesen bestätigt von %{fullName}"
 
 #.frontend
 #: ../turboui/src/StatusCustomization/index.tsx:164
-#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:236
+#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:245
 msgid "<icon/>Add status"
 msgstr "<icon/>Status hinzufügen"
 
@@ -5165,7 +5195,7 @@ msgstr "Rückblick als gelesen bestätigt"
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:116
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:301
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:427
-#: ../turboui/src/TaskPage/Sidebar.tsx:454
+#: ../turboui/src/TaskPage/Sidebar.tsx:477
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:118
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:258
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:289
@@ -5215,6 +5245,12 @@ msgid "Active members"
 msgstr "Aktive Mitglieder"
 
 #.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:124
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:131
+msgid "Active tasks"
+msgstr "Aktive Aufgaben"
+
+#.frontend
 #: ../turboui/src/StatusCustomization/StatusAppearancePicker.tsx:38
 msgid "Active work underway"
 msgstr "Laufende Arbeit"
@@ -5223,7 +5259,7 @@ msgstr "Laufende Arbeit"
 #: ../turboui/src/GoalPage/Activity.tsx:9
 #: ../turboui/src/GoalPage/index.tsx:255
 #: ../turboui/src/ProfilePage/index.tsx:146
-#: ../turboui/src/ProjectPage/index.tsx:336
+#: ../turboui/src/ProjectPage/index.tsx:337
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:57
 #: assets/js/pages/SpacePage/page.tsx:108
 #: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:59
@@ -5555,7 +5591,7 @@ msgid "Add projects"
 msgstr "Projekte hinzufügen"
 
 #.frontend
-#: ../turboui/src/TaskPage/Sidebar.tsx:141
+#: ../turboui/src/TaskPage/Sidebar.tsx:142
 msgid "Add reminder"
 msgstr "Erinnerung hinzufügen"
 
@@ -6040,7 +6076,7 @@ msgstr "Filter anwenden"
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:44
 #: ../turboui/src/TaskPage/PageOptions.tsx:21
-#: ../turboui/src/TaskPage/Sidebar.tsx:436
+#: ../turboui/src/TaskPage/Sidebar.tsx:449
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:109
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:353
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:388
@@ -6058,6 +6094,13 @@ msgstr "Tarif archivieren"
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:452
 msgid "Archive Product"
 msgstr "Produkt archivieren"
+
+#.frontend
+#: ../turboui/src/TaskPage/Sidebar.tsx:499
+#: ../turboui/src/TaskPage/Sidebar.tsx:501
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:64
+msgid "Archive task"
+msgstr "Aufgabe archivieren"
 
 #.frontend
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:163
@@ -6089,6 +6132,12 @@ msgstr "Archiviert am"
 #: ee/lib/admin_api/mutations/set_active_billing_product.ex:25
 msgid "Archived products cannot be activated"
 msgstr "Archivierte Produkte können nicht aktiviert werden"
+
+#.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:124
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:134
+msgid "Archived tasks"
+msgstr "Archivierte Aufgaben"
 
 #.frontend
 #: assets/js/features/activities/GoalArchived/index.tsx:65
@@ -6199,8 +6248,8 @@ msgstr "Personen zuweisen"
 
 #.frontend
 #: ../turboui/src/AssigneesField/index.tsx:147
-#: ../turboui/src/TaskPage/Sidebar.tsx:307
-#: ../turboui/src/TaskPage/Sidebar.tsx:354
+#: ../turboui/src/TaskPage/Sidebar.tsx:308
+#: ../turboui/src/TaskPage/Sidebar.tsx:355
 msgid "Assign task"
 msgstr "Aufgabe zuweisen"
 
@@ -6256,8 +6305,8 @@ msgstr "Zugewiesene Person ist nicht %{name}"
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:137
 #: ../turboui/src/TaskCreationModal/index.tsx:339
-#: ../turboui/src/TaskPage/Sidebar.tsx:301
-#: ../turboui/src/TaskPage/Sidebar.tsx:348
+#: ../turboui/src/TaskPage/Sidebar.tsx:302
+#: ../turboui/src/TaskPage/Sidebar.tsx:349
 #: lib/operately/md/task.ex:58
 msgid "Assignees"
 msgstr "Zugewiesen an"
@@ -6528,7 +6577,7 @@ msgid "Before"
 msgstr "Vor"
 
 #.frontend
-#: ../turboui/src/TaskPage/Sidebar.tsx:255
+#: ../turboui/src/TaskPage/Sidebar.tsx:256
 msgid "Before due date"
 msgstr "Vor dem Fälligkeitsdatum"
 
@@ -6661,7 +6710,7 @@ msgid "Blocked or intentionally stopped"
 msgstr "Blockiert oder bewusst gestoppt"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:82
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:85
 msgid "Board"
 msgstr "Board"
 
@@ -6852,7 +6901,7 @@ msgstr "Darf nicht dieselbe Person wie der Champion sein"
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:149
 #: ../turboui/src/SchedulePosting/ScheduleModal.tsx:96
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:136
-#: ../turboui/src/SlideIn/ActionConfirmation.tsx:30
+#: ../turboui/src/SlideIn/ActionConfirmation.tsx:41
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:125
 #: ../turboui/src/SpaceKpisPage/DeleteKpiModal.tsx:76
 #: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:114
@@ -7659,9 +7708,8 @@ msgid "Color Mode"
 msgstr "Farbmodus"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:135
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:149
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:157
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:169
 msgid "Column colors"
 msgstr "Spaltenfarben"
 
@@ -8040,7 +8088,7 @@ msgstr "Werkzeuge für diesen Arbeitsbereich konfigurieren"
 #: ../turboui/src/ConfirmDialog/index.tsx:58
 #: ../turboui/src/DateField/components/ActionButtons.tsx:26
 #: ../turboui/src/SchedulePosting/useScheduleFlowState.ts:46
-#: ../turboui/src/SlideIn/ActionConfirmation.tsx:33
+#: ../turboui/src/SlideIn/ActionConfirmation.tsx:50
 #: assets/js/hooks/useScheduleFlow.ts:64
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:353
 msgid "Confirm"
@@ -8279,7 +8327,7 @@ msgstr "Kopieren"
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:337
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:284
 #: ../turboui/src/TaskPage/PageOptions.tsx:9
-#: ../turboui/src/TaskPage/Sidebar.tsx:421
+#: ../turboui/src/TaskPage/Sidebar.tsx:434
 msgid "Copy URL"
 msgstr "URL kopieren"
 
@@ -8294,7 +8342,7 @@ msgstr "Konto-ID kopieren"
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:215
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:330
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:277
-#: ../turboui/src/TaskPage/Sidebar.tsx:415
+#: ../turboui/src/TaskPage/Sidebar.tsx:428
 #: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:18
 msgid "Copy failed"
 msgstr "Kopieren fehlgeschlagen"
@@ -8622,7 +8670,7 @@ msgstr "Inhalte im Arbeitsbereich erstellen, aktualisieren, löschen und archivi
 #: ../turboui/src/AccountApiTokensPage/index.tsx:252
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:114
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:196
-#: ../turboui/src/TaskPage/Sidebar.tsx:388
+#: ../turboui/src/TaskPage/Sidebar.tsx:389
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:257
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:126
 #: lib/operately/md/goal.ex:31
@@ -8859,7 +8907,7 @@ msgid "Days after start"
 msgstr "Tage nach Beginn"
 
 #.frontend
-#: ../turboui/src/TaskPage/Sidebar.tsx:197
+#: ../turboui/src/TaskPage/Sidebar.tsx:198
 msgid "Days before due date"
 msgstr "Tage vor dem Fälligkeitsdatum"
 
@@ -8894,7 +8942,7 @@ msgstr "Konto deaktivieren"
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:517
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:336
 #: ../turboui/src/TaskPage/PageOptions.tsx:28
-#: ../turboui/src/TaskPage/Sidebar.tsx:442
+#: ../turboui/src/TaskPage/Sidebar.tsx:465
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:81
 #: ../turboui/src/TemplateProjectPage/TemplateResourceMenu.tsx:65
 #: assets/js/features/Feed/index.tsx:120
@@ -9390,7 +9438,7 @@ msgid "Dismiss message"
 msgstr "Mitteilung ausblenden"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:39
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:42
 msgid "Display"
 msgstr "Anzeige"
 
@@ -9401,7 +9449,7 @@ msgid "Display Name"
 msgstr "Anzeigename"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:34
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:37
 msgid "Display options"
 msgstr "Anzeigeoptionen"
 
@@ -9620,9 +9668,9 @@ msgstr "Fälligkeitsdatum"
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:93
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:102
 #: ../turboui/src/TaskCreationModal/index.tsx:125
-#: ../turboui/src/TaskPage/Sidebar.tsx:73
-#: ../turboui/src/TaskPage/Sidebar.tsx:256
-#: ../turboui/src/TaskPage/Sidebar.tsx:331
+#: ../turboui/src/TaskPage/Sidebar.tsx:74
+#: ../turboui/src/TaskPage/Sidebar.tsx:257
+#: ../turboui/src/TaskPage/Sidebar.tsx:332
 msgid "Due date"
 msgstr "Fälligkeitsdatum"
 
@@ -10240,25 +10288,26 @@ msgstr "Gib null oder eine positive Anzahl von Tagen ein."
 #: assets/js/models/tasks/useKanbanState.tsx:244
 #: assets/js/models/tasks/useKanbanState.tsx:251
 #: assets/js/models/tasks/useProjectKanbanState.ts:72
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:201
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:226
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:255
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:280
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:313
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:341
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:380
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:395
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:451
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:463
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:498
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:107
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:131
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:159
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:187
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:215
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:245
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:260
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:285
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:202
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:227
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:256
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:281
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:314
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:342
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:381
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:396
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:452
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:464
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:499
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:108
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:132
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:160
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:188
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:216
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:246
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:261
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:286
+#: assets/js/models/tasks/useTaskArchiveChange.ts:25
 #: assets/js/models/tasks/useTaskSlideInProps.tsx:217
 #: assets/js/pages/AccountNotificationSettingsPage/index.tsx:73
 #: assets/js/pages/CompanyAdminPage/page.tsx:27
@@ -10266,10 +10315,10 @@ msgstr "Gib null oder eine positive Anzahl von Tagen ein."
 #: assets/js/pages/MilestonePage/index.tsx:74
 #: assets/js/pages/MilestonePage/useComments.tsx:78
 #: assets/js/pages/ProfilePage/index.tsx:72
-#: assets/js/pages/ProjectPage/index.tsx:209
-#: assets/js/pages/ProjectPage/index.tsx:290
-#: assets/js/pages/ProjectPage/index.tsx:788
-#: assets/js/pages/ProjectPage/index.tsx:817
+#: assets/js/pages/ProjectPage/index.tsx:210
+#: assets/js/pages/ProjectPage/index.tsx:291
+#: assets/js/pages/ProjectPage/index.tsx:790
+#: assets/js/pages/ProjectPage/index.tsx:819
 #: assets/js/pages/SpaceKpisPage/page.tsx:102
 #: assets/js/pages/SpacePage/page.tsx:119
 #: assets/js/pages/TaskPage/index.tsx:84
@@ -10675,6 +10724,11 @@ msgid "Failed to archive product in Polar"
 msgstr "Produkt konnte nicht in Polar archiviert werden"
 
 #.frontend
+#: assets/js/models/tasks/useTaskArchiveChange.ts:26
+msgid "Failed to archive task."
+msgstr "Die Aufgabe konnte nicht archiviert werden."
+
+#.frontend
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:148
 msgid "Failed to change plan"
 msgstr "Tarif konnte nicht geändert werden"
@@ -10690,7 +10744,7 @@ msgid "Failed to create account"
 msgstr "Konto konnte nicht erstellt werden"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:788
+#: assets/js/pages/ProjectPage/index.tsx:790
 msgid "Failed to create milestone"
 msgstr "Meilenstein konnte nicht erstellt werden"
 
@@ -10700,8 +10754,8 @@ msgid "Failed to create product in Polar"
 msgstr "Produkt konnte nicht in Polar erstellt werden"
 
 #.frontend
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:201
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:107
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:202
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:108
 msgid "Failed to create task"
 msgstr "Aufgabe konnte nicht erstellt werden"
 
@@ -10743,7 +10797,7 @@ msgid "Failed to delete company"
 msgstr "Unternehmen konnte nicht gelöscht werden"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:290
+#: assets/js/pages/ProjectPage/index.tsx:291
 msgid "Failed to delete project"
 msgstr "Projekt konnte nicht gelöscht werden"
 
@@ -10758,8 +10812,8 @@ msgid "Failed to delete target"
 msgstr "Messgröße konnte nicht gelöscht werden"
 
 #.frontend
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:498
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:260
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:499
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:261
 msgid "Failed to delete task"
 msgstr "Aufgabe konnte nicht gelöscht werden"
 
@@ -10838,6 +10892,11 @@ msgstr "Einladungslink konnte nicht zurückgesetzt werden."
 #: assets/js/pages/InviteTeamPage/index.tsx:100
 msgid "Failed to reset invite link. Please try again."
 msgstr "Einladungslink konnte nicht zurückgesetzt werden. Versuche es erneut."
+
+#.frontend
+#: assets/js/models/tasks/useTaskArchiveChange.ts:26
+msgid "Failed to restore task."
+msgstr "Die Aufgabe konnte nicht wiederhergestellt werden."
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:87
@@ -10952,7 +11011,7 @@ msgid "Failed to update due date."
 msgstr "Fälligkeitsdatum konnte nicht aktualisiert werden."
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:817
+#: assets/js/pages/ProjectPage/index.tsx:819
 msgid "Failed to update milestone"
 msgstr "Meilenstein konnte nicht aktualisiert werden"
 
@@ -11002,41 +11061,41 @@ msgid "Failed to update target value"
 msgstr "Wert der Messgröße konnte nicht aktualisiert werden"
 
 #.frontend
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:280
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:215
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:281
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:216
 msgid "Failed to update task assignee"
 msgstr "Aufgabenzuweisung konnte nicht aktualisiert werden"
 
 #.frontend
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:285
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:286
 msgid "Failed to update task description"
 msgstr "Aufgabenbeschreibung konnte nicht aktualisiert werden"
 
 #.frontend
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:341
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:342
 #: assets/js/pages/TaskPage/index.tsx:84
 msgid "Failed to update task description."
 msgstr "Aufgabenbeschreibung konnte nicht aktualisiert werden."
 
 #.frontend
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:226
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:159
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:227
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:160
 msgid "Failed to update task due date"
 msgstr "Fälligkeitsdatum der Aufgabe konnte nicht aktualisiert werden"
 
 #.frontend
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:451
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:452
 msgid "Failed to update task milestone"
 msgstr "Meilenstein der Aufgabe konnte nicht aktualisiert werden"
 
 #.frontend
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:131
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:132
 msgid "Failed to update task name"
 msgstr "Aufgabenname konnte nicht aktualisiert werden"
 
 #.frontend
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:291
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:313
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:292
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:314
 #: assets/js/pages/TaskPage/index.tsx:74
 msgid "Failed to update task name."
 msgstr "Aufgabenname konnte nicht aktualisiert werden."
@@ -11048,8 +11107,8 @@ msgid "Failed to update task position"
 msgstr "Aufgabenposition konnte nicht aktualisiert werden"
 
 #.frontend
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:255
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:187
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:256
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:188
 msgid "Failed to update task reminders"
 msgstr "Aufgabenerinnerungen konnten nicht aktualisiert werden"
 
@@ -11060,8 +11119,8 @@ msgstr "Aufgabenerinnerungen konnten nicht aktualisiert werden."
 
 #.frontend
 #: assets/js/models/tasks/useKanbanState.tsx:251
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:380
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:245
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:381
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:246
 msgid "Failed to update task status"
 msgstr "Aufgabenstatus konnte nicht aktualisiert werden"
 
@@ -11077,7 +11136,7 @@ msgid "Failed to update task statuses"
 msgstr "Aufgabenstatusoptionen konnten nicht aktualisiert werden"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:209
+#: assets/js/pages/ProjectPage/index.tsx:210
 msgid "Failed to update tasks view"
 msgstr "Aufgabenansicht konnte nicht aktualisiert werden"
 
@@ -12563,7 +12622,7 @@ msgid "Latest value"
 msgstr "Neuester Wert"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:48
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:51
 msgid "Layout"
 msgstr "Layout"
 
@@ -12727,7 +12786,7 @@ msgid "Links"
 msgstr "Links"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:64
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:67
 msgid "List"
 msgstr "Liste"
 
@@ -13125,7 +13184,7 @@ msgstr "Erwähnte Person"
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:89
 #: ../turboui/src/TaskCreationModal/index.tsx:161
 #: ../turboui/src/TaskCreationModal/index.tsx:319
-#: ../turboui/src/TaskPage/Sidebar.tsx:368
+#: ../turboui/src/TaskPage/Sidebar.tsx:369
 #: lib/operately/md/task.ex:106
 #: lib/operately/md/task.ex:113
 msgid "Milestone"
@@ -13380,7 +13439,7 @@ msgstr "Ziel in einen anderen Arbeitsbereich verschieben"
 
 #.frontend
 #: ../turboui/src/TaskPage/MoveModal.tsx:59
-#: ../turboui/src/TaskPage/Sidebar.tsx:427
+#: ../turboui/src/TaskPage/Sidebar.tsx:440
 msgid "Move task"
 msgstr "Aufgabe verschieben"
 
@@ -13550,9 +13609,9 @@ msgstr "Hinweis auf neue Version in der Navigationsleiste"
 #: assets/js/pages/ProjectPage/index.tsx:122
 #: assets/js/pages/ProjectPage/index.tsx:128
 #: assets/js/pages/ProjectPage/index.tsx:134
-#: assets/js/pages/ProjectPage/index.tsx:665
-#: assets/js/pages/ProjectPage/index.tsx:671
-#: assets/js/pages/ProjectPage/index.tsx:677
+#: assets/js/pages/ProjectPage/index.tsx:667
+#: assets/js/pages/ProjectPage/index.tsx:673
+#: assets/js/pages/ProjectPage/index.tsx:679
 msgid "Network Error"
 msgstr "Netzwerkfehler"
 
@@ -13828,9 +13887,14 @@ msgid "No activity yet"
 msgstr "Noch keine Aktivitäten"
 
 #.frontend
+#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:187
+msgid "No archived tasks."
+msgstr "Keine archivierten Aufgaben."
+
+#.frontend
 #: ../turboui/src/AssigneesField/index.tsx:148
-#: ../turboui/src/TaskPage/Sidebar.tsx:308
-#: ../turboui/src/TaskPage/Sidebar.tsx:355
+#: ../turboui/src/TaskPage/Sidebar.tsx:309
+#: ../turboui/src/TaskPage/Sidebar.tsx:356
 msgid "No assignees"
 msgstr "Keine zugewiesenen Personen"
 
@@ -14043,7 +14107,7 @@ msgstr "Keine Mitglieder aufgelistet."
 #: ../turboui/src/MilestoneField/index.tsx:96
 #: ../turboui/src/TaskBoard/components/index.tsx:369
 #: ../turboui/src/TaskCreationModal/index.tsx:326
-#: ../turboui/src/TaskPage/Sidebar.tsx:376
+#: ../turboui/src/TaskPage/Sidebar.tsx:377
 #: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:348
 msgid "No milestone"
 msgstr "Ohne Meilenstein"
@@ -14503,7 +14567,7 @@ msgid "On Track"
 msgstr "Planmäßig"
 
 #.frontend
-#: ../turboui/src/TaskPage/Sidebar.tsx:260
+#: ../turboui/src/TaskPage/Sidebar.tsx:261
 msgid "On date"
 msgstr "Am Datum"
 
@@ -14886,7 +14950,7 @@ msgid "Outside collaborators"
 msgstr "Externe Personen"
 
 #.frontend
-#: ../turboui/src/TaskPage/Sidebar.tsx:257
+#: ../turboui/src/TaskPage/Sidebar.tsx:258
 msgid "Overdue"
 msgstr "Überfällig"
 
@@ -14897,7 +14961,7 @@ msgstr "Seit %{duration} überfällig"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:340
-#: ../turboui/src/TaskPage/Sidebar.tsx:483
+#: ../turboui/src/TaskPage/Sidebar.tsx:519
 msgid "Overdue by %{duration}."
 msgstr "Seit %{duration} überfällig."
 
@@ -16403,8 +16467,8 @@ msgstr "Zugehörige Projekte"
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:66
 #: ../turboui/src/MilestonePage/index.tsx:313
 #: ../turboui/src/TaskCreationModal/index.tsx:301
-#: ../turboui/src/TaskPage/Sidebar.tsx:60
-#: ../turboui/src/TaskPage/Sidebar.tsx:319
+#: ../turboui/src/TaskPage/Sidebar.tsx:61
+#: ../turboui/src/TaskPage/Sidebar.tsx:320
 #: ../turboui/src/TemplateProjectPage/MilestoneFormModal.tsx:63
 msgid "Relative due date"
 msgstr "Relatives Fälligkeitsdatum"
@@ -16415,7 +16479,7 @@ msgid "Reload"
 msgstr "Neu laden"
 
 #.frontend
-#: ../turboui/src/TaskPage/Sidebar.tsx:210
+#: ../turboui/src/TaskPage/Sidebar.tsx:211
 msgid "Reminder date"
 msgstr "Erinnerungsdatum"
 
@@ -16425,12 +16489,12 @@ msgid "Reminder for today"
 msgstr "Erinnerung für heute"
 
 #.frontend
-#: ../turboui/src/TaskPage/Sidebar.tsx:179
+#: ../turboui/src/TaskPage/Sidebar.tsx:180
 msgid "Reminder type"
 msgstr "Erinnerungstyp"
 
 #.frontend
-#: ../turboui/src/TaskPage/Sidebar.tsx:119
+#: ../turboui/src/TaskPage/Sidebar.tsx:120
 msgid "Reminders"
 msgstr "Erinnerungen"
 
@@ -16504,7 +16568,7 @@ msgid "Remove reaction"
 msgstr "Reaktion entfernen"
 
 #.frontend
-#: ../turboui/src/TaskPage/Sidebar.tsx:219
+#: ../turboui/src/TaskPage/Sidebar.tsx:220
 msgid "Remove reminder"
 msgstr "Erinnerung entfernen"
 
@@ -16824,6 +16888,12 @@ msgid "Restore this version?"
 msgstr "Diese Version wiederherstellen?"
 
 #.frontend
+#: ../turboui/src/TaskPage/Sidebar.tsx:457
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:64
+msgid "Restore to board"
+msgstr "Auf dem Board wiederherstellen"
+
+#.frontend
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:171
 msgid "Restore “%{name}”?"
 msgstr "„%{name}“ wiederherstellen?"
@@ -16918,7 +16988,7 @@ msgstr "Die Zugriffsstufen wurden auf ihre vorherigen Werte zurückgesetzt."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:116
-#: assets/js/pages/ProjectPage/index.tsx:671
+#: assets/js/pages/ProjectPage/index.tsx:673
 msgid "Reverted the champion to its previous value."
 msgstr "Die Zuweisung der Rolle „Champion“ wurde auf den vorherigen Stand zurückgesetzt."
 
@@ -16954,13 +17024,13 @@ msgstr "Der Projektname wurde auf seinen vorherigen Wert zurückgesetzt."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:122
-#: assets/js/pages/ProjectPage/index.tsx:677
+#: assets/js/pages/ProjectPage/index.tsx:679
 msgid "Reverted the reviewer to its previous value."
 msgstr "Die Zuweisung der Rolle „Reviewer“ wurde auf den vorherigen Stand zurückgesetzt."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:98
-#: assets/js/pages/ProjectPage/index.tsx:665
+#: assets/js/pages/ProjectPage/index.tsx:667
 msgid "Reverted the space to its previous value."
 msgstr "Der Arbeitsbereich wurde auf seinen vorherigen Wert zurückgesetzt."
 
@@ -17696,7 +17766,7 @@ msgstr "Führungskraft auswählen"
 #.frontend
 #: ../turboui/src/MilestoneField/index.tsx:95
 #: ../turboui/src/TaskCreationModal/index.tsx:180
-#: ../turboui/src/TaskPage/Sidebar.tsx:375
+#: ../turboui/src/TaskPage/Sidebar.tsx:376
 msgid "Select milestone"
 msgstr "Meilenstein auswählen"
 
@@ -17909,8 +17979,8 @@ msgstr "Datum festlegen"
 #: ../turboui/src/TaskBoard/components/TaskItem.tsx:296
 #: ../turboui/src/TaskBoard/components/TaskItem.tsx:301
 #: ../turboui/src/TaskCreationModal/index.tsx:130
-#: ../turboui/src/TaskPage/Sidebar.tsx:79
-#: ../turboui/src/TaskPage/Sidebar.tsx:337
+#: ../turboui/src/TaskPage/Sidebar.tsx:80
+#: ../turboui/src/TaskPage/Sidebar.tsx:338
 msgid "Set due date"
 msgstr "Fälligkeitsdatum festlegen"
 
@@ -17948,8 +18018,8 @@ msgstr "Projektdauer festlegen"
 #: ../turboui/src/RelativeDayField/index.tsx:24
 #: ../turboui/src/RelativeDayField/index.tsx:35
 #: ../turboui/src/TaskCreationModal/index.tsx:304
-#: ../turboui/src/TaskPage/Sidebar.tsx:65
-#: ../turboui/src/TaskPage/Sidebar.tsx:324
+#: ../turboui/src/TaskPage/Sidebar.tsx:66
+#: ../turboui/src/TaskPage/Sidebar.tsx:325
 #: ../turboui/src/TemplateProjectPage/MilestoneFormModal.tsx:68
 msgid "Set relative date"
 msgstr "Relatives Datum festlegen"
@@ -18068,8 +18138,8 @@ msgid "Show all"
 msgstr "Alle anzeigen"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:97
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:103
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:98
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:102
 msgid "Show closed statuses"
 msgstr "Geschlossene Statusoptionen anzeigen"
 
@@ -18255,8 +18325,8 @@ msgid "Some milestone IDs do not belong to this project"
 msgstr "Einige Meilenstein-IDs gehören nicht zu diesem Projekt"
 
 #.frontend
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:395
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:463
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:396
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:464
 #: assets/js/pages/GoalPage/index.tsx:195
 #: assets/js/pages/GoalPage/useChecklists.tsx:66
 #: assets/js/pages/GoalPage/useChecklists.tsx:90
@@ -18830,7 +18900,7 @@ msgstr "Abonnement beendet"
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:213
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:328
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:275
-#: ../turboui/src/TaskPage/Sidebar.tsx:413
+#: ../turboui/src/TaskPage/Sidebar.tsx:426
 msgid "Success"
 msgstr "Erfolg"
 
@@ -18994,7 +19064,7 @@ msgid "Task Statuses"
 msgstr "Aufgabenstatusoptionen"
 
 #.frontend
-#: ../turboui/src/TaskPage/Sidebar.tsx:413
+#: ../turboui/src/TaskPage/Sidebar.tsx:426
 msgid "Task URL copied to clipboard"
 msgstr "Aufgaben-URL in die Zwischenablage kopiert"
 
@@ -19031,7 +19101,7 @@ msgid "Task name"
 msgstr "Aufgabenname"
 
 #.frontend
-#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:290
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:291
 #: assets/js/pages/TaskPage/index.tsx:75
 msgid "Task name cannot be empty"
 msgstr "Aufgabenname darf nicht leer sein"
@@ -19112,8 +19182,10 @@ msgstr "Die Aufgabe wurde aus dem Meilenstein „%{title}“ entfernt"
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:261
 #: ../turboui/src/SearchPage/filterOptions.ts:13
-#: ../turboui/src/SpaceKanbanPage/index.tsx:108
+#: ../turboui/src/SpaceKanbanPage/index.tsx:110
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:69
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:124
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:128
 #: ../turboui/src/TemplateProjectPage/index.tsx:31
 #: assets/js/features/SpaceTools/Tasks/RegularState.tsx:24
 #: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:20
@@ -20512,6 +20584,11 @@ msgstr "Dieser Status kann nicht gelöscht werden. Das Kanban-Board muss mindest
 msgid "This tab is out of date. Reloading to get the latest version..."
 msgstr "Dieser Tab ist nicht aktuell. Die neueste Version wird geladen …"
 
+#.frontend
+#: ../turboui/src/TaskPage/Sidebar.tsx:500
+msgid "This task will move to the archive. You can restore it to the board at any time."
+msgstr "Diese Aufgabe wird ins Archiv verschoben. Du kannst sie jederzeit wieder auf das Board holen."
+
 #.elixir
 #: ee/lib/admin_api/curated_templates/shared.ex:16
 msgid "This template has changed. Reload it before saving."
@@ -20932,7 +21009,7 @@ msgstr "Diese Versionen konnten nicht verglichen werden"
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:215
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:330
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:277
-#: ../turboui/src/TaskPage/Sidebar.tsx:415
+#: ../turboui/src/TaskPage/Sidebar.tsx:428
 msgid "Unable to copy URL to clipboard"
 msgstr "URL konnte nicht in die Zwischenablage kopiert werden"
 
@@ -21237,7 +21314,7 @@ msgid "Update badge setting saved"
 msgstr "Einstellung für den Versionshinweis gespeichert"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:632
+#: assets/js/pages/ProjectPage/index.tsx:634
 #: assets/js/pages/TaskPage/index.tsx:329
 msgid "Update failed"
 msgstr "Aktualisierung fehlgeschlagen"
@@ -23011,9 +23088,9 @@ msgstr "ein Arbeitsbereich"
 #: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:54
 #: assets/js/features/activities/TaskDueDateUpdating/index.tsx:56
 #: assets/js/features/activities/TaskDueDateUpdating/index.tsx:132
-#: assets/js/models/activities/feed.tsx:148
-#: assets/js/models/activities/feed.tsx:199
-#: assets/js/models/activities/feed.tsx:228
+#: assets/js/models/activities/feed.tsx:163
+#: assets/js/models/activities/feed.tsx:214
+#: assets/js/models/activities/feed.tsx:243
 msgid "a task"
 msgstr "eine Aufgabe"
 
@@ -23312,7 +23389,7 @@ msgid "created this document"
 msgstr "hat dieses Dokument erstellt"
 
 #.frontend
-#: ../turboui/src/TaskPage/Sidebar.tsx:169
+#: ../turboui/src/TaskPage/Sidebar.tsx:170
 msgid "day"
 msgid_plural "days"
 msgstr[0] "Tag"
@@ -23881,7 +23958,7 @@ msgid "this project"
 msgstr "dieses Projekt"
 
 #.frontend
-#: ../turboui/src/Timeline/TaskActivities.tsx:343
+#: ../turboui/src/Timeline/TaskActivities.tsx:350
 msgid "this task"
 msgstr "diese Aufgabe"
 
@@ -24085,25 +24162,25 @@ msgid "Sep"
 msgstr "Sept."
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:124
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:146
 msgctxt "column colors"
 msgid "Bordered"
 msgstr "Umrandet"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:125
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:147
 msgctxt "column colors"
 msgid "None"
 msgstr "Keine"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:123
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:145
 msgctxt "column colors"
 msgid "Soft"
 msgstr "Dezent"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:122
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:144
 msgctxt "column colors"
 msgid "Vivid"
 msgstr "Kräftig"
