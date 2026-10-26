@@ -11,6 +11,7 @@ import FormattedTime, { type FormattedTimePreferences } from "../FormattedTime";
 import { CommentCountIndicator } from "../CommentCountIndicator";
 import { StatusBadge, BadgeStatus } from "../StatusBadge";
 import { ScheduledPostDate, ScheduledPostLabel } from "../SchedulePosting";
+import { TextSeparator } from "../TextSeparator";
 
 namespace CheckInCard {
   interface CheckIn {
@@ -22,6 +23,7 @@ namespace CheckInCard {
     status: BadgeStatus;
     state?: "draft" | "scheduled" | "published" | null;
     scheduledAt?: string | null;
+    acknowledgedAt?: string | null;
   }
 
   export interface Props {
@@ -43,15 +45,15 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type, formattedTim
 
   return (
     <DivLink to={checkIn.link} className={className}>
-      <div className="flex gap-4 flex-1">
+      <div className="flex gap-4 flex-1 min-w-0">
         {checkIn.author && (
           <div className="shrink-0">
             <Avatar person={checkIn.author} size="large" />
           </div>
         )}
 
-        <div className="flex-1 h-full">
-          <div className="flex items-center gap-2 mb-1">
+        <div className="flex-1 h-full min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
             <div className="font-semibold leading-none" data-test-id="check-in-title">
               <Trans
                 i18nKey="Check-In for <date/>"
@@ -81,22 +83,24 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type, formattedTim
             <Summary content={checkIn.content} characterCount={130} mentionedPersonLookup={mentionedPersonLookup} />
           </div>
 
-          <div className="flex gap-1 mt-1 text-xs">
-            {checkIn.author && (
-              <>
-                <div className="text-sm text-content-dimmed">{checkIn.author.fullName}</div>
-                <div className="text-sm text-content-dimmed">·</div>
-              </>
-            )}
-            {checkIn.state === "scheduled" && checkIn.scheduledAt ? (
-              <ScheduledPostDate
-                scheduledAt={checkIn.scheduledAt}
-                formattedTimePreferences={formattedTimePreferences}
-              />
-            ) : (
-              <div className="text-sm text-content-dimmed">
+          <div className="flex flex-wrap items-center gap-y-1 mt-1 text-sm text-content-dimmed">
+            {checkIn.author && <div>{checkIn.author.fullName}</div>}
+            <div className="flex items-center">
+              {checkIn.author && <TextSeparator />}
+              {checkIn.state === "scheduled" && checkIn.scheduledAt ? (
+                <ScheduledPostDate
+                  scheduledAt={checkIn.scheduledAt}
+                  formattedTimePreferences={formattedTimePreferences}
+                />
+              ) : (
                 <FormattedTime {...formattedTimePreferences} time={checkIn.date} format="relative-weekday-or-date" />
-              </div>
+              )}
+            </div>
+            {checkIn.state === "published" && checkIn.acknowledgedAt === null && (
+              <span className="flex items-center" data-test-id="check-in-pending-acknowledgement">
+                <TextSeparator />
+                {t("Not yet acknowledged")}
+              </span>
             )}
           </div>
         </div>

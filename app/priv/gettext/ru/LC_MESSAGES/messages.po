@@ -699,12 +699,12 @@ msgid "%{author} added you to the %{space_name} space."
 msgstr "%{author}: вы добавлены в пространство «%{space_name}»."
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:43
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:44
 msgid "%{author} archived <task>%{taskName}</task>"
 msgstr "%{author} архивирует <task>%{taskName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:28
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:29
 msgid "%{author} archived <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr "%{author} архивирует <task>%{taskName}</task> в <location>%{locationName}</location>"
 
@@ -2320,12 +2320,12 @@ msgid "%{author} restored <document>%{documentName}</document> to a previous ver
 msgstr "%{author}: восстановлена предыдущая версия документа <document>%{documentName}</document> в пространстве <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:45
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:46
 msgid "%{author} restored <task>%{taskName}</task> to the board"
 msgstr "%{author} возвращает <task>%{taskName}</task> на доску"
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:34
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:35
 msgid "%{author} restored <task>%{taskName}</task> to the board in <location>%{locationName}</location>"
 msgstr "%{author} возвращает <task>%{taskName}</task> на доску в <location>%{locationName}</location>"
 
@@ -5419,7 +5419,7 @@ msgstr "Ведется активная работа"
 #: ../turboui/src/GoalPage/Activity.tsx:9
 #: ../turboui/src/GoalPage/index.tsx:255
 #: ../turboui/src/ProfilePage/index.tsx:146
-#: ../turboui/src/ProjectPage/index.tsx:337
+#: ../turboui/src/ProjectPage/index.tsx:338
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:57
 #: assets/js/pages/SpacePage/page.tsx:108
 #: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:59
@@ -6260,7 +6260,7 @@ msgstr "Архивировать продукт"
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:499
 #: ../turboui/src/TaskPage/Sidebar.tsx:501
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:64
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:74
 msgid "Archive task"
 msgstr "Архивировать задачу"
 
@@ -7412,7 +7412,7 @@ msgid "Check-In"
 msgstr "Отчёт о ходе работы"
 
 #.frontend
-#: ../turboui/src/CheckInCard/index.tsx:56
+#: ../turboui/src/CheckInCard/index.tsx:58
 #: ../turboui/src/CheckInHeader/index.tsx:33
 #: assets/js/pages/GoalCheckInNewPage/index.tsx:45
 msgid "Check-In for <date/>"
@@ -9754,7 +9754,7 @@ msgid "Download file"
 msgstr "Скачать файл"
 
 #.frontend
-#: ../turboui/src/CheckInCard/index.tsx:72
+#: ../turboui/src/CheckInCard/index.tsx:74
 #: ../turboui/src/CheckInHeader/index.tsx:38
 #: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:77
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:60
@@ -14627,6 +14627,7 @@ msgid "Not sure? Start with a project - you can always set goals later."
 msgstr "Не уверены? Начните с проекта — цели всегда можно задать позже."
 
 #.frontend
+#: ../turboui/src/CheckInCard/index.tsx:106
 #: ../turboui/src/CheckInHeader/index.tsx:102
 #: assets/js/pages/GoalActivityPage/AckCTA.tsx:56
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:135
@@ -17065,7 +17066,7 @@ msgstr "Восстановить эту версию?"
 
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:457
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:64
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:74
 msgid "Restore to board"
 msgstr "Вернуть на доску"
 
@@ -18318,8 +18319,8 @@ msgid "Show all"
 msgstr "Показать все"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:98
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:102
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:96
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:100
 msgid "Show closed statuses"
 msgstr "Показать закрытые статусы"
 
