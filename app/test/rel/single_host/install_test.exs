@@ -21,12 +21,12 @@ defmodule Operately.SingleHost.InstallTest do
   end
 
   test "plain HTTP uses port 80 and does not publish a TLS listener", ctx do
-    assert {_, 0} = install(ctx, ["operately.example.com", "n", "", "", "y"])
+    assert {_, 0} = install(ctx, ["operately.example.com", "n", "", "y"])
     config = read_config(ctx)
 
     assert config["OPERATELY_HOST"] == "operately.example.com"
     assert config["OPERATELY_URL_SCHEME"] == "http"
-    assert config["OPERATELY_URL_PORT"] == "80"
+    refute Map.has_key?(config, "OPERATELY_URL_PORT")
     assert config["CERT_AUTO_RENEW"] == "no"
     assert compose(ctx) =~ "80:4000"
     refute compose(ctx) =~ "443:4001"
@@ -37,7 +37,7 @@ defmodule Operately.SingleHost.InstallTest do
     config = read_config(ctx)
 
     assert config["OPERATELY_URL_SCHEME"] == "https"
-    assert config["OPERATELY_URL_PORT"] == "443"
+    refute Map.has_key?(config, "OPERATELY_URL_PORT")
     assert config["CERT_AUTO_RENEW"] == "yes"
     assert config["CERT_DOMAIN"] == "operately.example.com"
     assert compose(ctx) =~ "80:4000"
@@ -45,28 +45,12 @@ defmodule Operately.SingleHost.InstallTest do
   end
 
   test "proxy HTTPS uses the public scheme while keeping the upstream on HTTP", ctx do
-    assert {_, 0} = install(ctx, ["operately.example.com", "n", "https", "", "y"])
+    assert {_, 0} = install(ctx, ["operately.example.com", "n", "https", "y"])
     config = read_config(ctx)
 
     assert config["OPERATELY_URL_SCHEME"] == "https"
-    assert config["OPERATELY_URL_PORT"] == "443"
+    refute Map.has_key?(config, "OPERATELY_URL_PORT")
     assert config["CERT_AUTO_RENEW"] == "no"
-    assert compose(ctx) =~ "80:4000"
-    refute compose(ctx) =~ "443:4001"
-  end
-
-  test "custom HTTP ports match the published listener", ctx do
-    assert {_, 0} = install(ctx, ["operately.example.com", "n", "http", "8080", "y"])
-
-    assert read_config(ctx)["OPERATELY_URL_PORT"] == "8080"
-    assert compose(ctx) =~ "8080:4000"
-    refute compose(ctx) =~ "443:4001"
-  end
-
-  test "custom proxy ports do not change the upstream listener", ctx do
-    assert {_, 0} = install(ctx, ["operately.example.com", "n", "https", "8443", "y"])
-
-    assert read_config(ctx)["OPERATELY_URL_PORT"] == "8443"
     assert compose(ctx) =~ "80:4000"
     refute compose(ctx) =~ "443:4001"
   end
@@ -84,7 +68,7 @@ defmodule Operately.SingleHost.InstallTest do
   end
 
   test "a failed Docker setup cannot cause secrets to be regenerated on rerun", ctx do
-    answers = ["operately.example.com", "n", "http", "", "y"]
+    answers = ["operately.example.com", "n", "http", "y"]
     assert {_, 1} = install(ctx, answers, [{"DOCKER_EXIT_CODE", "1"}])
     original_config = File.read!(Path.join(ctx.directory, "operately.env"))
     original_compose = compose(ctx)
@@ -97,21 +81,19 @@ defmodule Operately.SingleHost.InstallTest do
     assert File.read!(Path.join(ctx.directory, "docker-calls")) == original_calls
   end
 
-  test "rejects invalid URL configuration before writing files or running Docker", ctx do
+  test "rejects an invalid scheme before writing files or running Docker", ctx do
     original_compose = compose(ctx)
 
-    for {scheme, port} <- [{"ftp", "80"}, {"http", "0"}, {"http", "65536"}, {"https", "abc"}] do
-      assert {_, status} = install(ctx, ["operately.example.com", "n", scheme, port, "y"])
-      assert status != 0
-      refute File.exists?(Path.join(ctx.directory, "operately.env"))
-      refute File.exists?(Path.join(ctx.directory, "docker-calls"))
-      assert compose(ctx) == original_compose
-    end
+    assert {_, status} = install(ctx, ["operately.example.com", "n", "ftp", "y"])
+    assert status != 0
+    refute File.exists?(Path.join(ctx.directory, "operately.env"))
+    refute File.exists?(Path.join(ctx.directory, "docker-calls"))
+    assert compose(ctx) == original_compose
   end
 
   test "cancelling leaves configuration files untouched", ctx do
     original_compose = compose(ctx)
-    assert {_, 1} = install(ctx, ["operately.example.com", "n", "https", "", "n"])
+    assert {_, 1} = install(ctx, ["operately.example.com", "n", "https", "n"])
     refute File.exists?(Path.join(ctx.directory, "operately.env"))
     assert compose(ctx) == original_compose
     refute File.exists?(Path.join(ctx.directory, "docker-calls"))

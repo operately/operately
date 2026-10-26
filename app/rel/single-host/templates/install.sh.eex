@@ -36,38 +36,21 @@ case $MANAGE_CERTS_YN in
         y|yes|Y)
                 read -r -p "   Administrator email for Let's Encrypt: " ADMIN_EMAIL
                 OPERATELY_URL_SCHEME="https"
-                OPERATELY_URL_PORT="443"
                 ;;
         *)
                 read -r -p "   Public URL scheme (http/https) [http]: " OPERATELY_URL_SCHEME
                 OPERATELY_URL_SCHEME=${OPERATELY_URL_SCHEME:-http}
                 case $OPERATELY_URL_SCHEME in
-                        http) DEFAULT_URL_PORT=80 ;;
-                        https) DEFAULT_URL_PORT=443 ;;
+                        http|https) ;;
                         *) echo "OPERATELY_URL_SCHEME must be http or https"; exit 1 ;;
                 esac
-
-                read -r -p "   Public URL port [${DEFAULT_URL_PORT}]: " OPERATELY_URL_PORT
-                OPERATELY_URL_PORT=${OPERATELY_URL_PORT:-$DEFAULT_URL_PORT}
-                if ! [[ "$OPERATELY_URL_PORT" =~ ^[0-9]{1,5}$ ]] ||
-                   (( 10#$OPERATELY_URL_PORT < 1 || 10#$OPERATELY_URL_PORT > 65535 )); then
-                        echo "OPERATELY_URL_PORT must be an integer between 1 and 65535"
-                        exit 1
-                fi
-                OPERATELY_URL_PORT=$((10#$OPERATELY_URL_PORT))
                 ;;
 esac
-
-PUBLIC_URL="${OPERATELY_URL_SCHEME}://${DOMAIN}"
-if [[ "$OPERATELY_URL_SCHEME:$OPERATELY_URL_PORT" != "http:80" &&
-      "$OPERATELY_URL_SCHEME:$OPERATELY_URL_PORT" != "https:443" ]]; then
-        PUBLIC_URL="${PUBLIC_URL}:${OPERATELY_URL_PORT}"
-fi
 
 echo -e ""
 echo -e "Please verify the following:"
 echo -e ""
-echo -e "- Operately will be accessible from: ${LBLUE}${PUBLIC_URL}${CLEAR}"
+echo -e "- Operately will be accessible from: ${LBLUE}${OPERATELY_URL_SCHEME}://${DOMAIN}${CLEAR}"
 case $MANAGE_CERTS_YN in
         y|yes|Y)
                 echo -e "- Operately will issue and auto-renew SSL certificates from Let's Encrypt."
@@ -128,7 +111,6 @@ trap 'rm -f "$CONFIG_TEMP"' EXIT
   echo "CERT_DOMAIN=\"${CERT_DOMAIN}\""
   echo "CERT_AUTO_RENEW=\"${CERT_AUTO_RENEW}\""
   echo "CERT_EMAILS=\"${CERT_EMAILS}\""
-  echo "OPERATELY_URL_PORT=\"${OPERATELY_URL_PORT}\""
   echo "OPERATELY_URL_SCHEME=\"${OPERATELY_URL_SCHEME}\""
   echo "SECRET_KEY_BASE=\"${SECRET_KEY_BASE}\""
   echo "SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${SYSTEM_SETTINGS_ENCRYPTION_KEYS}\""
@@ -145,9 +127,6 @@ mv "$CONFIG_TEMP" operately.env
 
 if [ "$CERT_AUTO_RENEW" = "no" ]; then
   sed -i '/443:4001/d' docker-compose.yml
-  if [ "$OPERATELY_URL_SCHEME" = "http" ]; then
-    sed -i "s/80:4000/${OPERATELY_URL_PORT}:4000/" docker-compose.yml
-  fi
 fi
 
 # Pulling and building docker images --------------------------------------------------

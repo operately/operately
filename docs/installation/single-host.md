@@ -82,9 +82,8 @@ and ask you for the following information:
     - For AWS SES users: Set `SMTP_PROVIDER=aws-ses` in your environment for optimized configuration
   - If you choose **Configure later**: Email delivery will be skipped and can be configured later
 - **SSL certificates**: Whether you want Operately to automatically manage SSL certificates via Let's Encrypt
-- **Public URL scheme and port**: When you manage certificates yourself, choose the scheme and port
-  used in your browser. Use `https` when a reverse proxy terminates HTTPS, or `http` for plain HTTP.
-  The default public ports are 443 for HTTPS and 80 for HTTP.
+- **Public URL scheme**: If you decline managed certificates, choose `https` when a
+  reverse proxy terminates HTTPS, or `http` for plain HTTP.
 
 ### Start Operately
 
