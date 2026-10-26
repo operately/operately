@@ -6,6 +6,13 @@ import "@testing-library/jest-dom";
 import { TaskDisplayMenu } from "./TaskDisplayMenu";
 
 describe("TaskDisplayMenu", () => {
+  it("hides column colors in list view", async () => {
+    const user = userEvent.setup();
+    render(<TaskDisplayMenu mode="list" onChange={jest.fn()} columnColors={{ value: "soft", onChange: jest.fn() }} />);
+    await user.click(screen.getByRole("button", { name: "Display options" }));
+    expect(screen.queryByRole("menuitem", { name: /Column colors/ })).not.toBeInTheDocument();
+  });
+
   it("combines layout and closed-status visibility controls", async () => {
     const user = userEvent.setup();
     const onVisibilityChange = jest.fn();

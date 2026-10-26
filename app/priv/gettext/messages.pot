@@ -4852,7 +4852,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/StatusCustomization/index.tsx:164
-#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:230
+#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:236
 msgid "<icon/>Add status"
 msgstr ""
 
@@ -5264,7 +5264,7 @@ msgstr ""
 #: ../turboui/src/GoalPage/Targets.tsx:19
 #: ../turboui/src/ResourceHub/AddFilesButton.tsx:38
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:107
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:256
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:263
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
 #: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:207
@@ -5589,7 +5589,7 @@ msgstr ""
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:141
 #: ../turboui/src/MilestonePage/components/ProjectTasksSection.tsx:108
 #: ../turboui/src/MilestonePage/components/TemplateTasksSection.tsx:107
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:283
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:290
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:83
 #: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:227
 #: ../turboui/src/TaskBoard/components/index.tsx:380
@@ -6640,7 +6640,7 @@ msgid "Blocked or intentionally stopped"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:78
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:82
 msgid "Board"
 msgstr ""
 
@@ -6840,7 +6840,7 @@ msgstr ""
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:98
 #: ../turboui/src/StatusCustomization/index.tsx:205
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:135
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:266
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:273
 #: ../turboui/src/TaskBoard/KanbanView/DeleteStatusModal.tsx:92
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:100
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:109
@@ -7630,6 +7630,13 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountSettingsPage/index.tsx:59
 msgid "Color Mode"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:135
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:149
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:157
+msgid "Column colors"
 msgstr ""
 
 #.frontend
@@ -8854,7 +8861,7 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:67
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:291
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:517
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:329
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:336
 #: ../turboui/src/TaskPage/PageOptions.tsx:28
 #: ../turboui/src/TaskPage/Sidebar.tsx:442
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:81
@@ -9352,7 +9359,7 @@ msgid "Dismiss message"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:35
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:39
 msgid "Display"
 msgstr ""
 
@@ -9363,7 +9370,7 @@ msgid "Display Name"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:30
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:34
 msgid "Display options"
 msgstr ""
 
@@ -9691,7 +9698,7 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
 #: ../turboui/src/SchedulePosting/ScheduleNotice.tsx:33
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:509
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:321
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:328
 #: assets/js/features/activities/GoalDiscussionCreation/index.tsx:62
 #: assets/js/pages/DiscussionPage/page.tsx:201
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:123
@@ -12505,7 +12512,7 @@ msgid "Latest value"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:44
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:48
 msgid "Layout"
 msgstr ""
 
@@ -12664,7 +12671,7 @@ msgid "Links"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:60
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:64
 msgid "List"
 msgstr ""
 
@@ -17977,8 +17984,8 @@ msgid "Show all"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:93
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:99
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:97
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:103
 msgid "Show closed statuses"
 msgstr ""
 
@@ -19217,7 +19224,7 @@ msgid "The \"%{title}\" milestone due date was updated"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:93
+#: lib/operately_web/mcp/executor.ex:94
 msgid "The %{name} tool is not implemented yet."
 msgstr ""
 
@@ -19663,7 +19670,7 @@ msgid "The requested resource was not found"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:100
+#: lib/operately_web/mcp/executor.ex:101
 msgid "The requested resource was not found or is not accessible."
 msgstr ""
 
@@ -19820,12 +19827,12 @@ msgid "The token request is missing required parameters or contains invalid valu
 msgstr ""
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:114
+#: lib/operately_web/mcp/executor.ex:112
 msgid "The tool could not complete the request with the provided data."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:121
+#: lib/operately_web/mcp/executor.ex:122
 msgid "The tool could not complete the request."
 msgstr ""
 
@@ -22067,7 +22074,7 @@ msgid "What kind of document is this?"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:243
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:250
 msgid "What needs to be done?"
 msgstr ""
 
@@ -22407,7 +22414,7 @@ msgid "You cannot delete the general space"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:107
+#: lib/operately_web/mcp/executor.ex:108
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr ""
 
@@ -23975,6 +23982,30 @@ msgstr ""
 #: lib/operately_email/date_formatting.ex:33
 msgctxt "abbreviated month"
 msgid "Sep"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:124
+msgctxt "column colors"
+msgid "Bordered"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:125
+msgctxt "column colors"
+msgid "None"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:123
+msgctxt "column colors"
+msgid "Soft"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:122
+msgctxt "column colors"
+msgid "Vivid"
 msgstr ""
 
 #.frontend

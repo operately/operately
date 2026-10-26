@@ -9,12 +9,14 @@ import type { ProjectField } from "../../ProjectField";
 import type { SpaceField } from "../../SpaceField";
 import type { FormattedTimePreferences } from "../../FormattedTime";
 import type { ReactNode } from "react";
+import type { ColumnColorsPreference } from "../columnColors";
 
 export type KanbanStatus = string;
 
 export type KanbanState = Record<KanbanStatus, string[]>;
 
 export interface KanbanToolbarContext {
+  columnColors: ColumnColorsPreference;
   closedStatuses: {
     count: number;
     visible: boolean;

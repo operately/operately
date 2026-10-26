@@ -53,8 +53,13 @@ export function TasksBoardView({
             onCreateMilestone={onCreateMilestone}
           />
         }
-        toolbarActions={({ closedStatuses }) => (
-          <TaskDisplayMenu mode={displayMode} onChange={onDisplayModeChange} closedStatuses={closedStatuses} />
+        toolbarActions={({ closedStatuses, columnColors }) => (
+          <TaskDisplayMenu
+            mode={displayMode}
+            onChange={onDisplayModeChange}
+            closedStatuses={closedStatuses}
+            columnColors={columnColors}
+          />
         )}
       />
     </div>

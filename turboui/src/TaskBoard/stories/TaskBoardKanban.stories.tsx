@@ -13,6 +13,7 @@ import {
   CANCELED_STATUS,
 } from "../tests/mockData";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
+import type { ColumnColorMode } from "../columnColors";
 
 type Story = StoryObj<typeof meta>;
 
@@ -186,6 +187,26 @@ export const BasicKanban: Story = {
     );
   },
 };
+
+function columnColorStory(initialMode: ColumnColorMode): Story {
+  return {
+    ...BasicKanban,
+    name: `${initialMode[0]?.toUpperCase()}${initialMode.slice(1)} column colors`,
+    beforeEach: () => {
+      const previousMode = window.localStorage.getItem("board:columnColors");
+      window.localStorage.setItem("board:columnColors", initialMode);
+      return () => {
+        if (previousMode === null) window.localStorage.removeItem("board:columnColors");
+        else window.localStorage.setItem("board:columnColors", previousMode);
+      };
+    },
+  };
+}
+
+export const VividColumnColors = columnColorStory("vivid");
+export const SoftColumnColors = columnColorStory("soft");
+export const BorderedColumnColors = columnColorStory("bordered");
+export const NoColumnColors = columnColorStory("none");
 
 export const SixStatusBoard: Story = {
   render: () => {

@@ -48,6 +48,7 @@ jest.mock("../TaskBoard/KanbanView", () => ({
     const resolvedToolbarActions =
       typeof toolbarActions === "function"
         ? toolbarActions({
+            columnColors: { value: "soft", onChange: jest.fn() },
             closedStatuses: { count: 1, visible: false, onVisibilityChange: jest.fn() },
           })
         : toolbarActions;
