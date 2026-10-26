@@ -58,6 +58,7 @@ const TaskArchiveUpdating: ActivityHandler = {
   pagePath(paths, activity) {
     const { task, project, space } = content(activity);
     if (task && project) return paths.taskPath(task.id);
+    if (project) return paths.projectPath(project.id);
     return paths.spaceKanbanPath(space.id, task ? { taskId: task.id } : undefined);
   },
 

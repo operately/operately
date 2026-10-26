@@ -42,7 +42,7 @@ jest.mock("./Kanban", () => ({
       {props.statuses.map((status) => (
         <div key={status.value} data-test-id={`column-${status.value}`}>
           {(props.columns[status.value] ?? []).map((task) => (
-            <span key={task.id} data-test-id={`task-${task.id}`} />
+            <button key={task.id} data-test-id={`task-${task.id}`} onClick={() => props.onTaskClick(task.id)} />
           ))}
         </div>
       ))}
@@ -51,9 +51,15 @@ jest.mock("./Kanban", () => ({
 }));
 
 jest.mock("./TaskSlideIn", () => ({
-  TaskSlideIn: ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) =>
+  TaskSlideIn: ({
+    isOpen,
+    onClose,
+    taskPageProps,
+  }: React.ComponentProps<typeof import("./TaskSlideIn").TaskSlideIn>) =>
     isOpen ? (
-      <div data-test-id="task-slide-in">
+      <div data-test-id="task-slide-in" data-can-edit={taskPageProps?.canEdit} data-task-name={taskPageProps?.name}>
+        {taskPageProps?.onArchive && <button data-test-id="archive-task" onClick={taskPageProps.onArchive} />}
+        {taskPageProps?.onRestore && <button data-test-id="restore-task" onClick={taskPageProps.onRestore} />}
         <button type="button" data-test-id="slide-in-close-button" onClick={onClose}>
           Close
         </button>
@@ -91,7 +97,7 @@ function boardProps(tasks: TaskBoard.Task[]): KanbanBoardProps {
     statuses: [pendingStatus],
     kanbanState: { pending: tasks.map((task) => task.id) },
     canEdit: true,
-    getTaskPageProps: () => ({ variant: "template", name: "Publish announcement" }) as never,
+    getTaskPageProps: (id) => ({ variant: "template", name: id, canEdit: true }) as never,
   };
 }
 
@@ -180,6 +186,57 @@ it("maps visible drop positions to the full ordering without losing archived car
       updatedKanbanState: { pending: [], done: ["archived", "visible", "task-1"] },
     }),
   );
+});
+
+describe("KanbanBoard archive actions", () => {
+  const done = { ...pendingStatus, id: "done", value: "done", closed: true };
+
+  it.each([false, true])("resolves old task links (archived: %s)", async (archived) => {
+    search.params = new URLSearchParams("taskId=old-name-1");
+    const task = makeTask({ id: "new-name-1", status: done, archivedAt: archived ? new Date() : null });
+    const save = jest.fn().mockResolvedValue(true);
+    render(<KanbanBoard {...boardProps([task])} onTaskArchiveChange={save} />);
+
+    expect(getElement("task-slide-in")).toHaveAttribute("data-can-edit", String(!archived));
+    await act(async () => fireEvent.click(getElement(archived ? "restore-task" : "archive-task")));
+
+    expect(save).toHaveBeenCalledWith(task.id, !archived);
+    expect(document.querySelector('[data-test-id="task-slide-in"]')).not.toBeInTheDocument();
+  });
+
+  it.each([false, true])("keeps another task open when saving completes (archived: %s)", async (archived) => {
+    search.params = new URLSearchParams("taskId=task-1");
+    const tasks = [makeTask({ status: done, archivedAt: archived ? new Date() : null }), makeTask({ id: "task-2" })];
+    let finishSave: (saved: boolean) => void = () => {};
+    const save = jest.fn(
+      () =>
+        new Promise<boolean>((resolve) => {
+          finishSave = resolve;
+        }),
+    );
+    render(<KanbanBoard {...boardProps(tasks)} onTaskArchiveChange={save} />);
+
+    fireEvent.click(getElement(archived ? "restore-task" : "archive-task"));
+    expect(save).toHaveBeenCalledWith("task-1", !archived);
+    fireEvent.click(getElement("slide-in-close-button"));
+    fireEvent.click(getElement("task-task-2"));
+    expect(getElement("task-slide-in")).toHaveAttribute("data-task-name", "task-2");
+
+    await act(async () => finishSave(true));
+    expect(getElement("task-slide-in")).toHaveAttribute("data-task-name", "task-2");
+  });
+
+  it("keeps the selected task open after an unsuccessful save", async () => {
+    search.params = new URLSearchParams("taskId=task-1");
+    render(
+      <KanbanBoard
+        {...boardProps([makeTask({ status: done })])}
+        onTaskArchiveChange={jest.fn().mockResolvedValue(false)}
+      />,
+    );
+    await act(async () => fireEvent.click(getElement("archive-task")));
+    expect(getElement("task-slide-in")).toBeInTheDocument();
+  });
 });
 
 function getElement(testId: string): HTMLElement {

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { StatusSelector } from "../../StatusSelector";
 import { useBoardDnD, useSortableList } from "../../utils/PragmaticDragAndDrop";
 import { Kanban } from "./Kanban";
@@ -8,6 +8,7 @@ import { DeleteStatusModal } from "./DeleteStatusModal";
 import type { KanbanBoardProps, KanbanStatus, KanbanState, TaskSlideInContext } from "./types";
 import type { TaskBoard } from "../components";
 import { useTaskSlideInSelection } from "../hooks/useTaskSlideInSelection";
+import { compareIds } from "../../utils/ids";
 
 export function KanbanBoard(props: KanbanBoardProps) {
   const [archived, setArchived] = useState(false);
@@ -28,13 +29,22 @@ export function KanbanBoard(props: KanbanBoardProps) {
   const [deletingStatus, setDeletingStatus] = useState<StatusSelector.StatusOption | undefined>();
 
   const { selectedTaskId, setSelectedTaskId, taskPageProps, taskById } = useTaskSlideIn(props);
-  const selectedTask = selectedTaskId ? taskById.get(selectedTaskId) : undefined;
+  const selectedTask = selectedTaskId ? props.tasks.find((task) => compareIds(task.id, selectedTaskId)) : undefined;
+  const selectedTaskIdRef = useRef(selectedTaskId);
+
+  useLayoutEffect(() => {
+    selectedTaskIdRef.current = selectedTaskId;
+    return () => {
+      selectedTaskIdRef.current = null;
+    };
+  }, [selectedTaskId]);
+
   const canChangeArchive = Boolean(props.canEdit && taskPageProps?.canEdit && props.onTaskArchiveChange);
 
   const changeArchive = async (archived: boolean) => {
     if (!selectedTask || !canChangeArchive) return;
     const saved = await props.onTaskArchiveChange?.(selectedTask.id, archived);
-    if (saved) setSelectedTaskId(null);
+    if (saved && compareIds(selectedTaskIdRef.current, selectedTask.id)) setSelectedTaskId(null);
   };
 
   const canReorderStatuses = Boolean(props.canEdit && !archived && props.onStatusesChange);
