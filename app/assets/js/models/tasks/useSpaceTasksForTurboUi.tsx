@@ -1,3 +1,4 @@
+import { useTaskArchiveChange } from "./useTaskArchiveChange";
 import i18n from "@/i18n";
 import * as React from "react";
 
@@ -288,7 +289,10 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
     }
   };
 
+  const updateTaskArchive = useTaskArchiveChange(setTasks);
+
   return {
+    updateTaskArchive,
     tasks,
     setTasks,
     createTask,

@@ -1,11 +1,32 @@
 import React from "react";
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
 import { TaskDisplayMenu } from "./TaskDisplayMenu";
 
 describe("TaskDisplayMenu", () => {
+  it.each([false, true])("switches task views inside Display (archived: %s)", async (archived) => {
+    const user = userEvent.setup();
+    const onChange = jest.fn();
+    render(<TaskDisplayMenu archiveView={{ archived, onChange }} />);
+
+    expect(document.querySelector('[data-test-id="task-archive-view"]')).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Display options" }));
+
+    await user.click(screen.getByRole("menuitem", { name: /Tasks/ }));
+    const activeOption = document.querySelector<HTMLElement>('[data-test-id="active-tasks-view"]');
+    const archivedOption = document.querySelector<HTMLElement>('[data-test-id="archived-tasks-view"]');
+    expect(activeOption).toHaveAttribute("aria-checked", String(!archived));
+    expect(archivedOption).toHaveAttribute("aria-checked", String(archived));
+
+    const nextOption = archived ? activeOption : archivedOption;
+    if (!nextOption) throw new Error("Missing task view option");
+    act(() => nextOption.focus());
+    await user.keyboard("{Enter}");
+    expect(onChange).toHaveBeenCalledWith(!archived);
+  });
+
   it("hides column colors in list view", async () => {
     const user = userEvent.setup();
     render(<TaskDisplayMenu mode="list" onChange={jest.fn()} columnColors={{ value: "soft", onChange: jest.fn() }} />);

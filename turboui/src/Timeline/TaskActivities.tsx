@@ -151,6 +151,13 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
         );
       }
 
+    case "task_archive_updating":
+      return activity.archived ? (
+        <Trans i18nKey="<author/> archived this task" components={{ author }} />
+      ) : (
+        <Trans i18nKey="<author/> restored this task to the board" components={{ author }} />
+      );
+
     case "task_status_updating":
       return (
         <span className="text-content-dimmed">

@@ -14,6 +14,8 @@ import {
 } from "../tests/mockData";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 import type { ColumnColorMode } from "../columnColors";
+import { createMockRichTextHandlers } from "../../utils/storybook/richEditor";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 type Story = StoryObj<typeof meta>;
 
@@ -454,6 +456,65 @@ export const WithStatusManagement: Story = {
         onTaskKanbanChange={(event) => {
           setKanbanState(event.updatedKanbanState);
           setTasks((prev) => updateTasksAfterMove(prev, event.taskId, event.to.status, statuses));
+        }}
+      />
+    );
+  },
+};
+
+export const Archiving: Story = {
+  render: () => {
+    const initialTasks = spreadTasksAcrossStatuses(mockTasks("project"), BASE_STATUSES).map((task, index) => ({
+      ...task,
+      archivedAt: task.status?.closed && index % 2 === 0 ? new Date("2026-10-01T12:00:00Z") : null,
+    }));
+    const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
+    return (
+      <KanbanBoard
+        tasks={tasks}
+        statuses={BASE_STATUSES}
+        kanbanState={buildKanbanStateFromTasks(tasks, BASE_STATUSES)}
+        canEdit
+        getTaskPageProps={(taskId) => {
+          const task = tasks.find((task) => task.id === taskId);
+          if (!task) return null;
+          return {
+            variant: "project-task",
+            name: task.title,
+            onNameChange: async () => true,
+            description: null,
+            onDescriptionChange: async () => true,
+            status: task.status,
+            statusOptions: BASE_STATUSES,
+            onStatusChange: () => undefined,
+            dueDate: task.dueDate ?? undefined,
+            onDueDateChange: () => undefined,
+            reminders: [],
+            onRemindersChange: async () => true,
+            assignees: task.assignees ?? [],
+            onAssigneesChange: () => undefined,
+            milestone: null,
+            milestones: [],
+            onMilestoneChange: () => undefined,
+            onMilestoneSearch: async () => undefined,
+            createdAt: new Date("2026-10-01T12:00:00Z"),
+            createdBy: null,
+            subscriptions: { hidden: true, isSubscribed: false, onToggle: () => undefined, entityType: "project_task" },
+            onDelete: async () => undefined,
+            assigneePersonSearch: { people: [], onSearch: async () => undefined },
+            richTextHandlers: createMockRichTextHandlers(),
+            canEdit: true,
+            onAddComment: () => undefined,
+            onEditComment: () => undefined,
+            onDeleteComment: () => undefined,
+            formattedTimePreferences: defaultFormattedTimePreferences,
+          };
+        }}
+        onTaskArchiveChange={async (taskId, archived) => {
+          setTasks((tasks) =>
+            tasks.map((task) => (task.id === taskId ? { ...task, archivedAt: archived ? new Date() : null } : task)),
+          );
+          return true;
         }}
       />
     );

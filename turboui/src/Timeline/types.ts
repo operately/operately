@@ -36,6 +36,16 @@ export interface TaskAssignmentActivity {
   page: ActivityPageContext;
 }
 
+export interface TaskArchiveActivity {
+  id: string;
+  type: "task_archive_updating";
+  author: Person;
+  insertedAt: string;
+  archived: boolean;
+  taskName: string;
+  page: ActivityPageContext;
+}
+
 export interface TaskStatusChangeActivity {
   id: string;
   type: "task_status_updating";
@@ -139,6 +149,7 @@ export interface Task {
 export type TaskActivity =
   | TaskAssignmentActivity
   | TaskStatusChangeActivity
+  | TaskArchiveActivity
   | TaskMilestoneActivity
   | TaskPriorityActivity
   | TaskDueDateActivity

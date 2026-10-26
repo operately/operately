@@ -162,6 +162,7 @@ export namespace ProjectPage {
     // Kanban props
     kanbanState: KanbanState;
     onTaskKanbanChange?: KanbanBoardProps["onTaskKanbanChange"];
+    onTaskArchiveChange?: KanbanBoardProps["onTaskArchiveChange"];
 
     onTaskCreate?: (task: NewTaskPayload) => void;
     onTaskNameChange?: (taskId: string, name: string) => void;

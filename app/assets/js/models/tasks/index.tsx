@@ -63,6 +63,7 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask, opts: Parse
     dueDate: parseContextualDate(task.dueDate),
     reminders: parseTaskReminders(task.reminders),
     closedAt: Time.parse(task.closedAt),
+    archivedAt: Time.parse(task.archivedAt),
     hasDescription: richContentToString(description).trim().length > 0,
     hasComments,
     commentCount,

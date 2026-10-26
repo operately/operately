@@ -9,8 +9,10 @@ import { SwitchToggle } from "../../SwitchToggle";
 import type { ColumnColorsPreference } from "../columnColors";
 import type { ColumnColorMode } from "../columnColors";
 import { useWindowSizeBreakpoints } from "../../utils/useWindowSizeBreakpoint";
+import type { TaskArchiveView } from "../KanbanView/types";
 
 interface Props {
+  archiveView?: TaskArchiveView;
   columnColors?: ColumnColorsPreference;
   mode?: Types.TaskDisplayMode;
   onChange?: (mode: Types.TaskDisplayMode) => void;
@@ -21,10 +23,11 @@ interface Props {
   };
 }
 
-export function TaskDisplayMenu({ mode, onChange, closedStatuses, columnColors }: Props) {
+export function TaskDisplayMenu({ mode, onChange, closedStatuses, columnColors, archiveView }: Props) {
   const { t } = useTranslation();
   const hasLayoutOptions = Boolean(mode && onChange);
   const hasClosedStatusesOption = Boolean(closedStatuses && closedStatuses.count > 0);
+  const hasBoardOptions = hasClosedStatusesOption || (mode !== "list" && Boolean(archiveView || columnColors));
 
   return (
     <Menu
@@ -86,38 +89,57 @@ export function TaskDisplayMenu({ mode, onChange, closedStatuses, columnColors }
           </div>
         )}
 
-        {hasClosedStatusesOption && closedStatuses && (
-          <div
-            className={classNames(
-              "flex items-center justify-between gap-3 px-1 py-2",
-              hasLayoutOptions && "mt-3 border-t border-surface-outline pt-3",
+        {hasBoardOptions && (
+          <div className={classNames(hasLayoutOptions && "mt-3 border-t border-surface-outline pt-2")}>
+            {hasClosedStatusesOption && closedStatuses && (
+              <div className="flex items-center justify-between gap-3 px-3 py-1 text-sm font-medium leading-6 text-content-dimmed">
+                <span>{t("Show closed statuses")}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs tabular-nums text-content-subtle">{closedStatuses.count}</span>
+                  <SwitchToggle
+                    label={t("Show closed statuses")}
+                    labelHidden
+                    value={closedStatuses.visible}
+                    setValue={closedStatuses.onVisibilityChange}
+                    testId="toggle-closed-statuses"
+                  />
+                </div>
+              </div>
             )}
-          >
-            <div className="flex min-w-0 items-center gap-2 text-sm font-medium text-content-base">
-              <span>{t("Show closed statuses")}</span>
-              <span className="rounded-full border border-surface-outline px-1.5 py-0.5 text-xs tabular-nums text-content-dimmed">
-                {closedStatuses.count}
-              </span>
-            </div>
-            <SwitchToggle
-              label={t("Show closed statuses")}
-              labelHidden
-              value={closedStatuses.visible}
-              setValue={closedStatuses.onVisibilityChange}
-              testId="toggle-closed-statuses"
-            />
+
+            {mode !== "list" && archiveView && <TaskViewMenu view={archiveView} />}
+
+            {mode !== "list" && columnColors && <ColumnColorsMenu preference={columnColors} />}
           </div>
         )}
-
-        {mode !== "list" && columnColors && <ColumnColorsMenu preference={columnColors} />}
       </div>
     </Menu>
   );
 }
 
+function TaskViewMenu({ view }: { view: TaskArchiveView }) {
+  const { t } = useTranslation();
+
+  return (
+    <DisplaySubMenu label={t("Tasks")} valueLabel={view.archived ? t("Archived tasks") : t("Active tasks")}>
+      <DropdownMenu.RadioGroup
+        value={view.archived ? "archived" : "active"}
+        onValueChange={(value) => view.onChange(value === "archived")}
+        aria-label={t("Tasks")}
+      >
+        <MenuRadioItem value="active" testId="active-tasks-view">
+          {t("Active tasks")}
+        </MenuRadioItem>
+        <MenuRadioItem value="archived" testId="archived-tasks-view">
+          {t("Archived tasks")}
+        </MenuRadioItem>
+      </DropdownMenu.RadioGroup>
+    </DisplaySubMenu>
+  );
+}
+
 function ColumnColorsMenu({ preference }: { preference: ColumnColorsPreference }) {
   const { t } = useTranslation();
-  const isSmallScreen = useWindowSizeBreakpoints() === "xs";
   const options: { value: ColumnColorMode; label: string }[] = [
     { value: "vivid", label: t("Vivid", { context: "column colors" }) },
     { value: "soft", label: t("Soft", { context: "column colors" }) },
@@ -142,20 +164,35 @@ function ColumnColorsMenu({ preference }: { preference: ColumnColorsPreference }
     </DropdownMenu.RadioGroup>
   );
 
+  return (
+    <DisplaySubMenu
+      label={t("Column colors")}
+      valueLabel={options.find((option) => option.value === preference.value)?.label}
+    >
+      {choices}
+    </DisplaySubMenu>
+  );
+}
+
+function DisplaySubMenu({
+  label,
+  valueLabel,
+  children,
+}: React.PropsWithChildren<{ label: string; valueLabel?: string }>) {
+  const isSmallScreen = useWindowSizeBreakpoints() === "xs";
+
   if (isSmallScreen) {
     return (
-      <div className="mt-2 border-t border-surface-outline pt-2">
-        <DropdownMenu.Label className="px-3 pb-1 text-xs font-medium text-content-subtle">
-          {t("Column colors")}
-        </DropdownMenu.Label>
-        {choices}
+      <div className="py-1">
+        <DropdownMenu.Label className="px-3 pb-1 text-xs font-medium text-content-subtle">{label}</DropdownMenu.Label>
+        {children}
       </div>
     );
   }
 
   return (
-    <SubMenu label={t("Column colors")} valueLabel={options.find((option) => option.value === preference.value)?.label}>
-      {choices}
+    <SubMenu label={label} valueLabel={valueLabel}>
+      {children}
     </SubMenu>
   );
 }
