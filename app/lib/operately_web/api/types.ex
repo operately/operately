@@ -1337,6 +1337,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_task_reopening,
       :activity_content_task_size_change,
       :activity_content_task_status_change,
+      :activity_content_task_archive_updating,
       :activity_content_task_status_updating,
       :activity_content_task_update
     ]
@@ -1574,6 +1575,14 @@ defmodule OperatelyWeb.Api.Types do
     field :task_name, :string, null: true
     field :old_due_date, :contextual_date, null: false
     field :new_due_date, :contextual_date, null: false
+  end
+
+  object :activity_content_task_archive_updating, for: Operately.Activities.Content.TaskArchiveUpdating do
+    field :space, :space, null: false
+    field :project, :project, null: true
+    field :task, :task, null: true
+    field :name, :string, null: false
+    field :archived, :boolean, null: false
   end
 
   object :activity_content_task_status_updating, for: Operately.Activities.Content.TaskStatusUpdating do
@@ -2047,6 +2056,7 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
+    field? :archived_at, :datetime, null: true
     field? :closed_at, :datetime, null: true
     field? :due_date, :contextual_date, null: true
     field? :reminders, list_of(:task_reminder), null: true
