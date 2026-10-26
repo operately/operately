@@ -14,6 +14,7 @@ import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 import classNames from "../../utils/classnames";
 import { useTaskKeyboardNavigation } from "../hooks/useTaskKeyboardNavigation";
 import { TaskDisplayMenu } from "../components/TaskDisplayMenu";
+import { useBoardColumnColorMode } from "../hooks/useBoardColumnColorMode";
 
 interface Props {
   milestone: TaskBoard.Milestone | null;
@@ -77,11 +78,14 @@ export function Kanban({
   });
 
   const unknownStatus = statuses.find((status) => status.value === "unknown-status");
+  const [colorMode, setColorMode] = useBoardColumnColorMode();
+  const columnColors = { value: colorMode, onChange: setColorMode };
   const regularStatuses = statuses.filter((status) => status.value !== "unknown-status");
   const closedStatuses = regularStatuses.filter((status) => status.closed);
   const [areClosedStatusesVisible, setAreClosedStatusesVisible] = React.useState(true);
 
   const toolbarContext: KanbanToolbarContext = {
+    columnColors,
     closedStatuses: {
       count: closedStatuses.length,
       visible: areClosedStatusesVisible,
@@ -91,8 +95,9 @@ export function Kanban({
   const resolvedToolbarActions =
     typeof toolbarActions === "function"
       ? toolbarActions(toolbarContext)
-      : toolbarActions ||
-        (closedStatuses.length > 0 && <TaskDisplayMenu closedStatuses={toolbarContext.closedStatuses} />);
+      : toolbarActions || (
+          <TaskDisplayMenu columnColors={columnColors} closedStatuses={toolbarContext.closedStatuses} />
+        );
   const hasBoardToolbar = !renderHeader && Boolean(toolbarLeading || resolvedToolbarActions);
 
   const setScrollContainerRefs = React.useCallback(
@@ -122,6 +127,7 @@ export function Kanban({
       {(dragHandleRef) => (
         <Column
           status={status}
+          colorMode={columnColors.value}
           tasks={columns[status.value] || []}
           draggedItemId={draggedItemId}
           targetLocation={targetLocation}
@@ -177,6 +183,7 @@ export function Kanban({
             {unknownStatus && (
               <Column
                 status={unknownStatus}
+                colorMode="none"
                 tasks={columns[unknownStatus.value] || []}
                 draggedItemId={draggedItemId}
                 targetLocation={targetLocation}

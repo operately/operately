@@ -1,13 +1,17 @@
 import { useTranslation } from "react-i18next";
 import React from "react";
-import { Menu } from "../../Menu";
+import { Menu, MenuRadioItem, SubMenu } from "../../Menu";
 import { IconAdjustmentsHorizontal, IconLayoutKanban, IconList } from "../../icons";
 import classNames from "../../utils/classnames";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Types from "../types";
 import { SwitchToggle } from "../../SwitchToggle";
+import type { ColumnColorsPreference } from "../columnColors";
+import type { ColumnColorMode } from "../columnColors";
+import { useWindowSizeBreakpoints } from "../../utils/useWindowSizeBreakpoint";
 
 interface Props {
+  columnColors?: ColumnColorsPreference;
   mode?: Types.TaskDisplayMode;
   onChange?: (mode: Types.TaskDisplayMode) => void;
   closedStatuses?: {
@@ -17,7 +21,7 @@ interface Props {
   };
 }
 
-export function TaskDisplayMenu({ mode, onChange, closedStatuses }: Props) {
+export function TaskDisplayMenu({ mode, onChange, closedStatuses, columnColors }: Props) {
   const { t } = useTranslation();
   const hasLayoutOptions = Boolean(mode && onChange);
   const hasClosedStatusesOption = Boolean(closedStatuses && closedStatuses.count > 0);
@@ -104,7 +108,54 @@ export function TaskDisplayMenu({ mode, onChange, closedStatuses }: Props) {
             />
           </div>
         )}
+
+        {mode !== "list" && columnColors && <ColumnColorsMenu preference={columnColors} />}
       </div>
     </Menu>
+  );
+}
+
+function ColumnColorsMenu({ preference }: { preference: ColumnColorsPreference }) {
+  const { t } = useTranslation();
+  const isSmallScreen = useWindowSizeBreakpoints() === "xs";
+  const options: { value: ColumnColorMode; label: string }[] = [
+    { value: "vivid", label: t("Vivid", { context: "column colors" }) },
+    { value: "soft", label: t("Soft", { context: "column colors" }) },
+    { value: "bordered", label: t("Bordered", { context: "column colors" }) },
+    { value: "none", label: t("None", { context: "column colors" }) },
+  ];
+
+  const choices = (
+    <DropdownMenu.RadioGroup
+      value={preference.value}
+      onValueChange={(value) => {
+        const option = options.find((option) => option.value === value);
+        if (option) preference.onChange(option.value);
+      }}
+      aria-label={t("Column colors")}
+    >
+      {options.map((option) => (
+        <MenuRadioItem key={option.value} value={option.value} testId={`column-colors-${option.value}`}>
+          {option.label}
+        </MenuRadioItem>
+      ))}
+    </DropdownMenu.RadioGroup>
+  );
+
+  if (isSmallScreen) {
+    return (
+      <div className="mt-2 border-t border-surface-outline pt-2">
+        <DropdownMenu.Label className="px-3 pb-1 text-xs font-medium text-content-subtle">
+          {t("Column colors")}
+        </DropdownMenu.Label>
+        {choices}
+      </div>
+    );
+  }
+
+  return (
+    <SubMenu label={t("Column colors")} valueLabel={options.find((option) => option.value === preference.value)?.label}>
+      {choices}
+    </SubMenu>
   );
 }

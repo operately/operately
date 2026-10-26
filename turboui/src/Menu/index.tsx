@@ -4,7 +4,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
 import { DivLink } from "../Link";
-import { IconChevronRight, IconDots } from "../icons";
+import { IconCheck, IconChevronRight, IconDots } from "../icons";
 
 import { TestableElement, createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
@@ -52,6 +52,7 @@ interface MenuActionItemProps extends MenuItemProps {
 
 interface SubMenuProps {
   label: string;
+  valueLabel?: string;
   icon?: React.ComponentType<{ size: any }>;
   children: React.ReactNode;
   hidden?: boolean;
@@ -137,7 +138,7 @@ function Trigger(props: MenuProps) {
   }
 }
 
-export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
+export function SubMenu({ label, valueLabel, icon, children, hidden }: SubMenuProps) {
   const isXsScreen = useWindowSizeBreakpoints() === "xs";
 
   if (hidden) return null;
@@ -147,6 +148,7 @@ export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
       <DropdownMenu.SubTrigger asChild>
         <div className={menuItemClass} data-test-id={createTestId(label)}>
           <MenuItemIconAndTitle icon={icon}>{label}</MenuItemIconAndTitle>
+          {valueLabel && <span className="text-content-subtle">{valueLabel}</span>}
           <IconChevronRight size={16} />
         </div>
       </DropdownMenu.SubTrigger>
@@ -222,6 +224,21 @@ export function MenuActionItem(props: MenuActionItemProps) {
 
 export function MenuSeparator() {
   return <DropdownMenu.Separator className="my-2 h-px bg-surface-outline" />;
+}
+
+export function MenuRadioItem({
+  value,
+  children,
+  testId,
+}: React.PropsWithChildren<TestableElement & { value: string }>) {
+  return (
+    <DropdownMenu.RadioItem value={value} className={menuItemClass} data-test-id={testId}>
+      <span className="flex-1">{children}</span>
+      <DropdownMenu.ItemIndicator>
+        <IconCheck size={16} aria-hidden />
+      </DropdownMenu.ItemIndicator>
+    </DropdownMenu.RadioItem>
+  );
 }
 
 function useHasVisibleChildren(children: React.ReactNode): boolean {
