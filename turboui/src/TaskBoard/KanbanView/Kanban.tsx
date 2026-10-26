@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Trans } from "../../Translate";
 import React, { useMemo } from "react";
 import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types";
@@ -17,6 +18,7 @@ import { TaskDisplayMenu } from "../components/TaskDisplayMenu";
 import { useBoardColumnColorMode } from "../hooks/useBoardColumnColorMode";
 
 interface Props {
+  archiveView?: KanbanToolbarContext["archiveView"];
   milestone: TaskBoard.Milestone | null;
   columns: Record<KanbanStatus, TaskBoard.Task[]>;
   draggedItemId: string | null;
@@ -41,6 +43,7 @@ interface Props {
 }
 
 export function Kanban({
+  archiveView,
   milestone,
   columns,
   draggedItemId,
@@ -63,6 +66,7 @@ export function Kanban({
   toolbarActions,
   renderHeader,
 }: Props) {
+  const { t } = useTranslation();
   const testId = useMemo(
     () => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"),
     [milestone],
@@ -85,9 +89,10 @@ export function Kanban({
   const [areClosedStatusesVisible, setAreClosedStatusesVisible] = React.useState(true);
 
   const toolbarContext: KanbanToolbarContext = {
+    archiveView,
     columnColors,
     closedStatuses: {
-      count: closedStatuses.length,
+      count: archiveView?.archived ? 0 : closedStatuses.length,
       visible: areClosedStatusesVisible,
       onVisibilityChange: setAreClosedStatusesVisible,
     },
@@ -95,9 +100,7 @@ export function Kanban({
   const resolvedToolbarActions =
     typeof toolbarActions === "function"
       ? toolbarActions(toolbarContext)
-      : toolbarActions || (
-          <TaskDisplayMenu columnColors={columnColors} closedStatuses={toolbarContext.closedStatuses} />
-        );
+      : toolbarActions || <TaskDisplayMenu {...toolbarContext} />;
   const hasBoardToolbar = !renderHeader && Boolean(toolbarLeading || resolvedToolbarActions);
 
   const setScrollContainerRefs = React.useCallback(
@@ -179,6 +182,11 @@ export function Kanban({
           )}
           {...scopeBind}
         >
+          {archiveView?.archived && statuses.length === 0 && (
+            <div className="p-8 text-center text-content-dimmed" data-test-id="archive-empty-state">
+              {t("No archived tasks.")}
+            </div>
+          )}
           <div className="flex gap-3 min-w-max items-start" data-test-id="kanban-columns">
             {unknownStatus && (
               <Column
@@ -209,7 +217,7 @@ export function Kanban({
             )}
 
             {regularStatuses.map((status, index) => {
-              if (status.closed && !areClosedStatusesVisible) return null;
+              if (status.closed && !areClosedStatusesVisible && !archiveView?.archived) return null;
 
               return renderStatusColumn(status, index);
             })}

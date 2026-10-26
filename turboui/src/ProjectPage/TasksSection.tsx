@@ -93,6 +93,7 @@ function LoadedTasksSection({ state }: { state: ProjectPage.State }) {
         onTaskRemindersChange={state.onTaskRemindersChange}
         onTaskStatusChange={state.onTaskStatusChange}
         onTaskMilestoneChange={canEdit && state.onTaskMilestoneChange ? handleTaskMilestoneChange : undefined}
+        onTaskArchiveChange={state.onTaskArchiveChange}
         onTaskDelete={state.onTaskDelete}
         milestones={state.milestones}
         onMilestoneSearch={state.onMilestoneSearch}
@@ -109,7 +110,7 @@ function LoadedTasksSection({ state }: { state: ProjectPage.State }) {
   return (
     <div className="flex-1 flex flex-col overflow-hidden pt-1">
       <TaskBoard
-        tasks={tasks}
+        tasks={tasks.filter((task) => !task.archivedAt)}
         milestones={state.milestones}
         searchableMilestones={state.searchableMilestones}
         onTaskCreate={canEdit ? state.onTaskCreate : undefined}

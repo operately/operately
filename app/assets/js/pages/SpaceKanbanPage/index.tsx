@@ -44,6 +44,7 @@ function Page() {
     updateTaskReminders,
     updateTaskAssignee,
     deleteTask,
+    updateTaskArchive,
     updateTaskDescription,
   } = Tasks.useSpaceTasksForTurboUi({
     backendTasks,
@@ -121,6 +122,7 @@ function Page() {
     onTaskRemindersChange: slideInModel.onTaskRemindersChange,
     onTaskStatusChange: slideInModel.onTaskStatusChange,
     onTaskDelete: deleteTask,
+    onTaskArchiveChange: updateTaskArchive,
     onTaskDescriptionChange: slideInModel.onTaskDescriptionChange,
     richTextHandlers,
 

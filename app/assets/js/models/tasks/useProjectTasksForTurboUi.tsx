@@ -1,3 +1,4 @@
+import { useTaskArchiveChange } from "./useTaskArchiveChange";
 import * as React from "react";
 
 import { type TaskStatus, type TasksCreateInput } from "@/api";
@@ -501,7 +502,10 @@ export function useProjectTasksForTurboUi({
     }
   };
 
+  const updateTaskArchive = useTaskArchiveChange(setTasks);
+
   return {
+    updateTaskArchive,
     tasks,
     setTasks,
     createTask,

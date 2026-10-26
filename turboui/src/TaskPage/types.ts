@@ -96,7 +96,8 @@ export namespace TaskPage {
     // Actions
     onDelete: () => Promise<void>;
     onDuplicate?: () => void;
-    onArchive?: () => void;
+    onArchive?: () => void | Promise<void>;
+    onRestore?: () => void | Promise<void>;
     onMoveTask?: (input: MoveTaskInput) => Promise<boolean>;
     spaceSearch?: SpaceField.SearchSpaceFn;
     projectSearch?: ProjectField.SearchProjectFn;
@@ -158,6 +159,7 @@ export namespace TaskPage {
     | "subscriptions"
     | "onDelete"
     | "onArchive"
+    | "onRestore"
     | "onMoveTask"
     | "spaceSearch"
     | "projectSearch"

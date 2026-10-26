@@ -143,6 +143,7 @@ export const DISPLAYED_IN_FEED = [
   "task_adding",
   "task_name_updating",
   "task_status_updating",
+  "task_archive_updating",
   "task_deleting",
   "task_description_change",
   "task_due_date_updating",
@@ -240,6 +241,7 @@ import ProjectDiscussionSubmitted from "@/features/activities/ProjectDiscussionS
 import ProjectDescriptionChanged from "@/features/activities/ProjectDescriptionChanged";
 import TaskAdding from "@/features/activities/TaskAdding";
 import TaskNameUpdating from "@/features/activities/TaskNameUpdating";
+import TaskArchiveUpdating from "@/features/activities/TaskArchiveUpdating";
 import TaskStatusUpdating from "@/features/activities/TaskStatusUpdating";
 import TaskDescriptionChange from "@/features/activities/TaskDescriptionChange";
 import TaskDueDateUpdating from "@/features/activities/TaskDueDateUpdating";
@@ -409,6 +411,7 @@ function handler(activity: Activity) {
     .with("task_adding", () => TaskAdding)
     .with("task_name_updating", () => TaskNameUpdating)
     .with("task_status_updating", () => TaskStatusUpdating)
+    .with("task_archive_updating", () => TaskArchiveUpdating)
     .with("task_deleting", () => TaskDeleting)
     .with("task_description_change", () => TaskDescriptionChange)
     .with("task_due_date_updating", () => TaskDueDateUpdating)

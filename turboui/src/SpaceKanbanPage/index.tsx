@@ -42,6 +42,7 @@ export namespace SpaceKanbanPage {
     // Callbacks
     assigneePersonSearch: PersonField.SearchData;
     onTaskKanbanChange: KanbanBoardProps["onTaskKanbanChange"];
+    onTaskArchiveChange?: KanbanBoardProps["onTaskArchiveChange"];
     onTaskCreate: (task: Types.NewTaskPayload) => void;
     onTaskNameChange: (taskId: string, name: string) => void;
     onTaskAssigneeChange: (taskId: string, assignees: Types.Person[]) => void;
@@ -77,6 +78,7 @@ export function SpaceKanbanPage(props: SpaceKanbanPage.Props) {
         onTaskDueDateChange={props.onTaskDueDateChange}
         onTaskRemindersChange={props.onTaskRemindersChange}
         onTaskStatusChange={props.onTaskStatusChange}
+        onTaskArchiveChange={props.onTaskArchiveChange}
         onTaskDelete={props.onTaskDelete}
         onTaskDescriptionChange={props.onTaskDescriptionChange}
         richTextHandlers={props.richTextHandlers}
