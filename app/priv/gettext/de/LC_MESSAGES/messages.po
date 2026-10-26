@@ -4853,7 +4853,7 @@ msgstr "<icon/>Als gelesen bestätigt von %{fullName}"
 
 #.frontend
 #: ../turboui/src/StatusCustomization/index.tsx:164
-#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:230
+#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:236
 msgid "<icon/>Add status"
 msgstr "<icon/>Status hinzufügen"
 
@@ -5270,7 +5270,7 @@ msgstr "Aktivitäten aus deinen Arbeitsbereichen, Zielen und Projekten erscheine
 #: ../turboui/src/GoalPage/Targets.tsx:19
 #: ../turboui/src/ResourceHub/AddFilesButton.tsx:38
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:107
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:256
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:263
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
 #: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:207
@@ -5595,7 +5595,7 @@ msgstr "Füge Messgrößen hinzu, um den Fortschritt anhand von Zahlen zu verfol
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:141
 #: ../turboui/src/MilestonePage/components/ProjectTasksSection.tsx:108
 #: ../turboui/src/MilestonePage/components/TemplateTasksSection.tsx:107
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:283
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:290
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:83
 #: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:227
 #: ../turboui/src/TaskBoard/components/index.tsx:380
@@ -6661,7 +6661,7 @@ msgid "Blocked or intentionally stopped"
 msgstr "Blockiert oder bewusst gestoppt"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:78
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:82
 msgid "Board"
 msgstr "Board"
 
@@ -6861,7 +6861,7 @@ msgstr "Darf nicht dieselbe Person wie der Champion sein"
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:98
 #: ../turboui/src/StatusCustomization/index.tsx:205
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:135
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:266
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:273
 #: ../turboui/src/TaskBoard/KanbanView/DeleteStatusModal.tsx:92
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:100
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:109
@@ -7657,6 +7657,13 @@ msgstr "Zeilen werden gesammelt"
 #: ../turboui/src/AccountSettingsPage/index.tsx:59
 msgid "Color Mode"
 msgstr "Farbmodus"
+
+#.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:135
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:149
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:157
+msgid "Column colors"
+msgstr "Spaltenfarben"
 
 #.frontend
 #: ../turboui/src/RichEditor/components/useTableControls.ts:203
@@ -8885,7 +8892,7 @@ msgstr "Konto deaktivieren"
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:67
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:291
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:517
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:329
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:336
 #: ../turboui/src/TaskPage/PageOptions.tsx:28
 #: ../turboui/src/TaskPage/Sidebar.tsx:442
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:81
@@ -9383,7 +9390,7 @@ msgid "Dismiss message"
 msgstr "Mitteilung ausblenden"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:35
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:39
 msgid "Display"
 msgstr "Anzeige"
 
@@ -9394,7 +9401,7 @@ msgid "Display Name"
 msgstr "Anzeigename"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:30
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:34
 msgid "Display options"
 msgstr "Anzeigeoptionen"
 
@@ -9722,7 +9729,7 @@ msgstr "Frühere Version"
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
 #: ../turboui/src/SchedulePosting/ScheduleNotice.tsx:33
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:509
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:321
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:328
 #: assets/js/features/activities/GoalDiscussionCreation/index.tsx:62
 #: assets/js/pages/DiscussionPage/page.tsx:201
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:123
@@ -12556,7 +12563,7 @@ msgid "Latest value"
 msgstr "Neuester Wert"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:44
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:48
 msgid "Layout"
 msgstr "Layout"
 
@@ -12720,7 +12727,7 @@ msgid "Links"
 msgstr "Links"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:60
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:64
 msgid "List"
 msgstr "Liste"
 
@@ -18061,8 +18068,8 @@ msgid "Show all"
 msgstr "Alle anzeigen"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:93
-#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:99
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:97
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:103
 msgid "Show closed statuses"
 msgstr "Geschlossene Statusoptionen anzeigen"
 
@@ -19306,7 +19313,7 @@ msgid "The \"%{title}\" milestone due date was updated"
 msgstr "Das Fälligkeitsdatum des Meilensteins „%{title}“ wurde aktualisiert"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:93
+#: lib/operately_web/mcp/executor.ex:94
 msgid "The %{name} tool is not implemented yet."
 msgstr "Das Werkzeug „%{name}“ ist noch nicht implementiert."
 
@@ -19757,7 +19764,7 @@ msgid "The requested resource was not found"
 msgstr "Der angeforderte Inhalt wurde nicht gefunden"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:100
+#: lib/operately_web/mcp/executor.ex:101
 msgid "The requested resource was not found or is not accessible."
 msgstr "Der angeforderte Inhalt wurde nicht gefunden oder ist nicht zugänglich."
 
@@ -19914,12 +19921,12 @@ msgid "The token request is missing required parameters or contains invalid valu
 msgstr "In der Token-Anfrage fehlen erforderliche Parameter oder sie enthält ungültige Werte."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:114
+#: lib/operately_web/mcp/executor.ex:112
 msgid "The tool could not complete the request with the provided data."
 msgstr "Das Werkzeug konnte die Anfrage mit den angegebenen Daten nicht abschließen."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:121
+#: lib/operately_web/mcp/executor.ex:122
 msgid "The tool could not complete the request."
 msgstr "Das Werkzeug konnte die Anfrage nicht abschließen."
 
@@ -22167,7 +22174,7 @@ msgid "What kind of document is this?"
 msgstr "Was für ein Dokument ist das?"
 
 #.frontend
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:243
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:250
 msgid "What needs to be done?"
 msgstr "Was muss erledigt werden?"
 
@@ -22507,7 +22514,7 @@ msgid "You cannot delete the general space"
 msgstr "Du kannst den allgemeinen Arbeitsbereich nicht löschen"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:107
+#: lib/operately_web/mcp/executor.ex:108
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr "Du hast keine Berechtigung für diesen Vorgang oder das Unternehmen ist schreibgeschützt."
 
@@ -24076,6 +24083,30 @@ msgstr "Okt."
 msgctxt "abbreviated month"
 msgid "Sep"
 msgstr "Sept."
+
+#.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:124
+msgctxt "column colors"
+msgid "Bordered"
+msgstr "Umrandet"
+
+#.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:125
+msgctxt "column colors"
+msgid "None"
+msgstr "Keine"
+
+#.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:123
+msgctxt "column colors"
+msgid "Soft"
+msgstr "Dezent"
+
+#.frontend
+#: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:122
+msgctxt "column colors"
+msgid "Vivid"
+msgstr "Kräftig"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:105
