@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 254
+- Endpoints: 255
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -253,6 +253,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `tasks list_potential_assignees` | `op tasks list_potential_assignees` | `GET` | `/api/external/v1/tasks/list_potential_assignees` |
 | `tasks list_task_statuses` | `op tasks list_task_statuses` | `GET` | `/api/external/v1/tasks/list_task_statuses` |
 | `tasks move` | `op tasks move` | `POST` | `/api/external/v1/tasks/move` |
+| `tasks update_archive` | `op tasks update_archive` | `POST` | `/api/external/v1/tasks/update_archive` |
 | `tasks update_assignee` | `op tasks update_assignee` | `POST` | `/api/external/v1/tasks/update_assignee` |
 | `tasks update_description` | `op tasks update_description` | `POST` | `/api/external/v1/tasks/update_description` |
 | `tasks update_due_date` | `op tasks update_due_date` | `POST` | `/api/external/v1/tasks/update_due_date` |

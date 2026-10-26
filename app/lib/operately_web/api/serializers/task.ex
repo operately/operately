@@ -20,6 +20,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       reminders: OperatelyWeb.Api.Serializer.serialize(task.reminders || []),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(task.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(task.updated_at),
+      archived_at: OperatelyWeb.Api.Serializer.serialize(task.archived_at),
       closed_at: OperatelyWeb.Api.Serializer.serialize(task.closed_at),
       assignees: OperatelyWeb.Api.Serializer.serialize(task.assigned_people),
       milestone: OperatelyWeb.Api.Serializer.serialize(task.milestone),

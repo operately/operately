@@ -16,6 +16,7 @@ defmodule Operately.Tasks.Task do
           reminders: [Operately.Tasks.Reminder.t()],
           status: String.t(),
           task_status: Operately.Tasks.Status.t() | nil,
+          archived_at: NaiveDateTime.t() | nil,
           closed_at: NaiveDateTime.t() | nil,
           reopened_at: NaiveDateTime.t() | nil,
           creator_id: Ecto.UUID.t() | nil,
@@ -56,6 +57,7 @@ defmodule Operately.Tasks.Task do
     embeds_many :reminders, Operately.Tasks.Reminder, on_replace: :delete
 
     embeds_one :task_status, Operately.Tasks.Status, on_replace: :update
+    field :archived_at, :naive_datetime
     field :closed_at, :naive_datetime
     field :reopened_at, :naive_datetime
 
@@ -87,6 +89,7 @@ defmodule Operately.Tasks.Task do
       :priority,
       :creator_id,
       :status,
+      :archived_at,
       :closed_at,
       :reopened_at,
       :milestone_id,
