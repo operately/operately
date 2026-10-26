@@ -6,6 +6,7 @@ export type {
   TaskActivity,
   TaskAssignmentActivity,
   TaskStatusChangeActivity,
+  TaskArchiveActivity,
   TaskMilestoneActivity,
   TaskPriorityActivity,
   TaskDueDateActivity,

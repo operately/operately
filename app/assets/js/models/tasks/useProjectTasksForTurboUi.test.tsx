@@ -71,6 +71,7 @@ jest.mock("./taskLifecycle", () => {
     useUpdateTaskName: () => ({ mutateAsync: updateTaskNameMutateAsync }),
     useUpdateTaskReminders: update,
     useUpdateTaskStatus: update,
+    useUpdateTaskArchive: update,
   };
 });
 

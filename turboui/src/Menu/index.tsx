@@ -4,7 +4,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
 import { DivLink } from "../Link";
-import { IconCheck, IconChevronRight, IconDots } from "../icons";
+import { IconCheck, IconChevronDown, IconChevronRight, IconDots } from "../icons";
 
 import { TestableElement, createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
@@ -13,6 +13,8 @@ import { useWindowSizeBreakpoints } from "../utils/useWindowSizeBreakpoint";
 type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
 
 interface MenuProps extends TestableElement {
+  triggerLabel?: string;
+  ariaLabel?: string;
   children: React.ReactNode;
   customTrigger?: React.ReactNode;
   headerContent?: React.ReactNode;
@@ -127,12 +129,20 @@ function Trigger(props: MenuProps) {
   } else {
     return (
       <DropdownMenu.Trigger
-        className={menuTriggerClass}
+        className={classNames(menuTriggerClass, props.triggerLabel && "flex items-center gap-2 text-sm font-medium")}
+        aria-label={props.ariaLabel}
         data-test-id={props.testId}
         disabled={props.readonly}
         aria-readonly={props.readonly || undefined}
       >
-        <IconDots size={20} />
+        {props.triggerLabel ? (
+          <>
+            {props.triggerLabel}
+            <IconChevronDown size={16} />
+          </>
+        ) : (
+          <IconDots size={20} />
+        )}
       </DropdownMenu.Trigger>
     );
   }

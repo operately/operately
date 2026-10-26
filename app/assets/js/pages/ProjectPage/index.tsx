@@ -155,6 +155,7 @@ function LoadedPage() {
     updateTaskDescription,
     updateTaskMilestone,
     deleteTask,
+    updateTaskArchive,
   } = Tasks.useProjectTasksForTurboUi({
     backendTasks,
     tasksLoaded: content.tasksLoaded,
@@ -438,6 +439,7 @@ function LoadedPage() {
     onTaskRemindersChange: slideInModel.onTaskRemindersChange,
     onTaskMilestoneChange: updateTaskMilestone,
     onTaskDelete: deleteTask,
+    onTaskArchiveChange: updateTaskArchive,
     onTaskDescriptionChange: slideInModel.onTaskDescriptionChange,
     getTaskPageProps: slideInModel.getTaskPageProps,
     milestones,

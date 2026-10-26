@@ -34,6 +34,10 @@ export function useUpdateTaskDescription() {
   return useTaskMutation(Api.tasks.updateDescriptionMutationOptions());
 }
 
+export function useUpdateTaskArchive() {
+  return useTaskMutation(Api.tasks.updateArchiveMutationOptions());
+}
+
 export function useUpdateTaskStatus() {
   return useTaskMutation(Api.tasks.updateStatusMutationOptions());
 }

@@ -66,6 +66,7 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     subscriptions: props.subscriptions,
     onDelete: props.onDelete,
     onArchive: props.onArchive,
+    onRestore: props.onRestore,
     onMoveTask: props.onMoveTask,
     projectSearch: props.projectSearch,
     spaceSearch: props.spaceSearch,

@@ -73,6 +73,7 @@ export interface Task {
   dueOffsetDays?: number | null;
   reminders?: TaskPage.Reminder[];
   closedAt?: Date | null;
+  archivedAt?: Date | null;
   hasDescription?: boolean;
   hasComments?: boolean;
   commentCount?: number;
@@ -181,6 +182,7 @@ export interface TaskListSlideInContext {
 }
 
 export interface TaskBoardProps {
+  onTaskArchiveChange?: (taskId: string, archived: boolean) => Promise<boolean>;
   tasks: Task[];
   milestones?: Milestone[];
   searchableMilestones: Milestone[]; // Filtered milestones for task creation modal

@@ -15,7 +15,13 @@ export type KanbanStatus = string;
 
 export type KanbanState = Record<KanbanStatus, string[]>;
 
+export interface TaskArchiveView {
+  archived: boolean;
+  onChange: (archived: boolean) => void;
+}
+
 export interface KanbanToolbarContext {
+  archiveView?: TaskArchiveView;
   columnColors: ColumnColorsPreference;
   closedStatuses: {
     count: number;
@@ -76,6 +82,7 @@ export interface TaskSlideInContext {
 }
 
 export interface KanbanBoardProps {
+  onTaskArchiveChange?: TaskBoardProps["onTaskArchiveChange"];
   milestone?: TaskBoard.Milestone;
   tasks: TaskBoard.Task[];
   statuses: StatusSelector.StatusOption[];
