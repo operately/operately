@@ -73,7 +73,7 @@ defmodule Operately.MixProject do
 
       # only in dev
       {:phoenix_live_reload, "~> 1.5", only: :dev},
-      {:tailwind, "~> 0.2.3", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.5.1", runtime: Mix.env() == :dev},
 
       # only in tests
       {:wallaby, "~> 0.31.0", runtime: false, only: :test},
