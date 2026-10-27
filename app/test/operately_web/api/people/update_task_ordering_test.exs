@@ -32,6 +32,33 @@ defmodule OperatelyWeb.Api.People.UpdateTaskOrderingTest do
       assert Repo.reload!(ctx.member).preferences.task_ordering == []
     end
 
+    test "it saves the displayed task order after access to another assigned task is revoked", ctx do
+      ctx =
+        ctx
+        |> Factory.add_task_assignee(:member_project_assignment, :project_task, :member)
+        |> Factory.add_space(:public_space, company_permissions: Operately.Access.Binding.view_access())
+        |> Factory.create_space_task(:first_space_task, :public_space)
+        |> Factory.add_task_assignee(:member_space_assignment, :first_space_task, :member)
+        |> Factory.create_space_task(:second_space_task, :public_space)
+        |> Factory.add_task_assignee(:second_space_assignment, :second_space_task, :member)
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.log_in_person(:member)
+
+      {:ok, work_map} = Operately.WorkMaps.GetWorkMapQuery.execute(ctx.member, %{
+        company_id: ctx.company.id,
+        contributor_id: ctx.member.id,
+        include_tasks: true
+      }, :flat)
+
+      ids = for item <- work_map, item.type == :task, do: item.id
+      assert Enum.sort(ids) == Enum.sort([ctx.first_space_task.id, ctx.second_space_task.id])
+      reordered_ids = Enum.reverse(ids)
+
+      assert {200, res} = mutation(ctx.conn, [:people, :update_task_ordering], %{task_ids: reordered_ids})
+      assert res.task_ids == Enum.map(reordered_ids, &Operately.ShortUuid.encode!/1)
+      assert Repo.reload!(ctx.member).preferences.task_ordering == reordered_ids
+    end
+
     test "it does not change another person's order", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
       {:ok, _} = Operately.People.update_person(ctx.member, %{preferences: %{task_ordering: [ctx.space_task.id]}})
