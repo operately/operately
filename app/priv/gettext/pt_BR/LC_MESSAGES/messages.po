@@ -2806,6 +2806,11 @@ msgid "%{duration} <status>overdue</status>."
 msgstr "%{duration} <status>em atraso</status>."
 
 #.frontend
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:78
+msgid "%{first} or %{second}"
+msgstr "%{first} ou %{second}"
+
+#.frontend
 #: ../turboui/src/CommentSection/FeedRows.tsx:98
 msgid "%{fullName} acknowledged this %{label}<icon/>"
 msgstr "%{fullName} confirmou a leitura de %{label}<icon/>"
@@ -6841,6 +6846,7 @@ msgstr "O conteúdo é obrigatório"
 
 #.frontend
 #: ../turboui/src/RichEditor/components/BoldButton.tsx:13
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:59
 msgid "Bold"
 msgstr "Negrito"
 
@@ -6867,6 +6873,11 @@ msgstr "Crie um ponto de partida reutilizável para trabalhos recorrentes."
 #.frontend
 #: ../turboui/src/RichEditor/components/BulletListButton.tsx:13
 msgid "Bullet List"
+msgstr "Lista com marcadores"
+
+#.frontend
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:78
+msgid "Bulleted list"
 msgstr "Lista com marcadores"
 
 #.frontend
@@ -7730,6 +7741,7 @@ msgstr "Host do cliente"
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:63
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
 #: ../turboui/src/Modal/index.tsx:143
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:94
 #: ../turboui/src/SlideIn/index.tsx:120
 #: ../turboui/src/SlideIn/index.tsx:122
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:134
@@ -7814,6 +7826,11 @@ msgstr "Cofundador e CEO do Operately"
 #.frontend
 #: ../turboui/src/RichEditor/components/CodeBlockButton.tsx:13
 msgid "Code Block"
+msgstr "Bloco de código"
+
+#.frontend
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:81
+msgid "Code block"
 msgstr "Bloco de código"
 
 #.frontend
@@ -11643,6 +11660,11 @@ msgid "Forgot password?"
 msgstr "Esqueceu sua senha?"
 
 #.frontend
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:100
+msgid "Format text as you type using these shortcuts."
+msgstr "Formate o texto enquanto digita usando estes atalhos."
+
+#.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/VersionTimeline.tsx:30
 #: ../turboui/src/DocumentVersionHistoryPage/types.ts:86
 #: ../turboui/src/DocumentVersionHistoryPage/types.ts:87
@@ -11989,6 +12011,10 @@ msgstr "Tem acesso total ao projeto e pode realizar qualquer ação, incluindo e
 
 #.frontend
 #: ../turboui/src/RichEditor/components/HeadingButtons.tsx:22
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:69
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:70
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:71
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:72
 msgid "Heading %{level}"
 msgstr "Título %{level}"
 
@@ -12022,6 +12048,11 @@ msgstr "Ocultar lista"
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Hide previous check-in"
 msgstr "Ocultar check-in anterior"
+
+#.frontend
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:62
+msgid "Highlight"
+msgstr "Destaque"
 
 #.frontend
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:53
@@ -12587,6 +12618,7 @@ msgstr "Ele está disponível novamente para criar projetos."
 
 #.frontend
 #: ../turboui/src/RichEditor/components/ItalicButton.tsx:13
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:60
 msgid "Italic"
 msgstr "Itálico"
 
@@ -12981,6 +13013,7 @@ msgid "Limited"
 msgstr "Limitado"
 
 #.frontend
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:63
 #: ../turboui/src/SearchPage/index.tsx:313
 #: assets/js/pages/ResourceHubEditLinkPage/navigation.tsx:22
 msgid "Link"
@@ -13433,6 +13466,17 @@ msgstr "Marcar como feito"
 msgid "Mark task as done"
 msgstr "Marcar tarefa como concluída"
 
+#.frontend
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:19
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:22
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:23
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:91
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:170
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:171
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:179
+msgid "Markdown shortcuts"
+msgstr "Atalhos de Markdown"
+
 #.elixir
 #: lib/operately_email/templates/goal_closing.html.eex:7
 msgid "Marked as accomplished"
@@ -13716,7 +13760,7 @@ msgstr "Saiba mais na documentação: <actionLink>Guias de configuração</actio
 #~ msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:133
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:149
 msgid "More formatting options"
 msgstr "Mais opções de formatação"
 
@@ -14910,6 +14954,11 @@ msgstr "Notificações"
 #.frontend
 #: ../turboui/src/RichEditor/components/NumberListButton.tsx:13
 msgid "Numbered List"
+msgstr "Lista numerada"
+
+#.frontend
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:79
+msgid "Numbered list"
 msgstr "Lista numerada"
 
 #.frontend
@@ -16593,6 +16642,7 @@ msgstr "Resultados da busca rápida"
 
 #.frontend
 #: ../turboui/src/RichEditor/components/BlockquoteButton.tsx:13
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:80
 msgid "Quote"
 msgstr "Citação"
 
@@ -19279,6 +19329,7 @@ msgid "Storage used"
 msgstr "Armazenamento usado"
 
 #.frontend
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:61
 #: ../turboui/src/RichEditor/components/StrikeButton.tsx:13
 msgid "Strikethrough"
 msgstr "Tachado"
@@ -25843,6 +25894,12 @@ msgstr "é"
 msgctxt "filter operator"
 msgid "is not"
 msgstr "não é"
+
+#.frontend
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:140
+msgctxt "keyboard key"
+msgid "Space"
+msgstr "Espaço"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:66
