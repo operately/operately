@@ -199,6 +199,7 @@ export interface TaskBoardProps {
   onTaskDelete?: (taskId: string) => void | Promise<unknown>;
   onMoveTask?: TaskPage.ContentProps["onMoveTask"];
   onMilestoneUpdate?: (milestoneId: string, updates: UpdateMilestonePayload) => void;
+  onMilestoneComplete?: (milestoneId: string) => Promise<void>;
   onMilestoneSearch: (query: string) => Promise<void>;
   assigneePersonSearch?: PersonField.SearchData;
   projectSearch?: ProjectField.SearchProjectFn;

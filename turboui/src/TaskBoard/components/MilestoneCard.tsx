@@ -15,7 +15,6 @@ import { InlineTaskCreator } from "./InlineTaskCreator";
 import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
 import { SecondaryButton } from "../../Button";
 import { StatusSelector } from "../../StatusSelector";
-import classNames from "../../utils/classnames";
 import { createTestId } from "../../TestableElement";
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 import type { RichTextHandlers } from "../../RichContent/types";
@@ -31,6 +30,7 @@ export interface MilestoneCardProps {
   onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange?: (taskId: string, status: Types.Status | null) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
+  onMilestoneComplete?: Types.TaskBoardProps["onMilestoneComplete"];
   assigneePersonSearch?: PersonField.SearchData;
   statusOptions: StatusSelector.StatusOption[];
   availableMilestones?: Types.Milestone[];
@@ -63,6 +63,7 @@ export function MilestoneCard({
   onTaskDueDateChange,
   onTaskStatusChange,
   onMilestoneUpdate,
+  onMilestoneComplete,
   assigneePersonSearch,
   statusOptions,
   stats,
@@ -92,6 +93,7 @@ export function MilestoneCard({
     }),
   });
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
   const {
     open: creatorOpen,
     openCreator,
@@ -125,6 +127,17 @@ export function MilestoneCard({
     }
   };
 
+  const completeMilestone = async () => {
+    if (isCompleting || !onMilestoneComplete) return;
+
+    setIsCompleting(true);
+    try {
+      await onMilestoneComplete(milestone.id);
+    } finally {
+      setIsCompleting(false);
+    }
+  };
+
   // Do not auto-open on empty milestones; rely on explicit triggers
 
   return (
@@ -132,10 +145,7 @@ export function MilestoneCard({
       <li ref={cardRef} {...hoverBind}>
         {/* Milestone header */}
         <div
-          className={classNames(
-            "flex items-center justify-between gap-3 px-4 py-3 bg-surface-dimmed border-b border-surface-outline",
-            !milestone.dueDate && onMilestoneUpdate ? "group/milestone-header" : undefined,
-          )}
+          className="group/milestone-header flex flex-wrap items-center justify-between gap-3 px-4 py-3 bg-surface-dimmed border-b border-surface-outline"
           data-test-id={createTestId("milestone", milestone.id)}
         >
           <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -215,6 +225,18 @@ export function MilestoneCard({
             </div>
           </div>
           <div className="flex items-center gap-4">
+            {!isCompleted && onMilestoneComplete && (
+              <SecondaryButton
+                size="xxs"
+                onClick={completeMilestone}
+                loading={isCompleting}
+                disabled={isCompleting}
+                testId="complete-milestone"
+                className="opacity-0 transition-opacity group-hover/milestone-header:opacity-100 group-focus-within/milestone-header:opacity-100 [@media(hover:none)]:opacity-100"
+              >
+                {t("Mark complete")}
+              </SecondaryButton>
+            )}
             {onTaskCreate && (
               <SecondaryButton
                 size="xs"

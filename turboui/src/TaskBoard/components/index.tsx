@@ -52,6 +52,7 @@ export function TaskBoard({
   onTaskDelete,
   onMoveTask,
   onMilestoneUpdate,
+  onMilestoneComplete,
   onMilestoneSearch,
   assigneePersonSearch,
   projectSearch,
@@ -345,6 +346,7 @@ export function TaskBoard({
                   onTaskDueDateChange={onTaskDueDateChange}
                   onTaskStatusChange={onTaskStatusChange}
                   onMilestoneUpdate={onMilestoneUpdate}
+                  onMilestoneComplete={onMilestoneComplete}
                   assigneePersonSearch={assigneePersonSearch}
                   statusOptions={statuses}
                   availableMilestones={allMilestones}

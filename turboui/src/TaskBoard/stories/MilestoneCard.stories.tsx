@@ -107,6 +107,7 @@ const meta: Meta<typeof MilestoneCard> = {
               console.log("Task status updated:", taskId, status);
             }}
             onMilestoneUpdate={handleMilestoneUpdate}
+            onMilestoneComplete={async () => setMilestone((current) => ({ ...current, status: "done" }))}
             assigneePersonSearch={assigneePersonSearch}
             statusOptions={DEFAULT_STATUS_OPTIONS}
             availableMilestones={[milestone]}
