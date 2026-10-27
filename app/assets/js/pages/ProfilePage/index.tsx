@@ -25,7 +25,9 @@ function Page() {
   const me = useMe();
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { person, workMap, reviewerWorkMap } = useLoadedData();
+  const { person, workMap, reviewerWorkMap, taskOrdering } = useLoadedData();
+  const taskOrderingMutation = People.useUpdateTaskOrdering();
+  const isOwnProfile = compareIds(me?.id, person.id);
   const taskList = useTaskList({
     resourceType: "person",
     resourceId: person.id,
@@ -50,6 +52,9 @@ function Page() {
 
     workMap: convertToWorkMapItems(paths, workMap),
     reviewerWorkMap: convertToWorkMapItems(paths, reviewerWorkMap),
+    taskOrdering: isOwnProfile ? taskOrdering : [],
+    onTaskOrderingChange: taskOrderingMutation.save,
+    taskOrderingSaving: taskOrderingMutation.isPending,
 
     canEditProfile: canEditProfile(person),
     editProfilePath: paths.profileEditPath(person.id),

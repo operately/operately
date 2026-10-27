@@ -19,7 +19,10 @@ import { AboutMe, Colleagues, Contact, PageHeader } from "./components";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import { WorkMap, WorkMapTable } from "../WorkMap";
 import { processPersonalItems } from "../WorkMap/utils/itemProcessor";
-import { sortItemsByClosedDate, sortItemsByDueDate, sortTasksByDueDateAndAssignmentDate } from "../WorkMap/utils/sort";
+import { sortItemsByClosedDate, sortItemsByDueDate } from "../WorkMap/utils/sort";
+import { sortPersonalTasks } from "./taskOrdering";
+import { compareIds } from "../utils/ids";
+import { showErrorToast } from "../Toasts";
 import { PersonCard } from "../PersonCard";
 import { isContentEmpty } from "../RichContent";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
@@ -38,6 +41,9 @@ export namespace ProfilePage {
 
     workMap: WorkMap.Item[];
     reviewerWorkMap: WorkMap.Item[];
+    taskOrdering: string[];
+    onTaskOrderingChange: (taskIds: string[]) => Promise<void>;
+    taskOrderingSaving: boolean;
 
     activityFeed: React.ReactNode;
 
@@ -57,7 +63,26 @@ export namespace ProfilePage {
 
 export function ProfilePage(props: ProfilePage.Props) {
   const { t } = useTranslation();
-  const { tabs, items } = useTabsWithItems(props.workMap, props.reviewerWorkMap);
+  const { tabs, items } = useTabsWithItems(props.workMap, props.reviewerWorkMap, props.taskOrdering);
+  const canReorder = tabs.active === "tasks" && compareIds(props.viewer?.id, props.person.id);
+
+  const saveOrdering = async (ids: string[]) => {
+    if (!canReorder || props.taskOrderingSaving) return;
+    try {
+      await props.onTaskOrderingChange(ids);
+    } catch {
+      showErrorToast(t("Error"), t("Could not save task order. Please try again."));
+    }
+  };
+
+  const reorderTask = (id: string, newIndex: number) => {
+    const ids = items.tasks.map((task) => task.id);
+    const oldIndex = ids.indexOf(id);
+    if (oldIndex < 0 || oldIndex === newIndex || newIndex < 0 || newIndex >= ids.length) return;
+    ids.splice(oldIndex, 1);
+    ids.splice(newIndex, 0, id);
+    void saveOrdering(ids);
+  };
 
   const workMapColumnOptions = React.useMemo(() => {
     return match(tabs.active)
@@ -84,6 +109,8 @@ export function ProfilePage(props: ProfilePage.Props) {
 
       {["tasks", "assigned", "reviewing", "paused", "completed"].includes(tabs.active) && (
         <WorkMapTable
+          onReorder={canReorder ? reorderTask : undefined}
+          reorderingDisabled={props.taskOrderingSaving}
           items={items[tabs.active]}
           tab={["completed", "paused"].includes(tabs.active) ? (tabs.active as WorkMap.Filter) : "all"}
           profileUser={props.person}
@@ -99,7 +126,7 @@ export function ProfilePage(props: ProfilePage.Props) {
   );
 }
 
-function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item[]) {
+function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item[], taskOrdering: string[]) {
   const { t } = useTranslation();
   const { tasks, assigned, reviewing, paused, completed } = React.useMemo(() => {
     const tasks = workMap.filter((i) => i.type === "task");
@@ -111,13 +138,16 @@ function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item
     const reviewerData = processPersonalItems(reviewerWorkMapWithoutTasks);
 
     return {
-      tasks: sortTasksByDueDateAndAssignmentDate(tasks.map((t) => ({ ...t, children: [] }))),
+      tasks: sortPersonalTasks(
+        tasks.map((t) => ({ ...t, children: [] })),
+        taskOrdering,
+      ),
       assigned: sortItemsByDueDate(assignedData.ongoingItems),
       reviewing: sortItemsByDueDate(reviewerData.ongoingItems),
       paused: sortItemsByDueDate([...assignedData.pausedItems, ...reviewerData.pausedItems]),
       completed: sortItemsByClosedDate([...assignedData.completedItems, ...reviewerData.completedItems]),
     };
-  }, [workMap, reviewerWorkMap]);
+  }, [workMap, reviewerWorkMap, taskOrdering]);
 
   const tabs = useTabs("tasks", [
     { id: "tasks", testId: "tasks", label: t("Tasks"), icon: <IconChecklist size={14} />, count: tasks.length },

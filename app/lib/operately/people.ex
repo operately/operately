@@ -157,7 +157,15 @@ defmodule Operately.People do
 
     try do
       Multi.new()
-      |> Multi.update(:person, changeset)
+      |> Multi.update(:person, fn _ ->
+        if Map.has_key?(attrs, :preferences) or Map.has_key?(attrs, "preferences") do
+          # Embedded preferences are written as a whole, so merge changes into the latest locked row.
+          current = Repo.one!(from p in Person, where: p.id == ^person.id, lock: "FOR UPDATE")
+          Person.changeset(current, attrs)
+        else
+          changeset
+        end
+      end)
       |> IndexUpdates.enqueue(:search_person, "person", fn changes -> changes.person.id end)
       |> Repo.transaction()
       |> case do

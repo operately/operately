@@ -1,4 +1,5 @@
 import React from "react";
+import { DragHandle, DropIndicator, useSortableItem } from "../../../utils/PragmaticDragAndDrop";
 
 import { WorkMap } from "..";
 
@@ -22,6 +23,10 @@ export type IsItemExpandedFn = (id: string) => boolean;
 export type SetItemExpandedFn = (id: string, value: boolean | ((prev: boolean) => boolean)) => void;
 
 interface Props {
+  reorder?: {
+    index: number;
+    disabled: boolean;
+  };
   item: WorkMap.Item;
   level: number;
   isLast: boolean;
@@ -42,6 +47,13 @@ interface Props {
 
 export function TableRow(props: Props) {
   const { item, tab, level, columnOptions, isExpanded: getItemExpanded, setItemExpanded } = props;
+  const reorder = level === 0 ? props.reorder : undefined;
+  const { ref, dragHandleRef, isDragging, closestEdge } = useSortableItem<HTMLTableRowElement>({
+    itemId: item.id,
+    index: reorder?.index ?? 0,
+    scope: "personal-tasks",
+    disabled: !reorder || reorder.disabled,
+  });
   const expanded = getItemExpanded(item.id);
 
   const handleSetExpanded = React.useCallback<React.Dispatch<React.SetStateAction<boolean>>>(
@@ -53,8 +65,22 @@ export function TableRow(props: Props) {
 
   return (
     <>
-      <RowContainer item={item}>
+      <RowContainer item={item} sortableRef={ref} isDragging={isDragging}>
         <ItemNameCell
+          reorderControls={
+            reorder && (
+              <div className="flex items-center mr-2">
+                <span
+                  ref={dragHandleRef as React.RefObject<HTMLSpanElement>}
+                  className="inline-flex w-4 shrink-0"
+                  data-test-id={`drag-task-${item.id}`}
+                >
+                  <DragHandle isDragging={isDragging} disabled={reorder.disabled} className="opacity-100" />
+                </span>
+                {closestEdge && <DropIndicator edge={closestEdge} />}
+              </div>
+            )
+          }
           item={item}
           level={level}
           expanded={expanded}

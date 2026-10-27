@@ -1008,6 +1008,7 @@
   "Correct the value recorded on <date/>. The previous number stays visible on this update.": "Korrigiere den am <date/> erfassten Wert. Der vorherige Wert bleibt bei diesem Eintrag sichtbar.",
   "Could not delete feed item": "Feed-Eintrag konnte nicht gelöscht werden",
   "Could not save all preferences. Please try again.": "Nicht alle Einstellungen konnten gespeichert werden. Bitte versuche es erneut.",
+  "Could not save task order. Please try again.": "Die Aufgabenreihenfolge konnte nicht gespeichert werden. Bitte versuche es erneut.",
   "Could not save tool settings": "Werkzeugeinstellungen konnten nicht gespeichert werden",
   "Could not update feature flag": "Funktionsschalter konnte nicht aktualisiert werden",
   "Could not update public sharing. Please try again.": "Die öffentliche Freigabe konnte nicht aktualisiert werden. Versuche es erneut.",

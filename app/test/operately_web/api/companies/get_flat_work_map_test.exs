@@ -259,10 +259,8 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMapTest do
       ctx
       |> Factory.setup()
       |> Factory.add_space(:space)
-      |> Factory.add_company_member(:assignee)
-      |> Factory.add_company_member(:other_person)
-      |> Factory.add_space_member(:assignee_space_member, :space, person: :assignee)
-      |> Factory.add_space_member(:other_space_member, :space, person: :other_person)
+      |> Factory.add_space_member(:assignee, :space)
+      |> Factory.add_space_member(:other_person, :space)
       |> Factory.add_project(:project, :space)
       |> Factory.add_project_milestone(:milestone, :project)
       |> Factory.add_project_task(:open_task, :milestone)

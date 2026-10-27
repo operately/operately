@@ -14,6 +14,7 @@ import { useItemStatus } from "../../hooks/useItemStatus";
 import { AddItemModal } from "../AddItemModal";
 
 interface Props {
+  reorderControls?: React.ReactNode;
   item: WorkMap.Item;
   level: number;
   showIndentation: boolean;
@@ -29,6 +30,7 @@ interface Props {
 }
 
 export function ItemNameCell({
+  reorderControls,
   item,
   level,
   expanded,
@@ -44,6 +46,7 @@ export function ItemNameCell({
   return (
     <td className="py-2 px-2 md:px-4 relative" data-test-id={createTestId("work-item", item.name)}>
       <div className="flex items-center">
+        {reorderControls}
         <Indentation level={level} showIndentation={showIndentation} />
         <ExpandButton item={item} expanded={expanded} setExpanded={setExpanded} showIndentation={showIndentation} />
         <Icon item={item} />

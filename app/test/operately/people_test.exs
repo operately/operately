@@ -227,6 +227,33 @@ defmodule Operately.PeopleTest do
       assert person.title == "some updated title"
     end
 
+    test "update_person/2 merges nested preferences from a stale person", ctx do
+      assert {:ok, _} = People.update_person(ctx.person, %{preferences: %{notifications: %{notify_on_mention: false}}})
+
+      assert {:ok, person} = People.update_person(ctx.person, %{preferences: %{notifications: %{send_daily_summary: true}}})
+
+      refute person.preferences.notifications.notify_on_mention
+      assert person.preferences.notifications.send_daily_summary
+      assert Repo.reload!(ctx.person).preferences == person.preferences
+    end
+
+    test "update_person/2 preserves newer preferences with string-keyed attributes", ctx do
+      assert {:ok, _} = People.update_person(ctx.person, %{preferences: %{time_format: :hour_24}})
+
+      assert {:ok, person} = People.update_person(ctx.person, %{"preferences" => %{"dismissed_product_release_id" => "v1.8"}})
+
+      assert person.preferences.time_format == :hour_24
+      assert person.preferences.dismissed_product_release_id == "v1.8"
+      assert Repo.reload!(ctx.person).preferences == person.preferences
+    end
+
+    test "update_person/2 rejects invalid preferences without overwriting newer values", ctx do
+      assert {:ok, current} = People.update_person(ctx.person, %{preferences: %{time_format: :hour_24}})
+
+      assert {:error, %Ecto.Changeset{}} = People.update_person(ctx.person, %{preferences: %{time_format: :invalid}})
+      assert Repo.reload!(ctx.person).preferences == current.preferences
+    end
+
     test "update_person/2 with invalid data returns error changeset", ctx do
       assert {:error, %Ecto.Changeset{}} = People.update_person(ctx.person, @invalid_attrs)
       assert ctx.person == People.get_person!(ctx.person.id)

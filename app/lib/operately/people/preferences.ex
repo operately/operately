@@ -68,11 +68,13 @@ defmodule Operately.People.Preferences do
     # Id of the release this person dismissed.
     # The toast is shown when the latest feed item exists and its id does not equal this value.
     field :dismissed_product_release_id, :string
+
+    field :task_ordering, {:array, :string}, default: []
   end
 
   def changeset(preferences, attrs) do
     preferences
-    |> cast(attrs, [:time_format, :dismissed_product_release_id], empty_values: [])
+    |> cast(attrs, [:time_format, :dismissed_product_release_id, :task_ordering], empty_values: [])
     |> validate_inclusion(:time_format, @time_format_values)
     |> validate_length(:dismissed_product_release_id, min: 1, max: @max_dismissed_product_release_id_length)
     |> cast_embed(:notifications, with: &Notifications.changeset/2)
