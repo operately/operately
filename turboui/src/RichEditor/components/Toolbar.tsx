@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import * as Popover from "../../Embedding/Popover";
-import { IconChevronDown } from "../../icons";
+import { IconChevronDown, IconKeyboard } from "../../icons";
 import * as React from "react";
 
 import { AttachmentButton } from "./AttachmentButton";
@@ -23,6 +23,8 @@ import { LinkEditForm } from "../LinkEditForm";
 import { CodeBlockButton } from "./CodeBlockButton";
 import { ColorPicker } from "./ColorPicker";
 import { DividerButton } from "./DividerButton";
+import { MarkdownHelp, MarkdownHelpContent, markdownHelpPopoverClassName } from "./MarkdownHelp";
+import { ToolbarButton } from "./ToolbarButton";
 
 export function Toolbar({ compact }: { compact?: boolean } = {}): JSX.Element {
   const size = useWindowSizeBreakpoints();
@@ -66,6 +68,8 @@ function DesktopToolbar() {
 
             <Separator />
             <LinkButton editor={editor} iconSize={20} />
+            <Separator />
+            <MarkdownHelp />
           </div>
 
           <div className="flex items-center gap-1">
@@ -128,17 +132,55 @@ function MobileToolbar() {
 
 function MobilePopupTools({ children }: { children: React.ReactNode }): JSX.Element {
   const { t } = useTranslation();
+  const [showMarkdownHelp, setShowMarkdownHelp] = React.useState(false);
+  const helpTitleId = React.useId();
+  const contentRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (showMarkdownHelp) contentRef.current?.focus();
+  }, [showMarkdownHelp]);
+
   return (
-    <Popover.Root>
+    <Popover.Root
+      onOpenChange={(open) => {
+        if (!open) setShowMarkdownHelp(false);
+      }}
+    >
       <Popover.Trigger className="mr-2" aria-label={t("More formatting options")}>
         <IconChevronDown size={20} />
       </Popover.Trigger>
       <Popover.Content
+        ref={contentRef}
+        aria-labelledby={showMarkdownHelp ? helpTitleId : undefined}
         align="end"
         collisionPadding={8}
-        className="z-10 p-2 max-w-[calc(100vw-1rem)] bg-surface-base rounded-lg shadow-lg border border-stroke-base"
+        className={
+          showMarkdownHelp
+            ? markdownHelpPopoverClassName
+            : "z-10 p-2 max-w-[calc(100vw-1rem)] bg-surface-base rounded-lg shadow-lg border border-stroke-base"
+        }
       >
-        <div className="flex flex-wrap gap-1">{children}</div>
+        {showMarkdownHelp ? (
+          <MarkdownHelpContent titleId={helpTitleId} />
+        ) : (
+          <>
+            <div className="flex flex-wrap gap-1">{children}</div>
+            <div className="mt-2 border-t border-stroke-base pt-2">
+              <ToolbarButton
+                title={t("Markdown shortcuts")}
+                aria-label={t("Markdown shortcuts")}
+                testId="toolbar-button-markdown-shortcuts"
+                tabIndex={0}
+                className="flex w-full items-center gap-2 text-left"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => setShowMarkdownHelp(true)}
+              >
+                <IconKeyboard size={20} className="shrink-0" />
+                {t("Markdown shortcuts")}
+              </ToolbarButton>
+            </div>
+          </>
+        )}
       </Popover.Content>
     </Popover.Root>
   );
