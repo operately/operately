@@ -9,6 +9,7 @@ import { Paths } from "../../routes/paths";
 export type Person = api.Person;
 export { prefetchPersonWithFallback } from "./prefetchPersonWithFallback";
 export { useUpdateProfile, useUpdateProfilePicture } from "./profileLifecycle";
+export { useUpdateTaskOrdering } from "./taskOrderingLifecycle";
 
 export { useGetTheme, useUpdateTheme } from "./themeLifecycle";
 export type { AccountTheme, InviteLink } from "@/api";

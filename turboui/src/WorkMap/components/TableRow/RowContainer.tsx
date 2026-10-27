@@ -6,18 +6,22 @@ import classNames from "../../../utils/classnames";
 interface Props {
   item: WorkMap.Item;
   children: React.ReactNode;
+  sortableRef?: React.RefObject<HTMLTableRowElement>;
+  isDragging?: boolean;
 }
 
-export function RowContainer({ item, children }: Props) {
+export function RowContainer({ item, children, sortableRef, isDragging }: Props) {
   const className = classNames(
     "group/row",
     "group border-b border-stroke-base transition-all duration-150 ease-in-out relative",
     "bg-surface-base hover:bg-surface-highlight dark:hover:bg-surface-dimmed/20",
+    isDragging && "opacity-40",
   );
 
   const testId = createTestId(item.type, item.name);
 
-  const rowRef = React.useRef<HTMLTableRowElement>(null);
+  const localRef = React.useRef<HTMLTableRowElement>(null);
+  const rowRef = sortableRef ?? localRef;
 
   React.useEffect(() => {
     if (!item.isNew || !rowRef.current) return;

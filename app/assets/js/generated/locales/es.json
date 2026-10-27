@@ -1073,6 +1073,7 @@
   "Correct the value recorded on <date/>. The previous number stays visible on this update.": "Corrige el valor registrado el <date/>. El número anterior seguirá visible en esta actualización.",
   "Could not delete feed item": "No se pudo eliminar el elemento del historial de actividad",
   "Could not save all preferences. Please try again.": "No se pudieron guardar todas las preferencias. Inténtalo de nuevo.",
+  "Could not save task order. Please try again.": "No se pudo guardar el orden de las tareas. Inténtalo de nuevo.",
   "Could not save tool settings": "No se pudo guardar la configuración de la herramienta",
   "Could not update feature flag": "No se pudo actualizar el indicador de función",
   "Could not update public sharing. Please try again.": "No se pudo actualizar el acceso mediante enlace público. Vuelve a intentarlo.",

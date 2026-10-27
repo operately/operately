@@ -1008,6 +1008,7 @@
   "Correct the value recorded on <date/>. The previous number stays visible on this update.": "Correct the value recorded on <date/>. The previous number stays visible on this update.",
   "Could not delete feed item": "Could not delete feed item",
   "Could not save all preferences. Please try again.": "Could not save all preferences. Please try again.",
+  "Could not save task order. Please try again.": "Could not save task order. Please try again.",
   "Could not save tool settings": "Could not save tool settings",
   "Could not update feature flag": "Could not update feature flag",
   "Could not update public sharing. Please try again.": "Could not update public sharing. Please try again.",

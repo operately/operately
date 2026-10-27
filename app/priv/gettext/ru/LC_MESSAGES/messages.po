@@ -5239,7 +5239,7 @@ msgid "API tokens"
 msgstr "API-токены"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:147
+#: ../turboui/src/ProfilePage/index.tsx:177
 msgid "About"
 msgstr "О нас"
 
@@ -5422,8 +5422,8 @@ msgstr "Ведется активная работа"
 
 #.frontend
 #: ../turboui/src/GoalPage/Activity.tsx:9
-#: ../turboui/src/GoalPage/index.tsx:255
-#: ../turboui/src/ProfilePage/index.tsx:146
+#: ../turboui/src/GoalPage/index.tsx:256
+#: ../turboui/src/ProfilePage/index.tsx:176
 #: ../turboui/src/ProjectPage/index.tsx:338
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:57
 #: assets/js/pages/SpacePage/page.tsx:108
@@ -5474,7 +5474,7 @@ msgstr "Здесь появятся действия из ваших прост�
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:263
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
-#: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:207
+#: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:210
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:102
 msgid "Add"
 msgstr "Добавить"
@@ -5707,8 +5707,8 @@ msgid "Add milestones to track key deliverables and deadlines"
 msgstr "Добавьте вехи для отслеживания ключевых результатов и сроков"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:285
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:289
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:302
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:306
 msgid "Add new item"
 msgstr "Добавить новый пункт"
 
@@ -6421,12 +6421,12 @@ msgid "Assign task"
 msgstr "Назначить задачу"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:127
+#: ../turboui/src/ProfilePage/index.tsx:157
 msgid "Assigned"
 msgstr "Назначено"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:196
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:213
 msgid "Assigned On"
 msgstr "Дата назначения"
 
@@ -6436,7 +6436,7 @@ msgid "Assigned goals and projects will appear here."
 msgstr "Назначенные цели и проекты появятся здесь."
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:76
+#: ../turboui/src/ProfilePage/index.tsx:101
 msgid "Assigned tasks will appear here."
 msgstr "Назначенные задачи появятся здесь."
 
@@ -7222,7 +7222,7 @@ msgstr "Действия с ячейкой"
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:163
 #: ../turboui/src/TemplateProjectPage/People.tsx:37
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:27
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:205
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:222
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:235
 #: assets/js/pages/ProjectAddPage/page.tsx:182
 #: lib/operately/md/goal.ex:130
@@ -7431,7 +7431,7 @@ msgstr "Отчёт за <date/>"
 
 #.frontend
 #: ../turboui/src/GoalPage/CheckIns.tsx:16
-#: ../turboui/src/GoalPage/index.tsx:238
+#: ../turboui/src/GoalPage/index.tsx:239
 #: ../turboui/src/ProjectPage/CheckIns.tsx:18
 #: assets/js/pages/ProjectCheckInEditPage/navigation.tsx:19
 #: assets/js/pages/ProjectCheckInNewPage/page.tsx:101
@@ -8165,7 +8165,7 @@ msgstr "Завершить «%{name}»?"
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:124
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:144
 #: ../turboui/src/MilestonePage/index.tsx:363
-#: ../turboui/src/ProfilePage/index.tsx:142
+#: ../turboui/src/ProfilePage/index.tsx:172
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:276
 #: ../turboui/src/SearchPage/index.tsx:340
 #: ../turboui/src/StatusBadge/index.tsx:111
@@ -8187,7 +8187,7 @@ msgstr "Дата завершения"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:97
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:193
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
 msgid "Completed On"
 msgstr "Дата завершения"
 
@@ -8577,6 +8577,11 @@ msgstr "Не удалось удалить элемент истории дей�
 #: ../turboui/src/AccountSettingsPage/index.tsx:88
 msgid "Could not save all preferences. Please try again."
 msgstr "Не удалось сохранить все настройки. Попробуйте ещё раз."
+
+#.frontend
+#: ../turboui/src/ProfilePage/index.tsx:74
+msgid "Could not save task order. Please try again."
+msgstr "Не удалось сохранить порядок задач. Попробуйте ещё раз."
 
 #.frontend
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:46
@@ -9578,7 +9583,7 @@ msgstr "Обсуждение не обновлено"
 #.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Discussions.tsx:28
-#: ../turboui/src/GoalPage/index.tsx:244
+#: ../turboui/src/GoalPage/index.tsx:245
 #: ../turboui/src/MilestonePage/index.tsx:212
 #: ../turboui/src/ProjectPage/Discussions.tsx:27
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:46
@@ -9654,7 +9659,7 @@ msgstr "Документ"
 #.frontend
 #: ../turboui/src/DocsAndFiles/PageDocsAndFiles.tsx:75
 #: ../turboui/src/DocsAndFiles/index.tsx:121
-#: ../turboui/src/GoalPage/index.tsx:250
+#: ../turboui/src/GoalPage/index.tsx:251
 #: ../turboui/src/MilestonePage/index.tsx:218
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:52
 #: ../turboui/src/ResourceHub/DraftNodesList.tsx:39
@@ -9838,7 +9843,7 @@ msgstr "Срок: <date/>"
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:77
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:193
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
 #: lib/operately/md/goal/timeframe.ex:10
 #: lib/operately/md/project/timeframe.ex:11
@@ -10334,7 +10339,7 @@ msgid "Employee Handbook"
 msgstr "Справочник по персоналу"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:241
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:258
 msgid "Empty when all targets/milestones are complete or none are defined."
 msgstr "Пусто, если все показатели и вехи выполнены или не заданы."
 
@@ -10453,6 +10458,7 @@ msgid "Enter zero or a positive number of days."
 msgstr "Введите нулевое или положительное число дней."
 
 #.frontend
+#: ../turboui/src/ProfilePage/index.tsx:74
 #: assets/js/models/comments/useDeleteComment.tsx:34
 #: assets/js/models/comments/useEditComment.tsx:36
 #: assets/js/models/comments/useOptimisticCommentUpdates.ts:124
@@ -10501,7 +10507,7 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/pages/HomePage/index.tsx:74
 #: assets/js/pages/MilestonePage/index.tsx:74
 #: assets/js/pages/MilestonePage/useComments.tsx:78
-#: assets/js/pages/ProfilePage/index.tsx:72
+#: assets/js/pages/ProfilePage/index.tsx:77
 #: assets/js/pages/ProjectPage/index.tsx:210
 #: assets/js/pages/ProjectPage/index.tsx:291
 #: assets/js/pages/ProjectPage/index.tsx:790
@@ -10540,7 +10546,7 @@ msgid "Error loading companies: %{message}"
 msgstr "Ошибка загрузки компаний: %{message}"
 
 #.frontend
-#: assets/js/pages/GoalPage/index.tsx:452
+#: assets/js/pages/GoalPage/index.tsx:453
 msgid "Error: %{message}"
 msgstr "Ошибка: %{message}"
 
@@ -11504,12 +11510,12 @@ msgid "For email sign-in, use your new email and existing password after confirm
 msgstr "После подтверждения используйте новый адрес электронной почты и текущий пароль для входа. Если пароль не задан, выберите «Забыли пароль?» при входе."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:239
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:256
 msgid "For goals: The first target or checklist item that hasn't been completed yet"
 msgstr "Для целей: первый ещё не выполненный показатель или пункт чек-листа"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:240
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:257
 msgid "For projects: The upcoming milestone (by due date)"
 msgstr "Для проектов: ближайшая веха по сроку выполнения"
 
@@ -13080,8 +13086,8 @@ msgstr "Загрузка задач"
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:129
 #: ../turboui/src/SelectLocalization/index.ts:56
-#: assets/js/pages/GoalPage/index.tsx:451
-#: assets/js/pages/ProfilePage/index.tsx:71
+#: assets/js/pages/GoalPage/index.tsx:452
+#: assets/js/pages/ProfilePage/index.tsx:76
 #: assets/js/pages/SpacePage/page.tsx:118
 msgid "Loading..."
 msgstr "Загрузка..."
@@ -13730,7 +13736,7 @@ msgid "My Account"
 msgstr "Моя учётная запись"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:312
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:329
 msgid "My Role"
 msgstr "Моя роль"
 
@@ -13771,7 +13777,7 @@ msgstr "Оценка NPS"
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:71
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:120
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:181
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:198
 #: assets/js/pages/SpaceEditPage/index.tsx:51
 msgid "Name"
 msgstr "Имя"
@@ -14019,7 +14025,7 @@ msgstr "Следующий месяц"
 
 #.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:49
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:248
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:265
 msgid "Next step"
 msgstr "Следующий шаг"
 
@@ -14671,7 +14677,7 @@ msgid "Not sure? Start with a project - you can always set goals later."
 msgstr "Не уверены? Начните с проекта — цели всегда можно задать позже."
 
 #.frontend
-#: ../turboui/src/CheckInCard/index.tsx:106
+#: ../turboui/src/CheckInCard/index.tsx:102
 #: ../turboui/src/CheckInHeader/index.tsx:102
 #: assets/js/pages/GoalActivityPage/AckCTA.tsx:56
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:135
@@ -15198,7 +15204,7 @@ msgstr[3] "Просрочено на %{count} дня"
 
 #.elixir
 #.frontend
-#: ../turboui/src/GoalPage/index.tsx:235
+#: ../turboui/src/GoalPage/index.tsx:236
 #: ../turboui/src/MilestonePage/index.tsx:208
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:31
 #: ../turboui/src/TemplateProjectPage/index.tsx:30
@@ -15372,7 +15378,7 @@ msgid "Pause this project?"
 msgstr "Приостановить этот проект?"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:138
+#: ../turboui/src/ProfilePage/index.tsx:168
 #: ../turboui/src/SearchPage/index.tsx:344
 #: ../turboui/src/SmallStatusIndicator/constants.ts:22
 #: ../turboui/src/StatusBadge/index.tsx:119
@@ -16027,14 +16033,14 @@ msgstr "Продукты"
 #.frontend
 #: ../turboui/src/AccountPage/index.tsx:49
 #: ../turboui/src/CompanyNavigation/User.tsx:48
-#: assets/js/pages/ProfilePage/index.tsx:43
+#: assets/js/pages/ProfilePage/index.tsx:45
 msgid "Profile"
 msgstr "Профиль"
 
 #.elixir
 #.frontend
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:115
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:187
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:204
 #: lib/operately/md/goal.ex:29
 #: lib/operately/md/goal.ex:98
 #: lib/operately/md/project.ex:319
@@ -16062,7 +16068,7 @@ msgstr "Всё идёт по плану. Препятствий нет."
 #: ../turboui/src/SearchPage/index.tsx:315
 #: ../turboui/src/TaskPage/MoveModal.tsx:66
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:202
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:219
 #: assets/js/features/activities/ProjectContributorsAddition/index.tsx:87
 #: lib/operately/md/milestone.ex:20
 #: lib/operately/md/task.ex:105
@@ -16596,7 +16602,7 @@ msgid "Receive a daily email with your upcoming check-ins, reviews, and other wo
 msgstr "Получайте ежедневное письмо с предстоящими отчётами, проверками и другой работой, требующей вашего внимания."
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:160
+#: ../turboui/src/ProfilePage/index.tsx:190
 msgid "Recent activity"
 msgstr "Недавние действия"
 
@@ -16930,6 +16936,11 @@ msgstr "Цель «%{goalName}» снова открыта"
 msgid "Reopening Goal"
 msgstr "Повторное открытие цели"
 
+#~ #.frontend
+#~ #: ../turboui/src/WorkMap/components/TableRow/index.tsx:85
+#~ msgid "Reorder task"
+#~ msgstr "Изменить порядок задачи"
+
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:119
 #: assets/js/pages/SetupPage/page.tsx:161
@@ -17020,6 +17031,11 @@ msgstr "Сбросить пароль"
 #: lib/operately_email/emails/reset_password_email.ex:16
 msgid "Reset password instructions"
 msgstr "Инструкции по сбросу пароля"
+
+#~ #.frontend
+#~ #: ../turboui/src/ProfilePage/index.tsx:122
+#~ msgid "Reset task order"
+#~ msgstr "Сбросить порядок задач"
 
 #.elixir
 #: lib/operately_email/templates/reset_password.html.eex:1
@@ -17373,7 +17389,7 @@ msgid "Reviewer: Not Assigned"
 msgstr "Куратор: не назначен"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:134
+#: ../turboui/src/ProfilePage/index.tsx:164
 msgid "Reviewing"
 msgstr "На проверке"
 
@@ -17430,7 +17446,7 @@ msgid "Roadmap"
 msgstr "Дорожная карта"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:312
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:329
 msgid "Role"
 msgstr "Роль"
 
@@ -18392,7 +18408,7 @@ msgstr "Показывать уведомление о новой версии"
 #~ msgstr "Отображаются только в предпросмотре. При использовании шаблона создаётся пустая история."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:238
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:255
 msgid "Shows what needs to happen next for this work to progress."
 msgstr "Показывает следующий шаг, необходимый для продвижения этой работы."
 
@@ -18636,7 +18652,7 @@ msgstr "Сканирование источника"
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:424
 #: ../turboui/src/TaskPage/MoveModal.tsx:67
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:132
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:199
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:216
 #: assets/js/pages/ProjectAddPage/page.tsx:147
 #: lib/operately/md/goal.ex:30
 #: lib/operately/md/milestone.ex:21
@@ -18918,7 +18934,7 @@ msgstr "Статистика"
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:110
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:68
 #: ../turboui/src/TaskCreationModal/index.tsx:307
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:184
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:201
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:325
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:256
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:283
@@ -19410,7 +19426,7 @@ msgstr "Задача убрана из вехи «%{title}»"
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:87
 #: ../turboui/src/MilestonePage/components/TaskSectionLayout.tsx:34
 #: ../turboui/src/MilestonePage/index.tsx:209
-#: ../turboui/src/ProfilePage/index.tsx:123
+#: ../turboui/src/ProfilePage/index.tsx:153
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:261
 #: ../turboui/src/SearchPage/filterOptions.ts:13
