@@ -5078,7 +5078,7 @@ msgid "API tokens"
 msgstr "Jetons API"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:147
+#: ../turboui/src/ProfilePage/index.tsx:177
 msgid "About"
 msgstr "À propos"
 
@@ -5261,8 +5261,8 @@ msgstr "Travail en cours"
 
 #.frontend
 #: ../turboui/src/GoalPage/Activity.tsx:9
-#: ../turboui/src/GoalPage/index.tsx:255
-#: ../turboui/src/ProfilePage/index.tsx:146
+#: ../turboui/src/GoalPage/index.tsx:256
+#: ../turboui/src/ProfilePage/index.tsx:176
 #: ../turboui/src/ProjectPage/index.tsx:338
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:57
 #: assets/js/pages/SpacePage/page.tsx:108
@@ -5313,7 +5313,7 @@ msgstr "L’activité de vos espaces, objectifs et projets apparaîtra ici."
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:263
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
-#: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:207
+#: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:210
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:102
 msgid "Add"
 msgstr "Ajouter"
@@ -5546,8 +5546,8 @@ msgid "Add milestones to track key deliverables and deadlines"
 msgstr "Ajoutez des jalons pour suivre les principaux livrables et échéances"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:285
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:289
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:302
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:306
 msgid "Add new item"
 msgstr "Ajouter un élément"
 
@@ -6258,12 +6258,12 @@ msgid "Assign task"
 msgstr "Assigner la tâche"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:127
+#: ../turboui/src/ProfilePage/index.tsx:157
 msgid "Assigned"
 msgstr "Assignée"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:196
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:213
 msgid "Assigned On"
 msgstr "Date d’assignation"
 
@@ -6273,7 +6273,7 @@ msgid "Assigned goals and projects will appear here."
 msgstr "Les objectifs et projets assignés apparaîtront ici."
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:76
+#: ../turboui/src/ProfilePage/index.tsx:101
 msgid "Assigned tasks will appear here."
 msgstr "Les tâches assignées apparaîtront ici."
 
@@ -7059,7 +7059,7 @@ msgstr "Actions de la cellule"
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:163
 #: ../turboui/src/TemplateProjectPage/People.tsx:37
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:27
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:205
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:222
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:235
 #: assets/js/pages/ProjectAddPage/page.tsx:182
 #: lib/operately/md/goal.ex:130
@@ -7268,7 +7268,7 @@ msgstr "Point d’avancement du <date/>"
 
 #.frontend
 #: ../turboui/src/GoalPage/CheckIns.tsx:16
-#: ../turboui/src/GoalPage/index.tsx:238
+#: ../turboui/src/GoalPage/index.tsx:239
 #: ../turboui/src/ProjectPage/CheckIns.tsx:18
 #: assets/js/pages/ProjectCheckInEditPage/navigation.tsx:19
 #: assets/js/pages/ProjectCheckInNewPage/page.tsx:101
@@ -8000,7 +8000,7 @@ msgstr "Terminer « %{name} » ?"
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:124
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:144
 #: ../turboui/src/MilestonePage/index.tsx:363
-#: ../turboui/src/ProfilePage/index.tsx:142
+#: ../turboui/src/ProfilePage/index.tsx:172
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:276
 #: ../turboui/src/SearchPage/index.tsx:340
 #: ../turboui/src/StatusBadge/index.tsx:111
@@ -8022,7 +8022,7 @@ msgstr "Date de fin"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:97
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:193
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
 msgid "Completed On"
 msgstr "Date de fin"
 
@@ -8410,6 +8410,11 @@ msgstr "Impossible de supprimer l’élément du fil d’activité"
 #: ../turboui/src/AccountSettingsPage/index.tsx:88
 msgid "Could not save all preferences. Please try again."
 msgstr "Impossible d’enregistrer toutes les préférences. Veuillez réessayer."
+
+#.frontend
+#: ../turboui/src/ProfilePage/index.tsx:74
+msgid "Could not save task order. Please try again."
+msgstr "Impossible d’enregistrer l’ordre des tâches. Réessayez."
 
 #.frontend
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:46
@@ -9411,7 +9416,7 @@ msgstr "Discussion non mise à jour"
 #.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Discussions.tsx:28
-#: ../turboui/src/GoalPage/index.tsx:244
+#: ../turboui/src/GoalPage/index.tsx:245
 #: ../turboui/src/MilestonePage/index.tsx:212
 #: ../turboui/src/ProjectPage/Discussions.tsx:27
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:46
@@ -9487,7 +9492,7 @@ msgstr "Document"
 #.frontend
 #: ../turboui/src/DocsAndFiles/PageDocsAndFiles.tsx:75
 #: ../turboui/src/DocsAndFiles/index.tsx:121
-#: ../turboui/src/GoalPage/index.tsx:250
+#: ../turboui/src/GoalPage/index.tsx:251
 #: ../turboui/src/MilestonePage/index.tsx:218
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:52
 #: ../turboui/src/ResourceHub/DraftNodesList.tsx:39
@@ -9671,7 +9676,7 @@ msgstr "Échéance le <date/>"
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:77
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:193
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
 #: lib/operately/md/goal/timeframe.ex:10
 #: lib/operately/md/project/timeframe.ex:11
@@ -10163,7 +10168,7 @@ msgid "Employee Handbook"
 msgstr "Guide du personnel"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:241
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:258
 msgid "Empty when all targets/milestones are complete or none are defined."
 msgstr "Vide lorsque tous les indicateurs ou jalons sont terminés ou qu’aucun n’est défini."
 
@@ -10282,6 +10287,7 @@ msgid "Enter zero or a positive number of days."
 msgstr "Saisissez zéro ou un nombre positif de jours."
 
 #.frontend
+#: ../turboui/src/ProfilePage/index.tsx:74
 #: assets/js/models/comments/useDeleteComment.tsx:34
 #: assets/js/models/comments/useEditComment.tsx:36
 #: assets/js/models/comments/useOptimisticCommentUpdates.ts:124
@@ -10330,7 +10336,7 @@ msgstr "Saisissez zéro ou un nombre positif de jours."
 #: assets/js/pages/HomePage/index.tsx:74
 #: assets/js/pages/MilestonePage/index.tsx:74
 #: assets/js/pages/MilestonePage/useComments.tsx:78
-#: assets/js/pages/ProfilePage/index.tsx:72
+#: assets/js/pages/ProfilePage/index.tsx:77
 #: assets/js/pages/ProjectPage/index.tsx:210
 #: assets/js/pages/ProjectPage/index.tsx:291
 #: assets/js/pages/ProjectPage/index.tsx:790
@@ -10369,7 +10375,7 @@ msgid "Error loading companies: %{message}"
 msgstr "Erreur lors du chargement des entreprises : %{message}"
 
 #.frontend
-#: assets/js/pages/GoalPage/index.tsx:452
+#: assets/js/pages/GoalPage/index.tsx:453
 msgid "Error: %{message}"
 msgstr "Erreur : %{message}"
 
@@ -11331,12 +11337,12 @@ msgid "For email sign-in, use your new email and existing password after confirm
 msgstr "Après confirmation, utilisez votre nouvelle adresse e-mail et votre mot de passe actuel pour vous connecter. Si vous n’avez pas défini de mot de passe, utilisez « Mot de passe oublié » lors de la connexion."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:239
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:256
 msgid "For goals: The first target or checklist item that hasn't been completed yet"
 msgstr "Pour les objectifs : le premier indicateur ou élément de la liste de contrôle qui n’est pas encore terminé"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:240
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:257
 msgid "For projects: The upcoming milestone (by due date)"
 msgstr "Pour les projets : le prochain jalon (par échéance)"
 
@@ -12907,8 +12913,8 @@ msgstr "Chargement des tâches"
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:129
 #: ../turboui/src/SelectLocalization/index.ts:56
-#: assets/js/pages/GoalPage/index.tsx:451
-#: assets/js/pages/ProfilePage/index.tsx:71
+#: assets/js/pages/GoalPage/index.tsx:452
+#: assets/js/pages/ProfilePage/index.tsx:76
 #: assets/js/pages/SpacePage/page.tsx:118
 msgid "Loading..."
 msgstr "Chargement…"
@@ -13557,7 +13563,7 @@ msgid "My Account"
 msgstr "Mon compte"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:312
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:329
 msgid "My Role"
 msgstr "Mon rôle"
 
@@ -13598,7 +13604,7 @@ msgstr "Score NPS"
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:71
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:120
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:181
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:198
 #: assets/js/pages/SpaceEditPage/index.tsx:51
 msgid "Name"
 msgstr "Nom"
@@ -13846,7 +13852,7 @@ msgstr "Mois suivant"
 
 #.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:49
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:248
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:265
 msgid "Next step"
 msgstr "Prochaine étape"
 
@@ -14498,7 +14504,7 @@ msgid "Not sure? Start with a project - you can always set goals later."
 msgstr "Vous hésitez ? Commencez par un projet ; vous pourrez définir des objectifs plus tard."
 
 #.frontend
-#: ../turboui/src/CheckInCard/index.tsx:106
+#: ../turboui/src/CheckInCard/index.tsx:102
 #: ../turboui/src/CheckInHeader/index.tsx:102
 #: assets/js/pages/GoalActivityPage/AckCTA.tsx:56
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:135
@@ -15023,7 +15029,7 @@ msgstr[1] "En retard de %{count} jours"
 
 #.elixir
 #.frontend
-#: ../turboui/src/GoalPage/index.tsx:235
+#: ../turboui/src/GoalPage/index.tsx:236
 #: ../turboui/src/MilestonePage/index.tsx:208
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:31
 #: ../turboui/src/TemplateProjectPage/index.tsx:30
@@ -15197,7 +15203,7 @@ msgid "Pause this project?"
 msgstr "Mettre ce projet en pause ?"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:138
+#: ../turboui/src/ProfilePage/index.tsx:168
 #: ../turboui/src/SearchPage/index.tsx:344
 #: ../turboui/src/SmallStatusIndicator/constants.ts:22
 #: ../turboui/src/StatusBadge/index.tsx:119
@@ -15850,14 +15856,14 @@ msgstr "Produits"
 #.frontend
 #: ../turboui/src/AccountPage/index.tsx:49
 #: ../turboui/src/CompanyNavigation/User.tsx:48
-#: assets/js/pages/ProfilePage/index.tsx:43
+#: assets/js/pages/ProfilePage/index.tsx:45
 msgid "Profile"
 msgstr "Profil"
 
 #.elixir
 #.frontend
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:115
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:187
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:204
 #: lib/operately/md/goal.ex:29
 #: lib/operately/md/goal.ex:98
 #: lib/operately/md/project.ex:319
@@ -15885,7 +15891,7 @@ msgstr "Avance comme prévu. Aucun point bloquant."
 #: ../turboui/src/SearchPage/index.tsx:315
 #: ../turboui/src/TaskPage/MoveModal.tsx:66
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:202
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:219
 #: assets/js/features/activities/ProjectContributorsAddition/index.tsx:87
 #: lib/operately/md/milestone.ex:20
 #: lib/operately/md/task.ex:105
@@ -16419,7 +16425,7 @@ msgid "Receive a daily email with your upcoming check-ins, reviews, and other wo
 msgstr "Recevez chaque jour un e-mail récapitulant vos prochains points d’avancement, examens et autres éléments qui nécessitent votre attention."
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:160
+#: ../turboui/src/ProfilePage/index.tsx:190
 msgid "Recent activity"
 msgstr "Activité récente"
 
@@ -16753,6 +16759,11 @@ msgstr "A rouvert l’objectif %{goalName}"
 msgid "Reopening Goal"
 msgstr "Réouverture de l’objectif"
 
+#~ #.frontend
+#~ #: ../turboui/src/WorkMap/components/TableRow/index.tsx:85
+#~ msgid "Reorder task"
+#~ msgstr "Réorganiser la tâche"
+
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:119
 #: assets/js/pages/SetupPage/page.tsx:161
@@ -16843,6 +16854,11 @@ msgstr "Réinitialiser le mot de passe"
 #: lib/operately_email/emails/reset_password_email.ex:16
 msgid "Reset password instructions"
 msgstr "Instructions de réinitialisation du mot de passe"
+
+#~ #.frontend
+#~ #: ../turboui/src/ProfilePage/index.tsx:122
+#~ msgid "Reset task order"
+#~ msgstr "Réinitialiser l’ordre des tâches"
 
 #.elixir
 #: lib/operately_email/templates/reset_password.html.eex:1
@@ -17196,7 +17212,7 @@ msgid "Reviewer: Not Assigned"
 msgstr "Référent : aucun"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:134
+#: ../turboui/src/ProfilePage/index.tsx:164
 msgid "Reviewing"
 msgstr "Examen"
 
@@ -17253,7 +17269,7 @@ msgid "Roadmap"
 msgstr "Feuille de route"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:312
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:329
 msgid "Role"
 msgstr "Rôle"
 
@@ -18206,7 +18222,7 @@ msgid "Show update badge"
 msgstr "Afficher l’indicateur de nouvelle version"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:238
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:255
 msgid "Shows what needs to happen next for this work to progress."
 msgstr "Indique la prochaine étape nécessaire pour faire avancer ce travail."
 
@@ -18450,7 +18466,7 @@ msgstr "Analyse de la source"
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:424
 #: ../turboui/src/TaskPage/MoveModal.tsx:67
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:132
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:199
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:216
 #: assets/js/pages/ProjectAddPage/page.tsx:147
 #: lib/operately/md/goal.ex:30
 #: lib/operately/md/milestone.ex:21
@@ -18732,7 +18748,7 @@ msgstr "Statistiques"
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:110
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:68
 #: ../turboui/src/TaskCreationModal/index.tsx:307
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:184
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:201
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:325
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:256
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:283
@@ -19224,7 +19240,7 @@ msgstr "La tâche a été retirée du jalon « %{title} »"
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:87
 #: ../turboui/src/MilestonePage/components/TaskSectionLayout.tsx:34
 #: ../turboui/src/MilestonePage/index.tsx:209
-#: ../turboui/src/ProfilePage/index.tsx:123
+#: ../turboui/src/ProfilePage/index.tsx:153
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:261
 #: ../turboui/src/SearchPage/filterOptions.ts:13

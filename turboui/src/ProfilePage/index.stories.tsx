@@ -61,6 +61,9 @@ const defaultArgs: ProfilePage.Props = {
 
   workMap: defaultWorkMap,
   reviewerWorkMap: defaultReviewerWorkMap,
+  taskOrdering: [],
+  onTaskOrderingChange: async () => {},
+  taskOrderingSaving: false,
 
   activityFeed: (
     <div className="bg-surface-base border border-surface-outline rounded-lg p-4">Activity feed placeholder</div>
@@ -78,6 +81,26 @@ const defaultArgs: ProfilePage.Props = {
 
 export const Default: Story = {
   args: defaultArgs,
+};
+
+export const ReorderTasks: Story = {
+  args: { ...defaultArgs, viewer: defaultArgs.person },
+  render: function ReorderTasksStory(args) {
+    const [taskOrdering, setTaskOrdering] = React.useState<string[]>([]);
+    return (
+      <ProfilePage {...args} taskOrdering={taskOrdering} onTaskOrderingChange={async (ids) => setTaskOrdering(ids)} />
+    );
+  },
+};
+
+export const TaskOrderingSaveFailure: Story = {
+  args: {
+    ...defaultArgs,
+    viewer: defaultArgs.person,
+    onTaskOrderingChange: async () => {
+      throw new Error("Offline");
+    },
+  },
 };
 
 export const EmptyTasks: Story = {

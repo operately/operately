@@ -5,6 +5,7 @@ import { MemoryRouter } from "react-router";
 import { ProfilePage } from ".";
 import { i18n, setupTestCatalog } from "../../test/i18n";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
+import { mockTasksTabItems } from "../WorkMap/tests/mockData";
 
 setupTestCatalog();
 beforeAll(() => {
@@ -31,6 +32,9 @@ const props: ProfilePage.Props = {
   reports: [{ ...person, id: "report", fullName: "Report name", profileLink: "/people/report" }],
   workMap: [],
   reviewerWorkMap: [],
+  taskOrdering: [],
+  onTaskOrderingChange: async () => {},
+  taskOrderingSaving: false,
   activityFeed: <div data-testid="feed" />,
   editProfilePath: "/edit",
   canEditProfile: true,
@@ -87,4 +91,23 @@ test("profile copy uses substituted translations", () => {
   expect(screen.getByText("Translated empty state", { exact: false })).toBeVisible();
   fireEvent.click(screen.getByText("Translated about"));
   expect(screen.getByText("Translated contact")).toBeVisible();
+});
+
+test.each(["self", "other", "saving"])("task reorder controls respect %s state", (state) => {
+  const { container } = render(
+    <MemoryRouter>
+      <ProfilePage
+        {...props}
+        workMap={mockTasksTabItems}
+        viewer={state === "other" ? { ...person, id: "other" } : person}
+        onTaskOrderingChange={jest.fn()}
+        taskOrderingSaving={state === "saving"}
+      />
+    </MemoryRouter>,
+  );
+  expect(container.querySelector('[draggable="true"]') !== null).toBe(state === "self");
+  if (state === "self") {
+    fireEvent.click(screen.getByText(i18n.t("Assigned")));
+    expect(container.querySelector('[draggable="true"]')).toBeNull();
+  }
 });

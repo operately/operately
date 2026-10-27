@@ -10,6 +10,16 @@ defmodule Operately.CompanyTransfers.Import.OrderingStateRewriterTest do
   alias OperatelyWeb.Paths
   alias OperatelyWeb.Api.Helpers
 
+  test "rewrites personal task ordering while preserving other preferences" do
+    source_id = Ecto.UUID.generate()
+    destination_id = Ecto.UUID.generate()
+    row = %{"preferences" => %{"task_ordering" => [source_id, Ecto.UUID.generate()], "time_format" => "hour_24"}}
+    plan = translation_plan(%{"tasks" => %{source_id => destination_id}})
+
+    assert {:ok, rewritten} = OrderingStateRewriter.rewrite_row_fields(row, "people", plan)
+    assert rewritten["preferences"] == %{"task_ordering" => [destination_id], "time_format" => "hour_24"}
+  end
+
   test "rewrites milestone ordering state ids" do
     source_milestone_id = Ecto.UUID.generate()
     destination_milestone_id = Ecto.UUID.generate()
