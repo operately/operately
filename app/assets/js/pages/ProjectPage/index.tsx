@@ -19,6 +19,7 @@ import { useProjectContentQueries } from "./contentQueries";
 import { shouldRevalidate } from "./navigation";
 
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
+import { useMilestoneCompletion } from "@/models/milestones/useMilestoneCompletion";
 import { parseCheckInsForTurboUi } from "@/models/projectCheckIns";
 import * as Spaces from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
@@ -63,6 +64,7 @@ function LoadedPage() {
     await Promise.all([refreshCore(), content.refresh(), docs.refresh()]);
   }, [refreshCore, content.refresh, docs.refresh]);
 
+  const milestoneCompletion = useMilestoneCompletion();
   const updatePermissions = Projects.useUpdateProjectPermissions();
   const updateKanban = Projects.useUpdateProjectKanban();
   const updateTasksView = Projects.useUpdateProjectTasksView();
@@ -445,6 +447,8 @@ function LoadedPage() {
     milestones,
     searchableMilestones: filteredMilestones,
     onMilestoneSearch: searchMilestones,
+    onMilestoneComplete: milestoneCompletion.requestCompletion,
+    completeMilestoneModal: milestoneCompletion.modalProps,
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,
     onMilestoneReorder: reorderMilestones,
@@ -490,7 +494,7 @@ function LoadedPage() {
     formattedTimePreferences,
   };
 
-  return <ProjectPage key={project.id!} {...props} />;
+  return <ProjectPage key={project.id} {...props} />;
 }
 
 function useProjectDocsAndFilesProps({

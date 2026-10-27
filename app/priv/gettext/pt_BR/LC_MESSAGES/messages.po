@@ -5335,7 +5335,7 @@ msgstr "Trabalho em andamento"
 #: ../turboui/src/GoalPage/Activity.tsx:9
 #: ../turboui/src/GoalPage/index.tsx:256
 #: ../turboui/src/ProfilePage/index.tsx:176
-#: ../turboui/src/ProjectPage/index.tsx:338
+#: ../turboui/src/ProjectPage/index.tsx:345
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:57
 #: assets/js/pages/SpacePage/page.tsx:108
 #: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:59
@@ -5709,8 +5709,8 @@ msgstr "Adicione metas para acompanhar o progresso quantitativo com números."
 #: ../turboui/src/MilestonePage/components/TemplateTasksSection.tsx:107
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:290
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:83
-#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:227
-#: ../turboui/src/TaskBoard/components/index.tsx:380
+#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:249
+#: ../turboui/src/TaskBoard/components/index.tsx:382
 #: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:540
 msgid "Add task"
 msgstr "Adicionar tarefa"
@@ -5726,7 +5726,7 @@ msgid "Add the first task to define the work."
 msgstr "Adicione a primeira tarefa para definir o trabalho."
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/index.tsx:330
+#: ../turboui/src/TaskBoard/components/index.tsx:331
 msgid "Add the first task to start breaking down the work."
 msgstr "Adicione a primeira tarefa para começar a detalhar o trabalho."
 
@@ -7708,7 +7708,7 @@ msgid "Cleared due date for %{taskName}"
 msgstr "Removeu a data de conclusão de %{taskName}"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:292
+#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:314
 msgid "Click + or press 'c' to add a task, or drag a task here."
 msgstr "Clique em + ou pressione 'c' para adicionar uma tarefa, ou arraste uma tarefa para cá."
 
@@ -10520,6 +10520,8 @@ msgstr "Insira zero ou um número positivo de dias."
 #: assets/js/models/comments/useOptimisticComments.tsx:133
 #: assets/js/models/goals/useGoalTargets.ts:65
 #: assets/js/models/goals/useGoalTargets.ts:89
+#: assets/js/models/milestones/useMilestoneCompletion.ts:33
+#: assets/js/models/milestones/useMilestoneCompletion.ts:73
 #: assets/js/models/projects/useProjectMilestoneOrdering.ts:132
 #: assets/js/models/projects/useTaskStatuses.tsx:67
 #: assets/js/models/projects/useTaskStatuses.tsx:73
@@ -10559,10 +10561,10 @@ msgstr "Insira zero ou um número positivo de dias."
 #: assets/js/pages/MilestonePage/index.tsx:74
 #: assets/js/pages/MilestonePage/useComments.tsx:78
 #: assets/js/pages/ProfilePage/index.tsx:77
-#: assets/js/pages/ProjectPage/index.tsx:210
-#: assets/js/pages/ProjectPage/index.tsx:291
-#: assets/js/pages/ProjectPage/index.tsx:790
-#: assets/js/pages/ProjectPage/index.tsx:819
+#: assets/js/pages/ProjectPage/index.tsx:212
+#: assets/js/pages/ProjectPage/index.tsx:293
+#: assets/js/pages/ProjectPage/index.tsx:794
+#: assets/js/pages/ProjectPage/index.tsx:823
 #: assets/js/pages/SpaceKpisPage/page.tsx:102
 #: assets/js/pages/SpacePage/page.tsx:119
 #: assets/js/pages/TaskPage/index.tsx:84
@@ -11065,7 +11067,7 @@ msgid "Failed to create account"
 msgstr "Não foi possível criar a conta"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:790
+#: assets/js/pages/ProjectPage/index.tsx:794
 msgid "Failed to create milestone"
 msgstr "Falha ao criar o marco"
 
@@ -11118,7 +11120,7 @@ msgid "Failed to delete company"
 msgstr "Não foi possível excluir a empresa"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:291
+#: assets/js/pages/ProjectPage/index.tsx:293
 msgid "Failed to delete project"
 msgstr "Falha ao excluir o projeto"
 
@@ -11332,7 +11334,7 @@ msgid "Failed to update due date."
 msgstr "Falha ao atualizar a data de conclusão."
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:819
+#: assets/js/pages/ProjectPage/index.tsx:823
 msgid "Failed to update milestone"
 msgstr "Falha ao atualizar o marco"
 
@@ -11352,6 +11354,8 @@ msgid "Failed to update milestone name."
 msgstr "Falha ao atualizar o nome do marco."
 
 #.frontend
+#: assets/js/models/milestones/useMilestoneCompletion.ts:33
+#: assets/js/models/milestones/useMilestoneCompletion.ts:73
 #: assets/js/pages/MilestonePage/index.tsx:424
 msgid "Failed to update milestone status."
 msgstr "Falha ao atualizar o status do marco."
@@ -11457,7 +11461,7 @@ msgid "Failed to update task statuses"
 msgstr "Falha ao atualizar os status das tarefas"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:210
+#: assets/js/pages/ProjectPage/index.tsx:212
 msgid "Failed to update tasks view"
 msgstr "Falha ao atualizar a visualização das tarefas"
 
@@ -13459,6 +13463,7 @@ msgstr "Marcar como lida"
 #.frontend
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:159
 #: ../turboui/src/MilestonePage/index.tsx:380
+#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:237
 msgid "Mark complete"
 msgstr "Marcar como concluído"
 
@@ -13638,7 +13643,7 @@ msgid "Milestone ordering contains IDs from another template"
 msgstr "A ordenação dos marcos contém IDs de outro modelo"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:88
+#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:89
 msgid "Milestone progress: %{progress} complete"
 msgstr "Progresso do marco: %{progress} concluído"
 
@@ -13997,14 +14002,14 @@ msgstr "Indicador de atualização na barra de navegação"
 #: assets/js/pages/InviteTeamPage/index.tsx:75
 #: assets/js/pages/InviteTeamPage/index.tsx:88
 #: assets/js/pages/InviteTeamPage/index.tsx:99
-#: assets/js/pages/ProjectPage/index.tsx:96
-#: assets/js/pages/ProjectPage/index.tsx:106
-#: assets/js/pages/ProjectPage/index.tsx:122
-#: assets/js/pages/ProjectPage/index.tsx:128
-#: assets/js/pages/ProjectPage/index.tsx:134
-#: assets/js/pages/ProjectPage/index.tsx:667
-#: assets/js/pages/ProjectPage/index.tsx:673
-#: assets/js/pages/ProjectPage/index.tsx:679
+#: assets/js/pages/ProjectPage/index.tsx:98
+#: assets/js/pages/ProjectPage/index.tsx:108
+#: assets/js/pages/ProjectPage/index.tsx:124
+#: assets/js/pages/ProjectPage/index.tsx:130
+#: assets/js/pages/ProjectPage/index.tsx:136
+#: assets/js/pages/ProjectPage/index.tsx:671
+#: assets/js/pages/ProjectPage/index.tsx:677
+#: assets/js/pages/ProjectPage/index.tsx:683
 msgid "Network Error"
 msgstr "Erro de rede"
 
@@ -14133,7 +14138,7 @@ msgid "New invitation URL"
 msgstr "Nova URL de convite"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/index.tsx:485
+#: ../turboui/src/TaskBoard/components/index.tsx:487
 #: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:297
 msgid "New milestone"
 msgstr "Novo marco"
@@ -14164,7 +14169,7 @@ msgid "New space"
 msgstr "Novo espaço"
 
 #.frontend
-#: ../turboui/src/TaskBoard/components/index.tsx:479
+#: ../turboui/src/TaskBoard/components/index.tsx:481
 #: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:294
 msgid "New task"
 msgstr "Nova tarefa"
@@ -14511,7 +14516,7 @@ msgstr "Nenhum membro listado."
 
 #.frontend
 #: ../turboui/src/MilestoneField/index.tsx:96
-#: ../turboui/src/TaskBoard/components/index.tsx:369
+#: ../turboui/src/TaskBoard/components/index.tsx:371
 #: ../turboui/src/TaskCreationModal/index.tsx:326
 #: ../turboui/src/TaskPage/Sidebar.tsx:377
 #: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:348
@@ -14750,9 +14755,9 @@ msgstr "Nenhuma meta ou checklist"
 #.elixir
 #.frontend
 #: ../turboui/src/MilestonePage/components/TaskSectionEmptyState.tsx:21
-#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:265
-#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:296
-#: ../turboui/src/TaskBoard/components/index.tsx:330
+#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:287
+#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:318
+#: ../turboui/src/TaskBoard/components/index.tsx:331
 #: lib/operately/md/milestone.ex:59
 msgid "No tasks yet."
 msgstr "Nenhuma tarefa ainda."
@@ -16054,7 +16059,7 @@ msgstr "Preparando o ambiente"
 
 #.frontend
 #: ../turboui/src/MilestonePage/components/TaskSectionEmptyState.tsx:12
-#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:285
+#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:307
 msgid "Press Enter to add. You can also drag tasks here."
 msgstr "Pressione Enter para adicionar. Você também pode arrastar tarefas para cá."
 
@@ -16417,7 +16422,7 @@ msgstr "Nome do projeto"
 
 #.frontend
 #: assets/js/pages/MilestonePage/index.tsx:65
-#: assets/js/pages/ProjectPage/index.tsx:89
+#: assets/js/pages/ProjectPage/index.tsx:91
 #: assets/js/pages/TaskPage/index.tsx:65
 msgid "Project name cannot be empty"
 msgstr "O nome do projeto não pode ficar em branco"
@@ -17509,25 +17514,25 @@ msgstr "Exibindo uma visão hierárquica de todos os objetivos e projetos da sua
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:88
-#: assets/js/pages/ProjectPage/index.tsx:122
+#: assets/js/pages/ProjectPage/index.tsx:124
 msgid "Reverted the access levels to their previous values."
 msgstr "Os níveis de acesso voltaram aos valores anteriores."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:116
-#: assets/js/pages/ProjectPage/index.tsx:673
+#: assets/js/pages/ProjectPage/index.tsx:677
 msgid "Reverted the champion to its previous value."
 msgstr "O champion voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:81
-#: assets/js/pages/ProjectPage/index.tsx:96
+#: assets/js/pages/ProjectPage/index.tsx:98
 msgid "Reverted the description to its previous value."
 msgstr "A descrição voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:110
-#: assets/js/pages/ProjectPage/index.tsx:128
+#: assets/js/pages/ProjectPage/index.tsx:130
 msgid "Reverted the due date to its previous value."
 msgstr "A data de conclusão voltou ao valor anterior."
 
@@ -17538,26 +17543,26 @@ msgstr "O nome do objetivo voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:128
-#: assets/js/pages/ProjectPage/index.tsx:106
+#: assets/js/pages/ProjectPage/index.tsx:108
 msgid "Reverted the parent goal to its previous value."
 msgstr "O objetivo superior voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/MilestonePage/index.tsx:64
-#: assets/js/pages/ProjectPage/index.tsx:88
+#: assets/js/pages/ProjectPage/index.tsx:90
 #: assets/js/pages/TaskPage/index.tsx:64
 msgid "Reverted the project name to its previous value."
 msgstr "O nome do projeto voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:122
-#: assets/js/pages/ProjectPage/index.tsx:679
+#: assets/js/pages/ProjectPage/index.tsx:683
 msgid "Reverted the reviewer to its previous value."
 msgstr "O reviewer voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:98
-#: assets/js/pages/ProjectPage/index.tsx:667
+#: assets/js/pages/ProjectPage/index.tsx:671
 msgid "Reverted the space to its previous value."
 msgstr "O espaço voltou ao valor anterior."
 
@@ -17567,7 +17572,7 @@ msgid "Reverted the start date to its previous value."
 msgstr "A data de início voltou ao valor anterior."
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:134
+#: assets/js/pages/ProjectPage/index.tsx:136
 msgid "Reverted the started date to its previous value."
 msgstr "A data de início voltou ao valor anterior."
 
@@ -18503,8 +18508,8 @@ msgstr "Definir data"
 #: ../turboui/src/MilestonePage/index.tsx:350
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:151
 #: ../turboui/src/TaskBoard/KanbanView/Card.tsx:263
-#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:196
-#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:208
+#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:206
+#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:218
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:98
 #: ../turboui/src/TaskBoard/components/TaskItem.tsx:272
 #: ../turboui/src/TaskBoard/components/TaskItem.tsx:277
@@ -19511,7 +19516,7 @@ msgstr "Tabelas: %{count}"
 #.frontend
 #: ../turboui/src/MilestonePage/components/TaskSectionEmptyState.tsx:17
 #: ../turboui/src/TaskBoard/components/EmptyMilestoneDropZone.tsx:58
-#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:290
+#: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:312
 #: ../turboui/src/TaskBoard/components/TaskList.tsx:178
 msgid "Tap + to add a task."
 msgstr "Toque em + para adicionar uma tarefa."
@@ -21934,7 +21939,7 @@ msgid "Update badge setting saved"
 msgstr "Configuração do indicador de atualização salva"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:634
+#: assets/js/pages/ProjectPage/index.tsx:638
 #: assets/js/pages/TaskPage/index.tsx:329
 msgid "Update failed"
 msgstr "Falha na atualização"

@@ -124,6 +124,7 @@ function LoadedTasksSection({ state }: { state: ProjectPage.State }) {
         onTaskDescriptionChange={canEdit ? state.onTaskDescriptionChange : undefined}
         onTaskDelete={canEdit ? state.onTaskDelete : undefined}
         onMilestoneUpdate={canEdit ? state.onMilestoneUpdate : undefined}
+        onMilestoneComplete={canEdit ? state.onMilestoneComplete : undefined}
         onMilestoneSearch={state.onMilestoneSearch}
         assigneePersonSearch={state.assigneePersonSearch}
         richTextHandlers={state.richTextHandlers}
