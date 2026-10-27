@@ -1,8 +1,5 @@
 defmodule Operately.People.TaskOrdering do
-  import Ecto.Query, only: [from: 2]
-
-  alias Operately.People.Person
-  alias Operately.Repo
+  alias Operately.People
   alias Operately.Tasks.Task
 
   def get(person) do
@@ -15,16 +12,9 @@ defmodule Operately.People.TaskOrdering do
     allowed = available_task_ids(person, ids)
 
     if length(ids) == MapSet.size(allowed) && Enum.all?(ids, &MapSet.member?(allowed, &1)) && Enum.uniq(ids) == ids do
-      Repo.transaction(fn ->
-        # Reload under a lock so a request cannot overwrite newer preference values.
-        current = Repo.one!(from p in Person, where: p.id == ^person.id, lock: "FOR UPDATE")
-
-        current
-        |> Person.changeset(%{preferences: %{task_ordering: ids}})
-        |> Repo.update!()
-
-        ids
-      end)
+      with {:ok, _person} <- People.update_person(person, %{preferences: %{task_ordering: ids}}) do
+        {:ok, ids}
+      end
     else
       {:error, :bad_request}
     end

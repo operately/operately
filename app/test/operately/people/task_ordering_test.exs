@@ -19,6 +19,16 @@ defmodule Operately.People.TaskOrderingTest do
     assert Operately.People.Person.time_format(Repo.reload!(ctx.creator)) == :hour_24
   end
 
+  test "a release dismissal from a stale person preserves the saved task order", ctx do
+    assert {:ok, _} = TaskOrdering.update(ctx.creator, [ctx.task.id])
+
+    assert {:ok, person} = Operately.People.update_person(ctx.creator, %{preferences: %{dismissed_product_release_id: "v1.8"}})
+
+    assert person.preferences.task_ordering == [ctx.task.id]
+    assert person.preferences.dismissed_product_release_id == "v1.8"
+    assert Repo.reload!(ctx.creator).preferences == person.preferences
+  end
+
   test "closed and unassigned tasks disappear from the saved order", ctx do
     assert {:ok, _} = TaskOrdering.update(ctx.creator, [ctx.task.id])
     person = Repo.reload!(ctx.creator)
