@@ -8,6 +8,10 @@ import { PageDocsAndFilesTab, type PageDocsAndFiles } from "../DocsAndFiles/Page
 
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
+import {
+  CompleteMilestoneModal,
+  type CompleteMilestoneModalProps,
+} from "../MilestonePage/components/CompleteMilestoneModal";
 import { BadgeStatus } from "../StatusBadge/types";
 import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
@@ -179,6 +183,8 @@ export namespace ProjectPage {
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
     onMilestoneReorder: (sourceId: string, destinationIndex: number) => Promise<void>;
     onMilestoneSearch: (query: string) => Promise<void>;
+    onMilestoneComplete?: (milestoneId: string) => Promise<void>;
+    completeMilestoneModal?: CompleteMilestoneModalProps | null;
     assigneePersonSearch: PersonField.SearchData;
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
@@ -314,6 +320,7 @@ export function ProjectPage(props: ProjectPage.Props) {
 
       {"space" in state && <MoveModal {...state} />}
       <DeleteModal {...state} />
+      {state.completeMilestoneModal && <CompleteMilestoneModal {...state.completeMilestoneModal} />}
       {state.saveAsTemplate && (
         <SaveProjectAsTemplateModal
           isOpen={Boolean(state.isSaveAsTemplateModalOpen)}

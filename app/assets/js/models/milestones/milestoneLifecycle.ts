@@ -11,6 +11,8 @@ export async function invalidateMilestoneLifecycleQueries(
     queryClient.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.projects.getQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.tasks.listQueryKeyPrefix(), refetchType }),
+    queryClient.invalidateQueries({ queryKey: Api.tasks.getQueryKeyPrefix(), refetchType }),
+    queryClient.invalidateQueries({ queryKey: Api.projects.listMilestonesQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.projects.getMilestoneQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.projects.listMilestoneTasksQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.projects.countChildrenQueryKeyPrefix(), refetchType }),

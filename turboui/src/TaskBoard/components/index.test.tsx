@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
@@ -260,4 +260,21 @@ test("creation and dragging are enabled by their callbacks", () => {
   expect(onTaskCreate).toHaveBeenCalledWith(expect.objectContaining({ title: "New task", milestone: null }));
   expect(useBoardDnD).toHaveBeenLastCalledWith(expect.any(Function), { enabled: true });
   expect(useSortableItem).toHaveBeenLastCalledWith(expect.objectContaining({ disabled: false }));
+});
+
+describe("TaskBoard milestone completion", () => {
+  it("completes the selected active milestone from its header", async () => {
+    const onMilestoneComplete = jest.fn(async () => {});
+    const { container } = renderTaskBoard({ onMilestoneComplete });
+    const buttons = container.querySelectorAll('[data-test-id="complete-milestone"]');
+    expect(buttons).toHaveLength(1);
+    const button = buttons.item(0);
+    fireEvent.click(button);
+    await waitFor(() => expect(onMilestoneComplete).toHaveBeenCalledWith(openMilestone.id));
+  });
+
+  it("hides completion when editing is unavailable", () => {
+    const { container } = renderTaskBoard();
+    expect(container.querySelector('[data-test-id="complete-milestone"]')).toBeNull();
+  });
 });
