@@ -381,6 +381,11 @@ defmodule OperatelyWeb.Api do
         mutation :instantiate, OperatelyWeb.Api.CuratedTemplates.Instantiate
       end
 
+      namespace :people do
+        query :get_task_ordering, OperatelyWeb.Api.People.GetTaskOrdering
+        mutation :update_task_ordering, OperatelyWeb.Api.People.UpdateTaskOrdering
+      end
+
       common_endpoints()
 
       mutation(:delete_company, OperatelyWeb.Api.Mutations.DeleteCompany)

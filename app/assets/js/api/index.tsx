@@ -3834,6 +3834,12 @@ export interface PeopleGetMeResult {
   me: Person;
 }
 
+export interface PeopleGetTaskOrderingInput {}
+
+export interface PeopleGetTaskOrderingResult {
+  taskIds: string[];
+}
+
 export interface PeopleListInput {
   onlySuspended?: boolean;
   includeSuspended?: boolean;
@@ -5600,6 +5606,14 @@ export interface PeopleUpdatePictureResult {
   person: Person;
 }
 
+export interface PeopleUpdateTaskOrderingInput {
+  taskIds: Id[];
+}
+
+export interface PeopleUpdateTaskOrderingResult {
+  taskIds: string[];
+}
+
 export interface PeopleUpdateThemeInput {
   theme: AccountTheme;
 }
@@ -7205,6 +7219,10 @@ class ApiNamespacePeople {
 
   async updatePicture(input: PeopleUpdatePictureInput): Promise<PeopleUpdatePictureResult> {
     return this.client.post("/people/update_picture", input);
+  }
+
+  async updateTaskOrdering(input: PeopleUpdateTaskOrderingInput): Promise<PeopleUpdateTaskOrderingResult> {
+    return this.client.post("/people/update_task_ordering", input);
   }
 
   async updateTheme(input: PeopleUpdateThemeInput): Promise<PeopleUpdateThemeResult> {
@@ -9960,6 +9978,25 @@ export default {
         staleTime: Infinity,
       }),
 
+    getTaskOrderingQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/get_task_ordering"),
+    getTaskOrderingQueryKey: (input: PeopleGetTaskOrderingInput) =>
+      buildApiQueryKey(defaultApiClient, "/people/get_task_ordering", input),
+    getTaskOrderingQueryOptions: (input: PeopleGetTaskOrderingInput) =>
+      buildApiQueryOptions<PeopleGetTaskOrderingInput, PeopleGetTaskOrderingResult>(
+        defaultApiClient,
+        "/people/get_task_ordering",
+        input,
+      ),
+    getTaskOrderingQuery: (input: PeopleGetTaskOrderingInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<PeopleGetTaskOrderingInput, PeopleGetTaskOrderingResult>(
+          defaultApiClient,
+          "/people/get_task_ordering",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
     listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/list"),
     listQueryKey: (input: PeopleListInput) => buildApiQueryKey(defaultApiClient, "/people/list", input),
     listQueryOptions: (input: PeopleListInput) =>
@@ -10035,6 +10072,18 @@ export default {
     updatePictureMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: PeopleUpdatePictureInput) => defaultApiClient.apiNamespacePeople.updatePicture(input),
+      }),
+
+    updateTaskOrdering: (input: PeopleUpdateTaskOrderingInput) =>
+      defaultApiClient.apiNamespacePeople.updateTaskOrdering(input),
+    useUpdateTaskOrdering: () =>
+      useMutation<PeopleUpdateTaskOrderingInput, PeopleUpdateTaskOrderingResult>((input) =>
+        defaultApiClient.apiNamespacePeople.updateTaskOrdering(input),
+      ),
+    updateTaskOrderingMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: PeopleUpdateTaskOrderingInput) =>
+          defaultApiClient.apiNamespacePeople.updateTaskOrdering(input),
       }),
 
     updateTheme: (input: PeopleUpdateThemeInput) => defaultApiClient.apiNamespacePeople.updateTheme(input),

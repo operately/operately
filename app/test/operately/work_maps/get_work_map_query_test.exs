@@ -137,6 +137,54 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       refute Map.has_key?(items_by_id, ctx.other_assignee_task.id)
     end
 
+    for {requester, expected_tasks} <- [assignee: [], other_person: [], system: [:open_task]] do
+      @tag requester: requester, expected_tasks: expected_tasks
+      test "filters task access for #{requester} when viewing an assignee's work map", ctx do
+        ctx = Factory.edit_project_company_members_access(ctx, :project, :no_access)
+        requester = Map.get(ctx, ctx.requester, :system)
+
+        {:ok, work_map} = GetWorkMapQuery.execute(requester, %{
+          company_id: ctx.company.id,
+          include_tasks: true,
+          contributor_id: ctx.assignee.id
+        }, :flat)
+
+        task_ids = for item <- work_map, item.type == :task, do: item.id
+        assert task_ids == Enum.map(ctx.expected_tasks, &Map.fetch!(ctx, &1).id)
+      end
+    end
+
+    test "includes accessible space tasks and excludes private space tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:public_space, company_permissions: Binding.view_access())
+        |> Factory.create_space_task(:space_task, :public_space)
+        |> Factory.add_task_assignee(:space_assignment, :space_task, :assignee)
+        |> Factory.add_space(:private_space, company_permissions: Binding.no_access())
+        |> Factory.create_space_task(:private_task, :private_space)
+        |> Factory.add_task_assignee(:private_assignment, :private_task, :assignee)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.assignee, %{company_id: ctx.company.id, include_tasks: true}, :flat)
+      task_ids = for item <- work_map, item.type == :task, do: item.id
+
+      assert ctx.space_task.id in task_ids
+      refute ctx.private_task.id in task_ids
+    end
+
+    test "excludes tasks closed by timestamp and archived tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:archived_task, :milestone)
+        |> Factory.add_task_assignee(:archived_assignment, :archived_task, :assignee)
+
+      {:ok, _} = Operately.Tasks.update_task(ctx.open_task, %{closed_at: NaiveDateTime.utc_now()})
+      {:ok, _} = Operately.Tasks.update_task(ctx.archived_task, %{archived_at: NaiveDateTime.utc_now()})
+
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.assignee, %{company_id: ctx.company.id, include_tasks: true}, :flat)
+
+      refute Enum.any?(work_map, &(&1.type == :task))
+    end
+
     test "preloads project_space as nil when assignee has no access to the space", ctx do
       ctx =
         ctx
