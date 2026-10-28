@@ -82,7 +82,7 @@ function DueDate(props: MilestonePage.State) {
   const showOverdueWarning = props.milestone.status !== "done";
 
   return (
-    <SidebarSection title={t("Due Date")}>
+    <SidebarSection title={t("Due date")}>
       <DateField
         date={props.milestone.dueDate || null}
         onDateSelect={props.onDueDateChange}

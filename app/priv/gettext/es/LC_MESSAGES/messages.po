@@ -2773,10 +2773,15 @@ msgstr[1] "%{count} subobjetivos"
 msgid "%{current} / Unlimited"
 msgstr "%{current} / Sin límite"
 
+#~ #.frontend
+#~ #: ../turboui/src/WorkMap/utils/timeline.ts:100
+#~ msgid "%{date} - no deadline"
+#~ msgstr "%{date} - sin fecha límite"
+
 #.frontend
 #: ../turboui/src/WorkMap/utils/timeline.ts:100
-msgid "%{date} - no deadline"
-msgstr "%{date} - sin fecha límite"
+msgid "%{date} - no due date"
+msgstr "%{date} - sin fecha de vencimiento"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/TrendIndicator.tsx:47
@@ -2788,10 +2793,15 @@ msgstr "%{delta} respecto al anterior"
 msgid "%{displayName} (%{key})"
 msgstr "%{displayName} (%{key})"
 
+#~ #.frontend
+#~ #: assets/js/features/goals/GoalCheckIn/Form.tsx:295
+#~ msgid "%{durationHumanized} until the deadline."
+#~ msgstr "Faltan %{durationHumanized} para la fecha límite."
+
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:295
-msgid "%{durationHumanized} until the deadline."
-msgstr "Faltan %{durationHumanized} para la fecha límite."
+msgid "%{durationHumanized} until the due date."
+msgstr "Faltan %{durationHumanized} para la fecha de vencimiento."
 
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:285
@@ -4300,12 +4310,19 @@ msgid_plural "%{count} days overdue"
 msgstr[0] "Venció hace %{count} día"
 msgstr[1] "Venció hace %{count} días"
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:61
+#~ msgid "1 day until the deadline."
+#~ msgid_plural "%{count} days until the deadline."
+#~ msgstr[0] "Falta %{count} día para la fecha límite."
+#~ msgstr[1] "Faltan %{count} días para la fecha límite."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:61
-msgid "1 day until the deadline."
-msgid_plural "%{count} days until the deadline."
-msgstr[0] "Falta %{count} día para la fecha límite."
-msgstr[1] "Faltan %{count} días para la fecha límite."
+msgid "1 day until the due date."
+msgid_plural "%{count} days until the due date."
+msgstr[0] "Falta %{count} día para la fecha de vencimiento."
+msgstr[1] "Faltan %{count} días para la fecha de vencimiento."
 
 #.frontend
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:250
@@ -4414,12 +4431,19 @@ msgid_plural "%{count} months <highlight>overdue.</highlight>"
 msgstr[0] "<highlight>Venció</highlight> hace %{count} mes."
 msgstr[1] "<highlight>Venció</highlight> hace %{count} meses."
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:77
+#~ msgid "1 month until the deadline."
+#~ msgid_plural "%{count} months until the deadline."
+#~ msgstr[0] "Falta %{count} mes para la fecha límite."
+#~ msgstr[1] "Faltan %{count} meses para la fecha límite."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:77
-msgid "1 month until the deadline."
-msgid_plural "%{count} months until the deadline."
-msgstr[0] "Falta %{count} mes para la fecha límite."
-msgstr[1] "Faltan %{count} meses para la fecha límite."
+msgid "1 month until the due date."
+msgid_plural "%{count} months until the due date."
+msgstr[0] "Falta %{count} mes para la fecha de vencimiento."
+msgstr[1] "Faltan %{count} meses para la fecha de vencimiento."
 
 #.frontend
 #: ../turboui/src/utils/time.tsx:221
@@ -4635,12 +4659,19 @@ msgid_plural "%{count} weeks <highlight>overdue.</highlight>"
 msgstr[0] "<highlight>Venció</highlight> hace %{count} semana."
 msgstr[1] "<highlight>Venció</highlight> hace %{count} semanas."
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:69
+#~ msgid "1 week until the deadline."
+#~ msgid_plural "%{count} weeks until the deadline."
+#~ msgstr[0] "Falta %{count} semana para la fecha límite."
+#~ msgstr[1] "Faltan %{count} semanas para la fecha límite."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:69
-msgid "1 week until the deadline."
-msgid_plural "%{count} weeks until the deadline."
-msgstr[0] "Falta %{count} semana para la fecha límite."
-msgstr[1] "Faltan %{count} semanas para la fecha límite."
+msgid "1 week until the due date."
+msgid_plural "%{count} weeks until the due date."
+msgstr[0] "Falta %{count} semana para la fecha de vencimiento."
+msgstr[1] "Faltan %{count} semanas para la fecha de vencimiento."
 
 #.frontend
 #: ../turboui/src/utils/time.tsx:218
@@ -5562,10 +5593,15 @@ msgstr "Añadir miembros a %{name}"
 msgid "Add milestone"
 msgstr "Añadir hito"
 
+#~ #.frontend
+#~ #: ../turboui/src/MilestoneList/EmptyState.tsx:22
+#~ msgid "Add milestones to track key deliverables and deadlines"
+#~ msgstr "Añade hitos para seguir las entregas clave y las fechas límite"
+
 #.frontend
 #: ../turboui/src/MilestoneList/EmptyState.tsx:22
-msgid "Add milestones to track key deliverables and deadlines"
-msgstr "Añade hitos para seguir las entregas clave y las fechas límite"
+msgid "Add milestones to track key deliverables and due dates"
+msgstr "Añade hitos para seguir las entregas clave y las fechas de vencimiento"
 
 #.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:302
@@ -9760,18 +9796,21 @@ msgstr "Vence el %{date}"
 msgid "Due <date/>"
 msgstr "Vence el <date/>"
 
+#~ #.elixir
+#~ #.frontend
+#~ #: ../turboui/src/GoalPage/Sidebar.tsx:77
+#~ #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
+#~ #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
+#~ #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
+#~ #: lib/operately/md/goal/timeframe.ex:10
+#~ #: lib/operately/md/project/timeframe.ex:11
+#~ msgid "Due Date"
+#~ msgstr "Fecha de vencimiento"
+
 #.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:77
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
-#: assets/js/features/goals/GoalCheckIn/Form.tsx:452
-#: lib/operately/md/goal/timeframe.ex:10
-#: lib/operately/md/project/timeframe.ex:11
-msgid "Due Date"
-msgstr "Fecha de vencimiento"
-
-#.frontend
 #: ../turboui/src/MilestonePage/index.tsx:344
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:146
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:93
@@ -9780,6 +9819,10 @@ msgstr "Fecha de vencimiento"
 #: ../turboui/src/TaskPage/Sidebar.tsx:74
 #: ../turboui/src/TaskPage/Sidebar.tsx:257
 #: ../turboui/src/TaskPage/Sidebar.tsx:332
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
+#: assets/js/features/goals/GoalCheckIn/Form.tsx:452
+#: lib/operately/md/goal/timeframe.ex:10
+#: lib/operately/md/project/timeframe.ex:11
 msgid "Due date"
 msgstr "Fecha de vencimiento"
 
@@ -17883,10 +17926,15 @@ msgstr "Mira lo que cambió"
 msgid "See what will change before this company moves to the Free plan."
 msgstr "Consulta qué cambiará antes de que esta empresa pase al plan gratuito."
 
+#~ #.frontend
+#~ #: ../turboui/src/WorkMap/components/ZeroState.tsx:73
+#~ msgid "See what you and your team are working on, with progress and deadlines."
+#~ msgstr "Consulta en qué trabajan tú y tu equipo, con el avance y las fechas límite."
+
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:73
-msgid "See what you and your team are working on, with progress and deadlines."
-msgstr "Consulta en qué trabajan tú y tu equipo, con el avance y las fechas límite."
+msgid "See what you and your team are working on, with progress and due dates."
+msgstr "Consulta en qué trabajan tú y tu equipo, con el avance y las fechas de vencimiento."
 
 #.frontend
 #: ../turboui/src/Forms/SelectGoal.tsx:100

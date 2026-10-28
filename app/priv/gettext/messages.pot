@@ -2775,7 +2775,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/WorkMap/utils/timeline.ts:100
-msgid "%{date} - no deadline"
+msgid "%{date} - no due date"
 msgstr ""
 
 #.frontend
@@ -2790,7 +2790,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:295
-msgid "%{durationHumanized} until the deadline."
+msgid "%{durationHumanized} until the due date."
 msgstr ""
 
 #.frontend
@@ -4297,8 +4297,8 @@ msgstr[1] ""
 
 #.elixir
 #: lib/operately_email/check_in_overview.ex:61
-msgid "1 day until the deadline."
-msgid_plural "%{count} days until the deadline."
+msgid "1 day until the due date."
+msgid_plural "%{count} days until the due date."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -4411,8 +4411,8 @@ msgstr[1] ""
 
 #.elixir
 #: lib/operately_email/check_in_overview.ex:77
-msgid "1 month until the deadline."
-msgid_plural "%{count} months until the deadline."
+msgid "1 month until the due date."
+msgid_plural "%{count} months until the due date."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -4632,8 +4632,8 @@ msgstr[1] ""
 
 #.elixir
 #: lib/operately_email/check_in_overview.ex:69
-msgid "1 week until the deadline."
-msgid_plural "%{count} weeks until the deadline."
+msgid "1 week until the due date."
+msgid_plural "%{count} weeks until the due date."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -5554,7 +5554,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/MilestoneList/EmptyState.tsx:22
-msgid "Add milestones to track key deliverables and deadlines"
+msgid "Add milestones to track key deliverables and due dates"
 msgstr ""
 
 #.frontend
@@ -9724,14 +9724,6 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:77
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
-#: assets/js/features/goals/GoalCheckIn/Form.tsx:452
-#: lib/operately/md/goal/timeframe.ex:10
-#: lib/operately/md/project/timeframe.ex:11
-msgid "Due Date"
-msgstr ""
-
-#.frontend
 #: ../turboui/src/MilestonePage/index.tsx:344
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:146
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:93
@@ -9740,6 +9732,10 @@ msgstr ""
 #: ../turboui/src/TaskPage/Sidebar.tsx:74
 #: ../turboui/src/TaskPage/Sidebar.tsx:257
 #: ../turboui/src/TaskPage/Sidebar.tsx:332
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
+#: assets/js/features/goals/GoalCheckIn/Form.tsx:452
+#: lib/operately/md/goal/timeframe.ex:10
+#: lib/operately/md/project/timeframe.ex:11
 msgid "Due date"
 msgstr ""
 
@@ -17767,7 +17763,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:73
-msgid "See what you and your team are working on, with progress and deadlines."
+msgid "See what you and your team are working on, with progress and due dates."
 msgstr ""
 
 #.frontend

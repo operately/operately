@@ -7,7 +7,7 @@ defmodule Operately.MD.Goal.Timeframe do
     ## #{gettext("Timeframe")}
 
     #{gettext("Start Date")}: #{render_contextual_date(goal.timeframe && goal.timeframe.contextual_start_date)}
-    #{gettext("Due Date")}: #{render_contextual_date(goal.timeframe && goal.timeframe.contextual_end_date)}
+    #{gettext("Due date")}: #{render_contextual_date(goal.timeframe && goal.timeframe.contextual_end_date)}
 
     ### #{gettext("Timeframe History")}
 
