@@ -1819,6 +1819,33 @@ export interface GoalUpdatePermissions {
   canComment?: boolean | null;
 }
 
+export interface InlineAnchor {
+  __typename: "inline_anchor";
+  sourceVersion: number;
+  sourceFrom: number;
+  sourceTo: number;
+  quote: string;
+  prefix: string;
+  suffix: string;
+  currentVersion: number;
+  currentFrom: number | null;
+  currentTo: number | null;
+  status: InlineAnchorStatus;
+}
+
+export interface InlineThread {
+  __typename: "inline_thread";
+  id: Id;
+  resourceType: InlineThreadResourceType;
+  resourceId: Id;
+  author: Person | null;
+  resolvedAt: string | null;
+  resolvedBy: Person | null;
+  insertedAt: string;
+  anchor: InlineAnchor;
+  messages: Comment[];
+}
+
 export interface InviteLink {
   __typename: "invite_link";
   id?: string | null;
@@ -3116,6 +3143,10 @@ export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret
 export type GoalStatus =
   "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
+export type InlineAnchorStatus = "attached" | "unattached";
+
+export type InlineThreadResourceType = "resource_hub_document";
+
 export type Language = "en" | "pt-BR" | "de" | "ru" | "fr" | "es";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
@@ -3699,6 +3730,15 @@ export interface GoalsSearchParentGoalInput {
 
 export interface GoalsSearchParentGoalResult {
   goals: Goal[];
+}
+
+export interface InlineThreadsListInput {
+  resourceType: InlineThreadResourceType;
+  resourceId: Id;
+}
+
+export interface InlineThreadsListResult {
+  threads: InlineThread[];
 }
 
 export interface InvitationsGetInvitationInput {
@@ -5348,6 +5388,62 @@ export interface GoalsUpdateTargetValueInput {
 
 export interface GoalsUpdateTargetValueResult {
   success: boolean;
+}
+
+export interface InlineThreadsCreateInput {
+  resourceType: InlineThreadResourceType;
+  resourceId: Id;
+  sourceVersion: number;
+  from: number;
+  to: number;
+  quote: string;
+  content: Json;
+}
+
+export interface InlineThreadsCreateResult {
+  thread: InlineThread;
+}
+
+export interface InlineThreadsDeleteMessageInput {
+  messageId: Id;
+}
+
+export interface InlineThreadsDeleteMessageResult {
+  thread: InlineThread | null;
+}
+
+export interface InlineThreadsReopenInput {
+  threadId: Id;
+}
+
+export interface InlineThreadsReopenResult {
+  thread: InlineThread;
+}
+
+export interface InlineThreadsReplyInput {
+  threadId: Id;
+  content: Json;
+}
+
+export interface InlineThreadsReplyResult {
+  thread: InlineThread;
+}
+
+export interface InlineThreadsResolveInput {
+  threadId: Id;
+}
+
+export interface InlineThreadsResolveResult {
+  thread: InlineThread;
+}
+
+export interface InlineThreadsUpdateMessageInput {
+  messageId: Id;
+  content: Json;
+}
+
+export interface InlineThreadsUpdateMessageResult {
+  thread: InlineThread;
 }
 
 export interface InvitationsGetCompanyInviteLinkInput {}
@@ -7866,6 +7962,34 @@ class ApiNamespaceRichContent {
   }
 }
 
+class ApiNamespaceInlineThreads {
+  constructor(private client: ApiClient) {}
+
+  async create(input: InlineThreadsCreateInput): Promise<InlineThreadsCreateResult> {
+    return this.client.post("/inline_threads/create", input);
+  }
+
+  async deleteMessage(input: InlineThreadsDeleteMessageInput): Promise<InlineThreadsDeleteMessageResult> {
+    return this.client.post("/inline_threads/delete_message", input);
+  }
+
+  async reopen(input: InlineThreadsReopenInput): Promise<InlineThreadsReopenResult> {
+    return this.client.post("/inline_threads/reopen", input);
+  }
+
+  async reply(input: InlineThreadsReplyInput): Promise<InlineThreadsReplyResult> {
+    return this.client.post("/inline_threads/reply", input);
+  }
+
+  async resolve(input: InlineThreadsResolveInput): Promise<InlineThreadsResolveResult> {
+    return this.client.post("/inline_threads/resolve", input);
+  }
+
+  async updateMessage(input: InlineThreadsUpdateMessageInput): Promise<InlineThreadsUpdateMessageResult> {
+    return this.client.post("/inline_threads/update_message", input);
+  }
+}
+
 class ApiNamespaceReactions {
   constructor(private client: ApiClient) {}
 
@@ -7914,6 +8038,7 @@ export class ApiClient {
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceCuratedTemplates: ApiNamespaceCuratedTemplates;
   public apiNamespaceRichContent: ApiNamespaceRichContent;
+  public apiNamespaceInlineThreads: ApiNamespaceInlineThreads;
   public apiNamespaceReactions: ApiNamespaceReactions;
   public apiNamespaceAnalytics: ApiNamespaceAnalytics;
 
@@ -7943,6 +8068,7 @@ export class ApiClient {
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceCuratedTemplates = new ApiNamespaceCuratedTemplates(this);
     this.apiNamespaceRichContent = new ApiNamespaceRichContent(this);
+    this.apiNamespaceInlineThreads = new ApiNamespaceInlineThreads(this);
     this.apiNamespaceReactions = new ApiNamespaceReactions(this);
     this.apiNamespaceAnalytics = new ApiNamespaceAnalytics(this);
   }
@@ -12485,6 +12611,90 @@ export default {
       mutationOptions({
         mutationFn: (input: RichContentSetTaskItemCheckedInput) =>
           defaultApiClient.apiNamespaceRichContent.setTaskItemChecked(input),
+      }),
+  },
+
+  inline_threads: {
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/inline_threads/list"),
+    listQueryKey: (input: InlineThreadsListInput) => buildApiQueryKey(defaultApiClient, "/inline_threads/list", input),
+    listQueryOptions: (input: InlineThreadsListInput) =>
+      buildApiQueryOptions<InlineThreadsListInput, InlineThreadsListResult>(
+        defaultApiClient,
+        "/inline_threads/list",
+        input,
+      ),
+    listQuery: (input: InlineThreadsListInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<InlineThreadsListInput, InlineThreadsListResult>(
+          defaultApiClient,
+          "/inline_threads/list",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    create: (input: InlineThreadsCreateInput) => defaultApiClient.apiNamespaceInlineThreads.create(input),
+    useCreate: () =>
+      useMutation<InlineThreadsCreateInput, InlineThreadsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.create(input),
+      ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsCreateInput) => defaultApiClient.apiNamespaceInlineThreads.create(input),
+      }),
+
+    resolve: (input: InlineThreadsResolveInput) => defaultApiClient.apiNamespaceInlineThreads.resolve(input),
+    useResolve: () =>
+      useMutation<InlineThreadsResolveInput, InlineThreadsResolveResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.resolve(input),
+      ),
+    resolveMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsResolveInput) => defaultApiClient.apiNamespaceInlineThreads.resolve(input),
+      }),
+
+    updateMessage: (input: InlineThreadsUpdateMessageInput) =>
+      defaultApiClient.apiNamespaceInlineThreads.updateMessage(input),
+    useUpdateMessage: () =>
+      useMutation<InlineThreadsUpdateMessageInput, InlineThreadsUpdateMessageResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.updateMessage(input),
+      ),
+    updateMessageMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsUpdateMessageInput) =>
+          defaultApiClient.apiNamespaceInlineThreads.updateMessage(input),
+      }),
+
+    reopen: (input: InlineThreadsReopenInput) => defaultApiClient.apiNamespaceInlineThreads.reopen(input),
+    useReopen: () =>
+      useMutation<InlineThreadsReopenInput, InlineThreadsReopenResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.reopen(input),
+      ),
+    reopenMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsReopenInput) => defaultApiClient.apiNamespaceInlineThreads.reopen(input),
+      }),
+
+    reply: (input: InlineThreadsReplyInput) => defaultApiClient.apiNamespaceInlineThreads.reply(input),
+    useReply: () =>
+      useMutation<InlineThreadsReplyInput, InlineThreadsReplyResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.reply(input),
+      ),
+    replyMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsReplyInput) => defaultApiClient.apiNamespaceInlineThreads.reply(input),
+      }),
+
+    deleteMessage: (input: InlineThreadsDeleteMessageInput) =>
+      defaultApiClient.apiNamespaceInlineThreads.deleteMessage(input),
+    useDeleteMessage: () =>
+      useMutation<InlineThreadsDeleteMessageInput, InlineThreadsDeleteMessageResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.deleteMessage(input),
+      ),
+    deleteMessageMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsDeleteMessageInput) =>
+          defaultApiClient.apiNamespaceInlineThreads.deleteMessage(input),
       }),
   },
 

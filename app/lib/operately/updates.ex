@@ -24,6 +24,9 @@ defmodule Operately.Updates do
 
   def get_comment!(id), do: Repo.get!(Comment, id)
 
+  # Inline messages must use their dedicated, document-authorized endpoints.
+  def get_comment_with_access_level(_id, _person_id, :inline_thread), do: {:error, :not_found}
+
   def get_comment_with_access_level(id, person_id, type) when type in [:resource_hub_document, :resource_hub_file, :resource_hub_link] do
     case Repo.get(Comment, id) do
       nil -> {:error, :not_found}
@@ -132,7 +135,6 @@ defmodule Operately.Updates do
           as: :resource,
           where: c.id == ^id
         )
-
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :comment)
   end
