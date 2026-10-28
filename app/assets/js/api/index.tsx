@@ -1955,6 +1955,7 @@ export interface Panel {
 
 export interface Person {
   __typename: "person";
+  titleSetupPending?: boolean;
   id: string;
   url?: string;
   fullName: string;
@@ -5579,6 +5580,7 @@ export interface PeopleUpdateInput {
   id: Id;
   fullName?: string;
   title?: string;
+  titleSetupPending?: boolean;
   timezone?: string;
   language?: Language | null;
   timeFormat?: TimeFormat;

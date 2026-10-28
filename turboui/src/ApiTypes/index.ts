@@ -1859,6 +1859,7 @@ export interface Panel {
 
 export interface Person {
   __typename: "person";
+  titleSetupPending?: boolean;
   id: string;
   url?: string;
   fullName: string;

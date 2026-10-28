@@ -305,3 +305,5 @@ export { useSelectLocalization } from "./SelectLocalization";
 export * from "./CuratedTemplates";
 
 export * from "./SaasAdminAccountActionsMenu";
+
+export { TitleSetupPrompt } from "./TitleSetupPrompt";

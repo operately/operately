@@ -2353,6 +2353,7 @@ defmodule OperatelyWeb.Api.Types do
   enum :language, values: Operately.I18n.Languages.api_values()
 
   object :person, for: Operately.People.Person do
+    field? :title_setup_pending, :boolean, null: false
     field :id, :string
     field? :url, :string
     field :full_name, :string
