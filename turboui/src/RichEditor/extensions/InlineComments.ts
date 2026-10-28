@@ -12,8 +12,8 @@ export interface InlineCommentsOptions {
   onThreadClick?: (threadIds: string[]) => void;
 }
 
-type DetachedRange = { range: InlineCommentRange; doc: Node };
-type State = { ranges: InlineCommentRange[]; detached: DetachedRange[]; activeThreadId?: string | null };
+type RangeSnapshot = { ranges: InlineCommentRange[]; doc: Node };
+type State = { ranges: InlineCommentRange[]; snapshots: RangeSnapshot[]; activeThreadId?: string | null };
 type Update = { ranges?: InlineCommentRange[]; activeThreadId?: string | null };
 
 export const inlineCommentsKey = new PluginKey<State>("inlineComments");
@@ -58,20 +58,22 @@ export function createInlineCommentsPlugin(options: InlineCommentsOptions): Plug
     state: {
       init: (_, state) => ({
         ranges: options.ranges.filter((range) => validRange(state.doc, range)),
-        detached: [],
+        snapshots: [],
         activeThreadId: options.activeThreadId,
       }),
       apply(tr, previous, oldState) {
         const update: Update | undefined = tr.getMeta(inlineCommentsKey);
         let next = previous;
+
         if (update?.ranges) {
-          next = { ...previous, ranges: update.ranges.filter((range) => validRange(tr.doc, range)), detached: [] };
+          next = { ...previous, ranges: update.ranges.filter((range) => validRange(tr.doc, range)), snapshots: [] };
         } else if (tr.docChanged && tr.getMeta("preventUpdate") !== undefined) {
           // Tiptap setContent replaces the document; old ranges and undo snapshots no longer apply.
-          next = { ...previous, ranges: [], detached: [] };
+          next = { ...previous, ranges: [], snapshots: [] };
         } else if (tr.docChanged) {
           next = mapRanges(previous, tr, oldState.doc);
         }
+
         if (update && "activeThreadId" in update) next = { ...next, activeThreadId: update.activeThreadId };
         return next;
       },
@@ -119,21 +121,24 @@ export function createInlineCommentsPlugin(options: InlineCommentsOptions): Plug
 }
 
 function mapRanges(previous: State, tr: Transaction, oldDoc: Node): State {
+  if (previous.ranges.length === 0 && previous.snapshots.length === 0) return previous;
+
+  // Undo can combine several transactions, including edits outside a range.
+  // Remember all ranges for each body so that grouped undo restores exact boundaries.
+  const snapshots = [
+    { doc: oldDoc, ranges: previous.ranges },
+    ...previous.snapshots.filter((snapshot) => !snapshot.doc.eq(oldDoc)),
+  ];
+  const restored = snapshots.find((snapshot) => snapshot.doc.eq(tr.doc));
+  if (restored) return { ...previous, ranges: restored.ranges, snapshots };
+
   const ranges: InlineCommentRange[] = [];
-  const detached: DetachedRange[] = [];
-
-  for (const snapshot of previous.detached) {
-    if (snapshot.doc.eq(tr.doc)) ranges.push(snapshot.range);
-    else detached.push(snapshot);
-  }
-
   for (const range of previous.ranges) {
     const mapped = mapRange(range, tr);
     if (mapped && validRange(tr.doc, mapped)) ranges.push(mapped);
-    else detached.push({ range, doc: oldDoc });
   }
 
-  return { ...previous, ranges, detached };
+  return { ...previous, ranges, snapshots };
 }
 
 function mapRange(range: InlineCommentRange, tr: Transaction): InlineCommentRange | null {

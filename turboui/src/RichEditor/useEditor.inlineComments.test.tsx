@@ -46,7 +46,7 @@ it("external content and supplied ranges replace the baseline; callback and acti
     ranges: [{ id: "b", from: 1, to: 4 }],
   });
   expect(inlineCommentsKey.getState(editor.state)?.ranges).toEqual([{ id: "b", from: 1, to: 4 }]);
-  expect(inlineCommentsKey.getState(editor.state)?.detached).toEqual([]);
+  expect(inlineCommentsKey.getState(editor.state)?.snapshots).toEqual([]);
 });
 
 it("local drafts contain only document content", async () => {

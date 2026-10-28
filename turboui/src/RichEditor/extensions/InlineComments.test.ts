@@ -1,4 +1,5 @@
 import { Editor, type JSONContent } from "@tiptap/core";
+import { closeHistory } from "@tiptap/pm/history";
 import fixtures from "../../../../app/test/fixtures/rich_text/selections.json";
 import { createRichEditorExtensions } from "../createRichEditorExtensions";
 import { inlineCommentsKey, type InlineCommentsOptions } from "./InlineComments";
@@ -43,6 +44,61 @@ test("full replacement detaches, undo restores the exact snapshot, and redo deta
   expect(ranges()).toEqual([{ id: "a", from: 1, to: 6 }]);
   editor.commands.redo();
   expect(ranges()).toEqual([]);
+});
+
+test.each([
+  { from: 1, to: 3, remaining: { id: "a", from: 1, to: 4 } },
+  { from: 4, to: 6, remaining: { id: "a", from: 1, to: 4 } },
+])("undo restores a partially deleted boundary ($from–$to), and redo shrinks it again", ({ from, to, remaining }) => {
+  setup();
+  editor.view.dispatch(editor.state.tr.delete(from, to));
+  expect(ranges()).toEqual([remaining]);
+  editor.commands.undo();
+  expect(ranges()).toEqual([{ id: "a", from: 1, to: 6 }]);
+  editor.commands.redo();
+  expect(ranges()).toEqual([remaining]);
+});
+
+test("undo restores each boundary across successive partial and full deletions", () => {
+  setup();
+  editor.view.dispatch(editor.state.tr.delete(1, 2));
+  editor.view.dispatch(closeHistory(editor.state.tr).delete(4, 5));
+  editor.view.dispatch(closeHistory(editor.state.tr).delete(1, 4));
+  expect(ranges()).toEqual([]);
+  editor.commands.undo();
+  expect(ranges()).toEqual([{ id: "a", from: 1, to: 4 }]);
+  editor.commands.undo();
+  expect(ranges()).toEqual([{ id: "a", from: 1, to: 5 }]);
+  editor.commands.undo();
+  expect(ranges()).toEqual([{ id: "a", from: 1, to: 6 }]);
+  editor.commands.redo();
+  editor.commands.redo();
+  editor.commands.redo();
+  expect(ranges()).toEqual([]);
+});
+
+test("undo recovers overlapping ranges after grouped partial deletions", () => {
+  setup({
+    ranges: [
+      { id: "a", from: 1, to: 6 },
+      { id: "b", from: 2, to: 5 },
+    ],
+  });
+  editor.view.dispatch(editor.state.tr.delete(1, 2));
+  editor.view.dispatch(editor.state.tr.delete(1, 2));
+  editor.commands.undo();
+  expect(ranges()).toEqual([
+    { id: "a", from: 1, to: 6 },
+    { id: "b", from: 2, to: 5 },
+  ]);
+});
+
+test("supplied ranges discard partial-deletion recovery snapshots", () => {
+  setup();
+  editor.view.dispatch(editor.state.tr.delete(1, 3));
+  editor.commands.setInlineCommentRanges([{ id: "new", from: 1, to: 4 }]);
+  editor.commands.undo();
+  expect(ranges()).toEqual([{ id: "new", from: 3, to: 6 }]);
 });
 
 test("supplied ranges start a new baseline and discard detached snapshots", () => {
@@ -98,12 +154,12 @@ test("uses UTF-16 positions and ignores formatting changes", () => {
   expect(ranges()).toEqual([{ id: "a", from: 7, to: 9 }]);
 });
 
-test("external replacement discards the old undo recovery baseline", () => {
+test.each([3, 6])("external replacement discards the recovery baseline after deletion to %i", (to) => {
   setup();
-  editor.view.dispatch(editor.state.tr.delete(1, 6));
+  editor.view.dispatch(editor.state.tr.delete(1, to));
   editor.commands.setContent(content("Hello world"));
   expect(ranges()).toEqual([]);
-  expect(inlineCommentsKey.getState(editor.state)?.detached).toEqual([]);
+  expect(inlineCommentsKey.getState(editor.state)?.snapshots).toEqual([]);
 });
 
 test("rejects ranges splitting a surrogate pair", () => {
