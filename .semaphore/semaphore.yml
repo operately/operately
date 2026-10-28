@@ -170,7 +170,7 @@ blocks:
             - artifact push workflow -d test-timing-fragments/unit-$SEMAPHORE_JOB_INDEX.json /tmp/test-timing-unit-$SEMAPHORE_JOB_INDEX.json --force
 
         - name: Features
-          parallelism: 18
+          parallelism: 20
           commands:
             - artifact pull workflow test-manifests --force
             - make test.setup.features
