@@ -293,7 +293,7 @@ function OverviewDueDate() {
       return (
         <span>
           <Trans
-            i18nKey="{{durationHumanized}} until the deadline."
+            i18nKey="{{durationHumanized}} until the due date."
             values={{ durationHumanized: durationHumanized(new Date(), date) }}
           />
         </span>
@@ -449,7 +449,7 @@ function DueDateSelector() {
 
   return (
     <div>
-      <Label text={t("Due Date")} info={t("Set a new due date for the goal.")} />
+      <Label text={t("Due date")} info={t("Set a new due date for the goal.")} />
       <DateField
         date={value ?? null}
         onDateSelect={(date) => setValue(date)}

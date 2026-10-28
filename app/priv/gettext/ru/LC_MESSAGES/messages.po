@@ -2796,9 +2796,14 @@ msgstr[3] "%{count} подцели"
 msgid "%{current} / Unlimited"
 msgstr "%{current} / Без ограничений"
 
+#~ #.frontend
+#~ #: ../turboui/src/WorkMap/utils/timeline.ts:100
+#~ msgid "%{date} - no deadline"
+#~ msgstr "%{date} — без срока выполнения"
+
 #.frontend
 #: ../turboui/src/WorkMap/utils/timeline.ts:100
-msgid "%{date} - no deadline"
+msgid "%{date} - no due date"
 msgstr "%{date} — без срока выполнения"
 
 #.frontend
@@ -2811,9 +2816,14 @@ msgstr "%{delta} к предыдущему значению"
 msgid "%{displayName} (%{key})"
 msgstr "%{displayName} (%{key})"
 
+#~ #.frontend
+#~ #: assets/js/features/goals/GoalCheckIn/Form.tsx:295
+#~ msgid "%{durationHumanized} until the deadline."
+#~ msgstr "До срока выполнения: %{durationHumanized}."
+
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:295
-msgid "%{durationHumanized} until the deadline."
+msgid "%{durationHumanized} until the due date."
 msgstr "До срока выполнения: %{durationHumanized}."
 
 #.frontend
@@ -4361,10 +4371,19 @@ msgstr[1] "Просрочено на %{count} дня"
 msgstr[2] "Просрочено на %{count} дней"
 msgstr[3] "Просрочено на %{count} дня"
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:61
+#~ msgid "1 day until the deadline."
+#~ msgid_plural "%{count} days until the deadline."
+#~ msgstr[0] "До срока выполнения: %{count} день."
+#~ msgstr[1] "До срока выполнения: %{count} дня."
+#~ msgstr[2] "До срока выполнения: %{count} дней."
+#~ msgstr[3] "До срока выполнения: %{count} дня."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:61
-msgid "1 day until the deadline."
-msgid_plural "%{count} days until the deadline."
+msgid "1 day until the due date."
+msgid_plural "%{count} days until the due date."
 msgstr[0] "До срока выполнения: %{count} день."
 msgstr[1] "До срока выполнения: %{count} дня."
 msgstr[2] "До срока выполнения: %{count} дней."
@@ -4507,10 +4526,19 @@ msgstr[1] "<highlight>Просрочено</highlight> на %{count} месяц�
 msgstr[2] "<highlight>Просрочено</highlight> на %{count} месяцев."
 msgstr[3] "<highlight>Просрочено</highlight> на %{count} месяца."
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:77
+#~ msgid "1 month until the deadline."
+#~ msgid_plural "%{count} months until the deadline."
+#~ msgstr[0] "До срока выполнения: %{count} месяц."
+#~ msgstr[1] "До срока выполнения: %{count} месяца."
+#~ msgstr[2] "До срока выполнения: %{count} месяцев."
+#~ msgstr[3] "До срока выполнения: %{count} месяца."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:77
-msgid "1 month until the deadline."
-msgid_plural "%{count} months until the deadline."
+msgid "1 month until the due date."
+msgid_plural "%{count} months until the due date."
 msgstr[0] "До срока выполнения: %{count} месяц."
 msgstr[1] "До срока выполнения: %{count} месяца."
 msgstr[2] "До срока выполнения: %{count} месяцев."
@@ -4790,10 +4818,19 @@ msgstr[1] "<highlight>Просрочено</highlight> на %{count} недел�
 msgstr[2] "<highlight>Просрочено</highlight> на %{count} недель."
 msgstr[3] "<highlight>Просрочено</highlight> на %{count} недели."
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:69
+#~ msgid "1 week until the deadline."
+#~ msgid_plural "%{count} weeks until the deadline."
+#~ msgstr[0] "До срока выполнения: %{count} неделя."
+#~ msgstr[1] "До срока выполнения: %{count} недели."
+#~ msgstr[2] "До срока выполнения: %{count} недель."
+#~ msgstr[3] "До срока выполнения: %{count} недели."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:69
-msgid "1 week until the deadline."
-msgid_plural "%{count} weeks until the deadline."
+msgid "1 week until the due date."
+msgid_plural "%{count} weeks until the due date."
 msgstr[0] "До срока выполнения: %{count} неделя."
 msgstr[1] "До срока выполнения: %{count} недели."
 msgstr[2] "До срока выполнения: %{count} недель."
@@ -5723,10 +5760,15 @@ msgstr "Добавить участников в «%{name}»"
 msgid "Add milestone"
 msgstr "Добавить веху"
 
+#~ #.frontend
+#~ #: ../turboui/src/MilestoneList/EmptyState.tsx:22
+#~ msgid "Add milestones to track key deliverables and deadlines"
+#~ msgstr "Добавьте вехи для отслеживания ключевых результатов и сроков"
+
 #.frontend
 #: ../turboui/src/MilestoneList/EmptyState.tsx:22
-msgid "Add milestones to track key deliverables and deadlines"
-msgstr "Добавьте вехи для отслеживания ключевых результатов и сроков"
+msgid "Add milestones to track key deliverables and due dates"
+msgstr "Добавьте вехи для отслеживания ключевых результатов и сроков выполнения"
 
 #.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:302
@@ -9927,18 +9969,21 @@ msgstr "Срок: %{date}"
 msgid "Due <date/>"
 msgstr "Срок: <date/>"
 
+#~ #.elixir
+#~ #.frontend
+#~ #: ../turboui/src/GoalPage/Sidebar.tsx:77
+#~ #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
+#~ #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
+#~ #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
+#~ #: lib/operately/md/goal/timeframe.ex:10
+#~ #: lib/operately/md/project/timeframe.ex:11
+#~ msgid "Due Date"
+#~ msgstr "Срок выполнения"
+
 #.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:77
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
-#: assets/js/features/goals/GoalCheckIn/Form.tsx:452
-#: lib/operately/md/goal/timeframe.ex:10
-#: lib/operately/md/project/timeframe.ex:11
-msgid "Due Date"
-msgstr "Срок выполнения"
-
-#.frontend
 #: ../turboui/src/MilestonePage/index.tsx:344
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:146
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:93
@@ -9947,6 +9992,10 @@ msgstr "Срок выполнения"
 #: ../turboui/src/TaskPage/Sidebar.tsx:74
 #: ../turboui/src/TaskPage/Sidebar.tsx:257
 #: ../turboui/src/TaskPage/Sidebar.tsx:332
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
+#: assets/js/features/goals/GoalCheckIn/Form.tsx:452
+#: lib/operately/md/goal/timeframe.ex:10
+#: lib/operately/md/project/timeframe.ex:11
 msgid "Due date"
 msgstr "Срок выполнения"
 
@@ -18060,9 +18109,14 @@ msgstr "Посмотрите, что изменилось"
 msgid "See what will change before this company moves to the Free plan."
 msgstr "Посмотрите, что изменится при переходе компании на бесплатный тариф."
 
+#~ #.frontend
+#~ #: ../turboui/src/WorkMap/components/ZeroState.tsx:73
+#~ msgid "See what you and your team are working on, with progress and deadlines."
+#~ msgstr "Просматривайте работу своей команды, её прогресс и сроки выполнения."
+
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:73
-msgid "See what you and your team are working on, with progress and deadlines."
+msgid "See what you and your team are working on, with progress and due dates."
 msgstr "Просматривайте работу своей команды, её прогресс и сроки выполнения."
 
 #.frontend

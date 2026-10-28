@@ -16,7 +16,7 @@ defmodule Operately.MD.Goal.TimeframeTest do
 
     assert rendered =~ "## Timeframe"
     assert rendered =~ "Start Date:"
-    assert rendered =~ "Due Date:"
+    assert rendered =~ "Due date:"
     assert rendered =~ "### Timeframe History"
   end
 
@@ -26,7 +26,7 @@ defmodule Operately.MD.Goal.TimeframeTest do
     rendered = Timeframe.render(goal)
 
     assert rendered =~ "Start Date: Not Set"
-    assert rendered =~ "Due Date: Not Set"
+    assert rendered =~ "Due date: Not Set"
   end
 
   test "renders contextual dates when available", ctx do
@@ -36,7 +36,7 @@ defmodule Operately.MD.Goal.TimeframeTest do
 
     # Should show the current date from the factory setup
     assert rendered =~ "Start Date:"
-    assert rendered =~ "Due Date:"
+    assert rendered =~ "Due date:"
     # The factory-created goals have dates set, so they shouldn't show "Not Set"
     refute rendered =~ "Start Date: Not Set"
   end
@@ -211,7 +211,7 @@ defmodule Operately.MD.Goal.TimeframeTest do
 
     assert rendered =~ "## Timeframe"
     assert rendered =~ "Start Date: Not Set"
-    assert rendered =~ "Due Date: Not Set"
+    assert rendered =~ "Due date: Not Set"
     assert rendered =~ "### Timeframe History"
   end
 
@@ -222,7 +222,7 @@ defmodule Operately.MD.Goal.TimeframeTest do
     # Should render timeframe section
     assert rendered =~ "## Timeframe"
     assert rendered =~ "Start Date:"
-    assert rendered =~ "Due Date:"
+    assert rendered =~ "Due date:"
 
     # Should have timeframe history section
     assert rendered =~ "### Timeframe History"

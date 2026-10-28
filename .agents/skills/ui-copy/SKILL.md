@@ -41,7 +41,9 @@ User-authored content, machine identifiers/protocol fields, developer-only diagn
 
 ## Product Vocabulary
 
-Some names exist only in code, schemas, and internal discussion. Never put them in UI copy — placeholders, labels, empty states, errors, confirmations, notifications, or help text.
+Use these terms consistently in labels, placeholders, empty states, errors, confirmations, notifications, and help text.
+
+- **Due date** is the planned completion date for a goal, project, milestone, or task. Use `Due date` for labels and `due date` in sentences; avoid `deadline` or `end date` for this concept. Keep natural phrases such as `Due today` and `Overdue`, and distinguish actual completion dates and billing period end dates. Follow each language’s glossary for translations.
 
 - **Resource Hub** is an internal name. Users do not know what a resource hub is. Never use `resource hub`, `Resource Hub`, or similar phrasing in UI copy. Prefer the user-facing terms already in the product, such as `Documents & Files`, `documents and files`, or the specific item types (`document`, `folder`, `link`, `file`) when that is clearer.
 
