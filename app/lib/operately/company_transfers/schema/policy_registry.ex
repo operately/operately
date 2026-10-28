@@ -107,6 +107,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
       table_map: %{
         "comment_thread" => "comment_threads",
         "goal_update" => "goal_updates",
+        "inline_thread" => "inline_threads",
         "message" => "messages",
         "project_check_in" => "project_check_ins",
         "project_milestone" => "project_milestones",
@@ -172,6 +173,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "goal_updates",
     "goals",
     "groups",
+    "inline_threads",
     "kpi_annotations",
     "kpi_entries",
     "kpi_entry_edits",

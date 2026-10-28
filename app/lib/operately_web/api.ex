@@ -360,6 +360,16 @@ defmodule OperatelyWeb.Api do
     quote do
       query :get_language, OperatelyWeb.Api.Queries.GetLanguage
 
+      namespace :inline_threads do
+        query :list, OperatelyWeb.Api.InlineThreads.List
+        mutation :create, OperatelyWeb.Api.InlineThreads.Create
+        mutation :reply, OperatelyWeb.Api.InlineThreads.Reply
+        mutation :update_message, OperatelyWeb.Api.InlineThreads.UpdateMessage
+        mutation :delete_message, OperatelyWeb.Api.InlineThreads.DeleteMessage
+        mutation :resolve, OperatelyWeb.Api.InlineThreads.Resolve
+        mutation :reopen, OperatelyWeb.Api.InlineThreads.Reopen
+      end
+
       namespace :analytics do
         mutation :sync_context, OperatelyWeb.Api.Analytics.SyncContext
       end

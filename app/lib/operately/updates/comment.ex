@@ -1,5 +1,6 @@
 defmodule Operately.Updates.Comment do
   use Operately.Schema
+  use Operately.Repo.Getter
   import Ecto.Changeset
 
   @entity_types [
@@ -9,6 +10,7 @@ defmodule Operately.Updates.Comment do
     :message,
     :update,
     :comment_thread,
+    :inline_thread,
     :project_retrospective,
     :resource_hub_document,
     :resource_hub_file,
@@ -49,6 +51,7 @@ defmodule Operately.Updates.Comment do
 
     timestamps()
     requester_access_level()
+    request_info()
   end
 
   def entity_types, do: @entity_types
