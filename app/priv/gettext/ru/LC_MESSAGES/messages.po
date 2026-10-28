@@ -5210,6 +5210,11 @@ msgid "ADMIN ACCOUNT"
 msgstr "УЧЁТНАЯ ЗАПИСЬ АДМИНИСТРАТОРА"
 
 #.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:41
+msgid "AI client"
+msgstr "ИИ-клиент"
+
+#.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:60
 msgid "API Base URL"
 msgstr "Базовый URL API"
@@ -5251,7 +5256,7 @@ msgstr "Обо мне"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:251
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:151
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:109
 msgid "Access"
 msgstr "Доступ"
 
@@ -5506,6 +5511,13 @@ msgid "Add Members"
 msgstr "Добавить участников"
 
 #.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:102
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:125
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:210
+msgid "Add Operately"
+msgstr "Добавить Operately"
+
+#.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/AddOwnersModal.tsx:19
 msgid "Add Owner"
 msgstr "Добавить владельца"
@@ -5582,6 +5594,11 @@ msgstr "Добавить проект"
 #: ../turboui/src/ProjectPage/Overview.tsx:54
 msgid "Add a project description..."
 msgstr "Добавить описание проекта..."
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:206
+msgid "Add a remote MCP server with Streamable HTTP and OAuth support."
+msgstr "Добавьте удалённый MCP-сервер с поддержкой Streamable HTTP и OAuth."
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:14
@@ -5805,6 +5822,12 @@ msgid "Add task"
 msgstr "Добавить задачу"
 
 #.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:161
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:185
+msgid "Add the MCP server"
+msgstr "Добавить MCP-сервер"
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:115
 msgid "Add the first KPI"
 msgstr "Добавить первый KPI"
@@ -5818,6 +5841,11 @@ msgstr "Добавьте первую задачу, чтобы определи�
 #: ../turboui/src/TaskBoard/components/index.tsx:331
 msgid "Add the first task to start breaking down the work."
 msgstr "Добавьте первую задачу, чтобы начать разбивать работу на части."
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:142
+msgid "Add the server configuration"
+msgstr "Добавить конфигурацию сервера"
 
 #.frontend
 #: ../turboui/src/MilestoneList/EmptyState.tsx:24
@@ -6601,6 +6629,11 @@ msgstr "Разрешить доступ"
 msgid "Authorize MCP Client"
 msgstr "Разрешить доступ клиенту MCP"
 
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:85
+msgid "Authorize access"
+msgstr "Разрешить доступ"
+
 #.elixir
 #: lib/operately_web/api/goals/acknowledge_check_in.ex:58
 #: lib/operately_web/api/projects/acknowledge_check_in.ex:56
@@ -6960,47 +6993,47 @@ msgid "Cadence"
 msgstr "Периодичность"
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:123
+#: assets/js/components/Badges/AccessLevelBadges.tsx:137
 msgid "Can comment all resources in the space, but cannot add or remove members or resources in the space."
 msgstr "Может комментировать все материалы в пространстве, но не может добавлять или убирать участников и материалы."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:126
+#: assets/js/components/Badges/AccessLevelBadges.tsx:140
 msgid "Can comment on the goal updates and discussions. Cannot edit, close, or archive the goal."
 msgstr "Может комментировать отчёты по цели и обсуждения. Не может редактировать, закрывать или архивировать цель."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:120
+#: assets/js/components/Badges/AccessLevelBadges.tsx:134
 msgid "Can comment on the project, including tasks, and check-ins. Cannot edit, close, or archive the project."
 msgstr "Может комментировать проект, в том числе задачи и отчёты. Не может завершать или архивировать проект."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:111
+#: assets/js/components/Badges/AccessLevelBadges.tsx:125
 msgid "Can edit the goal, including its details and targets."
 msgstr "Может редактировать цель, в том числе её описание и показатели."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:105
+#: assets/js/components/Badges/AccessLevelBadges.tsx:119
 msgid "Can edit the project, including its details, tasks, and comments, and can check-in. Cannot close or archive the project."
 msgstr "Может редактировать проект, в том числе его описание, задачи и комментарии, а также публиковать отчёты. Не может завершать или архивировать проект."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:108
+#: assets/js/components/Badges/AccessLevelBadges.tsx:122
 msgid "Can edit the space and its details, add new members, but cannot access invite-only projects or change space managers."
 msgstr "Может редактировать пространство и его описание, добавлять участников, но не имеет доступа к проектам только по приглашению и не может менять администраторов пространства."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:138
+#: assets/js/components/Badges/AccessLevelBadges.tsx:152
 msgid "Can view all resources in the space, but cannot edit, comment, or add new resources."
 msgstr "Может просматривать все материалы в пространстве, но не может редактировать, комментировать или добавлять материалы."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:139
+#: assets/js/components/Badges/AccessLevelBadges.tsx:153
 msgid "Can view the goal, including its details and updates. Cannot edit, comment, close, or archive the goal."
 msgstr "Может просматривать цель, в том числе её описание и отчёты. Не может редактировать, комментировать, закрывать или архивировать цель."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:135
+#: assets/js/components/Badges/AccessLevelBadges.tsx:149
 msgid "Can view the project, including its details, tasks, and comments. Cannot edit, comment, close, or archive the project."
 msgstr "Может просматривать проект, в том числе его описание, задачи и комментарии. Не может редактировать, комментировать, завершать или архивировать проект."
 
@@ -7027,7 +7060,7 @@ msgstr "Куратор и ответственный не могут быть о
 #: ../turboui/src/AccountApiTokensPage/index.tsx:474
 #: ../turboui/src/AccountApiTokensPage/index.tsx:520
 #: ../turboui/src/AccountChangeEmailPage/FormElements.tsx:48
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:290
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:248
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:151
 #: ../turboui/src/Checklist/index.tsx:330
 #: ../turboui/src/Checklist/index.tsx:379
@@ -7144,17 +7177,17 @@ msgid "Cancellation unavailable"
 msgstr "Отмена недоступна"
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:152
+#: assets/js/components/Badges/AccessLevelBadges.tsx:166
 msgid "Cannot access the goal."
 msgstr "Нет доступа к цели."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:150
+#: assets/js/components/Badges/AccessLevelBadges.tsx:164
 msgid "Cannot access the project."
 msgstr "Нет доступа к проекту."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:151
+#: assets/js/components/Badges/AccessLevelBadges.tsx:165
 msgid "Cannot access the space."
 msgstr "Нет доступа к пространству."
 
@@ -7654,6 +7687,11 @@ msgstr "Выберите пространства, цели и проекты, �
 msgid "Choose which parts of this project to copy into the template."
 msgstr "Выберите, какие части этого проекта копировать в шаблон."
 
+#~ #.frontend
+#~ #: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:38
+#~ msgid "Choose your AI client to see the setup steps."
+#~ msgstr "Выберите ИИ-клиент, чтобы увидеть шаги настройки."
+
 #.frontend
 #: ../turboui/src/DateField/index.tsx:499
 msgid "Clear"
@@ -7744,7 +7782,7 @@ msgstr "Нажмите, чтобы удалить вашу реакцию"
 
 #.elixir
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:150
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:108
 #: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:122
 msgid "Client"
 msgstr "Клиент"
@@ -7905,7 +7943,7 @@ msgstr "Столбец удалён"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:137
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:22
 #: ../turboui/src/PrivacyField/index.tsx:189
-#: assets/js/components/Badges/AccessLevelBadges.tsx:117
+#: assets/js/components/Badges/AccessLevelBadges.tsx:131
 #: assets/js/features/Permissions/index.tsx:26
 #: assets/js/features/Permissions/index.tsx:48
 #: assets/js/features/Permissions/index.tsx:59
@@ -8313,12 +8351,27 @@ msgid "Confirming your upgrade"
 msgstr "Подтверждение перехода на более высокий тариф"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:61
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:59
 msgid "Connect AI clients via MCP and manage their access here."
 msgstr "Подключите клиентов ИИ через MCP и управляйте их доступом здесь."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:152
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:36
+msgid "Connect a client"
+msgstr "Подключить клиент"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:195
+msgid "Connect in Claude Code"
+msgstr "Подключить в Claude Code"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:152
+msgid "Connect in Cursor"
+msgstr "Подключить в Cursor"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:110
 msgid "Connected"
 msgstr "Подключено"
 
@@ -8328,7 +8381,7 @@ msgid "Connected %{projectName} project to the %{goalName} goal"
 msgstr "Проект «%{projectName}» связан с целью «%{goalName}»"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:68
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:66
 msgid "Connected Clients"
 msgstr "Подключённые клиенты"
 
@@ -8520,6 +8573,11 @@ msgid "Copy account ID"
 msgstr "Скопировать ID учётной записи"
 
 #.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:146
+msgid "Copy configuration"
+msgstr "Скопировать конфигурацию"
+
+#.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:38
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:56
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:215
@@ -8536,6 +8594,12 @@ msgid "Copy link"
 msgstr "Копировать ссылку"
 
 #.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:175
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:197
+msgid "Copy login command"
+msgstr "Скопировать команду входа"
+
+#.frontend
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:68
 msgid "Copy of %{name}"
 msgstr "Копия %{name}"
@@ -8544,6 +8608,17 @@ msgstr "Копия %{name}"
 #: ../turboui/src/DocumentPublicSharingModal/index.tsx:57
 msgid "Copy public link"
 msgstr "Копировать публичную ссылку"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:82
+msgid "Copy server URL"
+msgstr "Скопировать URL сервера"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:165
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:189
+msgid "Copy setup command"
+msgstr "Скопировать команду настройки"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:211
@@ -9996,7 +10071,7 @@ msgstr "Редактировать"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:136
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:28
 #: ../turboui/src/PrivacyField/index.tsx:192
-#: assets/js/components/Badges/AccessLevelBadges.tsx:102
+#: assets/js/components/Badges/AccessLevelBadges.tsx:116
 #: assets/js/features/Permissions/index.tsx:33
 #: assets/js/features/Permissions/index.tsx:47
 #: assets/js/features/Permissions/index.tsx:58
@@ -10071,7 +10146,7 @@ msgid "Edit contributor"
 msgstr "Редактировать участника проекта"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:324
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:282
 msgid "Edit data"
 msgstr "Редактировать данные"
 
@@ -10086,7 +10161,7 @@ msgid "Edit message"
 msgstr "Редактировать сообщение"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:318
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:276
 msgid "Edit only"
 msgstr "Только редактирование"
 
@@ -11614,7 +11689,7 @@ msgstr "От: %{start_date} до %{end_date}"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:135
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:34
 #: ../turboui/src/PrivacyField/index.tsx:195
-#: assets/js/components/Badges/AccessLevelBadges.tsx:87
+#: assets/js/components/Badges/AccessLevelBadges.tsx:101
 #: assets/js/features/Permissions/index.tsx:40
 #: assets/js/features/Permissions/index.tsx:46
 #: assets/js/features/Permissions/index.tsx:57
@@ -11702,6 +11777,11 @@ msgstr "На главную"
 #: lib/operately_web/controllers/error_html/service_unavailable.html.heex:22
 msgid "Go back to Lobby"
 msgstr "Вернуться к выбору компании"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:120
+msgid "Go to Customize → Connectors. Select + Add, then Add custom connector."
+msgstr "Откройте «Настроить» → «Коннекторы». Выберите «+ Добавить», затем «Добавить собственный коннектор»."
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:80
@@ -11879,17 +11959,17 @@ msgid "Has description"
 msgstr "Есть описание"
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:93
+#: assets/js/components/Badges/AccessLevelBadges.tsx:107
 msgid "Has full access to all resources in the space, including team and access management."
 msgstr "Имеет полный доступ ко всем материалам пространства, включая управление командой и доступом."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:94
+#: assets/js/components/Badges/AccessLevelBadges.tsx:108
 msgid "Has full access to the goal and can perform any action, including editing, commenting, checking-in, closing, and archiving the goal."
 msgstr "Имеет полный доступ к цели и может выполнять любые действия, включая редактирование, комментирование, публикацию отчётов, закрытие и архивацию цели."
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:90
+#: assets/js/components/Badges/AccessLevelBadges.tsx:104
 msgid "Has full access to the project and can perform any action, including editing, commenting, checking-in, closing, and archiving the project."
 msgstr "Имеет полный доступ к проекту и может выполнять любые действия, включая редактирование, комментирование, публикацию отчётов, завершение и архивацию проекта."
 
@@ -11965,7 +12045,7 @@ msgstr "С этой ссылкой что-то не так. Проверьте �
 #: ../turboui/src/AccountApiTokensPage/index.tsx:58
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:22
 #: ../turboui/src/AccountChangeEmailPage/index.tsx:71
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:44
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:42
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:48
 #: ../turboui/src/AccountPage/index.tsx:85
 #: ../turboui/src/AccountSecurityPage/index.tsx:21
@@ -12088,6 +12168,11 @@ msgid "Imports and reconciles Operately-managed Polar products. Unrelated manual
 msgstr "Импортирует и сверяет продукты Polar, управляемые Operately. Посторонние продукты, созданные в Polar вручную, не затрагиваются."
 
 #.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:135
+msgid "In a new chat, open + → Connectors and enable Operately."
+msgstr "В новом чате откройте + → «Коннекторы» и включите Operately."
+
+#.frontend
 #: ../turboui/src/StatusCustomization/StatusAppearancePicker.tsx:35
 msgid "In progress (blue)"
 msgstr "В работе (синий)"
@@ -12122,6 +12207,11 @@ msgstr "Информация"
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:203
 msgid "Inserted"
 msgstr "Вставлено"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:112
+msgid "Install the plugin, then type @ in a new chat and select Operately."
+msgstr "Установите плагин, затем введите @ в новом чате и выберите Operately."
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:112
@@ -12773,7 +12863,7 @@ msgstr "Последнее обновление"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:253
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:153
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:111
 msgid "Last Used"
 msgstr "Последнее использование"
 
@@ -13164,8 +13254,8 @@ msgid "Long-term outcomes you're working toward. Track overall progress and impa
 msgstr "Долгосрочные результаты, над которыми вы работаете. Отслеживайте общий прогресс и влияние."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:52
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:59
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:50
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:57
 #: ../turboui/src/CompanyNavigation/User.tsx:63
 msgid "MCP Connections"
 msgstr "MCP-подключения"
@@ -13614,10 +13704,10 @@ msgstr "Ежемесячные отчёты держат всех в курсе.
 msgid "Monthly revenue"
 msgstr "Ежемесячный доход"
 
-#.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:107
-msgid "More details are in the docs: <actionLink>Setup guides</actionLink>"
-msgstr "Подробнее в документации: <actionLink>Руководства по настройке</actionLink>"
+#~ #.frontend
+#~ #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:107
+#~ msgid "More details are in the docs: <actionLink>Setup guides</actionLink>"
+#~ msgstr "Подробнее в документации: <actionLink>Руководства по настройке</actionLink>"
 
 #.frontend
 #: ../turboui/src/RichEditor/components/Toolbar.tsx:149
@@ -13802,10 +13892,25 @@ msgid "Name is required"
 msgstr "Имя требуется"
 
 #.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:126
+msgid "Name it Operately and paste this server URL. Continue with the detected OAuth settings and choose Sign in now."
+msgstr "Введите имя Operately и вставьте этот URL сервера. Продолжите с обнаруженными настройками OAuth и выберите «Войти сейчас»."
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:103
+msgid "Name it Operately, paste this server URL, and choose OAuth. Review the prompt, then select Create as a plugin."
+msgstr "Введите имя Operately, вставьте этот URL сервера и выберите OAuth. Ознакомьтесь с уведомлением и выберите «Создать как плагин»."
+
+#.frontend
 #: assets/js/pages/NewCompanyPage/index.tsx:62
 #: assets/js/pages/SetupPage/page.tsx:109
 msgid "Name of the company"
 msgstr "Название компании"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:211
+msgid "Name the server Operately and paste this URL."
+msgstr "Назовите сервер Operately и вставьте этот URL."
 
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:135
@@ -13816,6 +13921,11 @@ msgstr "Имя:"
 #: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:57
 msgid "Navbar update badge"
 msgstr "Уведомление о новой версии в навигации"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:70
+msgid "Need help? <guides>Setup guides</guides>"
+msgstr "Нужна помощь? <guides>Руководства по настройке</guides>"
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:72
@@ -13850,7 +13960,7 @@ msgstr "Сетевая ошибка"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:364
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:224
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:182
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:144
 msgid "Never"
 msgstr "Никогда"
@@ -14054,7 +14164,7 @@ msgstr "API-токены ещё не созданы."
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:45
 #: ../turboui/src/PrivacyField/index.tsx:183
-#: assets/js/components/Badges/AccessLevelBadges.tsx:147
+#: assets/js/components/Badges/AccessLevelBadges.tsx:161
 #: assets/js/features/Permissions/index.tsx:19
 #: assets/js/features/Permissions/index.tsx:61
 #: lib/operately/i18n/access_labels.ex:6
@@ -14074,7 +14184,7 @@ msgid "No KPIs yet"
 msgstr "KPI пока нет"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:75
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:73
 msgid "No MCP connections yet."
 msgstr "MCP-подключений пока нет."
 
@@ -14642,7 +14752,7 @@ msgstr "Не назначено"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:356
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:216
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:174
 msgid "Not available"
 msgstr "Недоступно"
 
@@ -14964,6 +15074,31 @@ msgid "Open %{name} preview"
 msgstr "Открыть предпросмотр «%{name}»"
 
 #.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:98
+msgid "Open ChatGPT"
+msgstr "Открыть ChatGPT"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:96
+msgid "Open ChatGPT plugins"
+msgstr "Открыть плагины ChatGPT"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:121
+msgid "Open Claude"
+msgstr "Открыть Claude"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:119
+msgid "Open Claude connectors"
+msgstr "Открыть коннекторы Claude"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:153
+msgid "Open Cursor’s MCP settings, find Operately, and select Connect to sign in."
+msgstr "Откройте настройки MCP в Cursor, найдите Operately и выберите «Подключить», чтобы войти."
+
+#.frontend
 #: ../turboui/src/LinkPage/index.tsx:46
 msgid "Open Link"
 msgstr "Открыть ссылку"
@@ -15023,6 +15158,16 @@ msgstr "Открыть выбор статуса для выбранной за�
 #: ../turboui/src/MilestonePage/components/CompleteMilestoneModal.tsx:87
 msgid "Open tasks"
 msgstr "Открытые задачи"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:205
+msgid "Open your client’s MCP settings"
+msgstr "Открыть настройки MCP клиента"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:143
+msgid "Open ~/.cursor/mcp.json and add Operately to mcpServers. Keep any servers already listed."
+msgstr "Откройте ~/.cursor/mcp.json и добавьте Operately в mcpServers. Сохраните уже указанные серверы."
 
 #.frontend
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:50
@@ -15088,7 +15233,7 @@ msgstr "Необязательно. Оставьте поле пустым, чт
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:255
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:155
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:113
 msgid "Options"
 msgstr "Варианты"
 
@@ -15147,6 +15292,7 @@ msgid "Orphans removed"
 msgstr "Записи без источника удалены"
 
 #.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:30
 #: ../turboui/src/LinkNewPage/index.tsx:101
 #: ../turboui/src/ResourceHub/AddFilesButton.tsx:110
 msgid "Other"
@@ -15307,7 +15453,7 @@ msgstr "Пароль"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:59
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:23
 #: ../turboui/src/AccountChangeEmailPage/index.tsx:72
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:45
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:43
 #: ../turboui/src/AccountPage/index.tsx:67
 #: ../turboui/src/AccountSecurityPage/index.tsx:24
 #: ../turboui/src/AccountSecurityPage/index.tsx:26
@@ -17404,8 +17550,8 @@ msgstr "На проверке"
 #~ msgstr "Следит за прогрессом и даёт обратную связь."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:238
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:294
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:196
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:252
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:36
 msgid "Revoke"
 msgstr "Отозвать"
@@ -17416,17 +17562,17 @@ msgid "Revoke Invitation"
 msgstr "Отозвать приглашение"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:70
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:68
 msgid "Revoke a connection if you no longer trust the client or want to stop its access."
 msgstr "Отзовите доступ подключения, если больше не доверяете клиенту или хотите прекратить его доступ."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:281
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:239
 msgid "Revoke access for <clientName>%{clientName}</clientName>? The client will need to reconnect through OAuth."
 msgstr "Отозвать доступ у <clientName>%{clientName}</clientName>? Клиенту потребуется повторно подключиться через OAuth."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:276
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:234
 msgid "Revoke connection"
 msgstr "Отозвать доступ подключения"
 
@@ -17477,6 +17623,17 @@ msgstr "Добавить недостающие записи"
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:314
 msgid "Run reconciliation"
 msgstr "Выполнить сверку"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:162
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:186
+msgid "Run this command in your terminal."
+msgstr "Выполните эту команду в терминале."
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:172
+msgid "Run this command to open the authorization page in your browser."
+msgstr "Выполните эту команду, чтобы открыть страницу авторизации в браузере."
 
 #.frontend
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:275
@@ -17891,6 +18048,11 @@ msgid "Select"
 msgstr "Выбрать"
 
 #.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:97
+msgid "Select +, then Add custom MCP server."
+msgstr "Выберите +, затем «Добавить собственный MCP-сервер»."
+
+#.frontend
 #: ../turboui/src/CompanyPickerPage/index.tsx:31
 msgid "Select Company"
 msgstr "Выберите компанию"
@@ -18180,10 +18342,10 @@ msgstr "Отправка кода..."
 msgid "Separate multiple domains with commas."
 msgstr "Разделяйте несколько доменов запятыми."
 
-#.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:96
-msgid "Server URL"
-msgstr "URL сервера"
+#~ #.frontend
+#~ #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:96
+#~ msgid "Server URL"
+#~ msgstr "URL сервера"
 
 #.frontend
 #: ../turboui/src/DateField/index.tsx:434
@@ -18444,6 +18606,16 @@ msgstr "Зарегистрироваться и присоединиться к 
 #: assets/js/pages/LoginPage/index.tsx:174
 msgid "Sign in"
 msgstr "Войти"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:86
+msgid "Sign in to Operately, choose your company if prompted, and review the permissions before authorizing."
+msgstr "Войдите в Operately, выберите компанию, если появится запрос, и проверьте разрешения перед предоставлением доступа."
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:171
+msgid "Sign in with Codex"
+msgstr "Войти через Codex"
 
 #.frontend
 #: assets/js/features/auth/Buttons.tsx:31
@@ -18788,6 +18960,11 @@ msgstr "Конкретные компании"
 #: assets/js/features/goals/GoalTargetsV2/EditTargetCard.tsx:63
 msgid "Start"
 msgstr "Начальное значение"
+
+#.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:196
+msgid "Start Claude Code, run /mcp, and select Operately to authenticate."
+msgstr "Запустите Claude Code, выполните /mcp и выберите Operately для аутентификации."
 
 #.elixir
 #.frontend
@@ -21904,14 +22081,20 @@ msgid "Use for backlog or paused work"
 msgstr "Используйте для запланированной или приостановленной работы"
 
 #.frontend
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:111
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:134
+msgid "Use it in a chat"
+msgstr "Использовать в чате"
+
+#.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:48
 msgid "Use these values when calling the external Operately API."
 msgstr "Используйте эти значения при вызове внешнего API Operately."
 
-#.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:97
-msgid "Use this URL to create a connection in your AI client."
-msgstr "Используйте этот URL, чтобы настроить подключение в вашем клиенте ИИ."
+#~ #.frontend
+#~ #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:97
+#~ msgid "Use this URL to create a connection in your AI client."
+#~ msgstr "Используйте этот URL, чтобы настроить подключение в вашем клиенте ИИ."
 
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:117
@@ -22024,7 +22207,7 @@ msgstr "Посмотреть инструкции по использовани�
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:138
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:16
 #: ../turboui/src/PrivacyField/index.tsx:186
-#: assets/js/components/Badges/AccessLevelBadges.tsx:132
+#: assets/js/components/Badges/AccessLevelBadges.tsx:146
 #: assets/js/features/Permissions/index.tsx:12
 #: assets/js/features/Permissions/index.tsx:49
 #: assets/js/features/Permissions/index.tsx:60
@@ -22215,7 +22398,7 @@ msgid "View all"
 msgstr "Смотреть все"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:317
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:275
 msgid "View and edit"
 msgstr "Просмотр и редактирование"
 
@@ -22230,7 +22413,7 @@ msgid "View billing history"
 msgstr "Посмотреть историю оплаты"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:323
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:281
 msgid "View data"
 msgstr "Просмотр данных"
 
@@ -22251,7 +22434,7 @@ msgid "View on board"
 msgstr "Посмотреть на доске"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:319
+#: ../turboui/src/AccountMcpConnectionsPage/index.tsx:277
 msgid "View only"
 msgstr "Только просмотр"
 
