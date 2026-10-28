@@ -171,6 +171,7 @@ defmodule Operately.InviteLinksTest do
         })
 
       assert {:ok, person} = InviteLinks.join_company_via_invite_link(ctx.new_account, invite_link.token)
+      assert person.title_setup_pending
       assert person.account_id == ctx.new_account.id
       assert person.company_id == ctx.company.id
 
@@ -178,6 +179,16 @@ defmodule Operately.InviteLinksTest do
       assert reloaded_link.use_count == 1
 
       assert People.get_person(ctx.new_account, ctx.company).id == person.id
+    end
+
+    test "rejoining does not reset completed role setup", ctx do
+      ctx = Factory.add_account(ctx, :new_account)
+      {:ok, invite_link} = InviteLinks.create_invite_link(%{company_id: ctx.company.id, author_id: ctx.creator.id})
+      {:ok, person} = InviteLinks.join_company_via_invite_link(ctx.new_account, invite_link.token)
+      {:ok, _} = People.update_person(person, %{title_setup_pending: false})
+
+      assert {:ok, rejoined} = InviteLinks.join_company_via_invite_link(ctx.new_account, invite_link.token)
+      refute rejoined.title_setup_pending
     end
 
     test "returns existing person when the account is already in the company", ctx do
@@ -188,6 +199,7 @@ defmodule Operately.InviteLinksTest do
 
       assert {:ok, person} = InviteLinks.join_company_via_invite_link(ctx.account, invite_link.token)
       assert person.id == existing_person.id
+      refute person.title_setup_pending
 
       reloaded_link = Repo.get!(InviteLink, invite_link.id)
       assert reloaded_link.use_count == 0

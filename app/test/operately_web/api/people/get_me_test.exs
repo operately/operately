@@ -29,6 +29,12 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
       assert {200, %{me: %{permissions: %{can_edit_profile: false}}}} = query(ctx.conn, [:people, :get_me], %{})
     end
 
+    test "returns role setup state for the current membership", ctx do
+      assert {200, %{me: %{title_setup_pending: false}}} = query(ctx.conn, [:people, :get_me], %{})
+      {:ok, _} = Operately.People.update_person(ctx.person, %{title_setup_pending: true})
+      assert {200, %{me: %{title_setup_pending: true}}} = query(ctx.conn, [:people, :get_me], %{})
+    end
+
     test "it returns the current account's information", ctx do
       assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{})
 

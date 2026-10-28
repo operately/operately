@@ -1,3 +1,4 @@
+import { MemberOnboarding } from "./MemberOnboarding";
 import { contactUsLink } from "./contactUsLink";
 import * as React from "react";
 
@@ -46,6 +47,7 @@ export default function CompanyLayout() {
         <Outlet />
       </div>
 
+      <MemberOnboarding />
       <DevBar />
       <KeyboardShortcutsModal isOpen={keyboardShortcutsModal.isOpen} onClose={keyboardShortcutsModal.close} />
     </div>

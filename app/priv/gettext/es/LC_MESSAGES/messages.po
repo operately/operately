@@ -5049,7 +5049,7 @@ msgid "ADMIN ACCOUNT"
 msgstr "CUENTA DE ADMINISTRADOR"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:41
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:42
 msgid "AI client"
 msgstr "Cliente de IA"
 
@@ -5350,9 +5350,9 @@ msgid "Add Members"
 msgstr "Agregar miembros"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:102
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:125
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:210
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:103
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:126
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:211
 msgid "Add Operately"
 msgstr "Añadir Operately"
 
@@ -5435,7 +5435,7 @@ msgid "Add a project description..."
 msgstr "Añadir una descripción del proyecto..."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:206
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:207
 msgid "Add a remote MCP server with Streamable HTTP and OAuth support."
 msgstr "Añade un servidor MCP remoto compatible con Streamable HTTP y OAuth."
 
@@ -5661,8 +5661,8 @@ msgid "Add task"
 msgstr "Agregar la tarea"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:161
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:185
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:162
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:186
 msgid "Add the MCP server"
 msgstr "Añadir el servidor MCP"
 
@@ -5682,7 +5682,7 @@ msgid "Add the first task to start breaking down the work."
 msgstr "Añade la primera tarea para empezar a dividir el trabajo."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:142
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:143
 msgid "Add the server configuration"
 msgstr "Añadir la configuración del servidor"
 
@@ -6467,7 +6467,7 @@ msgid "Authorize MCP Client"
 msgstr "Autorizar al cliente MCP"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:85
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:86
 msgid "Authorize access"
 msgstr "Autorizar acceso"
 
@@ -8191,17 +8191,17 @@ msgid "Connect AI clients via MCP and manage their access here."
 msgstr "Conecta clientes de IA mediante MCP y gestiona su acceso aquí."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:36
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:37
 msgid "Connect a client"
 msgstr "Conectar un cliente"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:195
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:196
 msgid "Connect in Claude Code"
 msgstr "Conectar en Claude Code"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:152
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:153
 msgid "Connect in Cursor"
 msgstr "Conectar en Cursor"
 
@@ -8406,7 +8406,7 @@ msgid "Copy account ID"
 msgstr "Copiar ID de cuenta"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:146
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:147
 msgid "Copy configuration"
 msgstr "Copiar configuración"
 
@@ -8427,8 +8427,8 @@ msgid "Copy link"
 msgstr "Copiar enlace"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:175
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:197
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:176
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:198
 msgid "Copy login command"
 msgstr "Copiar comando de inicio de sesión"
 
@@ -8443,13 +8443,13 @@ msgid "Copy public link"
 msgstr "Copiar enlace público"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:82
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:83
 msgid "Copy server URL"
 msgstr "Copiar URL del servidor"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:165
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:189
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:166
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:190
 msgid "Copy setup command"
 msgstr "Copiar comando de configuración"
 
@@ -11606,7 +11606,7 @@ msgid "Go back to Lobby"
 msgstr "Volver a la selección de empresa"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:120
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:121
 msgid "Go to Customize → Connectors. Select + Add, then Add custom connector."
 msgstr "Ve a Personalizar → Conectores. Selecciona + Añadir y luego Añadir conector personalizado."
 
@@ -11995,7 +11995,7 @@ msgid "Imports and reconciles Operately-managed Polar products. Unrelated manual
 msgstr "Importa y reconcilia los productos de Polar gestionados por Operately. Se omiten los productos manuales de Polar que no estén relacionados."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:135
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:136
 msgid "In a new chat, open + → Connectors and enable Operately."
 msgstr "En un nuevo chat, abre + → Conectores y activa Operately."
 
@@ -12036,7 +12036,7 @@ msgid "Inserted"
 msgstr "Insertado"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:112
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:113
 msgid "Install the plugin, then type @ in a new chat and select Operately."
 msgstr "Instala el plugin, escribe @ en un nuevo chat y selecciona Operately."
 
@@ -12199,7 +12199,7 @@ msgid "Invalid product parameters"
 msgstr "Parámetros de producto no válidos"
 
 #.elixir
-#: lib/operately_web/api/people/update.ex:137
+#: lib/operately_web/api/people/update.ex:139
 msgid "Invalid profile update"
 msgstr "Actualización de perfil no válida"
 
@@ -12774,6 +12774,7 @@ msgstr "Deja notas aquí..."
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:107
+#: ../turboui/src/TitleSetupPrompt/index.tsx:77
 msgid "Let teammates know what you focus on. You can change this later."
 msgstr "Hazles saber a tus compañeros de equipo en qué te concentras. Puedes cambiar esto más tarde."
 
@@ -13719,12 +13720,12 @@ msgid "Name is required"
 msgstr "El nombre es obligatorio"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:126
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:127
 msgid "Name it Operately and paste this server URL. Continue with the detected OAuth settings and choose Sign in now."
 msgstr "Usa el nombre Operately y pega esta URL del servidor. Continúa con la configuración OAuth detectada y elige Iniciar sesión ahora."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:103
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:104
 msgid "Name it Operately, paste this server URL, and choose OAuth. Review the prompt, then select Create as a plugin."
 msgstr "Usa el nombre Operately, pega esta URL del servidor y elige OAuth. Revisa el aviso y selecciona Crear como plugin."
 
@@ -13735,7 +13736,7 @@ msgid "Name of the company"
 msgstr "Nombre de la empresa"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:211
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:212
 msgid "Name the server Operately and paste this URL."
 msgstr "Nombra el servidor Operately y pega esta URL."
 
@@ -13750,7 +13751,7 @@ msgid "Navbar update badge"
 msgstr "Indicador de nueva versión en la barra de navegación"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:70
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:71
 msgid "Need help? <guides>Setup guides</guides>"
 msgstr "¿Necesitas ayuda? <guides>Guías de configuración</guides>"
 
@@ -14901,27 +14902,27 @@ msgid "Open %{name} preview"
 msgstr "Abrir vista previa de %{name}"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:98
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:99
 msgid "Open ChatGPT"
 msgstr "Abrir ChatGPT"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:96
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:97
 msgid "Open ChatGPT plugins"
 msgstr "Abrir plugins de ChatGPT"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:121
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:122
 msgid "Open Claude"
 msgstr "Abrir Claude"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:119
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:120
 msgid "Open Claude connectors"
 msgstr "Abrir conectores de Claude"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:153
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:154
 msgid "Open Cursor’s MCP settings, find Operately, and select Connect to sign in."
 msgstr "Abre la configuración MCP de Cursor, busca Operately y selecciona Conectar para iniciar sesión."
 
@@ -14987,12 +14988,12 @@ msgid "Open tasks"
 msgstr "Tareas abiertas"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:205
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:206
 msgid "Open your client’s MCP settings"
 msgstr "Abrir la configuración MCP de tu cliente"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:143
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:144
 msgid "Open ~/.cursor/mcp.json and add Operately to mcpServers. Keep any servers already listed."
 msgstr "Abre ~/.cursor/mcp.json y añade Operately a mcpServers. Conserva los servidores que ya estén en la lista."
 
@@ -15119,7 +15120,7 @@ msgid "Orphans removed"
 msgstr "Elementos huérfanos eliminados"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:30
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:31
 #: ../turboui/src/LinkNewPage/index.tsx:101
 #: ../turboui/src/ResourceHub/AddFilesButton.tsx:110
 msgid "Other"
@@ -17448,13 +17449,13 @@ msgid "Run reconciliation"
 msgstr "Ejecutar reconciliación"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:162
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:186
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:163
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:187
 msgid "Run this command in your terminal."
 msgstr "Ejecuta este comando en tu terminal."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:172
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:173
 msgid "Run this command to open the authorization page in your browser."
 msgstr "Ejecuta este comando para abrir la página de autorización en tu navegador."
 
@@ -17521,6 +17522,7 @@ msgstr "Igual que el sistema"
 #: ../turboui/src/PrivacyField/index.tsx:118
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:97
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:95
+#: ../turboui/src/TitleSetupPrompt/index.tsx:63
 #: assets/js/features/ProjectRetrospective/Form.tsx:82
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:173
 #: assets/js/pages/CompanyRenamePage/index.tsx:48
@@ -17871,7 +17873,7 @@ msgid "Select"
 msgstr "Seleccionar"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:97
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:98
 msgid "Select +, then Add custom MCP server."
 msgstr "Selecciona + y luego Añadir servidor MCP personalizado."
 
@@ -18422,12 +18424,12 @@ msgid "Sign in"
 msgstr "Iniciar sesión"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:86
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:87
 msgid "Sign in to Operately, choose your company if prompted, and review the permissions before authorizing."
 msgstr "Inicia sesión en Operately, elige tu empresa si se solicita y revisa los permisos antes de autorizar."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:171
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:172
 msgid "Sign in with Codex"
 msgstr "Iniciar sesión con Codex"
 
@@ -18537,6 +18539,11 @@ msgid "Size:"
 msgstr "Tamaño:"
 
 #.frontend
+#: ../turboui/src/TitleSetupPrompt/index.tsx:59
+msgid "Skip for now"
+msgstr "Omitir por ahora"
+
+#.frontend
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:206
 msgid "Skipped"
 msgstr "Omitido"
@@ -18592,6 +18599,7 @@ msgstr "Algo salió mal al usar este enlace de invitación."
 #: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:49
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:72
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:59
+#: ../turboui/src/TitleSetupPrompt/index.tsx:90
 #: assets/js/models/projects/useProjectContributorActions.tsx:91
 #: assets/js/models/projects/useProjectContributorActions.tsx:102
 #: assets/js/models/projects/useProjectContributorActions.tsx:150
@@ -18776,7 +18784,7 @@ msgid "Start"
 msgstr "Valor inicial"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:196
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:197
 msgid "Start Claude Code, run /mcp, and select Operately to authenticate."
 msgstr "Inicia Claude Code, ejecuta /mcp y selecciona Operately para autenticarte."
 
@@ -20988,6 +20996,7 @@ msgstr "El título no puede estar vacío"
 
 #.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:107
+#: ../turboui/src/TitleSetupPrompt/index.tsx:83
 msgid "Title in Company"
 msgstr "Cargo en la empresa"
 
@@ -21857,8 +21866,8 @@ msgid "Use for backlog or paused work"
 msgstr "Usar para trabajo pendiente o en pausa"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:111
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:134
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:112
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:135
 msgid "Use it in a chat"
 msgstr "Usar en un chat"
 
@@ -22540,6 +22549,11 @@ msgstr "¿Cuál es tu rol?"
 #: assets/js/pages/NewCompanyPage/index.tsx:69
 msgid "What's your title in the company?"
 msgstr "¿Cuál es tu cargo en la empresa?"
+
+#.frontend
+#: ../turboui/src/TitleSetupPrompt/index.tsx:76
+msgid "What's your title?"
+msgstr "¿Cuál es tu cargo?"
 
 #.frontend
 #: ../turboui/src/Subscriptions/SubscribersSelector.tsx:41
@@ -23681,6 +23695,7 @@ msgstr "no coincide con la contraseña"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:113
+#: ../turboui/src/TitleSetupPrompt/index.tsx:84
 msgid "e.g Product Manager, Designer, CEO"
 msgstr "p. ej., responsable de producto, diseñador, director ejecutivo"
 
