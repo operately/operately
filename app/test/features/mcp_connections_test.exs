@@ -26,4 +26,11 @@ defmodule Operately.Features.McpConnectionsTest do
     |> Steps.revoke_first_connection()
     |> Steps.assert_grant_removed_from_list()
   end
+
+  feature "switch between client setup instructions", ctx do
+    ctx
+    |> Steps.visit_mcp_connections_page()
+    |> Steps.assert_on_mcp_connections_page()
+    |> Steps.switch_client_setup_instructions()
+  end
 end
