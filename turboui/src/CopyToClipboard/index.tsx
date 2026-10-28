@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { IconCheck, IconCopy, TablerIconProps } from "../icons";
+import { SecondaryButton } from "../Button";
 import { translationText } from "../i18n";
 import { showErrorToast } from "../Toasts";
 import classNames from "../utils/classnames";
@@ -14,6 +15,7 @@ interface CopyToClipboardProps {
   iconProps?: TablerIconProps;
   testId?: string;
   ariaLabel?: string;
+  label?: string;
 }
 
 export function CopyToClipboard({
@@ -24,6 +26,7 @@ export function CopyToClipboard({
   iconProps,
   testId,
   ariaLabel,
+  label,
 }: CopyToClipboardProps) {
   const { t } = useTranslation();
   const resolvedAriaLabel = ariaLabel ?? translationText(t("Copy to clipboard"));
@@ -38,6 +41,14 @@ export function CopyToClipboard({
       showErrorToast(t("Copy failed"), t("Unable to copy to clipboard"));
     }
   };
+
+  if (label) {
+    return (
+      <SecondaryButton size="xxs" onClick={handleClick} testId={testId} ariaLabel={ariaLabel} className={className}>
+        {copied ? t("Copied") : label}
+      </SecondaryButton>
+    );
+  }
 
   // containerSize is necessary to make sure that the icon's bg is always a square
   const containerSize = `calc(${size}px + ${padding * 0.5}rem)`;

@@ -4,6 +4,7 @@ import { ResourceAccessContent, ResourceAccessContentProps } from "./ResourceAcc
 
 interface Props extends ResourceAccessContentProps {
   fullName: string;
+  companyName: string;
   isGuest: boolean;
 }
 
@@ -17,7 +18,10 @@ export function AddedContent(props: Props) {
       </div>
 
       <div className="mt-4">
-        {t("{{name}} has been added to the company and an email has been sent to notify them.", { name: props.fullName })}
+        {t("{{name}} already uses Operately. We've added them to {{company}} and notified them by email.", {
+          name: props.fullName,
+          company: props.companyName,
+        })}
       </div>
 
       {props.isGuest && <ResourceAccessContent {...props} />}
