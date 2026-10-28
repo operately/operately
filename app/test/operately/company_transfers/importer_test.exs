@@ -970,6 +970,51 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     _ = File.rm(storage_path(imported_blob))
   end
 
+  test "run/1 round-trips inline threads, messages, and reactions with translated references", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_document(:document, :hub, content: Operately.Support.RichText.rich_text("Hello world"))
+      |> Factory.add_inline_thread(:thread, :document, from: 1, to: 6, quote: "Hello")
+
+    {:ok, thread} = Operately.Operations.InlineThreadReplying.run(ctx.creator, ctx.thread, Operately.Support.RichText.rich_text("Reply"))
+    {:ok, thread} = Operately.Operations.InlineThreadResolving.run(ctx.creator, thread)
+    ctx = ctx |> Map.put(:message, hd(thread.messages)) |> Factory.add_reactions(:reaction, :message)
+
+    assert {:ok, import_run} = export_and_stage_import(ctx)
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_author = Repo.get_by!(Person, company_id: completed_run.company_id, email: ctx.creator.email)
+
+    imported_thread =
+      Operately.Comments.InlineThread.get!(:system,
+        author_id: imported_author.id,
+        opts: Operately.Comments.InlineThread.read_options()
+      )
+
+    assert imported_thread.id != thread.id
+    assert imported_thread.resource_id != ctx.document.id
+    assert imported_thread.document.author_id == imported_author.id
+    assert imported_thread.resolved_by_id == imported_author.id
+    assert imported_thread.resolved_at == thread.resolved_at
+    assert imported_thread.anchor == thread.anchor
+    assert Enum.sort(Enum.map(imported_thread.messages, & &1.content)) == Enum.sort(Enum.map(thread.messages, & &1.content))
+
+    for message <- imported_thread.messages do
+      refute message.id in Enum.map(thread.messages, & &1.id)
+      assert message.entity_type == :inline_thread
+      assert message.entity_id == imported_thread.id
+      assert message.author_id == imported_author.id
+    end
+
+    [reaction] = Enum.flat_map(imported_thread.messages, & &1.reactions)
+    assert reaction.id != ctx.reaction.id
+    assert reaction.person_id == imported_author.id
+    assert reaction.entity_id in Enum.map(imported_thread.messages, & &1.id)
+  end
+
   defp export_and_stage_import(ctx, mutate_package \\ & &1) do
     export_and_stage_import_as(ctx, ctx.account, mutate_package)
   end

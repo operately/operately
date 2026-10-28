@@ -5031,6 +5031,7 @@ msgstr "Eine neue Aufgabe namens „%{task_name}“ wurde in diesem Projekt erst
 #.elixir
 #: lib/operately_web/api/documents/restore_version.ex:57
 #: lib/operately_web/api/documents/update.ex:44
+#: lib/operately_web/api/inline_threads/create.ex:48
 msgid "A newer version of this document exists"
 msgstr "Es gibt eine neuere Version dieses Dokuments"
 

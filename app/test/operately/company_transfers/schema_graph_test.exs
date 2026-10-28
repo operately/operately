@@ -184,6 +184,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert config.type_column == "entity_type"
       assert config.id_column == "entity_id"
       assert config.table_map["comment_thread"] == "comment_threads"
+      assert config.table_map["inline_thread"] == "inline_threads"
       refute Map.has_key?(config.table_map, "update")
     end
 
@@ -414,6 +415,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert Discovery.classify_table("companies") == :included
       assert Discovery.classify_table("projects") == :included
       assert Discovery.classify_table("milestone_comments") == :included
+      assert Discovery.classify_table("inline_threads") == :included
       assert Discovery.classify_table("project_templates") == :included
       assert Discovery.classify_table("project_template_comments") == :included
       assert Discovery.classify_table("project_template_discussions") == :included

@@ -1797,6 +1797,34 @@ defmodule OperatelyWeb.Api.Types do
     field? :can_view, :boolean, null: true
   end
 
+  enum :inline_thread_resource_type, values: Operately.Comments.InlineThread.resource_types()
+  enum :inline_anchor_status, values: Operately.Comments.InlineAnchor.statuses()
+
+  object :inline_anchor, for: Operately.Comments.InlineAnchor do
+    field :source_version, :integer, null: false
+    field :source_from, :integer, null: false
+    field :source_to, :integer, null: false
+    field :quote, :string, null: false
+    field :prefix, :string, null: false
+    field :suffix, :string, null: false
+    field :current_version, :integer, null: false
+    field :current_from, :integer, null: true
+    field :current_to, :integer, null: true
+    field :status, :inline_anchor_status, null: false
+  end
+
+  object :inline_thread, for: Operately.Comments.InlineThread do
+    field :id, :id, null: false
+    field :resource_type, :inline_thread_resource_type, null: false
+    field :resource_id, :id, null: false
+    field :author, :person, null: true
+    field :resolved_at, :string, null: true
+    field :resolved_by, :person, null: true
+    field :inserted_at, :string, null: false
+    field :anchor, :inline_anchor, null: false
+    field :messages, list_of(:comment), null: false
+  end
+
   object :document_version, for: Operately.ResourceHubs.DocumentVersion do
     field :id, :string, null: false
     field :version_number, :integer, null: false

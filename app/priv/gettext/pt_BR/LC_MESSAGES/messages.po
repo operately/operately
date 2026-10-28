@@ -5102,6 +5102,7 @@ msgstr "Uma nova tarefa chamada %{task_name} foi criada neste projeto."
 #.elixir
 #: lib/operately_web/api/documents/restore_version.ex:57
 #: lib/operately_web/api/documents/update.ex:44
+#: lib/operately_web/api/inline_threads/create.ex:48
 msgid "A newer version of this document exists"
 msgstr "Existe uma versão mais recente deste documento"
 
