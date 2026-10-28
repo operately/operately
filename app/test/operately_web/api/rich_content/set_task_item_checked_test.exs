@@ -14,6 +14,16 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemCheckedTest do
     |> Factory.log_in_person(:creator)
   end
 
+  test "generic checkbox updates cannot bypass inline-thread endpoints", ctx do
+    ctx = Factory.add_document(ctx, :document, :hub, content: Operately.Support.RichText.rich_text("Hello"))
+    attrs = %{resource_id: ctx.document.id, source_version: ctx.document.current_version, from: 1, to: 6, quote: "Hello", content: content()}
+    assert {:ok, thread} = Operately.Operations.InlineThreadCreating.run(ctx.creator, ctx.document, attrs)
+    message = hd(thread.messages)
+
+    assert {404, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs(message, :comment, :content, message.content))
+    assert Repo.reload!(message).content == message.content
+  end
+
   test "checkbox snapshots keep URL labels while conflict detection remains active", ctx do
     source = content()
     url = Paths.project_path(ctx.company, ctx.project)

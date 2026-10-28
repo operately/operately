@@ -1,0 +1,364 @@
+[
+  {
+    "name": "plain text",
+    "content": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Hello world"
+            }
+          ]
+        }
+      ]
+    },
+    "selections": [
+      {
+        "from": 7,
+        "to": 12,
+        "quote": "world"
+      }
+    ]
+  },
+  {
+    "name": "unicode",
+    "content": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "a😀b"
+            }
+          ]
+        }
+      ]
+    },
+    "selections": [
+      {
+        "from": 2,
+        "to": 4,
+        "quote": "😀"
+      },
+      {
+        "from": 4,
+        "to": 5,
+        "quote": "b"
+      }
+    ]
+  },
+  {
+    "name": "nested list and mention",
+    "content": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "A"
+                    },
+                    {
+                      "type": "mention",
+                      "attrs": {
+                        "id": "person",
+                        "label": "Person"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": "B"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "selections": [
+      {
+        "from": 3,
+        "to": 6,
+        "quote": "A￼B"
+      }
+    ]
+  },
+  {
+    "name": "empty paragraph",
+    "content": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "one"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": []
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "two"
+            }
+          ]
+        }
+      ]
+    },
+    "selections": [
+      {
+        "from": 1,
+        "to": 11,
+        "quote": "one\n\ntwo"
+      }
+    ]
+  },
+  {
+    "name": "block leaf",
+    "content": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "one"
+            }
+          ]
+        },
+        {
+          "type": "horizontalRule"
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "two"
+            }
+          ]
+        }
+      ]
+    },
+    "selections": [
+      {
+        "from": 1,
+        "to": 10,
+        "quote": "one\n￼\ntwo"
+      }
+    ]
+  },
+  {
+    "name": "hard break",
+    "content": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "a"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "b"
+            }
+          ]
+        }
+      ]
+    },
+    "selections": [
+      {
+        "from": 1,
+        "to": 4,
+        "quote": "a\nb"
+      }
+    ]
+  },
+  {
+    "name": "table cells",
+    "content": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "table",
+          "content": [
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableHeader",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "A"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "B"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "selections": [
+      {
+        "from": 4,
+        "to": 10,
+        "quote": "A\nB"
+      }
+    ]
+  },
+  {
+    "name": "code and task list",
+    "content": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "codeBlock",
+          "content": [
+            {
+              "type": "text",
+              "text": "a\nb"
+            }
+          ]
+        },
+        {
+          "type": "taskList",
+          "content": [
+            {
+              "type": "taskItem",
+              "attrs": {
+                "checked": false
+              },
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Done"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "selections": [
+      {
+        "from": 1,
+        "to": 4,
+        "quote": "a\nb"
+      },
+      {
+        "from": 8,
+        "to": 12,
+        "quote": "Done"
+      }
+    ]
+  },
+  {
+    "name": "heading, marks and blob",
+    "content": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "heading",
+          "attrs": {
+            "level": 2
+          },
+          "content": [
+            {
+              "type": "text",
+              "text": "Title",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A"
+            },
+            {
+              "type": "blob",
+              "attrs": {
+                "id": "file"
+              }
+            },
+            {
+              "type": "text",
+              "text": "B"
+            }
+          ]
+        }
+      ]
+    },
+    "selections": [
+      {
+        "from": 1,
+        "to": 6,
+        "quote": "Title"
+      },
+      {
+        "from": 8,
+        "to": 11,
+        "quote": "A￼B"
+      }
+    ]
+  }
+]

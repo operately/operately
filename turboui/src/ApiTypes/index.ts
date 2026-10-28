@@ -1723,6 +1723,33 @@ export interface GoalUpdatePermissions {
   canComment?: boolean | null;
 }
 
+export interface InlineAnchor {
+  __typename: "inline_anchor";
+  sourceVersion: number;
+  sourceFrom: number;
+  sourceTo: number;
+  quote: string;
+  prefix: string;
+  suffix: string;
+  currentVersion: number;
+  currentFrom: number | null;
+  currentTo: number | null;
+  status: InlineAnchorStatus;
+}
+
+export interface InlineThread {
+  __typename: "inline_thread";
+  id: Id;
+  resourceType: InlineThreadResourceType;
+  resourceId: Id;
+  author: Person | null;
+  resolvedAt: string | null;
+  resolvedBy: Person | null;
+  insertedAt: string;
+  anchor: InlineAnchor;
+  messages: Comment[];
+}
+
 export interface InviteLink {
   __typename: "invite_link";
   id?: string | null;
@@ -3019,6 +3046,10 @@ export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret
 
 export type GoalStatus =
   "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
+
+export type InlineAnchorStatus = "attached" | "unattached";
+
+export type InlineThreadResourceType = "resource_hub_document";
 
 export type Language = "en" | "pt-BR" | "de" | "ru" | "fr" | "es";
 
