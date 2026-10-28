@@ -15219,6 +15219,17 @@
           },
           {
             "default": null,
+            "name": "title_setup_pending",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "id",
             "type": {
               "name": "string",
@@ -31907,6 +31918,17 @@
           "name": "title",
           "type": {
             "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "title_setup_pending",
+          "type": {
+            "name": "boolean",
             "kind": "named"
           },
           "optional": true,

@@ -20,6 +20,7 @@ defmodule Operately.People.Person do
 
     field :full_name, :string
     field :title, :string
+    field :title_setup_pending, :boolean, default: false
     field :avatar_url, :string
     field :email, :string
     field :timezone, :string
@@ -54,6 +55,7 @@ defmodule Operately.People.Person do
     |> cast(attrs, [
       :full_name,
       :title,
+      :title_setup_pending,
       :avatar_url,
       :timezone,
       :language,

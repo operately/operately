@@ -50,6 +50,18 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
       assert person.timezone == "America/New_Jersey"
     end
 
+    test "an admin cannot dismiss another member's role setup", ctx do
+      promote_me_to_admin(ctx)
+      {:ok, _} = Operately.People.update_person(ctx.company_member, %{title_setup_pending: true})
+
+      assert {200, _} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.company_member), title_setup_pending: false
+               })
+
+      assert Repo.reload!(ctx.company_member).title_setup_pending
+    end
+
     test "when I'm an admin, it ignores language changes for someone else", ctx do
       promote_me_to_admin(ctx)
 
@@ -99,6 +111,58 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
 
   describe "updating my own profile" do
     setup :register_and_log_in_account
+
+    test "saving a role completes setup atomically", ctx do
+      {:ok, _} = Operately.People.update_person(ctx.person, %{title_setup_pending: true})
+
+      assert {200, _} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person), title: "Designer", title_setup_pending: false
+               })
+
+      person = Repo.reload!(ctx.person)
+      assert person.title == "Designer"
+      refute person.title_setup_pending
+    end
+
+    test "role setup is independent for each company membership", ctx do
+      ctx = Factory.add_company(ctx, :other_company, ctx.account)
+      other_member = Operately.People.get_person(ctx.account, ctx.other_company)
+      {:ok, _} = Operately.People.update_person(ctx.person, %{title_setup_pending: true})
+      {:ok, _} = Operately.People.update_person(other_member, %{title_setup_pending: true})
+
+      assert {200, _} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person), title_setup_pending: false
+               })
+
+      refute Repo.reload!(ctx.person).title_setup_pending
+      assert Repo.reload!(other_member).title_setup_pending
+    end
+
+    test "skipping role setup preserves the profile", ctx do
+      {:ok, _} = Operately.People.update_person(ctx.person, %{title_setup_pending: true})
+
+      assert {200, _} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person), title_setup_pending: false
+               })
+
+      person = Repo.reload!(ctx.person)
+      assert person.title == ctx.person.title
+      refute person.title_setup_pending
+    end
+
+    test "a failed profile update leaves role setup pending", ctx do
+      {:ok, _} = Operately.People.update_person(ctx.person, %{title_setup_pending: true})
+
+      assert {400, _} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person), full_name: "", title_setup_pending: false
+               })
+
+      assert Repo.reload!(ctx.person).title_setup_pending
+    end
 
     test "it updates the profile", ctx do
       assert {200, %{person: %{}}} =
