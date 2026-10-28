@@ -19,7 +19,7 @@ export function EmptyState({ display, canEdit, onAdd }: EmptyStateProps) {
       <p className="mb-1 text-sm">{t("No milestones yet")}</p>
       {canEdit && (
         <div>
-          <p className="mb-4 text-xs">{t("Add milestones to track key deliverables and deadlines")}</p>
+          <p className="mb-4 text-xs">{t("Add milestones to track key deliverables and due dates")}</p>
           <GhostButton size="sm" onClick={onAdd}>
             {t("Add your first milestone")}
           </GhostButton>

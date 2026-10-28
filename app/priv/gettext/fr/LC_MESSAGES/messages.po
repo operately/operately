@@ -2773,9 +2773,14 @@ msgstr[1] "%{count} sous-objectifs"
 msgid "%{current} / Unlimited"
 msgstr "%{current} / Illimité"
 
+#~ #.frontend
+#~ #: ../turboui/src/WorkMap/utils/timeline.ts:100
+#~ msgid "%{date} - no deadline"
+#~ msgstr "%{date} — sans échéance"
+
 #.frontend
 #: ../turboui/src/WorkMap/utils/timeline.ts:100
-msgid "%{date} - no deadline"
+msgid "%{date} - no due date"
 msgstr "%{date} — sans échéance"
 
 #.frontend
@@ -2788,9 +2793,14 @@ msgstr "%{delta} par rapport à la valeur précédente"
 msgid "%{displayName} (%{key})"
 msgstr "%{displayName} (%{key})"
 
+#~ #.frontend
+#~ #: assets/js/features/goals/GoalCheckIn/Form.tsx:295
+#~ msgid "%{durationHumanized} until the deadline."
+#~ msgstr "%{durationHumanized} avant l’échéance."
+
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:295
-msgid "%{durationHumanized} until the deadline."
+msgid "%{durationHumanized} until the due date."
 msgstr "%{durationHumanized} avant l’échéance."
 
 #.frontend
@@ -4300,10 +4310,17 @@ msgid_plural "%{count} days overdue"
 msgstr[0] "En retard de %{count} jour"
 msgstr[1] "En retard de %{count} jours"
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:61
+#~ msgid "1 day until the deadline."
+#~ msgid_plural "%{count} days until the deadline."
+#~ msgstr[0] "%{count} jour avant l’échéance."
+#~ msgstr[1] "%{count} jours avant l’échéance."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:61
-msgid "1 day until the deadline."
-msgid_plural "%{count} days until the deadline."
+msgid "1 day until the due date."
+msgid_plural "%{count} days until the due date."
 msgstr[0] "%{count} jour avant l’échéance."
 msgstr[1] "%{count} jours avant l’échéance."
 
@@ -4414,10 +4431,17 @@ msgid_plural "%{count} months <highlight>overdue.</highlight>"
 msgstr[0] "<highlight>En retard</highlight> de %{count} mois."
 msgstr[1] "<highlight>En retard</highlight> de %{count} mois."
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:77
+#~ msgid "1 month until the deadline."
+#~ msgid_plural "%{count} months until the deadline."
+#~ msgstr[0] "%{count} mois avant l’échéance."
+#~ msgstr[1] "%{count} mois avant l’échéance."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:77
-msgid "1 month until the deadline."
-msgid_plural "%{count} months until the deadline."
+msgid "1 month until the due date."
+msgid_plural "%{count} months until the due date."
 msgstr[0] "%{count} mois avant l’échéance."
 msgstr[1] "%{count} mois avant l’échéance."
 
@@ -4635,10 +4659,17 @@ msgid_plural "%{count} weeks <highlight>overdue.</highlight>"
 msgstr[0] "<highlight>En retard</highlight> de %{count} semaine."
 msgstr[1] "<highlight>En retard</highlight> de %{count} semaines."
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:69
+#~ msgid "1 week until the deadline."
+#~ msgid_plural "%{count} weeks until the deadline."
+#~ msgstr[0] "%{count} semaine avant l’échéance."
+#~ msgstr[1] "%{count} semaines avant l’échéance."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:69
-msgid "1 week until the deadline."
-msgid_plural "%{count} weeks until the deadline."
+msgid "1 week until the due date."
+msgid_plural "%{count} weeks until the due date."
 msgstr[0] "%{count} semaine avant l’échéance."
 msgstr[1] "%{count} semaines avant l’échéance."
 
@@ -5562,9 +5593,14 @@ msgstr "Ajouter des membres à %{name}"
 msgid "Add milestone"
 msgstr "Ajouter un jalon"
 
+#~ #.frontend
+#~ #: ../turboui/src/MilestoneList/EmptyState.tsx:22
+#~ msgid "Add milestones to track key deliverables and deadlines"
+#~ msgstr "Ajoutez des jalons pour suivre les principaux livrables et échéances"
+
 #.frontend
 #: ../turboui/src/MilestoneList/EmptyState.tsx:22
-msgid "Add milestones to track key deliverables and deadlines"
+msgid "Add milestones to track key deliverables and due dates"
 msgstr "Ajoutez des jalons pour suivre les principaux livrables et échéances"
 
 #.frontend
@@ -9760,18 +9796,21 @@ msgstr "Échéance le %{date}"
 msgid "Due <date/>"
 msgstr "Échéance le <date/>"
 
+#~ #.elixir
+#~ #.frontend
+#~ #: ../turboui/src/GoalPage/Sidebar.tsx:77
+#~ #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
+#~ #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
+#~ #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
+#~ #: lib/operately/md/goal/timeframe.ex:10
+#~ #: lib/operately/md/project/timeframe.ex:11
+#~ msgid "Due Date"
+#~ msgstr "Échéance"
+
 #.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:77
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
-#: assets/js/features/goals/GoalCheckIn/Form.tsx:452
-#: lib/operately/md/goal/timeframe.ex:10
-#: lib/operately/md/project/timeframe.ex:11
-msgid "Due Date"
-msgstr "Échéance"
-
-#.frontend
 #: ../turboui/src/MilestonePage/index.tsx:344
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:146
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:93
@@ -9780,6 +9819,10 @@ msgstr "Échéance"
 #: ../turboui/src/TaskPage/Sidebar.tsx:74
 #: ../turboui/src/TaskPage/Sidebar.tsx:257
 #: ../turboui/src/TaskPage/Sidebar.tsx:332
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
+#: assets/js/features/goals/GoalCheckIn/Form.tsx:452
+#: lib/operately/md/goal/timeframe.ex:10
+#: lib/operately/md/project/timeframe.ex:11
 msgid "Due date"
 msgstr "Échéance"
 
@@ -17883,9 +17926,14 @@ msgstr "Voir les modifications"
 msgid "See what will change before this company moves to the Free plan."
 msgstr "Découvrez les changements prévus avant le passage de cette entreprise au forfait gratuit."
 
+#~ #.frontend
+#~ #: ../turboui/src/WorkMap/components/ZeroState.tsx:73
+#~ msgid "See what you and your team are working on, with progress and deadlines."
+#~ msgstr "Consultez le travail de votre équipe et le vôtre, avec l’avancement et les échéances."
+
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:73
-msgid "See what you and your team are working on, with progress and deadlines."
+msgid "See what you and your team are working on, with progress and due dates."
 msgstr "Consultez le travail de votre équipe et le vôtre, avec l’avancement et les échéances."
 
 #.frontend

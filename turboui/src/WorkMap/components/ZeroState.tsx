@@ -70,7 +70,7 @@ export function ZeroStateCanAdd({
           {t("Start by adding a goal or project")}
         </h2>
         <p className="mt-2 text-content-dimmed">
-          {t("See what you and your team are working on, with progress and deadlines.")}
+          {t("See what you and your team are working on, with progress and due dates.")}
         </p>
 
         <div className="mt-8 grid w-full gap-4 sm:grid-cols-2 sm:gap-6">

@@ -207,7 +207,7 @@ export function TableHeader({ tab, columnOptions = {}, viewer, profileUser }: He
           hide={columnOptions.hideDueDate}
           className={isCompletedPage ? "md:px-4" : "hidden lg:table-cell md:px-4"}
         >
-          {isCompletedPage ? t("Completed On") : t("Due Date")}
+          {isCompletedPage ? t("Completed On") : t("Due date")}
         </HeaderCell>
         <HeaderCell hide={columnOptions.hideAssignedDate} className="hidden lg:table-cell md:px-4">
           {t("Assigned On")}

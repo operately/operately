@@ -97,7 +97,7 @@ export function formatRangeLabel(item: TimelineDatedItem) {
   }
 
   if (item.startDate && !item.endDate) {
-    return i18n.t("{{date}} - no deadline", { date: compactDateLabel.format(item.startDate) });
+    return i18n.t("{{date}} - no due date", { date: compactDateLabel.format(item.startDate) });
   }
 
   if (!item.startDate && item.endDate) {

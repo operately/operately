@@ -74,7 +74,7 @@ function DueDate(props: GoalPage.State) {
   const testId = isReadonly ? "due-date-field-readonly" : "due-date-field";
 
   return (
-    <SidebarSection title={t("Due Date")}>
+    <SidebarSection title={t("Due date")}>
       <DateField
         date={props.dueDate}
         onDateSelect={props.setDueDate}

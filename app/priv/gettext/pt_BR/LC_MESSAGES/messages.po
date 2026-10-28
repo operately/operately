@@ -2780,9 +2780,14 @@ msgstr[1] "%{count} subobjetivos"
 msgid "%{current} / Unlimited"
 msgstr "%{current} / Sem limite"
 
+#~ #.frontend
+#~ #: ../turboui/src/WorkMap/utils/timeline.ts:100
+#~ msgid "%{date} - no deadline"
+#~ msgstr "%{date} - sem data de conclusão"
+
 #.frontend
 #: ../turboui/src/WorkMap/utils/timeline.ts:100
-msgid "%{date} - no deadline"
+msgid "%{date} - no due date"
 msgstr "%{date} - sem data de conclusão"
 
 #.frontend
@@ -2795,10 +2800,15 @@ msgstr "%{delta} vs anterior"
 msgid "%{displayName} (%{key})"
 msgstr "%{displayName} (%{key})"
 
+#~ #.frontend
+#~ #: assets/js/features/goals/GoalCheckIn/Form.tsx:295
+#~ msgid "%{durationHumanized} until the deadline."
+#~ msgstr "%{durationHumanized} até o prazo final."
+
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:295
-msgid "%{durationHumanized} until the deadline."
-msgstr "%{durationHumanized} até o prazo final."
+msgid "%{durationHumanized} until the due date."
+msgstr "%{durationHumanized} até a data de conclusão."
 
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:285
@@ -4362,12 +4372,19 @@ msgid_plural "%{count} days overdue"
 msgstr[0] "Data de conclusão atrasada em 1 dia"
 msgstr[1] "Data de conclusão atrasada em %{count} dias"
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:61
+#~ msgid "1 day until the deadline."
+#~ msgid_plural "%{count} days until the deadline."
+#~ msgstr[0] "1 dia até o prazo."
+#~ msgstr[1] "%{count} dias até o prazo."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:61
-msgid "1 day until the deadline."
-msgid_plural "%{count} days until the deadline."
-msgstr[0] "1 dia até o prazo."
-msgstr[1] "%{count} dias até o prazo."
+msgid "1 day until the due date."
+msgid_plural "%{count} days until the due date."
+msgstr[0] "1 dia até a data de conclusão."
+msgstr[1] "%{count} dias até a data de conclusão."
 
 #.frontend
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:250
@@ -4476,12 +4493,19 @@ msgid_plural "%{count} months <highlight>overdue.</highlight>"
 msgstr[0] "1 mês <highlight>de atraso.</highlight>"
 msgstr[1] "%{count} meses <highlight>de atraso.</highlight>"
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:77
+#~ msgid "1 month until the deadline."
+#~ msgid_plural "%{count} months until the deadline."
+#~ msgstr[0] "1 mês até o prazo."
+#~ msgstr[1] "%{count} meses até o prazo."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:77
-msgid "1 month until the deadline."
-msgid_plural "%{count} months until the deadline."
-msgstr[0] "1 mês até o prazo."
-msgstr[1] "%{count} meses até o prazo."
+msgid "1 month until the due date."
+msgid_plural "%{count} months until the due date."
+msgstr[0] "1 mês até a data de conclusão."
+msgstr[1] "%{count} meses até a data de conclusão."
 
 #.frontend
 #: ../turboui/src/utils/time.tsx:221
@@ -4697,12 +4721,19 @@ msgid_plural "%{count} weeks <highlight>overdue.</highlight>"
 msgstr[0] "1 semana <highlight>de atraso.</highlight>"
 msgstr[1] "%{count} semanas <highlight>de atraso.</highlight>"
 
+#~ #.elixir
+#~ #: lib/operately_email/check_in_overview.ex:69
+#~ msgid "1 week until the deadline."
+#~ msgid_plural "%{count} weeks until the deadline."
+#~ msgstr[0] "1 semana até o prazo."
+#~ msgstr[1] "%{count} semanas até o prazo."
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:69
-msgid "1 week until the deadline."
-msgid_plural "%{count} weeks until the deadline."
-msgstr[0] "1 semana até o prazo."
-msgstr[1] "%{count} semanas até o prazo."
+msgid "1 week until the due date."
+msgid_plural "%{count} weeks until the due date."
+msgstr[0] "1 semana até a data de conclusão."
+msgstr[1] "%{count} semanas até a data de conclusão."
 
 #.frontend
 #: ../turboui/src/utils/time.tsx:218
@@ -5634,10 +5665,15 @@ msgstr "Adicionar membros a %{name}"
 msgid "Add milestone"
 msgstr "Adicionar marco"
 
+#~ #.frontend
+#~ #: ../turboui/src/MilestoneList/EmptyState.tsx:22
+#~ msgid "Add milestones to track key deliverables and deadlines"
+#~ msgstr "Adicione marcos para acompanhar entregas e prazos importantes"
+
 #.frontend
 #: ../turboui/src/MilestoneList/EmptyState.tsx:22
-msgid "Add milestones to track key deliverables and deadlines"
-msgstr "Adicione marcos para acompanhar entregas e prazos importantes"
+msgid "Add milestones to track key deliverables and due dates"
+msgstr "Adicione marcos para acompanhar entregas importantes e datas de conclusão"
 
 #.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:302
@@ -9967,18 +10003,21 @@ msgstr "Data de conclusão: %{date}"
 msgid "Due <date/>"
 msgstr "Prazo: <date/>"
 
+#~ #.elixir
+#~ #.frontend
+#~ #: ../turboui/src/GoalPage/Sidebar.tsx:77
+#~ #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
+#~ #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
+#~ #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
+#~ #: lib/operately/md/goal/timeframe.ex:10
+#~ #: lib/operately/md/project/timeframe.ex:11
+#~ msgid "Due Date"
+#~ msgstr "Data de conclusão"
+
 #.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:77
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
-#: assets/js/features/goals/GoalCheckIn/Form.tsx:452
-#: lib/operately/md/goal/timeframe.ex:10
-#: lib/operately/md/project/timeframe.ex:11
-msgid "Due Date"
-msgstr "Data de conclusão"
-
-#.frontend
 #: ../turboui/src/MilestonePage/index.tsx:344
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:146
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:93
@@ -9987,6 +10026,10 @@ msgstr "Data de conclusão"
 #: ../turboui/src/TaskPage/Sidebar.tsx:74
 #: ../turboui/src/TaskPage/Sidebar.tsx:257
 #: ../turboui/src/TaskPage/Sidebar.tsx:332
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
+#: assets/js/features/goals/GoalCheckIn/Form.tsx:452
+#: lib/operately/md/goal/timeframe.ex:10
+#: lib/operately/md/project/timeframe.ex:11
 msgid "Due date"
 msgstr "Data de conclusão"
 
@@ -18344,10 +18387,15 @@ msgstr "Veja o que mudou"
 msgid "See what will change before this company moves to the Free plan."
 msgstr "Veja o que mudará antes de esta empresa passar para o plano Gratuito."
 
+#~ #.frontend
+#~ #: ../turboui/src/WorkMap/components/ZeroState.tsx:73
+#~ msgid "See what you and your team are working on, with progress and deadlines."
+#~ msgstr "Veja o que você e sua equipe estão fazendo, com progresso e prazos."
+
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:73
-msgid "See what you and your team are working on, with progress and deadlines."
-msgstr "Veja o que você e sua equipe estão fazendo, com progresso e prazos."
+msgid "See what you and your team are working on, with progress and due dates."
+msgstr "Veja o que você e sua equipe estão fazendo, com progresso e datas de conclusão."
 
 #.frontend
 #: ../turboui/src/Forms/SelectGoal.tsx:100
