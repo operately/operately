@@ -2,10 +2,12 @@ import React from "react";
 import { Content, useEditor } from "../RichEditor";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 import { TaskListContext } from "../RichEditor/extensions/TaskItem";
+import type { InlineCommentsOptions } from "../RichEditor/extensions/InlineComments";
 import type { TaskListInteraction } from "../RichEditor/taskLists";
 import { useTaskListContent } from "./useTaskListContent";
 
 interface Props {
+  inlineComments?: InlineCommentsOptions;
   content: any;
   className?: string;
   mentionedPersonLookup: MentionedPersonLookupFn;
@@ -23,12 +25,14 @@ export default function RichContent({
   thumbnailBlobs,
   transformContent,
   taskList,
+  inlineComments,
 }: Props) {
   const parsed = React.useMemo(() => (parseContent ? JSON.parse(content) : content), [content, parseContent]);
   const { displayedContent, pending, changeTaskItem } = useTaskListContent(parsed, taskList);
 
   const editor = useEditor({
     content: displayedContent,
+    inlineComments,
     editable: false,
     thumbnailBlobs,
     transformContent,
