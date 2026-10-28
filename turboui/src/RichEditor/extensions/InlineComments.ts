@@ -1,5 +1,7 @@
 import { Extension } from "@tiptap/core";
 import type { Node } from "@tiptap/pm/model";
+import { closeHistory, isHistoryTransaction } from "@tiptap/pm/history";
+import { Step, StepResult, type Mappable } from "@tiptap/pm/transform";
 import { Plugin, PluginKey, TextSelection, type Transaction } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 
@@ -12,8 +14,7 @@ export interface InlineCommentsOptions {
   onThreadClick?: (threadIds: string[]) => void;
 }
 
-type RangeSnapshot = { ranges: InlineCommentRange[]; doc: Node };
-type State = { ranges: InlineCommentRange[]; snapshots: RangeSnapshot[]; activeThreadId?: string | null };
+type State = { ranges: InlineCommentRange[]; baseline: object; activeThreadId?: string | null };
 type Update = { ranges?: InlineCommentRange[]; activeThreadId?: string | null };
 
 export const inlineCommentsKey = new PluginKey<State>("inlineComments");
@@ -65,25 +66,51 @@ export function createInlineCommentsPlugin(options: InlineCommentsOptions): Plug
     state: {
       init: (_, state) => ({
         ranges: options.ranges.filter((range) => validRange(state.doc, range)),
-        snapshots: [],
+        baseline: {},
         activeThreadId: options.activeThreadId,
       }),
-      apply(tr, previous, oldState) {
+      apply(tr, previous) {
         const update: Update | undefined = tr.getMeta(inlineCommentsKey);
         let next = previous;
 
         if (update?.ranges) {
-          next = { ...previous, ranges: update.ranges.filter((range) => validRange(tr.doc, range)), snapshots: [] };
+          next = { ...previous, ranges: update.ranges.filter((range) => validRange(tr.doc, range)), baseline: {} };
         } else if (tr.docChanged && tr.getMeta("preventUpdate") !== undefined) {
           // Tiptap setContent replaces the document; old ranges and undo snapshots no longer apply.
-          next = { ...previous, ranges: [], snapshots: [] };
+          next = { ...previous, ranges: [], baseline: {} };
         } else if (tr.docChanged) {
-          next = mapRanges(previous, tr, oldState.doc);
+          const recovery = isHistoryTransaction(tr)
+            ? tr.steps
+                .filter(
+                  (step): step is InlineCommentRangesStep =>
+                    step instanceof InlineCommentRangesStep && step.baseline === previous.baseline,
+                )
+                .at(-1)
+            : undefined;
+          next = {
+            ...previous,
+            ranges: recovery
+              ? recovery.after.filter((range) => validRange(tr.doc, range))
+              : mapRanges(previous.ranges, tr),
+          };
         }
 
         if (update && "activeThreadId" in update) next = { ...next, activeThreadId: update.activeThreadId };
         return next;
       },
+    },
+    appendTransaction(transactions, oldState, newState) {
+      const before = inlineCommentsKey.getState(oldState);
+      const after = inlineCommentsKey.getState(newState);
+
+      if (!before || !after) return null;
+      if (before.baseline !== after.baseline) return closeHistory(newState.tr).setMeta("addToHistory", false);
+      if (!transactions.some((tr) => tr.docChanged) || transactions.some(isHistoryTransaction)) return null;
+      if (transactions.some((tr) => tr.getMeta("addToHistory") === false)) return null;
+      if (sameRanges(before.ranges, after.ranges)) return null;
+
+      // History groups this document-neutral step with the edit and prunes it with that event.
+      return newState.tr.step(new InlineCommentRangesStep(before.ranges, after.ranges, after.baseline));
     },
     props: {
       decorations(state) {
@@ -127,26 +154,60 @@ export function createInlineCommentsPlugin(options: InlineCommentsOptions): Plug
   });
 }
 
-function mapRanges(previous: State, tr: Transaction, oldDoc: Node): State {
-  if (previous.ranges.length === 0 && previous.snapshots.length === 0) return previous;
+function sameRanges(a: InlineCommentRange[], b: InlineCommentRange[]): boolean {
+  return (
+    a.length === b.length &&
+    a.every((range, i) => range.id === b[i]?.id && range.from === b[i]?.from && range.to === b[i]?.to)
+  );
+}
 
-  // Undo can combine several transactions, including edits outside a range.
-  // Remember all ranges for each body so that grouped undo restores exact boundaries.
-  const snapshots = [
-    { doc: oldDoc, ranges: previous.ranges },
-    ...previous.snapshots.filter((snapshot) => !snapshot.doc.eq(oldDoc)),
-  ];
-  const restored = snapshots.find((snapshot) => snapshot.doc.eq(tr.doc));
-  if (restored) return { ...previous, ranges: restored.ranges, snapshots };
-
+function mapRanges(previous: InlineCommentRange[], tr: Transaction): InlineCommentRange[] {
   const ranges: InlineCommentRange[] = [];
-  for (const range of previous.ranges) {
+  for (const range of previous) {
     const mapped = mapRange(range, tr);
     if (mapped && validRange(tr.doc, mapped)) ranges.push(mapped);
   }
-
-  return { ...previous, ranges, snapshots };
+  return ranges;
 }
+
+// Range changes live in ProseMirror's history, not in a separate document snapshot cache.
+class InlineCommentRangesStep extends Step {
+  constructor(
+    readonly before: InlineCommentRange[],
+    readonly after: InlineCommentRange[],
+    readonly baseline: object | null,
+  ) {
+    super();
+  }
+
+  apply(doc: Node): StepResult {
+    return StepResult.ok(doc);
+  }
+
+  invert(): InlineCommentRangesStep {
+    return new InlineCommentRangesStep(this.after, this.before, this.baseline);
+  }
+
+  map(mapping: Mappable): InlineCommentRangesStep {
+    const remap = (ranges: InlineCommentRange[]) =>
+      ranges.flatMap((range) => {
+        const from = mapping.mapResult(range.from, 1);
+        const to = mapping.mapResult(range.to, -1);
+        return from.pos < to.pos && !(from.deleted && to.deleted) ? [{ ...range, from: from.pos, to: to.pos }] : [];
+      });
+    return new InlineCommentRangesStep(remap(this.before), remap(this.after), this.baseline);
+  }
+
+  // Range history is editor-local; serialized steps contain no comment data.
+  toJSON() {
+    return { stepType: "operatelyInlineCommentRanges" };
+  }
+  static fromJSON(): InlineCommentRangesStep {
+    return new InlineCommentRangesStep([], [], null);
+  }
+}
+
+Step.jsonID("operatelyInlineCommentRanges", InlineCommentRangesStep);
 
 function mapRange(range: InlineCommentRange, tr: Transaction): InlineCommentRange | null {
   let { from, to } = range;
