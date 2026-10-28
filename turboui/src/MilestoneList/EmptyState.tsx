@@ -14,7 +14,7 @@ export function EmptyState({ display, canEdit, onAdd }: EmptyStateProps) {
   if (!display) return null;
 
   return (
-    <div className="py-8 text-center text-content-dimmed">
+    <div className="py-8 text-center text-content-dimmed" data-test-id="milestones-empty-state">
       <IconFlag size={48} className="mx-auto mb-4 text-content-subtle" />
       <p className="mb-1 text-sm">{t("No milestones yet")}</p>
       {canEdit && (
