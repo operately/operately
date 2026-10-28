@@ -2925,17 +2925,22 @@ msgid "%{name} - Copy"
 msgstr "%{name} – Kopie"
 
 #.frontend
-#: ../turboui/src/CompanyAdminAddPeoplePage/components/AddedContent.tsx:16
+#: ../turboui/src/CompanyAdminAddPeoplePage/components/AddedContent.tsx:21
+msgid "%{name} already uses Operately. We've added them to %{company} and notified them by email."
+msgstr "%{name} nutzt Operately bereits. Wir haben die Person zu %{company} hinzugefügt und per E-Mail benachrichtigt."
+
+#.frontend
+#: ../turboui/src/CompanyAdminAddPeoplePage/components/AddedContent.tsx:17
 msgid "%{name} has been added"
 msgstr "%{name} wurde hinzugefügt"
 
-#.frontend
-#: ../turboui/src/CompanyAdminAddPeoplePage/components/AddedContent.tsx:20
-msgid "%{name} has been added to the company and an email has been sent to notify them."
-msgstr "%{name} wurde zum Unternehmen hinzugefügt und per E-Mail benachrichtigt."
+#~ #.frontend
+#~ #: ../turboui/src/CompanyAdminAddPeoplePage/components/AddedContent.tsx:20
+#~ msgid "%{name} has been added to the company and an email has been sent to notify them."
+#~ msgstr "%{name} wurde zum Unternehmen hinzugefügt und per E-Mail benachrichtigt."
 
 #.frontend
-#: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:18
+#: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:19
 msgid "%{name} has been invited by email"
 msgstr "%{name} wurde per E-Mail eingeladen"
 
@@ -6516,7 +6521,7 @@ msgid "Back to Home"
 msgstr "Zurück zur Startseite"
 
 #.frontend
-#: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:288
+#: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:290
 msgid "Back to Manage Team Members"
 msgstr "Zurück zur Teammitgliederverwaltung"
 
@@ -8369,7 +8374,8 @@ msgid "Converted your account to an outside collaborator"
 msgstr "Dein Konto in das einer externen Person umgewandelt"
 
 #.frontend
-#: ../turboui/src/CopyToClipboard/index.tsx:75
+#: ../turboui/src/CopyToClipboard/index.tsx:48
+#: ../turboui/src/CopyToClipboard/index.tsx:86
 #: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:16
 msgid "Copied"
 msgstr "Kopiert"
@@ -8412,7 +8418,7 @@ msgid "Copy configuration"
 msgstr "Konfiguration kopieren"
 
 #.frontend
-#: ../turboui/src/CopyToClipboard/index.tsx:38
+#: ../turboui/src/CopyToClipboard/index.tsx:41
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:56
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:215
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:330
@@ -8424,6 +8430,8 @@ msgstr "Kopieren fehlgeschlagen"
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentItem.tsx:207
+#: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:42
+#: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:49
 msgid "Copy link"
 msgstr "Link kopieren"
 
@@ -8432,6 +8440,11 @@ msgstr "Link kopieren"
 #: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:198
 msgid "Copy login command"
 msgstr "Anmeldebefehl kopieren"
+
+#.frontend
+#: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:42
+msgid "Copy message"
+msgstr "Nachricht kopieren"
 
 #.frontend
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:68
@@ -8465,7 +8478,7 @@ msgid "Copy the token now. For security reasons, it will only be shown once."
 msgstr "Kopiere das Token jetzt. Aus Sicherheitsgründen wird es nur einmal angezeigt."
 
 #.frontend
-#: ../turboui/src/CopyToClipboard/index.tsx:29
+#: ../turboui/src/CopyToClipboard/index.tsx:32
 #: assets/js/pages/GoalAsMarkdownPage/index.tsx:31
 #: assets/js/pages/ProjectAsMarkdownPage/page.tsx:28
 msgid "Copy to clipboard"
@@ -11755,7 +11768,7 @@ msgid "Grant %{fullName} access to the site admin dashboard? Site admins can man
 msgstr "%{fullName} Zugriff auf die Instanzverwaltung gewähren? Instanz-Admins können instanzweite Einstellungen verwalten und andere privilegierte Verwaltungsaktionen ausführen. Gewähre diesen Zugriff nur Personen, die die gesamte Instanz verwalten sollen."
 
 #.frontend
-#: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:257
+#: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:259
 msgid "Grant Access"
 msgstr "Zugriff gewähren"
 
@@ -11824,6 +11837,11 @@ msgstr "Hilf deinem Team, deinem Namen ein Gesicht zuzuordnen."
 #: assets/js/pages/NotificationsPage/index.tsx:42
 msgid "Here's every notification you've received from Operately."
 msgstr "Hier findest du alle Benachrichtigungen, die du von Operately erhalten hast."
+
+#.frontend
+#: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:24
+msgid "Hi %{name}, I've invited you to join %{company} on Operately. Use this link to finish setting up your account: %{link}"
+msgstr "Hallo %{name}, ich habe dich zu %{company} auf Operately eingeladen. Schließe über diesen Link die Einrichtung deines Kontos ab: %{link}"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskList.tsx:196
@@ -12281,15 +12299,20 @@ msgstr "Ungültiger Wert für Ganzzahlaufzählung %{type}: %{parsed_value}. Zul�
 msgid "Invitation Expired"
 msgstr "Einladung abgelaufen"
 
-#.frontend
-#: ../turboui/src/InviteLinkPanel/index.tsx:25
-msgid "Invitation Link"
-msgstr "Einladungslink"
+#~ #.frontend
+#~ #: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:32
+#~ msgid "Invitation Link"
+#~ msgstr "Einladungslink"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:287
 msgid "Invitation URL"
 msgstr "Einladungs-URL"
+
+#~ #.frontend
+#~ #: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:32
+#~ msgid "Invitation message"
+#~ msgstr "Einladungsnachricht"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:165
@@ -12298,7 +12321,7 @@ msgstr "Einladungen ohne Antwort"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:129
-#: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:283
+#: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:285
 msgid "Invite Another Member"
 msgstr "Weiteres Mitglied einladen"
 
@@ -15647,7 +15670,7 @@ msgid "Please fix the errors above."
 msgstr "Korrigiere die oben angezeigten Fehler."
 
 #.frontend
-#: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:347
+#: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:349
 msgid "Please select a resource"
 msgstr "Wähle einen Inhalt aus"
 
@@ -20327,10 +20350,10 @@ msgstr "Zuvor war kein Champion zugewiesen."
 msgid "There was no previous reviewer."
 msgstr "Zuvor war kein Reviewer zugewiesen."
 
-#.frontend
-#: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:23
-msgid "They've received an email with this link. You can copy it here to share again if they didn't get the email or prefer another channel."
-msgstr "Die Person hat eine E-Mail mit diesem Link erhalten. Du kannst ihn hier kopieren und erneut teilen, falls die E-Mail nicht angekommen ist oder ein anderer Kanal bevorzugt wird."
+#~ #.frontend
+#~ #: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:23
+#~ msgid "They've received an email with this link. You can copy it here to share again if they didn't get the email or prefer another channel."
+#~ msgstr "Die Person hat eine E-Mail mit diesem Link erhalten. Du kannst ihn hier kopieren und erneut teilen, falls die E-Mail nicht angekommen ist oder ein anderer Kanal bevorzugt wird."
 
 #.elixir
 #: lib/operately/company_transfers/public_error_message.ex:17
@@ -20683,7 +20706,7 @@ msgid "This item can't be moved into one of its subfolders"
 msgstr "Dieser Eintrag kann nicht in einen seiner Unterordner verschoben werden"
 
 #.frontend
-#: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:26
+#: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:32
 msgid "This link (including the one in their email) expires in 24 hours."
 msgstr "Dieser Link (einschließlich des Links in der E-Mail) läuft in 24 Stunden ab."
 
@@ -21273,7 +21296,7 @@ msgid "Unable to copy URL to clipboard"
 msgstr "URL konnte nicht in die Zwischenablage kopiert werden"
 
 #.frontend
-#: ../turboui/src/CopyToClipboard/index.tsx:38
+#: ../turboui/src/CopyToClipboard/index.tsx:41
 #: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:18
 msgid "Unable to copy to clipboard"
 msgstr "Konnte nicht in die Zwischenablage kopiert werden"
@@ -22443,6 +22466,11 @@ msgstr "Wir warten darauf, dass dein neuer Tarif aktiv wird."
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:106
 msgid "We're waiting for your upgrade to finish. This page will update automatically when your new plan becomes active."
 msgstr "Wir warten auf den Abschluss deines Upgrades. Diese Seite wird automatisch aktualisiert, sobald dein neuer Tarif aktiv ist."
+
+#.frontend
+#: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:28
+msgid "We've emailed %{name} a link to finish setting up their account. You can also share it below."
+msgstr "Wir haben %{name} einen Link per E-Mail geschickt, um die Kontoeinrichtung abzuschließen. Du kannst ihn auch unten teilen."
 
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:238
