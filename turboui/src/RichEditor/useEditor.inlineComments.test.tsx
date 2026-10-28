@@ -83,3 +83,38 @@ it("can enable and disable decorations after loading threads without replacing t
   rerender({ enabled: false });
   expect(inlineCommentsKey.getState(editor.state)).toBeUndefined();
 });
+
+it.each([true, false])("exposes working inline comment commands (initially enabled: %s)", async (enabled) => {
+  const { result, rerender } = renderHook(
+    ({ enabled }) => useEditor({ handlers, content, inlineComments: enabled ? { ranges: [] } : undefined }),
+    { initialProps: { enabled } },
+  );
+  await waitFor(() => expect(result.current.editor).not.toBeNull());
+  const editor: Editor = result.current.editor;
+  if (!enabled) rerender({ enabled: true });
+  expect(result.current.editor).toBe(editor);
+
+  act(() => {
+    expect(editor.commands.setInlineCommentRanges([{ id: "a", from: 1, to: 6 }])).toBe(true);
+    expect(editor.commands.setActiveInlineThread("a")).toBe(true);
+  });
+  expect(inlineCommentsKey.getState(editor.state)?.ranges).toEqual([{ id: "a", from: 1, to: 6 }]);
+  expect(inlineCommentsKey.getState(editor.state)?.activeThreadId).toBe("a");
+  expect(editor.view.dom.querySelector('[data-inline-thread="a"]')?.className).toContain("bg-surface-highlight");
+
+  act(() => {
+    expect(
+      editor
+        .chain()
+        .setInlineCommentRanges([{ id: "b", from: 7, to: 12 }])
+        .setActiveInlineThread("b")
+        .run(),
+    ).toBe(true);
+  });
+  expect(inlineCommentsKey.getState(editor.state)?.ranges).toEqual([{ id: "b", from: 7, to: 12 }]);
+  expect(inlineCommentsKey.getState(editor.state)?.activeThreadId).toBe("b");
+
+  rerender({ enabled: false });
+  expect(editor.can().setInlineCommentRanges([])).toBe(false);
+  expect(editor.can().setActiveInlineThread("a")).toBe(false);
+});

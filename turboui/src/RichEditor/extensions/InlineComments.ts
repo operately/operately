@@ -27,26 +27,33 @@ declare module "@tiptap/core" {
   }
 }
 
-// Decorations belong to plugin state, never to the document schema or clipboard.
-export const InlineComments = Extension.create<InlineCommentsOptions>({
-  name: "inlineComments",
-  addOptions: () => ({ ranges: [] }),
+// Install commands once; the hook can enable/disable the plugin without recreating the editor.
+export const InlineCommentCommands = Extension.create({
+  name: "inlineCommentCommands",
   addCommands() {
     return {
       setInlineCommentRanges:
         (ranges) =>
-        ({ tr, dispatch }) => {
+        ({ tr, dispatch, state }) => {
+          if (!inlineCommentsKey.getState(state)) return false;
           if (dispatch) tr.setMeta(inlineCommentsKey, { ...tr.getMeta(inlineCommentsKey), ranges });
           return true;
         },
       setActiveInlineThread:
         (activeThreadId) =>
-        ({ tr, dispatch }) => {
+        ({ tr, dispatch, state }) => {
+          if (!inlineCommentsKey.getState(state)) return false;
           if (dispatch) tr.setMeta(inlineCommentsKey, { ...tr.getMeta(inlineCommentsKey), activeThreadId });
           return true;
         },
     };
   },
+});
+
+// Decorations belong to plugin state, never to the document schema or clipboard.
+export const InlineComments = InlineCommentCommands.extend<InlineCommentsOptions>({
+  name: "inlineComments",
+  addOptions: () => ({ ranges: [] }),
   addProseMirrorPlugins() {
     return [createInlineCommentsPlugin(this.options)];
   },

@@ -9,7 +9,12 @@ import { clearLocalDraft, isRichTextEmpty, LocalDraftOptions, readLocalDraft, wr
 import { SearchFn } from "./extensions/MentionPeople";
 import { restoreRichTextSource } from "../RichContent/restoreSource";
 import { createResourceLinkPlugin, type ResolveResourceLinks } from "./extensions/Link/resourceLinks";
-import { createInlineCommentsPlugin, inlineCommentsKey, type InlineCommentsOptions } from "./extensions/InlineComments";
+import {
+  InlineCommentCommands,
+  createInlineCommentsPlugin,
+  inlineCommentsKey,
+  type InlineCommentsOptions,
+} from "./extensions/InlineComments";
 import { normalizeRichTextContent } from "./richTextContent";
 
 export interface Person {
@@ -104,13 +109,15 @@ export function useEditor(props: UseEditorProps): EditorState {
   inlineCommentsRef.current = props.inlineComments;
 
   const extensions = React.useMemo(
-    () =>
-      createRichEditorExtensions(props.handlers, {
+    () => [
+      ...createRichEditorExtensions(props.handlers, {
         editable: props.editable,
         placeholder,
         thumbnailBlobs: props.thumbnailBlobs,
         portalContainer: embedding?.portalContainer,
       }),
+      InlineCommentCommands,
+    ],
     [
       props.handlers.uploadFile,
       props.handlers.peopleSearch,
@@ -249,16 +256,12 @@ export function useEditor(props: UseEditorProps): EditorState {
   const rangesKey = JSON.stringify(props.inlineComments?.ranges ?? []);
   React.useEffect(() => {
     if (!editor || !inlineCommentsKey.getState(editor.state)) return;
-    editor.view.dispatch(
-      editor.state.tr.setMeta(inlineCommentsKey, { ranges: restoredDraft ? [] : JSON.parse(rangesKey) }),
-    );
+    editor.commands.setInlineCommentRanges(restoredDraft ? [] : JSON.parse(rangesKey));
   }, [editor, rangesKey, restoredDraft, inlineCommentsEnabled]);
 
   React.useEffect(() => {
     if (!editor || !inlineCommentsKey.getState(editor.state)) return;
-    editor.view.dispatch(
-      editor.state.tr.setMeta(inlineCommentsKey, { activeThreadId: props.inlineComments?.activeThreadId ?? null }),
-    );
+    editor.commands.setActiveInlineThread(props.inlineComments?.activeThreadId ?? null);
   }, [editor, props.inlineComments?.activeThreadId, inlineCommentsEnabled]);
 
   const getJson = React.useCallback(() => {
