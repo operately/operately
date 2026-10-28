@@ -23,11 +23,15 @@ This matches the CLI split between read-only and write API tokens.
 
 ## Connecting a client
 
+The MCP Connections page includes setup steps for ChatGPT, Claude, Cursor, Codex CLI, Claude Code, and other compatible clients. Select a client to see its instructions and copy the server URL, command, or configuration. These values use the current installation's URL, including on self-hosted instances. The setup guides remain available for troubleshooting and additional clients.
+
 1. Add Operately as an MCP server in your AI client (remote / OAuth flow).
 2. Sign in and approve the requested scopes on the Operately consent screen.
 3. Select the company this connection should use (one company per grant).
 
 Arbitrary MCP clients can onboard via **Client ID Metadata Documents (CIMD)** without a server-side allowlist entry. Known directory partners may also be pre-registered.
+
+When updating the in-app instructions, check the official [ChatGPT](https://developers.openai.com/api/docs/guides/custom-mcp-server), [Claude](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp), [Cursor](https://cursor.com/docs/mcp), and [Claude Code](https://code.claude.com/docs/en/mcp) guides, plus `codex mcp add --help` and `codex mcp login --help` for the CLI commands.
 
 ## Managing connections
 
