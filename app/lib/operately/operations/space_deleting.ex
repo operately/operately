@@ -18,6 +18,7 @@ defmodule Operately.Operations.SpaceDeleting do
   alias Operately.Projects.{Project, CheckIn}
   alias Operately.Goals.{Goal, Update}
   alias Operately.Messages.{Message, MessagesBoard}
+  alias Operately.Comments.InlineThread
   alias Operately.Companies
   alias Operately.Search.IndexUpdates
 
@@ -70,13 +71,26 @@ defmodule Operately.Operations.SpaceDeleting do
       # Get all goal updates
       goal_update_ids = from(u in Update, where: u.goal_id in ^goal_ids, select: u.id) |> Repo.all()
 
+      # Include soft-deleted documents and parents: the space deletion cascades to them too.
+      inline_thread_ids =
+        from(t in InlineThread,
+          join: d in assoc(t, :document),
+          join: h in assoc(d, :resource_hub),
+          left_join: p in assoc(h, :project),
+          left_join: g in assoc(h, :goal),
+          where: h.space_id == ^space.id or p.group_id == ^space.id or g.group_id == ^space.id,
+          select: t.id
+        )
+        |> Repo.all(with_deleted: true)
+
       {:ok,
        %{
          projects: project_ids,
          goals: goal_ids,
          messages: message_ids,
          project_check_ins: project_check_in_ids,
-         goal_updates: goal_update_ids
+         goal_updates: goal_update_ids,
+         inline_threads: inline_thread_ids
        }}
     end)
   end
@@ -89,9 +103,9 @@ defmodule Operately.Operations.SpaceDeleting do
 
   defp delete_comments(multi) do
     Multi.run(multi, :comments, fn _, changes ->
-      %{sub_resources: %{messages: message_ids, project_check_ins: check_in_ids, goal_updates: update_ids}} = changes
+      %{sub_resources: %{messages: message_ids, project_check_ins: check_in_ids, goal_updates: update_ids, inline_threads: thread_ids}} = changes
 
-      all_entity_ids = message_ids ++ check_in_ids ++ update_ids
+      all_entity_ids = message_ids ++ check_in_ids ++ update_ids ++ thread_ids
       {_count, comments} = Operately.Updates.delete_comments(all_entity_ids)
       {:ok, comments}
     end)
