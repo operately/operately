@@ -27,9 +27,11 @@ import { useUpdateDocumentPublicSharing } from "@/models/resourceHubs/documentPu
 import { useLoadedData, useRefresh } from "./loader";
 import { buildDocumentPageNavigation, buildNavigationDocument } from "./navigation";
 import { useDocumentPageOptions } from "./Options";
+import { useDocumentInlineComments } from "./useInlineComments";
 
 export function Page() {
   const { document, folder, resourceHub, isCurrentUserSubscribed } = useLoadedData();
+  const inlineComments = useDocumentInlineComments(document);
   const me = useMe();
   const paths = usePaths();
   const navigate = useNavigate();
@@ -174,7 +176,7 @@ export function Page() {
 
   return (
     <>
-      <DocumentPage {...shared} hideDraftActions />
+      <DocumentPage key={document.id} {...shared} inlineComments={inlineComments} hideDraftActions />
       <DocumentPublicSharingModal
         isOpen={sharingOpen}
         onClose={() => setSharingOpen(false)}
