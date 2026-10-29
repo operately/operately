@@ -73,7 +73,7 @@ export function Thread({
   return (
     <section
       ref={cardRef}
-      className={`group/thread relative rounded-xl text-sm ${active ? "bg-surface-base shadow-lg border border-stroke-base p-4" : "bg-surface-dimmed"}`}
+      className={`group/thread relative rounded-xl text-sm bg-surface-base ${active ? "shadow-lg border border-stroke-base p-4" : ""}`}
       data-test-id={`inline-thread-${thread.id}`}
       data-resolved={Boolean(thread.resolvedAt)}
     >

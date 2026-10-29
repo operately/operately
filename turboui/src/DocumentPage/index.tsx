@@ -125,7 +125,7 @@ export function DocumentPage(props: DocumentPage.Props) {
   const review = useInlineComments(props.state === "published" ? props.inlineComments : undefined);
 
   return (
-    <div className={review.hasFloatingComments ? "xl:pr-[30rem]" : undefined}>
+    <div className={review.hasFloatingComments ? "xl:pr-[23rem]" : undefined}>
       <Page
         title={props.pageTitle}
         size={review.hasFloatingComments ? "medium" : "large"}
