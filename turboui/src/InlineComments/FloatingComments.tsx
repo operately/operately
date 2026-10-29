@@ -58,7 +58,7 @@ export function FloatingComments({
   return (
     <div
       ref={containerRef}
-      className="absolute left-full top-0 ml-6 w-[28rem] flex flex-col gap-3 pb-8"
+      className="absolute left-full top-0 ml-4 w-[22rem] flex flex-col gap-3 pb-8"
       data-test-id="inline-comments-floating"
     >
       {ordered.map((item) => (

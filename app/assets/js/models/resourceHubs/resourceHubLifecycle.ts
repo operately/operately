@@ -39,7 +39,12 @@ export async function invalidateResourceHubQueries(
   if (input.resourceType === "folder") folderIds.push(input.resourceId);
 
   // Match every include-flag and URL-name variant, without affecting other resources.
-  const invalidate = (prefix: readonly unknown[], field: string, ids: (string | null | undefined)[], detail = false) => {
+  const invalidate = (
+    prefix: readonly unknown[],
+    field: string,
+    ids: (string | null | undefined)[],
+    detail = false,
+  ) => {
     if (!ids.some(Boolean)) return Promise.resolve();
 
     return client.invalidateQueries({
@@ -61,8 +66,7 @@ export async function invalidateResourceHubQueries(
       refetchType,
       predicate: (query) => {
         const queryInput = query.queryKey[nodesPrefix.length] as
-          | { resourceHubId?: string; folderId?: string }
-          | undefined;
+          { resourceHubId?: string; folderId?: string } | undefined;
         return (
           compareIds(queryInput?.resourceHubId, hubId) || folderIds.some((id) => compareIds(queryInput?.folderId, id))
         );
@@ -71,6 +75,7 @@ export async function invalidateResourceHubQueries(
     invalidate(Api.resource_hubs.getFolderQueryKeyPrefix(), "id", folderIds),
     invalidate(Api.documents.getQueryKeyPrefix(), "id", [documentId], true),
     invalidate(Api.documents.listVersionsQueryKeyPrefix(), "documentId", [documentId], true),
+    invalidate(Api.inline_threads.listQueryKeyPrefix(), "resourceId", [documentId], true),
     invalidate(Api.files.getQueryKeyPrefix(), "id", [fileId], true),
     invalidate(Api.links.getQueryKeyPrefix(), "id", [linkId], true),
   ]);

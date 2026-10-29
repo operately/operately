@@ -206,13 +206,22 @@ test("empty documents keep their original layout and lend side padding to a new 
   assert.ok(composing.padding < original.padding);
   assert.equal(composing.textWidth, original.textWidth);
   const card = await composer.boundingBox();
-  assert.ok(card && card.width >= 400);
+  assert.ok(card);
+  assert.equal(card.width, 352);
+  const viewportWidth = await page.evaluate(() => document.documentElement.clientWidth);
+  assert.ok(Math.abs(composing.x - (viewportWidth - card.x - card.width)) < 2);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
   if (process.env.SCREENSHOT_DIR)
     await page.screenshot({ path: `${process.env.SCREENSHOT_DIR}/inline-wider-composer.png` });
   await composer.getByRole("button", { name: "Cancel", exact: true }).click();
   await composer.waitFor({ state: "detached" });
   assert.deepEqual(await geometry(), original);
+
+  await visit("review");
+  const paper = await geometry();
+  const comments = await page.locator('[data-test-id="inline-comments-floating"]').boundingBox();
+  assert.ok(comments);
+  assert.ok(Math.abs(paper.x - (viewportWidth - comments.x - comments.width)) < 2);
 });
 
 test("mobile readers can open and revisit an unattached thread without highlights", async () => {
