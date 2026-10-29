@@ -16,21 +16,30 @@ defmodule Operately.RichContent.Selection do
   @leaves ~w(mention blob hardBreak horizontalRule)
   @context_length 32
 
-  def extract(%{"type" => "doc", "content" => children}, {from, to})
-      when is_list(children) and is_integer(from) and is_integer(to) and from >= 0 and from < to do
-    with {:ok, chunks, size} <- walk_children(children, 0),
-         tokens = List.flatten(chunks),
-         true <- to <= size and valid_boundary?(tokens, from) and valid_boundary?(tokens, to),
-         selected_text when selected_text != "" <- text_between(tokens, from, to) do
-      {:ok,
-       %{
-         quote: selected_text,
-         prefix: tokens |> text_between(0, from) |> String.slice(-@context_length, @context_length),
-         suffix: tokens |> text_between(to, size) |> String.slice(0, @context_length)
-       }}
+  @doc "Indexes editor JSON once for selection extraction and anchor mapping."
+  def index(%{"type" => "doc", "content" => children}) when is_list(children) do
+    with {:ok, chunks, size} <- walk_children(children, 0) do
+      {:ok, %{tokens: List.flatten(chunks), size: size}}
     else
       _ -> {:error, :invalid_selection}
     end
+  end
+
+  def index(_), do: {:error, :invalid_selection}
+
+  def extract(%{tokens: tokens, size: size}, {from, to})
+      when is_integer(from) and is_integer(to) and from >= 0 and from < to do
+    with true <- to <= size and valid_boundary?(tokens, from) and valid_boundary?(tokens, to),
+         selected_text when selected_text != "" <- text_between(tokens, from, to) do
+      {:ok,
+       %{quote: selected_text, prefix: tokens |> text_between(0, from) |> String.slice(-@context_length, @context_length), suffix: tokens |> text_between(to, size) |> String.slice(0, @context_length)}}
+    else
+      _ -> {:error, :invalid_selection}
+    end
+  end
+
+  def extract(%{"type" => "doc"} = content, range) do
+    with {:ok, indexed} <- index(content), do: extract(indexed, range)
   end
 
   def extract(_, _), do: {:error, :invalid_selection}
@@ -41,15 +50,15 @@ defmodule Operately.RichContent.Selection do
       |> String.codepoints()
       |> Enum.map_reduce(pos, fn char, start ->
         size = byte_size(:unicode.characters_to_binary(char, :utf8, {:utf16, :big})) |> div(2)
-        {%{from: start, to: start + size, text: char, kind: :text}, start + size}
+        {%{from: start, to: start + size, text: char, kind: :text, value: {:text, char}}, start + size}
       end)
 
     {:ok, tokens, finish}
   end
 
-  defp walk(%{"type" => type}, pos) when type in @leaves do
+  defp walk(%{"type" => type} = node, pos) when type in @leaves do
     text = if type == "hardBreak", do: "\n", else: "\uFFFC"
-    tokens = [%{from: pos, to: pos + 1, text: text, kind: :text}]
+    tokens = [%{from: pos, to: pos + 1, text: text, kind: :text, value: {:leaf, type, get_in(node, ["attrs", "id"])}}]
     tokens = if type == "horizontalRule", do: [block_marker(pos, pos + 1) | tokens], else: tokens
     {:ok, tokens, pos + 1}
   end
@@ -60,6 +69,7 @@ defmodule Operately.RichContent.Selection do
     with true <- is_list(children),
          {:ok, tokens, finish} <- walk_children(children, pos + 1) do
       tokens = if type in @textblocks, do: [block_marker(pos, finish + 1) | tokens], else: tokens
+      tokens = [boundary(pos, type, :open), tokens, boundary(finish, type, :close)]
       {:ok, tokens, finish + 1}
     else
       _ -> :error
@@ -76,6 +86,8 @@ defmodule Operately.RichContent.Selection do
       {:ok, [tokens | remaining], finish}
     end
   end
+
+  defp boundary(pos, type, side), do: %{from: pos, to: pos + 1, text: "", kind: :boundary, value: {side, type}}
 
   defp block_marker(from, to), do: %{from: from, to: to, text: "", kind: :block}
 
