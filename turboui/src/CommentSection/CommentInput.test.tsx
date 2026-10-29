@@ -26,6 +26,28 @@ jest.mock("../RichEditor", () => ({
 jest.mock("../Toasts", () => ({ showErrorToast: jest.fn() }));
 beforeEach(() => jest.clearAllMocks());
 
+it("keeps an immediately active composer and its draft until submission succeeds", async () => {
+  const request = deferred();
+  const postComment = jest.fn(() => request.promise);
+  render(
+    <CommentInput
+      initiallyActive
+      waitForSuccess
+      currentUser={{ id: "maya", fullName: "Maya", avatarUrl: null, profileLink: "#" }}
+      form={{ items: [], submitting: false, postComment, editComment: jest.fn() }}
+      richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinks: null }}
+    />,
+  );
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Keep this draft" } });
+  fireEvent.click(screen.getByRole("button", { name: "Post" }));
+  fireEvent.click(screen.getByRole("button", { name: "Post" }));
+  expect(postComment).toHaveBeenCalledTimes(1);
+  expect(clearLocalDraft).not.toHaveBeenCalled();
+  await act(async () => request.resolve(false));
+  expect(screen.getByRole("textbox")).toHaveValue("Keep this draft");
+  expect(clearLocalDraft).not.toHaveBeenCalled();
+});
+
 function deferred() {
   let resolve: (value: boolean | undefined) => void = () => {};
   let reject: (error: Error) => void = () => {};

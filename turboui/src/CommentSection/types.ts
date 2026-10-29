@@ -5,7 +5,7 @@ import { Reactions } from "../Reactions";
 import type { AvatarPerson } from "../Avatar";
 import type { FormattedTimePreferences } from "../FormattedTime";
 
-export type CommentAppearance = "flat" | "card";
+export type CommentAppearance = "flat" | "card" | "inline";
 
 export interface Person {
   id: string;
@@ -53,6 +53,7 @@ export interface CommentFormState {
 }
 
 export interface CommentItemProps {
+  initiallyEditing?: boolean;
   comment: Comment;
   form: CommentFormState;
   commentParentType: string;
@@ -69,6 +70,11 @@ export interface CommentItemProps {
 }
 
 export interface CommentInputProps {
+  compact?: boolean;
+  hideToolbar?: boolean;
+  initiallyActive?: boolean;
+  waitForSuccess?: boolean;
+  submitDisabled?: boolean;
   form: CommentFormState;
   onSubmit?: () => void;
   onCancel?: () => void;

@@ -6,6 +6,7 @@ import { Avatar, AvatarList } from "../Avatar";
 import type { AvatarPerson } from "../Avatar";
 import { shortName } from "../Avatar/AvatarWithName";
 import { PrimaryButton, SecondaryButton } from "../Button";
+import { UnstyledButton } from "../Button/UnstalyedButton";
 import { CommentInputProps, CommentNotificationInfo, Person } from "./types";
 import { Editor, useEditor } from "../RichEditor";
 import { showErrorToast } from "../Toasts";
@@ -14,7 +15,7 @@ import { useDraftActivatedInput } from "./useDraftActivatedInput";
 interface CommentInputActiveProps extends CommentInputProps {
   currentUser: Person;
   onBlur: () => void;
-  onPost: (content: JSONContent) => Promise<void>;
+  onPost: (content: JSONContent) => Promise<boolean | void>;
   restoredContent?: JSONContent;
 }
 
@@ -28,12 +29,22 @@ export function CommentInput({
   currentUser,
   richTextHandlers,
   notificationInfo,
+  initiallyActive,
+  compact,
+  hideToolbar,
+  waitForSuccess,
+  submitDisabled,
+  onCancel,
 }: CommentInputProps & { currentUser: Person }) {
   const { t } = useTranslation();
   const { active, activate, deactivate } = useDraftActivatedInput(form.commentDraftKey);
   const composerVersion = React.useRef(0);
   const [restoredContent, setRestoredContent] = useState<JSONContent>();
   const mounted = React.useRef(true);
+
+  React.useEffect(() => {
+    if (initiallyActive) activate();
+  }, [initiallyActive, activate]);
 
   React.useEffect(() => {
     mounted.current = true;
@@ -53,26 +64,35 @@ export function CommentInput({
   };
 
   const postComment = async (content: JSONContent) => {
+    if (waitForSuccess) {
+      try {
+        return (await form.postComment(content)) !== false;
+      } catch {
+        showErrorToast(t("Comment not posted"), t("Your draft has been kept for retry."));
+        return false;
+      }
+    }
     const submittedVersion = composerVersion.current;
     // Close before the host adds its optimistic row; keep recovery outside the unmounted editor.
     closeInput();
     try {
-      if ((await form.postComment(content)) !== false) return;
+      if ((await form.postComment(content)) !== false) return true;
     } catch {
       // Handle false results and rejected requests the same way below.
     }
 
-    if (!mounted.current) return;
+    if (!mounted.current) return false;
 
     // Starting another comment discards recovery of this one, even if the newer comment was cancelled.
     if (composerVersion.current !== submittedVersion) {
       showErrorToast(t("Comment not posted"), t("Please try again."));
-      return;
+      return false;
     }
 
     setRestoredContent(content);
     startComment();
     showErrorToast(t("Comment not posted"), t("Your draft has been kept for retry."));
+    return false;
   };
 
   if (active) {
@@ -86,6 +106,11 @@ export function CommentInput({
         restoredContent={restoredContent}
         richTextHandlers={richTextHandlers}
         notificationInfo={notificationInfo}
+        compact={compact}
+        hideToolbar={hideToolbar}
+        waitForSuccess={waitForSuccess}
+        submitDisabled={submitDisabled}
+        onCancel={onCancel}
       />
     );
   }
@@ -96,18 +121,20 @@ export function CommentInput({
 function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProps) {
   const { t } = useTranslation();
   return (
-    <div
-      className="py-4 sm:py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
-      data-test-id="add-comment"
+    <UnstyledButton
+      className="w-full text-left py-4 sm:py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
+      testId="add-comment"
       onClick={onClick}
     >
       <Avatar person={currentUser} size="normal" />
       {t("Write a comment here...")}
-    </div>
+    </UnstyledButton>
   );
 }
 
 function CommentInputActive({
+  compact,
+  hideToolbar,
   form,
   currentUser,
   onBlur,
@@ -115,10 +142,15 @@ function CommentInputActive({
   restoredContent,
   richTextHandlers,
   notificationInfo,
+  waitForSuccess,
+  submitDisabled,
+  onCancel,
 }: CommentInputActiveProps) {
   const { t } = useTranslation();
   const [uploading] = useState(false);
   const restoreOnMount = React.useRef(restoredContent);
+  const posting = React.useRef(false);
+  const [pending, setPending] = useState(false);
 
   const editor = useEditor({
     content: "",
@@ -126,7 +158,7 @@ function CommentInputActive({
     placeholder: t("Write a comment here..."),
     handlers: richTextHandlers,
     autoFocus: true,
-    className: "min-h-[200px] px-4 py-3",
+    className: `${compact ? "min-h-[100px]" : "min-h-[200px]"} px-4 py-3`,
     localDraft: { key: form.commentDraftKey },
   });
 
@@ -137,22 +169,39 @@ function CommentInputActive({
     restoreOnMount.current = undefined;
   }, [editor.editor]);
 
-  const handlePost = () => {
+  const handlePost = async () => {
     const content = editor.getJson();
-    if (!content || editor.empty || uploading || form.submitting) return;
+    if (!content || editor.empty || uploading || form.submitting || submitDisabled || posting.current) return;
+
+    if (waitForSuccess) {
+      posting.current = true;
+      setPending(true);
+      try {
+        if ((await onPost(content)) !== false) {
+          editor.clearLocalDraft();
+          onBlur();
+        }
+      } finally {
+        posting.current = false;
+        setPending(false);
+      }
+      return;
+    }
 
     editor.clearLocalDraft();
     void onPost(content);
   };
 
   const handleCancel = () => {
+    if (posting.current) return;
     editor.clearLocalDraft();
     onBlur();
+    onCancel?.();
   };
 
   React.useEffect(() => {
     const handleEscapeKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (!waitForSuccess && e.key === "Escape") {
         handleCancel();
       }
     };
@@ -168,21 +217,21 @@ function CommentInputActive({
       <Avatar person={currentUser} size="normal" />
       <div className="flex-1 min-w-0">
         <div className="border border-surface-outline rounded-lg overflow-hidden">
-          <Editor editor={editor} hideBorder padding="p-0" />
+          <Editor editor={editor} hideBorder hideToolbar={hideToolbar} padding="p-0" />
 
           <div className="flex justify-between items-center m-4">
             <div className="flex items-center gap-2">
               <PrimaryButton
                 size="xs"
                 onClick={handlePost}
-                loading={form.submitting || uploading}
-                disabled={editor.empty}
+                loading={form.submitting || uploading || pending}
+                disabled={editor.empty || submitDisabled || pending}
                 testId="post-comment"
               >
                 {uploading ? t("Uploading...") : t("Post")}
               </PrimaryButton>
 
-              <SecondaryButton size="xs" onClick={handleCancel}>
+              <SecondaryButton size="xs" onClick={handleCancel} disabled={pending}>
                 {t("Cancel")}
               </SecondaryButton>
             </div>

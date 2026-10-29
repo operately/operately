@@ -13,6 +13,40 @@ import type { CommentFormState } from "./types";
 jest.mock("../Toasts", () => ({ showErrorToast: jest.fn(), showSuccessToast: jest.fn() }));
 beforeEach(() => jest.clearAllMocks());
 
+it.each([true, false])(
+  "ordinary comments keep their copy link and author actions while submitting: owner=%s",
+  async (owner) => {
+    const user = userEvent.setup();
+    const writeText = jest.spyOn(navigator.clipboard, "writeText").mockResolvedValue();
+    const commentLink = new URL(window.location.href);
+    commentLink.hash = comment.id;
+    render(
+      <MemoryRouter>
+        <CommentItem
+          comment={comment}
+          form={{ ...form, submitting: true }}
+          commentParentType="discussion"
+          canComment
+          currentUserId={owner ? comment.author.id : "another-person"}
+          appearance="flat"
+          richTextHandlers={{
+            mentionedPersonLookup: async () => null,
+            resolveResourceLinks: null,
+            taskList: { canEdit: false },
+            onCommentTaskItemChange: null,
+          }}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+        />
+      </MemoryRouter>,
+    );
+    await user.click(getByTestId("comment-options"));
+    expect(Boolean(document.querySelector('[data-test-id="edit-comment"]'))).toBe(owner);
+    expect(Boolean(document.querySelector('[data-test-id="delete-comment"]'))).toBe(owner);
+    await user.click(screen.getByText("Copy link"));
+    expect(writeText).toHaveBeenCalledWith(commentLink.toString());
+  },
+);
+
 const longCodeLine = "const endpoint = 'https://example.com/" + "a".repeat(200) + "';";
 
 const comment = {
@@ -277,4 +311,70 @@ it("reports a rejected deletion and keeps the comment available for retry", asyn
   await user.click(getByTestId("delete-comment"));
   expect(deleteComment).toHaveBeenCalledTimes(2);
   expect(deleteComment).toHaveBeenLastCalledWith(comment.id);
+});
+
+it.each([true, false])("inline menus offer only the author's edit/delete actions: owner=%s", async (owner) => {
+  const user = userEvent.setup();
+  render(
+    <MemoryRouter>
+      <CommentItem
+        comment={comment}
+        form={form}
+        commentParentType="inline_thread"
+        canComment
+        currentUserId={owner ? comment.author.id : "another-person"}
+        appearance="inline"
+        richTextHandlers={{
+          mentionedPersonLookup: async () => null,
+          resolveResourceLinks: null,
+          taskList: { canEdit: false },
+          onCommentTaskItemChange: null,
+        }}
+        formattedTimePreferences={defaultFormattedTimePreferences}
+      />
+    </MemoryRouter>,
+  );
+  if (owner) {
+    await user.click(getByTestId("comment-options"));
+    expect(screen.getAllByRole("menuitem")).toHaveLength(2);
+    expect(getByTestId("edit-comment")).toBeInTheDocument();
+    expect(getByTestId("delete-comment")).toBeInTheDocument();
+  } else {
+    expect(document.querySelector('[data-test-id="comment-options"]')).toBeNull();
+  }
+  expect(document.querySelector('[data-test-id="copy-comment-link"]')).toBeNull();
+});
+
+it("keeps an inline edit open after failure and allows retry", async () => {
+  const user = userEvent.setup();
+  const editComment = jest.fn().mockRejectedValueOnce(new Error("Save failed")).mockResolvedValue(true);
+  render(
+    <MemoryRouter>
+      <CommentItem
+        comment={comment}
+        form={{ ...form, editComment }}
+        commentParentType="inline_thread"
+        canComment
+        currentUserId={comment.author.id}
+        appearance="inline"
+        initiallyEditing
+        richTextHandlers={{
+          mentionedPersonLookup: async () => null,
+          resolveResourceLinks: null,
+          taskList: { canEdit: false },
+          onCommentTaskItemChange: null,
+        }}
+        formattedTimePreferences={defaultFormattedTimePreferences}
+      />
+    </MemoryRouter>,
+  );
+
+  await waitFor(() => expect(getByTestId("post-comment")).toBeEnabled());
+  await user.click(getByTestId("post-comment"));
+  await waitFor(() => expect(showErrorToast).toHaveBeenCalled());
+  expect(getByTestId("edit-comment-form")).toBeInTheDocument();
+  expect(getByTestId("post-comment")).toBeEnabled();
+  await user.click(getByTestId("post-comment"));
+  await waitFor(() => expect(document.querySelector('[data-test-id="edit-comment-form"]')).toBeNull());
+  expect(editComment).toHaveBeenCalledTimes(2);
 });
