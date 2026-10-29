@@ -174,6 +174,7 @@ export { NewDocumentPage } from "./NewDocumentPage";
 export { DocumentEditPage } from "./DocumentEditPage";
 export type { DocumentEditPage as DocumentEditPageTypes } from "./DocumentEditPage/types";
 export { DocumentPage } from "./DocumentPage";
+export type { DocumentInlineCommentsProps, InlineCommentTarget } from "./DocumentPage";
 export { DocumentTitle } from "./DocumentTitle";
 export { OngoingDraftActions } from "./OngoingDraftActions";
 export { LinkNewPage } from "./LinkNewPage";
