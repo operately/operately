@@ -142,6 +142,16 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemCheckedTest do
     assert checked(version.content)
   end
 
+  test "checkbox changes advance inline anchor versions without moving ranges", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:document, :hub, content: content())
+      |> Factory.add_inline_thread(:thread, :document, from: 3, to: 10, quote: "Ship it")
+
+    assert {200, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs(ctx.document, :document, :content, content()))
+    assert %{status: :attached, current_from: 3, current_to: 10, current_version: 2} = Repo.reload!(ctx.thread).anchor
+  end
+
   test "draft documents retain their version and subscription configuration", ctx do
     document = target(ctx, :document) |> Ecto.Changeset.change(content: content(), state: :draft) |> Repo.update!()
     assert {200, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs(document, :document, :content, document.content))

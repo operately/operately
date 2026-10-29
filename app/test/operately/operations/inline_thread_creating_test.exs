@@ -72,6 +72,47 @@ defmodule Operately.Operations.InlineThreadCreatingTest do
     end)
   end
 
+  test "a save waiting on thread creation reconciles the newly committed thread" do
+    Sandbox.unboxed_run(Repo, fn ->
+      ctx = setup_document()
+      parent = self()
+
+      try do
+        creator = Task.async(fn ->
+          Sandbox.unboxed_run(Repo, fn ->
+            Repo.transaction(fn ->
+              {:ok, thread} = InlineThreadCreating.run(ctx.creator, ctx.document, attrs(ctx))
+              send(parent, :thread_created)
+              receive do
+                :commit -> thread
+              after
+                5_000 -> Repo.rollback(:test_timeout)
+              end
+            end)
+          end)
+        end)
+        assert_receive :thread_created, 2_000
+        writer = Task.async(fn ->
+          Sandbox.unboxed_run(Repo, fn ->
+            document = Repo.preload(ctx.document, [:resource_hub, :node])
+            send(parent, :saving_document)
+            Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, document, %{name: document.name, content: RichText.rich_text("Say Hello world")})
+          end)
+        end)
+        assert_receive :saving_document, 2_000
+        assert Task.yield(writer, 100) == nil
+        send(creator.pid, :commit)
+        assert {:ok, thread} = Task.await(creator)
+        assert {:ok, document} = Task.await(writer)
+        assert %{status: :attached, current_version: 2, current_from: 5, current_to: 10} = Repo.reload!(thread).anchor
+        assert document.current_version == 2
+      after
+        Repo.delete!(ctx.company)
+        Repo.delete!(ctx.account)
+      end
+    end)
+  end
+
   defp setup_document do
     %{}
     |> Factory.setup()
