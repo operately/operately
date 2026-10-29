@@ -781,6 +781,7 @@ export interface ActivityContentResourceHubDocumentCommented {
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
   comment?: Comment | null;
+  inlineThreadId?: Id | null;
 }
 
 export interface ActivityContentResourceHubDocumentCreated {
@@ -809,6 +810,17 @@ export interface ActivityContentResourceHubDocumentEdited {
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
+}
+
+export interface ActivityContentResourceHubDocumentInlineThreadResolutionChanged {
+  __typename: "activity_content_resource_hub_document_inline_thread_resolution_changed";
+  goal?: Goal | null;
+  project?: Project | null;
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  document?: ResourceHubDocument | null;
+  inlineThreadId: Id;
+  resolved: boolean;
 }
 
 export interface ActivityContentResourceHubDocumentPublicSharingChanged {
@@ -2908,6 +2920,7 @@ export type ActivityContent =
   | ActivityContentProjectReviewSubmitted
   | ActivityContentProjectTimelineEdited
   | ActivityContentResourceHubDocumentCommented
+  | ActivityContentResourceHubDocumentInlineThreadResolutionChanged
   | ActivityContentResourceHubDocumentCreated
   | ActivityContentResourceHubDocumentDeleted
   | ActivityContentResourceHubDocumentEdited
@@ -3145,8 +3158,8 @@ export type RichTextResourceType =
   | "kpi"
   | "project_check_in"
   | "project_retrospective"
-  | "project_discussion"
   | "goal_discussion"
+  | "project_discussion"
   | "goal_check_in"
   | "space_discussion"
   | "comment"

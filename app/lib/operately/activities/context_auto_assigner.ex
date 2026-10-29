@@ -119,6 +119,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "resource_hub_created",
     "resource_hub_document_created",
     "resource_hub_document_commented",
+    "resource_hub_document_inline_thread_resolution_changed",
     "resource_hub_document_edited",
     "resource_hub_document_public_sharing_changed",
     "resource_hub_document_version_restored",

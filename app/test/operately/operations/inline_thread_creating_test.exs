@@ -7,6 +7,7 @@ defmodule Operately.Operations.InlineThreadCreatingTest do
   test "creates the thread and initial message atomically" do
     ctx = setup_document()
     before = document_state(ctx)
+    activity_count = Repo.aggregate(Operately.Activities.Activity, :count)
     assert {:ok, thread} = InlineThreadCreating.run(ctx.creator, ctx.document, attrs(ctx))
     assert [message] = thread.messages
     assert message.author.id == ctx.creator.id
@@ -15,6 +16,7 @@ defmodule Operately.Operations.InlineThreadCreatingTest do
     assert thread.resolved_by == nil
     assert thread.document.id == ctx.document.id
     assert document_state(ctx) == before
+    assert Repo.aggregate(Operately.Activities.Activity, :count) == activity_count + 1
   end
 
   test "invalid content leaves no thread or message" do
@@ -129,7 +131,6 @@ defmodule Operately.Operations.InlineThreadCreatingTest do
     %{
       document: Repo.reload!(ctx.document),
       versions: Repo.aggregate(Operately.ResourceHubs.DocumentVersion, :count),
-      activities: Repo.aggregate(Operately.Activities.Activity, :count),
       notifications: Repo.aggregate(Operately.Notifications.Notification, :count)
     }
   end

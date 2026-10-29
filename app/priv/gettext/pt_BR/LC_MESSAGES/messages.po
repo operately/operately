@@ -105,22 +105,22 @@ msgid "%{author} <action>commented</action> on <discussion>%{title}</discussion>
 msgstr "%{author} <action>comentou</action> em <discussion>%{title}</discussion> no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:67
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:72
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document>"
 msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:60
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:65
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> goal"
 msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document> no objetivo <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:56
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:61
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> project"
 msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document> no projeto <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:64
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:69
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> space"
 msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document> no espaço <parent>%{parentName}</parent>"
 
@@ -2283,6 +2283,11 @@ msgstr "%{author} renomeou o objetivo"
 msgid "%{author} renamed the project"
 msgstr "%{author} renomeou o projeto"
 
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:30
+msgid "%{author} reopened a comment thread on <document>%{documentName}</document>"
+msgstr "%{author} reabriu uma conversa de comentários em <document>%{documentName}</document>"
+
 #.elixir
 #: lib/operately_email/templates/goal_reopening.html.eex:1
 msgid "%{author} reopened the %{goal_name} goal"
@@ -2292,6 +2297,11 @@ msgstr "%{author} reabriu o objetivo %{goal_name}"
 #: lib/operately_email/templates/goal_reopening.text.eex:1
 msgid "%{author} reopened the goal \"%{goal_name}\"."
 msgstr "%{author} reabriu o objetivo \"%{goal_name}\"."
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:29
+msgid "%{author} resolved a comment thread on <document>%{documentName}</document>"
+msgstr "%{author} resolveu uma conversa de comentários em <document>%{documentName}</document>"
 
 #.frontend
 #: assets/js/features/activities/CompanyMemberRestoring/index.tsx:38
@@ -3268,7 +3278,7 @@ msgid "(%{location}) %{author} commented on the project retrospective"
 msgstr "(%{location}) %{author} comentou na retrospectiva do projeto"
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:19
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:23
 msgid "(%{location}) %{author} commented on: %{document_name}"
 msgstr "(%{location}) %{author} comentou em: %{document_name}"
 
@@ -7060,7 +7070,7 @@ msgstr "Não pode ser a mesma pessoa que o champion"
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:151
 #: ../turboui/src/Checklist/index.tsx:330
 #: ../turboui/src/Checklist/index.tsx:379
-#: ../turboui/src/CommentSection/CommentInput.tsx:235
+#: ../turboui/src/CommentSection/CommentInput.tsx:241
 #: ../turboui/src/CommentSection/CommentItem.tsx:387
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:37
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:46
@@ -7830,7 +7840,7 @@ msgstr "Host do cliente"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:197
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:63
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:57
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:68
 #: ../turboui/src/Modal/index.tsx:143
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:94
 #: ../turboui/src/SlideIn/index.tsx:126
@@ -8059,7 +8069,7 @@ msgid "Comments and task updates will appear here"
 msgstr "Comentários e atualizações de tarefas aparecerão aqui"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:103
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:108
 msgid "Comments could not be loaded."
 msgstr "Não foi possível carregar os comentários."
 
@@ -12213,7 +12223,7 @@ msgid "Hide completed"
 msgstr "Ocultar concluídos"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:266
+#: ../turboui/src/CommentSection/CommentInput.tsx:272
 msgid "Hide list"
 msgstr "Ocultar lista"
 
@@ -12414,7 +12424,10 @@ msgid "Information"
 msgstr "Informações"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:48
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:59
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:16
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:23
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:43
 msgid "Inline comments"
 msgstr "Comentários no texto"
 
@@ -12490,7 +12503,7 @@ msgid "Invalid activation code"
 msgstr "Código de ativação inválido"
 
 #.elixir
-#: lib/operately_web/api/companies/list_activities.ex:166
+#: lib/operately_web/api/companies/list_activities.ex:174
 msgid "Invalid activity cursor"
 msgstr "Cursor de atividade inválido"
 
@@ -13347,7 +13360,7 @@ msgid "Loading check-ins"
 msgstr "Carregando check-ins"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:98
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:103
 msgid "Loading comments..."
 msgstr "Carregando comentários..."
 
@@ -16209,7 +16222,7 @@ msgid "Please wait…"
 msgstr "Aguarde…"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:231
+#: ../turboui/src/CommentSection/CommentInput.tsx:237
 #: assets/js/pages/DiscussionNewPage/index.tsx:56
 msgid "Post"
 msgstr "Publicar"
@@ -16947,7 +16960,7 @@ msgstr "Reabriu o marco: %{title}"
 #: assets/js/features/activities/KpiEntryCommented/index.tsx:121
 #: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:120
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:108
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
 #: assets/js/features/activities/ResourceHubFileCommented/index.tsx:113
 #: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:111
 #: assets/js/features/activities/SpaceTaskCommented/index.tsx:111
@@ -16961,7 +16974,7 @@ msgid "Re: a KPI"
 msgstr "Re: um KPI"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
 msgid "Re: a document"
 msgstr "Re: um documento"
 
@@ -17433,7 +17446,7 @@ msgid "Renews"
 msgstr "Renova em"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:239
+#: ../turboui/src/InlineComments/Thread.tsx:240
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:155
 #: ../turboui/src/MilestonePage/index.tsx:376
 msgid "Reopen"
@@ -17576,7 +17589,7 @@ msgid "Reset your password"
 msgstr "Redefina sua senha"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:239
+#: ../turboui/src/InlineComments/Thread.tsx:240
 msgid "Resolve"
 msgstr "Resolver"
 
@@ -17758,7 +17771,7 @@ msgstr "Notas da retrospectiva:"
 #: ../turboui/src/ContentListState/index.tsx:33
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:146
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:105
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:110
 msgid "Retry"
 msgstr "Tentar novamente"
 
@@ -21060,12 +21073,12 @@ msgid "This code has expired. Request a new code to continue."
 msgstr "Este código expirou. Solicite um novo código para continuar."
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:109
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:114
 msgid "This comment thread is no longer available."
 msgstr "Esta conversa de comentários não está mais disponível."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:309
+#: ../turboui/src/CommentSection/CommentInput.tsx:315
 msgid "This comment will notify %{first} and %{second}"
 msgstr "Este comentário notificará %{first} e %{second}"
 
@@ -21075,14 +21088,14 @@ msgstr "Este comentário notificará %{first} e %{second}"
 #~ msgstr "Este comentário notificará %{first} e %{second}."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:321
+#: ../turboui/src/CommentSection/CommentInput.tsx:327
 msgid "This comment will notify %{first}, %{second}, and 1 other."
 msgid_plural "This comment will notify %{first}, %{second}, and %{count} others."
 msgstr[0] "Este comentário notificará %{first}, %{second} e mais 1 pessoa."
 msgstr[1] "Este comentário notificará %{first}, %{second} e mais %{count} pessoas."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:300
+#: ../turboui/src/CommentSection/CommentInput.tsx:306
 msgid "This comment will notify %{name}"
 msgstr "Este comentário notificará %{name}"
 
@@ -21662,17 +21675,17 @@ msgid "Timezone"
 msgstr "Fuso horário"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:292
+#: ../turboui/src/CommentSection/CommentInput.tsx:298
 msgid "Tip: @-mention someone to notify them about this milestone."
 msgstr "Dica: Mencione alguém com @ para notificá-lo sobre este marco."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:291
+#: ../turboui/src/CommentSection/CommentInput.tsx:297
 msgid "Tip: @-mention someone to notify them about this task."
 msgstr "Dica: Mencione alguém com @ para notificá-lo sobre esta tarefa."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:274
+#: ../turboui/src/CommentSection/CommentInput.tsx:280
 msgid "Tip: Subscribe if you want notifications too."
 msgstr "Dica: Inscreva-se se também quiser receber notificações."
 
@@ -22518,7 +22531,7 @@ msgid "Uploading files will be blocked once the storage limit is reached."
 msgstr "O envio de arquivos será bloqueado quando o limite de armazenamento for atingido."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:231
+#: ../turboui/src/CommentSection/CommentInput.tsx:237
 #: ../turboui/src/Forms/Submit.tsx:26
 msgid "Uploading..."
 msgstr "Enviando..."
@@ -22911,7 +22924,7 @@ msgid "View access"
 msgstr "Somente leitura"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:266
+#: ../turboui/src/CommentSection/CommentInput.tsx:272
 msgid "View all"
 msgstr "Ver todos"
 
@@ -24039,13 +24052,14 @@ msgid "a discussion"
 msgstr "uma discussão"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:73
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:117
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:78
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:122
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:75
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:126
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:127
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:160
 #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:39
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:34
 #: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:29
 msgid "a document"
 msgstr "um documento"
@@ -24324,7 +24338,7 @@ msgid "commented on the discussion \"%{title}\""
 msgstr "comentou na discussão \"%{title}\""
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:39
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:47
 msgid "commented on the document \"%{document_name}\""
 msgstr "comentou no documento \"%{document_name}\""
 
