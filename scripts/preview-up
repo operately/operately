@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --output) output=$2; shift 2 ;;
+    --pr) pr=$2; shift 2 ;;
+    *) shift ;;
+  esac
+done
+
+echo '167.233.193.239 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICQ9842+U39QsoF2mRDfQf4oQeH6vlfhqWSZ7dvApISG' >> ~/.ssh/known_hosts
+
+out="$(ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o ServerAliveInterval=30 app@167.233.193.239 "/home/app/.local/bin/preview up --pr $pr")"
+echo "$out"
+echo "$out" > "$output"
