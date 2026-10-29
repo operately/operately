@@ -8,7 +8,7 @@ import { useDocumentInlineComments } from "./useInlineComments";
 
 let mockEnabled = true;
 const mockNavigate = jest.fn();
-const mockLocation = { pathname: "/documents/doc", search: "?inlineThread=thread", hash: "#message" };
+let mockLocation = { key: "initial", pathname: "/documents/doc", search: "?inlineThread=thread", hash: "#message" };
 jest.mock("react-router", () => ({ useLocation: () => mockLocation, useNavigate: () => mockNavigate }));
 jest.mock("@/routes/useCompanyLoaderData", () => ({
   useCompanyLoaderData: () => ({
@@ -77,6 +77,7 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 
 beforeEach(() => {
   mockEnabled = true;
+  mockLocation = { key: "initial", pathname: "/documents/doc", search: "?inlineThread=thread", hash: "#message" };
   mockNavigate.mockClear();
   Api.default.setBasePath("/api/v2");
   client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
@@ -148,5 +149,74 @@ it("clears a deleted empty thread selection while preserving the ordinary commen
   expect(mockNavigate).toHaveBeenCalledWith(
     { pathname: "/documents/doc", search: "", hash: "#message" },
     expect.anything(),
+  );
+});
+
+describe.each(["create", "delete"] as const)("pending %s navigation", (action) => {
+  it.each(["unchanged", "unmounted", "other-document", "other-thread", "returned"])(
+    "only updates the URL if the original page is still current: %s",
+    async (destination) => {
+      let finish = () => {};
+      const pending = new Promise<void>((resolve) => {
+        finish = resolve;
+      });
+      const create = jest.fn(async () => {
+        await pending;
+        return { thread };
+      });
+      const remove = jest.fn(async () => {
+        await pending;
+        return { thread: null };
+      });
+      jest.spyOn(Api.inline_threads, "createMutationOptions").mockReturnValue({ mutationFn: create });
+      jest.spyOn(Api.inline_threads, "deleteMessageMutationOptions").mockReturnValue({ mutationFn: remove });
+      const view = renderHook((doc) => ({ inline: useDocumentInlineComments(doc) }), {
+        wrapper: Wrapper,
+        initialProps: document,
+      });
+      await waitFor(() => expect(view.result.current.inline?.threads).toHaveLength(1));
+      let completion: Promise<unknown> | undefined;
+      act(() => {
+        completion =
+          action === "create"
+            ? view.result.current.inline?.onCreate(
+                { from: 1, to: 6, quote: "Hello", sourceVersion: 1 },
+                { type: "doc" },
+              )
+            : view.result.current.inline?.onDeleteMessage("message");
+      });
+      await waitFor(() => expect(action === "create" ? create : remove).toHaveBeenCalledTimes(1));
+
+      if (destination === "unmounted") view.unmount();
+      if (destination === "other-document") {
+        mockLocation = { ...mockLocation, key: "next", pathname: "/documents/other" };
+        view.rerender({ ...document, id: "other" });
+      }
+      if (destination === "other-thread") {
+        mockLocation = { ...mockLocation, key: "next", search: "?inlineThread=other" };
+        view.rerender(document);
+      }
+      if (destination === "returned") {
+        const original = mockLocation;
+        mockLocation = { ...mockLocation, key: "away", pathname: "/documents/other" };
+        view.rerender({ ...document, id: "other" });
+        mockLocation = { ...original, key: "returned" };
+        view.rerender(document);
+      }
+
+      await act(async () => {
+        finish();
+        await completion;
+      });
+      if (destination === "unchanged") {
+        expect(mockNavigate).toHaveBeenCalledTimes(1);
+        expect(mockNavigate).toHaveBeenCalledWith(
+          { pathname: "/documents/doc", search: action === "create" ? "inlineThread=thread" : "", hash: "#message" },
+          { replace: true, preventScrollReset: true },
+        );
+      } else {
+        expect(mockNavigate).not.toHaveBeenCalled();
+      }
+    },
   );
 });

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 import type { ResourceHubDocument } from "@/api";
@@ -18,6 +19,15 @@ export function useDocumentInlineComments(document: ResourceHubDocument): Docume
   const location = useLocation();
   const navigate = useNavigate();
   const mutations = useInlineThreadMutations();
+  const currentPage = useRef<{ location: typeof location; documentId: string } | null>(null);
+
+  // Track the current page so completed requests cannot navigate after leaving it.
+  useLayoutEffect(() => {
+    currentPage.current = { location, documentId: document.id };
+    return () => {
+      currentPage.current = null;
+    };
+  }, [location, document.id]);
 
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "resource_hub", id: document.resourceHubId } });
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -26,7 +36,11 @@ export function useDocumentInlineComments(document: ResourceHubDocument): Docume
   const activeThreadId = new URLSearchParams(location.search).get("inlineThread");
 
   const selectThread = (id: string | null) => {
+    // Ignore callbacks captured before navigation or unmount, including a later visit to the same URL.
+    if (currentPage.current?.location !== location || currentPage.current.documentId !== document.id) return;
+
     const search = new URLSearchParams(location.search);
+
     if (id) search.set("inlineThread", id);
     else search.delete("inlineThread");
     navigate(
