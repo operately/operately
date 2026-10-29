@@ -9,7 +9,10 @@ defmodule Operately.Support.Features.ResourceHubDocument.InlineCommentsSteps do
   end
 
   step :visit_document, ctx do
-    ctx |> UI.visit(Paths.document_path(ctx.company, ctx.document)) |> UI.assert_has(testid: "inline-comments-floating")
+    ctx
+    |> UI.visit(Paths.document_path(ctx.company, ctx.document))
+    |> UI.assert_has(css: "[data-test-id='resource-hub-document-page'] .ProseMirror[contenteditable='false']")
+    |> UI.refute_has(testid: "inline-comments-floating")
   end
 
   step :select_passage, ctx do
@@ -27,6 +30,8 @@ defmodule Operately.Support.Features.ResourceHubDocument.InlineCommentsSteps do
       """)
     end)
     |> UI.click(testid: "inline-add-selection")
+    |> UI.assert_has(testid: "inline-comments-floating")
+    |> UI.assert_has(testid: "inline-new-thread")
   end
 
   step :post_thread, ctx do
