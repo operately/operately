@@ -17,9 +17,13 @@ import type { ResourceHubNodesListContextValue } from "../ResourceHub/contexts/N
 import type { ResourceHubDocument } from "../ResourceHub/types";
 import { Spacer } from "../Spacer";
 import { CurrentSubscriptions } from "../Subscriptions";
+import { useInlineComments } from "./InlineComments/useInlineComments";
+import type { DocumentInlineCommentsProps } from "./InlineComments/types";
+export type { DocumentInlineCommentsProps, InlineCommentTarget } from "./InlineComments/types";
 
 export namespace DocumentPage {
   export interface BaseProps {
+    inlineComments?: DocumentInlineCommentsProps;
     pageTitle: Page.Props["title"];
     navigation?: Navigation.Item[];
     options?: Page.Option[];
@@ -118,77 +122,88 @@ export namespace DocumentPage {
 }
 
 export function DocumentPage(props: DocumentPage.Props) {
+  const review = useInlineComments(props.state === "published" ? props.inlineComments : undefined);
+
   return (
-    <Page
-      title={props.pageTitle}
-      size="large"
-      navigation={props.navigation}
-      options={props.options}
-      testId={props.testId ?? "document-page"}
-    >
-      <div className="min-h-[600px] px-4 py-10 sm:px-12 lg:px-28">
-        {!props.hideDraftActions && <OngoingDraftActions {...props.draftActions} />}
+    <div className={review.hasFloatingComments ? "xl:pr-[30rem]" : undefined}>
+      <Page
+        title={props.pageTitle}
+        size={review.hasFloatingComments ? "medium" : "large"}
+        navigation={props.navigation}
+        options={props.options}
+        testId={props.testId ?? "document-page"}
+      >
+        <div className={`min-h-[600px] px-4 py-10 sm:px-12 ${review.hasFloatingComments ? "lg:px-12" : "lg:px-28"}`}>
+          {!props.hideDraftActions && <OngoingDraftActions {...props.draftActions} />}
 
-        <DocumentTitle
-          title={props.title}
-          author={props.author}
-          state={props.state}
-          publishedAt={props.publishedAt}
-          scheduledAt={props.scheduledAt}
-          modifiedAt={props.modifiedAt}
-          formattedTimePreferences={props.formattedTimePreferences}
-        />
+          <DocumentTitle
+            title={props.title}
+            author={props.author}
+            state={props.state}
+            publishedAt={props.publishedAt}
+            scheduledAt={props.scheduledAt}
+            modifiedAt={props.modifiedAt}
+            formattedTimePreferences={props.formattedTimePreferences}
+          />
 
-        <Spacer size={4} />
-        <RichContent
-          content={props.content}
-          className="text-md sm:text-lg"
-          mentionedPersonLookup={props.mentionedPersonLookup}
-          taskList={props.taskList}
-          parseContent
-        />
+          <Spacer size={4} />
 
-        {!props.hideReactions && (
-          <>
-            <Spacer size={2} />
-            <Reactions {...props.reactions} />
-          </>
+          <div ref={review.contentRef} tabIndex={review.enabled ? -1 : undefined}>
+            <RichContent
+              inlineComments={review.editorOptions}
+              content={props.content}
+              className="text-md sm:text-lg"
+              mentionedPersonLookup={props.mentionedPersonLookup}
+              taskList={props.taskList}
+              parseContent
+            />
+          </div>
+
+          {!props.hideReactions && (
+            <>
+              <Spacer size={2} />
+              <Reactions {...props.reactions} />
+            </>
+          )}
+
+          {!props.hideComments && (
+            <>
+              <Spacer size={4} />
+              <div className="border-t border-stroke-base mt-8" />
+              <CommentSection {...props.comments} />
+            </>
+          )}
+
+          {!props.hideSubscriptions && (
+            <>
+              <div className="border-t border-stroke-base mt-16 mb-8" />
+              <CurrentSubscriptions {...props.subscriptions} />
+            </>
+          )}
+        </div>
+
+        {review.floatingAction}
+        {review.comments}
+
+        {!props.hideDeleteModal && (
+          <DeleteResourceConfirmModal
+            isOpen={props.deleteModal.isOpen}
+            onClose={props.deleteModal.onClose}
+            resourceType="document"
+            resourceName={props.deleteModal.documentName}
+            onConfirm={props.deleteModal.onConfirm}
+          />
         )}
 
-        {!props.hideComments && (
-          <>
-            <Spacer size={4} />
-            <div className="border-t border-stroke-base mt-8" />
-            <CommentSection {...props.comments} />
-          </>
+        {!props.hideCopyModal && (
+          <CopyDocumentModalWrapper
+            listContext={props.copyModal.listContext}
+            document={props.copyModal.document}
+            isOpen={props.copyModal.isOpen}
+            hideModal={props.copyModal.onClose}
+          />
         )}
-
-        {!props.hideSubscriptions && (
-          <>
-            <div className="border-t border-stroke-base mt-16 mb-8" />
-            <CurrentSubscriptions {...props.subscriptions} />
-          </>
-        )}
-      </div>
-
-      {!props.hideDeleteModal && (
-        <DeleteResourceConfirmModal
-          isOpen={props.deleteModal.isOpen}
-          onClose={props.deleteModal.onClose}
-          resourceType="document"
-          resourceName={props.deleteModal.documentName}
-          onConfirm={props.deleteModal.onConfirm}
-        />
-      )}
-
-      {!props.hideCopyModal && (
-        <CopyDocumentModalWrapper
-          listContext={props.copyModal.listContext}
-          document={props.copyModal.document}
-          isOpen={props.copyModal.isOpen}
-          hideModal={props.copyModal.onClose}
-        />
-      )}
-    </Page>
+      </Page>
+    </div>
   );
 }

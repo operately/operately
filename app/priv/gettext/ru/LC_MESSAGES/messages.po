@@ -5197,7 +5197,7 @@ msgstr "В этом проекте была создана новая задач
 #.elixir
 #: lib/operately_web/api/documents/restore_version.ex:57
 #: lib/operately_web/api/documents/update.ex:44
-#: lib/operately_web/api/inline_threads/create.ex:48
+#: lib/operately_web/api/inline_threads/create.ex:41
 msgid "A newer version of this document exists"
 msgstr "Существует новая версия этого документа."
 
@@ -5694,6 +5694,11 @@ msgstr "Добавить столбец слева"
 #: ../turboui/src/RichEditor/components/tableActions.ts:28
 msgid "Add column right"
 msgstr "Добавить столбец справа"
+
+#.frontend
+#: ../turboui/src/DocumentPage/InlineComments/SelectionAction.tsx:39
+msgid "Add comment"
+msgstr "Добавить комментарий"
 
 #.frontend
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:113
@@ -7112,8 +7117,8 @@ msgstr "Куратор и ответственный не могут быть о
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:151
 #: ../turboui/src/Checklist/index.tsx:330
 #: ../turboui/src/Checklist/index.tsx:379
-#: ../turboui/src/CommentSection/CommentInput.tsx:186
-#: ../turboui/src/CommentSection/CommentItem.tsx:316
+#: ../turboui/src/CommentSection/CommentInput.tsx:229
+#: ../turboui/src/CommentSection/CommentItem.tsx:372
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:37
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:46
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
@@ -7670,6 +7675,11 @@ msgstr "Выбрать тариф"
 msgid "Choose a plan with more member capacity."
 msgstr "Выберите тариф с большим лимитом участников."
 
+#~ #.frontend
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:142
+#~ msgid "Choose a thread for this passage."
+#~ msgstr "Выберите ветку комментариев для этого фрагмента."
+
 #.elixir
 #: lib/operately/comments/create_milestone_comment_operation.ex:110
 msgid "Choose a valid open task resolution"
@@ -7844,10 +7854,11 @@ msgstr "Хост клиента"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:197
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:63
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
+#: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:203
 #: ../turboui/src/Modal/index.tsx:143
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:94
-#: ../turboui/src/SlideIn/index.tsx:120
-#: ../turboui/src/SlideIn/index.tsx:122
+#: ../turboui/src/SlideIn/index.tsx:152
+#: ../turboui/src/SlideIn/index.tsx:154
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:134
 #: ../turboui/src/TaskBoard/KanbanView/DeleteStatusModal.tsx:55
 msgid "Close"
@@ -8017,19 +8028,25 @@ msgid "Comment not added"
 msgstr "Комментарий не добавлен"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:183
+#: ../turboui/src/CommentSection/CommentItem.tsx:214
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:93
 msgid "Comment not deleted"
 msgstr "Комментарий не удалён"
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:69
-#: ../turboui/src/CommentSection/CommentInput.tsx:75
+#: ../turboui/src/CommentSection/CommentInput.tsx:86
+#: ../turboui/src/CommentSection/CommentInput.tsx:92
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:90
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:99
 msgid "Comment not posted"
 msgstr "Комментарий не опубликован"
 
 #.frontend
+#: ../turboui/src/CommentSection/CommentItem.tsx:346
+#: ../turboui/src/DocumentPage/InlineComments/Thread.tsx:55
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:84
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
 msgid "Comment not updated"
 msgstr "Комментарий не обновлён"
 
@@ -8064,6 +8081,11 @@ msgstr "Комментарии и действия"
 #: ../turboui/src/Timeline/Timeline.tsx:125
 msgid "Comments and task updates will appear here"
 msgstr "Комментарии и обновления задач появятся здесь"
+
+#.frontend
+#: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:135
+msgid "Comments could not be loaded."
+msgstr "Не удалось загрузить комментарии."
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:313
@@ -8638,7 +8660,7 @@ msgid "Copy failed"
 msgstr "Не удалось скопировать"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:207
+#: ../turboui/src/CommentSection/CommentItem.tsx:248
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:42
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:49
 msgid "Copy link"
@@ -9244,7 +9266,7 @@ msgstr "Деактивировать учётную запись"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:398
 #: ../turboui/src/AccountApiTokensPage/index.tsx:524
 #: ../turboui/src/Checklist/index.tsx:530
-#: ../turboui/src/CommentSection/CommentItem.tsx:225
+#: ../turboui/src/CommentSection/CommentItem.tsx:267
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:77
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:113
 #: ../turboui/src/GoalPage/Sidebar.tsx:406
@@ -10094,7 +10116,7 @@ msgstr "Более ранняя версия"
 
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:520
-#: ../turboui/src/CommentSection/CommentItem.tsx:216
+#: ../turboui/src/CommentSection/CommentItem.tsx:258
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:68
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
@@ -10260,7 +10282,7 @@ msgid "Edit update — %{name}"
 msgstr "Редактировать запись — %{name}"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:289
+#: ../turboui/src/CommentSection/CommentItem.tsx:333
 msgid "Edit your comment..."
 msgstr "Отредактируйте свой комментарий..."
 
@@ -11069,7 +11091,7 @@ msgid "Failed to change plan"
 msgstr "Не удалось сменить тариф"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:194
+#: ../turboui/src/CommentSection/CommentItem.tsx:227
 msgid "Failed to copy comment link to clipboard"
 msgstr "Не удалось скопировать ссылку на комментарий в буфер обмена"
 
@@ -12071,7 +12093,7 @@ msgid "Hide completed"
 msgstr "Скрыть завершённые"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:217
+#: ../turboui/src/CommentSection/CommentInput.tsx:260
 msgid "Hide list"
 msgstr "Скрыть список"
 
@@ -12270,6 +12292,11 @@ msgstr "Сканирование индекса"
 #: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:34
 msgid "Information"
 msgstr "Информация"
+
+#.frontend
+#: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:233
+msgid "Inline comments"
+msgstr "Комментарии к тексту"
 
 #.frontend
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:203
@@ -13193,6 +13220,11 @@ msgstr "Загрузка активных компаний..."
 #: ../turboui/src/ContentListState/index.tsx:19
 msgid "Loading check-ins"
 msgstr "Загрузка отчётов о ходе работы"
+
+#.frontend
+#: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:130
+msgid "Loading comments..."
+msgstr "Загрузка комментариев..."
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:134
@@ -15308,6 +15340,7 @@ msgstr "Необязательно. Оставьте поле пустым, чт
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:255
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:113
+#: ../turboui/src/CommentSection/CommentItem.tsx:238
 msgid "Options"
 msgstr "Варианты"
 
@@ -15911,8 +15944,9 @@ msgid "Please try again"
 msgstr "Пожалуйста, попробуйте ещё раз."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:69
-#: ../turboui/src/CommentSection/CommentItem.tsx:183
+#: ../turboui/src/CommentSection/CommentInput.tsx:86
+#: ../turboui/src/CommentSection/CommentItem.tsx:214
+#: ../turboui/src/DocumentPage/InlineComments/Thread.tsx:55
 #: ../turboui/src/Reactions/index.tsx:58
 #: ../turboui/src/Reactions/index.tsx:204
 #: assets/js/models/people/usePeopleSearchError.ts:7
@@ -15943,7 +15977,7 @@ msgid "Please wait…"
 msgstr "Пожалуйста, подождите..."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:182
+#: ../turboui/src/CommentSection/CommentInput.tsx:225
 #: assets/js/pages/DiscussionNewPage/index.tsx:56
 msgid "Post"
 msgstr "Опубликовать"
@@ -17136,6 +17170,7 @@ msgid "Renews"
 msgstr "Продление"
 
 #.frontend
+#: ../turboui/src/DocumentPage/InlineComments/Thread.tsx:77
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:155
 #: ../turboui/src/MilestonePage/index.tsx:376
 msgid "Reopen"
@@ -17266,6 +17301,16 @@ msgstr "Инструкции по сбросу пароля"
 #: lib/operately_email/templates/reset_password.html.eex:1
 msgid "Reset your password"
 msgstr "Сбросьте пароль"
+
+#.frontend
+#: ../turboui/src/DocumentPage/InlineComments/Thread.tsx:77
+msgid "Resolve"
+msgstr "Отметить как решённое"
+
+#.frontend
+#: ../turboui/src/DocumentPage/InlineComments/Thread.tsx:135
+msgid "Resolved"
+msgstr "Решено"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:125
@@ -17434,6 +17479,7 @@ msgstr "Заметки к итогам:"
 #.frontend
 #: ../turboui/src/ContentListState/index.tsx:33
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:146
+#: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:137
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
 msgid "Retry"
 msgstr "Повторить"
@@ -17786,7 +17832,7 @@ msgstr "Сохранить"
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:155
 #: ../turboui/src/AccountSettingsPage/index.tsx:89
-#: ../turboui/src/CommentSection/CommentItem.tsx:313
+#: ../turboui/src/CommentSection/CommentItem.tsx:369
 #: ../turboui/src/DocumentEditPage/index.tsx:83
 #: ../turboui/src/ProfileEditPage/index.tsx:142
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:443
@@ -18172,6 +18218,11 @@ msgstr "Выберите цель"
 #: ../turboui/src/Forms/SelectGoal.tsx:84
 msgid "Select a goal …"
 msgstr "Выберите цель..."
+
+#~ #.frontend
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:201
+#~ msgid "Select a passage to add an inline comment."
+#~ msgstr "Выделите фрагмент, чтобы добавить комментарий к тексту."
 
 #.frontend
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:191
@@ -18631,6 +18682,11 @@ msgstr[3] "Показать ещё %{count}"
 msgid "Show all"
 msgstr "Показать все"
 
+#~ #.frontend
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:144
+#~ msgid "Show all comments"
+#~ msgstr "Показать все комментарии"
+
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:96
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:100
@@ -18642,6 +18698,12 @@ msgstr "Показать закрытые статусы"
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Show previous check-in"
 msgstr "Показать предыдущий отчёт о ходе работы"
+
+#~ #.frontend
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:137
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:138
+#~ msgid "Show resolved"
+#~ msgstr "Показать решённые"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:63
@@ -19411,7 +19473,7 @@ msgid "Subscription ended"
 msgstr "Подписка закончилась"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:192
+#: ../turboui/src/CommentSection/CommentItem.tsx:225
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:48
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:213
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:328
@@ -20038,7 +20100,7 @@ msgid "The comment is still on this page. Try again."
 msgstr "Комментарий всё ещё на этой странице. Попробуйте снова."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:192
+#: ../turboui/src/CommentSection/CommentItem.tsx:225
 msgid "The comment link has been copied to your clipboard"
 msgstr "Ссылка на комментарий была скопирована в ваш буфер обмена"
 
@@ -20079,6 +20141,11 @@ msgstr "Текущая подписка закончится в конце те�
 #: lib/operately_email/templates/task_description_change.text.eex:11
 msgid "The description was cleared."
 msgstr "Описание было очищено."
+
+#.frontend
+#: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:153
+msgid "The document changed. Select the passage again to post your saved comment."
+msgstr "Документ изменился. Выделите фрагмент заново, чтобы опубликовать сохранённый комментарий."
 
 #.frontend
 #: assets/js/pages/ProjectTemplateDocumentPage/index.tsx:49
@@ -20575,6 +20642,11 @@ msgstr[3] "Роли этого человека в проектах (%{count}) �
 msgid "There are no deactivated team members in %{companyName}. To remove access for departing team members, visit the <actionLink>Manage Team Members</actionLink> page."
 msgstr "В компании «%{companyName}» нет деактивированных участников команды. Чтобы отозвать доступ у уходящих участников, откройте страницу <actionLink>управления участниками команды</actionLink>."
 
+#~ #.frontend
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:202
+#~ msgid "There are no inline comments to show."
+#~ msgstr "Нет комментариев к тексту для отображения."
+
 #.frontend
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:41
 msgid "There was an error updating your password. Please try again."
@@ -20693,12 +20765,17 @@ msgid "This code has expired. Request a new code to continue."
 msgstr "Срок действия кода истёк. Запросите новый код, чтобы продолжить."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:260
+#: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:141
+msgid "This comment thread is no longer available."
+msgstr "Эта ветка комментариев больше недоступна."
+
+#.frontend
+#: ../turboui/src/CommentSection/CommentInput.tsx:303
 msgid "This comment will notify %{first} and %{second}"
 msgstr "Уведомление об этом комментарии получат %{first} и %{second}"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:272
+#: ../turboui/src/CommentSection/CommentInput.tsx:315
 msgid "This comment will notify %{first}, %{second}, and 1 other."
 msgid_plural "This comment will notify %{first}, %{second}, and %{count} others."
 msgstr[0] "Уведомление об этом комментарии получат %{first}, %{second} и ещё %{count} человек."
@@ -20707,7 +20784,7 @@ msgstr[2] "Уведомление об этом комментарии полу�
 msgstr[3] "Уведомление об этом комментарии получат %{first}, %{second} и ещё %{count} человека."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:251
+#: ../turboui/src/CommentSection/CommentInput.tsx:294
 msgid "This comment will notify %{name}"
 msgstr "Уведомление об этом комментарии получит %{name}"
 
@@ -21008,6 +21085,11 @@ msgstr "Этот пакет слишком большой для импорта.
 msgid "This package was exported from Operately %{manifestVersion}, but this instance is running %{currentVersion}. The import failure may be related to version differences."
 msgstr "Этот пакет был экспортирован из Operately %{manifestVersion}, но этот экземпляр работает под управлением %{currentVersion}. Сбой импорта может быть связан с различиями версий."
 
+#.frontend
+#: ../turboui/src/DocumentPage/InlineComments/Thread.tsx:137
+msgid "This passage is no longer available."
+msgstr "Этот фрагмент больше недоступен."
+
 #.elixir
 #: lib/operately_email/templates/reset_password.text.eex:6
 msgid "This password reset link will expire in 24 hours for security reasons."
@@ -21269,17 +21351,17 @@ msgid "Timezone"
 msgstr "Часовой пояс"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:243
+#: ../turboui/src/CommentSection/CommentInput.tsx:286
 msgid "Tip: @-mention someone to notify them about this milestone."
 msgstr "Совет: используйте @-упоминание, чтобы уведомить человека об этой вехе."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:242
+#: ../turboui/src/CommentSection/CommentInput.tsx:285
 msgid "Tip: @-mention someone to notify them about this task."
 msgstr "Совет: используйте @-упоминание, чтобы уведомить человека об этой задаче."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:225
+#: ../turboui/src/CommentSection/CommentInput.tsx:268
 msgid "Tip: Subscribe if you want notifications too."
 msgstr "Совет: Подпишитесь, если вы хотите получать уведомления."
 
@@ -21666,7 +21748,7 @@ msgid "Undo"
 msgstr "Отменить действие"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:194
+#: ../turboui/src/CommentSection/CommentItem.tsx:227
 msgid "Unexpected error"
 msgstr "Неожиданная ошибка"
 
@@ -22097,7 +22179,7 @@ msgid "Uploading files will be blocked once the storage limit is reached."
 msgstr "После достижения лимита хранилища загрузка файлов будет заблокирована."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:182
+#: ../turboui/src/CommentSection/CommentInput.tsx:225
 #: ../turboui/src/Forms/Submit.tsx:26
 msgid "Uploading..."
 msgstr "Загрузка..."
@@ -22480,7 +22562,7 @@ msgid "View access"
 msgstr "Только просмотр"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:217
+#: ../turboui/src/CommentSection/CommentInput.tsx:260
 msgid "View all"
 msgstr "Смотреть все"
 
@@ -22995,8 +23077,8 @@ msgid "Workflow not updated"
 msgstr "Рабочий процесс не обновлён"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:105
 #: ../turboui/src/CommentSection/CommentInput.tsx:126
+#: ../turboui/src/CommentSection/CommentInput.tsx:152
 msgid "Write a comment here..."
 msgstr "Напишите комментарий здесь..."
 
@@ -23490,7 +23572,12 @@ msgid "Your current email stays active until you confirm this code."
 msgstr "Ваш текущий адрес электронной почты останется действующим, пока вы не подтвердите этот код."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:75
+#: ../turboui/src/CommentSection/CommentInput.tsx:69
+#: ../turboui/src/CommentSection/CommentInput.tsx:92
+#: ../turboui/src/CommentSection/CommentItem.tsx:346
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:90
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:99
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
 msgid "Your draft has been kept for retry."
 msgstr "Ваш черновик сохранён для повторной попытки."
 
