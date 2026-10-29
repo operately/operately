@@ -418,9 +418,9 @@
         "goal",
         "milestone",
         "document",
-        "kpi",
         "project_check_in",
         "project_retrospective",
+        "kpi",
         "project_discussion",
         "goal_discussion",
         "goal_check_in",
@@ -740,6 +740,10 @@
         },
         {
           "name": "activity_content_resource_hub_document_commented",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_document_inline_thread_resolution_changed",
           "kind": "named"
         },
         {
@@ -18335,6 +18339,17 @@
             "optional": true,
             "nullable": true,
             "has_default": false
+          },
+          {
+            "default": null,
+            "name": "inline_thread_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
           }
         ]
       },
@@ -24123,6 +24138,98 @@
                 "kind": "named"
               },
               "kind": "list"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_resource_hub_document_inline_thread_resolution_changed": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "document",
+            "type": {
+              "name": "resource_hub_document",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "inline_thread_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resolved",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
             },
             "optional": false,
             "nullable": false,

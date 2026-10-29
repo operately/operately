@@ -18,6 +18,21 @@ defmodule Operately.Operations.Notifications.Subscription do
     end)
   end
 
+  @doc "Creates a subscription if missing, leaving existing subscriptions (including cancellations) unchanged."
+  def insert_if_missing(subscription_list_id, person_id, type) do
+    case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
+      {:error, :not_found} ->
+        Notifications.create_subscription(%{
+          subscription_list_id: subscription_list_id,
+          person_id: person_id,
+          type: type,
+        })
+
+      {:ok, subscription} ->
+        {:ok, subscription}
+    end
+  end
+
   @doc """
   Finds people who are mentioned in a rich content and,
   if they don't have a subscription yet, creates it.
@@ -72,22 +87,12 @@ defmodule Operately.Operations.Notifications.Subscription do
   end
 
   defp ensure_subscription(subscription_list_id, person_id, type) do
-    case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
-      {:error, :not_found} ->
-        Notifications.create_subscription(%{
-          subscription_list_id: subscription_list_id,
-          person_id: person_id,
-          type: type,
-        })
-
-      {:ok, subscription = %{canceled: true}} ->
-        Notifications.update_subscription(subscription, %{
-          canceled: false,
-          type: type,
-        })
-
-      {:ok, subscription} ->
+    with {:ok, subscription} <- insert_if_missing(subscription_list_id, person_id, type) do
+      if subscription.canceled do
+        Notifications.update_subscription(subscription, %{canceled: false, type: type})
+      else
         {:ok, subscription}
+      end
     end
   end
 end

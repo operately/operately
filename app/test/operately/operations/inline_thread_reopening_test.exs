@@ -12,9 +12,10 @@ defmodule Operately.Operations.InlineThreadReopeningTest do
     |> Factory.add_inline_thread(:thread, :document, from: 1, to: 6, quote: "Hello")
   end
 
-  test "reopening clears resolution idempotently without document changes or events", ctx do
+  test "reopening clears resolution idempotently without document changes", ctx do
     {:ok, resolved} = InlineThreadResolving.run(ctx.creator, ctx.thread)
     before = document_state(ctx)
+    activity_count = Repo.aggregate(Operately.Activities.Activity, :count)
 
     assert {:ok, reopened} = InlineThreadReopening.run(ctx.creator, resolved)
     assert reopened.resolved_at == nil
@@ -24,13 +25,13 @@ defmodule Operately.Operations.InlineThreadReopeningTest do
     assert repeated.resolved_at == nil
     assert repeated.resolved_by_id == nil
     assert document_state(ctx) == before
+    assert Repo.aggregate(Operately.Activities.Activity, :count) == activity_count + 1
   end
 
   defp document_state(ctx) do
     %{
       document: Repo.reload!(ctx.document),
       versions: Repo.aggregate(Operately.ResourceHubs.DocumentVersion, :count),
-      activities: Repo.aggregate(Operately.Activities.Activity, :count),
       notifications: Repo.aggregate(Operately.Notifications.Notification, :count)
     }
   end

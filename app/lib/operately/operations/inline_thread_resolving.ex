@@ -14,6 +14,7 @@ defmodule Operately.Operations.InlineThreadResolving do
         Ecto.Changeset.change(locked, resolved_at: Operately.Time.utc_datetime_now(), resolved_by_id: author.id)
       end
     end)
+    |> Operately.Operations.InlineThreads.Events.resolution(author, :resolved_thread)
     |> SharedSteps.preload_thread(:resolved_thread)
     |> Repo.transaction()
     |> SharedSteps.result(:loaded_thread)

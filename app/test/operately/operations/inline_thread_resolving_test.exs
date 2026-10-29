@@ -12,8 +12,9 @@ defmodule Operately.Operations.InlineThreadResolvingTest do
     |> Factory.add_inline_thread(:thread, :document, from: 1, to: 6, quote: "Hello")
   end
 
-  test "resolution is idempotent and creates no document changes or events", ctx do
+  test "resolution is idempotent and creates no document changes", ctx do
     before = document_state(ctx)
+    activity_count = Repo.aggregate(Operately.Activities.Activity, :count)
 
     assert {:ok, resolved} = InlineThreadResolving.run(ctx.creator, ctx.thread)
     assert resolved.resolved_at
@@ -23,13 +24,13 @@ defmodule Operately.Operations.InlineThreadResolvingTest do
     assert repeated.resolved_at == resolved.resolved_at
     assert repeated.resolved_by_id == resolved.resolved_by_id
     assert document_state(ctx) == before
+    assert Repo.aggregate(Operately.Activities.Activity, :count) == activity_count + 1
   end
 
   defp document_state(ctx) do
     %{
       document: Repo.reload!(ctx.document),
       versions: Repo.aggregate(Operately.ResourceHubs.DocumentVersion, :count),
-      activities: Repo.aggregate(Operately.Activities.Activity, :count),
       notifications: Repo.aggregate(Operately.Notifications.Notification, :count)
     }
   end
