@@ -1,6 +1,6 @@
 defmodule Operately.Operations.Notifications.Subscription do
   alias Ecto.Multi
-  alias Operately.{Notifications, RichContent}
+  alias Operately.{Notifications, Repo, RichContent}
   alias Operately.Notifications.Subscription
 
   def insert(multi, author, attrs) do
@@ -20,16 +20,14 @@ defmodule Operately.Operations.Notifications.Subscription do
 
   @doc "Creates a subscription if missing, leaving existing subscriptions (including cancellations) unchanged."
   def insert_if_missing(subscription_list_id, person_id, type) do
-    case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
-      {:error, :not_found} ->
-        Notifications.create_subscription(%{
-          subscription_list_id: subscription_list_id,
-          person_id: person_id,
-          type: type,
-        })
+    changeset = Subscription.changeset(%{
+      subscription_list_id: subscription_list_id,
+      person_id: person_id,
+      type: type,
+    })
 
-      {:ok, subscription} ->
-        {:ok, subscription}
+    with {:ok, _} <- Repo.insert(changeset, on_conflict: :nothing, conflict_target: [:subscription_list_id, :person_id]) do
+      Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id)
     end
   end
 
