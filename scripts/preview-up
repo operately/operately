@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --output) output=$2; shift 2 ;;
+    --pr) pr=$2; shift 2 ;;
+    *) shift ;;
+  esac
+done
+
+known_hosts=$(dirname "$0")/preview.known_hosts
+
+out="$(ssh -i ~/.ssh/id_ed25519 -o UserKnownHostsFile="$known_hosts" -o IdentitiesOnly=yes -o ServerAliveInterval=30 app@167.233.193.239 "/home/app/.local/bin/preview up --pr $pr")"
+echo "$out"
+echo "$out" > "$output"
