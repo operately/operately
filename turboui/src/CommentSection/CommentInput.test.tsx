@@ -12,12 +12,18 @@ jest.mock("../RichEditor", () => ({
   hasLocalDraft: () => false,
   useEditor: () => {
     const [content, setContent] = React.useState<JSONContent>({});
-    const editor = React.useMemo(() => ({ commands: { setContent } }), []);
-    return { editor, content, setContent, getJson: () => content, empty: !content.text, clearLocalDraft };
+    const [editable, setEditable] = React.useState(true);
+    const editor = React.useMemo(() => ({ commands: { setContent }, setEditable }), []);
+    return { editor, editable, content, setContent, getJson: () => content, empty: !content.text, clearLocalDraft };
   },
-  Editor: ({ editor }: { editor: { content: JSONContent; setContent: (content: JSONContent) => void } }) => (
+  Editor: ({
+    editor,
+  }: {
+    editor: { editable: boolean; content: JSONContent; setContent: (content: JSONContent) => void };
+  }) => (
     <textarea
       aria-label="Comment"
+      readOnly={!editor.editable}
       value={editor.content.text ?? ""}
       onChange={(event) => editor.setContent({ type: "text", text: event.target.value })}
     />
@@ -25,6 +31,30 @@ jest.mock("../RichEditor", () => ({
 }));
 jest.mock("../Toasts", () => ({ showErrorToast: jest.fn() }));
 beforeEach(() => jest.clearAllMocks());
+
+it("keeps an immediately active composer and its draft until submission succeeds", async () => {
+  const request = deferred();
+  const postComment = jest.fn(() => request.promise);
+  render(
+    <CommentInput
+      initiallyActive
+      waitForSuccess
+      currentUser={{ id: "maya", fullName: "Maya", avatarUrl: null, profileLink: "#" }}
+      form={{ items: [], submitting: false, postComment, editComment: jest.fn() }}
+      richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinks: null }}
+    />,
+  );
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Keep this draft" } });
+  fireEvent.click(screen.getByRole("button", { name: "Post" }));
+  fireEvent.click(screen.getByRole("button", { name: "Post" }));
+  expect(postComment).toHaveBeenCalledTimes(1);
+  expect(clearLocalDraft).not.toHaveBeenCalled();
+  expect(screen.getByRole("textbox")).toHaveAttribute("readonly");
+  await act(async () => request.resolve(false));
+  expect(screen.getByRole("textbox")).toHaveValue("Keep this draft");
+  expect(screen.getByRole("textbox")).not.toHaveAttribute("readonly");
+  expect(clearLocalDraft).not.toHaveBeenCalled();
+});
 
 function deferred() {
   let resolve: (value: boolean | undefined) => void = () => {};

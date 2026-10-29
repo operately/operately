@@ -7,7 +7,7 @@ import { Menu, MenuActionItem } from "../Menu";
 import { FormattedTime } from "../FormattedTime";
 import RichContent from "../RichContent";
 import { parseContent } from "../RichContent/contentOps";
-import { IconEdit, IconTrash, IconLink } from "../icons";
+import { IconEdit, IconTrash, IconLink, IconDotsVertical } from "../icons";
 import { CommentAppearance, CommentItemProps } from "./types";
 import { compareIds } from "../utils/ids";
 import { Editor, useEditor, MentionedPersonLookupFn } from "../RichEditor";
@@ -54,8 +54,10 @@ export function CommentItem({
   appearance = "card",
   onVisible,
   canManageComments = false,
+  initiallyEditing = false,
 }: CommentItemProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const isInline = appearance === "inline";
+  const [isEditing, setIsEditing] = useState(initiallyEditing);
   const parsedContent = parseContent(comment.content);
   const onTaskItemChange = richTextHandlers.onCommentTaskItemChange;
   const isOwnComment = compareIds(currentUserId, comment.author.id);
@@ -66,12 +68,14 @@ export function CommentItem({
   const canAddReaction = Boolean(canComment && onAddReaction);
 
   const handleSaveEdit = async (content: any) => {
+    if (isInline && form.submitting) return false;
     if (form && form.editComment) {
       const success = await form.editComment(comment.id, content);
-      if (success === false) return;
+      if (success === false) return isInline ? false : undefined;
 
       setIsEditing(false);
     }
+    return undefined;
   };
 
   const handleAddReaction = useCallback(
@@ -93,49 +97,74 @@ export function CommentItem({
   );
 
   const testId = "comment-" + comment.id;
-  const isFlat = appearance === "flat";
+  const isFlat = appearance !== "card";
   const displayName = isFlat ? comment.author.fullName : shortName(comment.author.fullName);
   const containerClassName = isFlat
     ? "flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative"
     : "flex items-start gap-3 py-4 not-first:border-t border-stroke-base text-content-accent relative bg-surface-dimmed rounded-lg px-4 my-2";
 
+  const author = (
+    <div className="font-bold -mt-0.5">
+      {!isFlat && comment.author.profileLink ? (
+        <BlackLink to={comment.author.profileLink} underline="hover">
+          {displayName}
+        </BlackLink>
+      ) : (
+        displayName
+      )}
+    </div>
+  );
+  const timestamp = (
+    <span className={isInline ? "text-content-dimmed text-xs" : "text-content-dimmed text-sm"}>
+      <FormattedTime {...formattedTimePreferences} time={comment.insertedAt} format="relative" />
+    </span>
+  );
+  const menu = !isEditing && (
+    <CommentMenu
+      comment={comment}
+      canEdit={canComment && (!isInline || !form.submitting) && (canManageComments || isOwnComment)}
+      appearance={appearance}
+      onEdit={() => setIsEditing(true)}
+      onDelete={form.deleteComment ? () => form.deleteComment?.(comment.id) : undefined}
+    />
+  );
+
   return (
-    <div className={containerClassName} data-test-id={testId} id={comment.id} ref={visibilityRef}>
+    <div
+      className={isInline ? `group/comment ${containerClassName}` : containerClassName}
+      data-test-id={testId}
+      id={comment.id}
+      ref={visibilityRef}
+    >
       <div className="shrink-0">
         <Avatar person={comment.author} size="normal" />
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between">
-          <div className="font-bold -mt-0.5">
-            {!isFlat && comment.author.profileLink ? (
-              <BlackLink to={comment.author.profileLink} underline="hover">
-                {displayName}
-              </BlackLink>
+        <div className={isInline ? "flex items-start justify-between gap-2" : "flex items-center justify-between"}>
+          {isInline ? (
+            <div className="min-w-0">
+              {author}
+              {timestamp}
+            </div>
+          ) : (
+            author
+          )}
+          <div className={isInline ? "flex items-center gap-2 shrink-0" : "flex items-center gap-2"}>
+            {!isInline && timestamp}
+            {isInline ? (
+              <div className="flex items-center opacity-0 pointer-events-none group-hover/comment:opacity-100 group-hover/comment:pointer-events-auto group-focus-within/comment:opacity-100 group-focus-within/comment:pointer-events-auto [&:has([data-state=open])]:opacity-100 [&:has([data-state=open])]:pointer-events-auto [@media(hover:none)]:opacity-100 [@media(hover:none)]:pointer-events-auto">
+                {menu}
+              </div>
             ) : (
-              displayName
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-content-dimmed text-sm">
-              <FormattedTime {...formattedTimePreferences} time={comment.insertedAt} format="relative" />
-            </span>
-
-            {!isEditing && (
-              <CommentMenu
-                comment={comment}
-                canEdit={canComment && (canManageComments || isOwnComment)}
-                appearance={appearance}
-                onEdit={() => setIsEditing(true)}
-                onDelete={form.deleteComment ? () => form.deleteComment?.(comment.id) : undefined}
-              />
+              menu
             )}
           </div>
         </div>
 
         {isEditing ? (
           <CommentEditMode
+            inline={isInline}
             content={parsedContent}
             onSave={handleSaveEdit}
             onCancel={() => setIsEditing(false)}
@@ -174,13 +203,18 @@ interface CommentMenuProps {
   onDelete?: () => void | Promise<void>;
 }
 
-function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: CommentMenuProps) {
+export function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: CommentMenuProps) {
   const { t } = useTranslation();
+  const deleting = React.useRef(false);
   const handleDelete = async () => {
+    if (appearance === "inline" && deleting.current) return;
+    deleting.current = true;
     try {
       await onDelete?.();
     } catch {
       showErrorToast(t("Comment not deleted"), t("Please try again."));
+    } finally {
+      deleting.current = false;
     }
   };
 
@@ -195,17 +229,26 @@ function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: Comment
     }
   }, [comment.id]);
 
-  const isFlat = appearance === "flat";
+  const isFlat = appearance !== "card";
+
+  if (appearance === "inline" && !canEdit) return null;
 
   return (
-    <Menu size="small" testId={isFlat ? "comment-options" : createTestId("comment-menu", comment.id)}>
-      <MenuActionItem
-        onClick={handleCopyLink}
-        icon={IconLink}
-        testId={isFlat ? "copy-comment-link" : createTestId("copy-link", comment.id)}
-      >
-        {t("Copy link")}
-      </MenuActionItem>
+    <Menu
+      size="small"
+      ariaLabel={appearance === "inline" ? t("Options") : undefined}
+      triggerIcon={appearance === "inline" ? IconDotsVertical : undefined}
+      testId={isFlat ? "comment-options" : createTestId("comment-menu", comment.id)}
+    >
+      {appearance !== "inline" && (
+        <MenuActionItem
+          onClick={handleCopyLink}
+          icon={IconLink}
+          testId={isFlat ? "copy-comment-link" : createTestId("copy-link", comment.id)}
+        >
+          {t("Copy link")}
+        </MenuActionItem>
+      )}
       {canEdit && (
         <>
           <MenuActionItem
@@ -274,6 +317,7 @@ function CommentViewMode({
 }
 
 interface CommentEditModeProps {
+  inline?: boolean;
   content: any;
   onSave: (content: any) => Promise<boolean | void> | boolean | void;
   onCancel: () => void;
@@ -281,8 +325,17 @@ interface CommentEditModeProps {
   localDraftKey?: string;
 }
 
-function CommentEditMode({ content, onSave, onCancel, richTextHandlers, localDraftKey }: CommentEditModeProps) {
+function CommentEditMode({
+  content,
+  onSave,
+  onCancel,
+  richTextHandlers,
+  localDraftKey,
+  inline = false,
+}: CommentEditModeProps) {
   const { t } = useTranslation();
+  const saving = React.useRef(false);
+  const [pending, setPending] = useState(false);
   const editor = useEditor({
     content: content,
     editable: true,
@@ -294,10 +347,22 @@ function CommentEditMode({ content, onSave, onCancel, richTextHandlers, localDra
   const handleSave = async () => {
     const updatedContent = editor.getJson();
     if (!updatedContent || editor.empty) return;
-    const success = await onSave(updatedContent);
-    if (success === false) return;
-
-    editor.clearLocalDraft();
+    if (!inline) {
+      const success = await onSave(updatedContent);
+      if (success !== false) editor.clearLocalDraft();
+      return;
+    }
+    if (saving.current) return;
+    saving.current = true;
+    setPending(true);
+    try {
+      if ((await onSave(updatedContent)) !== false) editor.clearLocalDraft();
+    } catch {
+      showErrorToast(t("Comment not updated"), t("Your draft has been kept for retry."));
+    } finally {
+      saving.current = false;
+      setPending(false);
+    }
   };
 
   const handleCancel = () => {
@@ -307,12 +372,18 @@ function CommentEditMode({ content, onSave, onCancel, richTextHandlers, localDra
 
   return (
     <div className="bg-surface-base rounded-lg border border-stroke-base p-2 mt-1" data-test-id="edit-comment-form">
-      <Editor editor={editor} hideBorder />
+      <Editor editor={editor} hideBorder hideToolbar={inline} />
       <div className="flex gap-2 p-2 mt-2">
-        <PrimaryButton size="xs" onClick={handleSave} disabled={editor.empty} testId="post-comment">
+        <PrimaryButton
+          size="xs"
+          onClick={handleSave}
+          disabled={editor.empty || pending}
+          loading={inline ? pending : undefined}
+          testId="post-comment"
+        >
           {t("Save Changes")}
         </PrimaryButton>
-        <SecondaryButton size="xs" onClick={handleCancel}>
+        <SecondaryButton size="xs" onClick={handleCancel} disabled={inline ? pending : undefined}>
           {t("Cancel")}
         </SecondaryButton>
       </div>

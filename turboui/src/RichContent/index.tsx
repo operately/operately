@@ -1,4 +1,5 @@
 import React from "react";
+import type { Editor } from "@tiptap/core";
 import { Content, useEditor } from "../RichEditor";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 import { TaskListContext } from "../RichEditor/extensions/TaskItem";
@@ -39,11 +40,28 @@ export default function RichContent({
     handlers: { mentionedPersonLookup, resolveResourceLinks: null },
   });
 
+  useScrollToActiveComment(editor.editor, inlineComments);
+
   return (
     <TaskListContext.Provider value={{ canEdit: taskList.canEdit, pending, onChange: changeTaskItem }}>
       <Content editor={editor} className={className} />
     </TaskListContext.Provider>
   );
+}
+
+function useScrollToActiveComment(editor: Editor | null, inlineComments?: InlineCommentsOptions) {
+  const activeRange = inlineComments?.ranges.find((range) => range.id === inlineComments.activeThreadId);
+
+  React.useEffect(() => {
+    if (!editor || !inlineComments?.activeThreadId) return;
+
+    const range = activeRange;
+    if (!range || range.from < 0 || range.from >= editor.state.doc.content.size) return;
+
+    const node = editor.view.domAtPos(range.from).node as Node;
+    const element = node instanceof HTMLElement ? node : node.parentElement;
+    element?.scrollIntoView?.({ block: "center", behavior: "smooth" });
+  }, [editor, inlineComments?.activeThreadId, activeRange?.from, activeRange?.to]);
 }
 
 export * from "./contentOps";
