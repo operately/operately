@@ -2,8 +2,8 @@ import React from "react";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
-import type { InlineThread } from "../../ApiTypes";
-import { defaultFormattedTimePreferences } from "../../FormattedTime";
+import type { InlineThread } from "../ApiTypes";
+import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { useInlineComments } from "./useInlineComments";
 import type { DocumentInlineCommentsProps } from "./types";
 
@@ -30,7 +30,7 @@ beforeEach(() => {
   });
 });
 afterEach(() => jest.restoreAllMocks());
-jest.mock("../../CommentSection", () => ({
+jest.mock("../CommentSection", () => ({
   CommentItem: () => null,
   CommentInput: ({ form, submitDisabled, onCancel }) => {
     const [text, setText] = React.useState("");

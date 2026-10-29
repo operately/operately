@@ -1,15 +1,15 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import type { InlineThread } from "../../ApiTypes";
-import { UnstyledButton } from "../../Button/UnstalyedButton";
-import { Avatar } from "../../Avatar";
-import { FormattedTime } from "../../FormattedTime";
-import { parseContent, richContentToString } from "../../RichContent/contentOps";
-import { CommentInput, CommentItem, type Comment, type CommentFormState } from "../../CommentSection";
-import { CommentMenu } from "../../CommentSection/CommentItem";
-import { IconCheck, IconArrowBackUp } from "../../icons";
-import { compareIds } from "../../utils/ids";
-import { showErrorToast } from "../../Toasts";
+import type { InlineThread } from "../ApiTypes";
+import { UnstyledButton } from "../Button/UnstalyedButton";
+import { Avatar } from "../Avatar";
+import { FormattedTime } from "../FormattedTime";
+import { parseContent, richContentToString } from "../RichContent/contentOps";
+import { CommentInput, CommentItem, type Comment, type CommentFormState } from "../CommentSection";
+import { CommentMenu } from "../CommentSection/CommentItem";
+import { IconCheck, IconArrowBackUp } from "../icons";
+import { compareIds } from "../utils/ids";
+import { showErrorToast } from "../Toasts";
 import { attachedRange, type DocumentInlineCommentsProps } from "./types";
 
 export function Thread({

@@ -1,9 +1,9 @@
 import type { JSONContent } from "@tiptap/core";
-import type { InlineThread } from "../../ApiTypes";
-import type { Person } from "../../CommentSection";
-import type { FormattedTimePreferences } from "../../FormattedTime";
-import type { RichEditorHandlers } from "../../RichEditor/useEditor";
-import type { InlineCommentSelection } from "../../RichEditor/extensions/InlineComments";
+import type { InlineThread } from "../ApiTypes";
+import type { Person } from "../CommentSection";
+import type { FormattedTimePreferences } from "../FormattedTime";
+import type { RichEditorHandlers } from "../RichEditor/useEditor";
+import type { InlineCommentSelection } from "../RichEditor/extensions/InlineComments";
 
 export type InlineCommentTarget = InlineCommentSelection & { sourceVersion: number };
 

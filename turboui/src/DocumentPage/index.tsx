@@ -17,9 +17,9 @@ import type { ResourceHubNodesListContextValue } from "../ResourceHub/contexts/N
 import type { ResourceHubDocument } from "../ResourceHub/types";
 import { Spacer } from "../Spacer";
 import { CurrentSubscriptions } from "../Subscriptions";
-import { useInlineComments } from "./InlineComments/useInlineComments";
-import type { DocumentInlineCommentsProps } from "./InlineComments/types";
-export type { DocumentInlineCommentsProps, InlineCommentTarget } from "./InlineComments/types";
+import { useInlineComments } from "../InlineComments/useInlineComments";
+import type { DocumentInlineCommentsProps } from "../InlineComments/types";
+export type { DocumentInlineCommentsProps, InlineCommentTarget } from "../InlineComments/types";
 
 export namespace DocumentPage {
   export interface BaseProps {

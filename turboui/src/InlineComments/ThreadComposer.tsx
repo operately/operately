@@ -1,7 +1,7 @@
 import React from "react";
 import type { JSONContent } from "@tiptap/core";
 import { useTranslation } from "react-i18next";
-import { CommentInput } from "../../CommentSection";
+import { CommentInput } from "../CommentSection";
 import type { DocumentInlineCommentsProps, InlineCommentTarget } from "./types";
 
 interface ThreadComposerProps {

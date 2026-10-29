@@ -1,7 +1,7 @@
 import React from "react";
 import { autoUpdate, computePosition, flip, offset, shift } from "@floating-ui/dom";
 import { useTranslation } from "react-i18next";
-import { SecondaryButton } from "../../Button";
+import { SecondaryButton } from "../Button";
 
 export function SelectionAction({ range, onAdd }: { range: Range; onAdd: () => void }) {
   const { t } = useTranslation();

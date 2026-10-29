@@ -1,6 +1,6 @@
 import React from "react";
 import type { JSONContent } from "@tiptap/core";
-import type { InlineCommentSelection, InlineCommentsOptions } from "../../RichEditor/extensions/InlineComments";
+import type { InlineCommentSelection, InlineCommentsOptions } from "../RichEditor/extensions/InlineComments";
 import { attachedRange, type DocumentInlineCommentsProps, type InlineCommentTarget } from "./types";
 import { SelectionAction } from "./SelectionAction";
 import { ThreadComposer } from "./ThreadComposer";

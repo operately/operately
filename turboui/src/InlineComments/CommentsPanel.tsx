@@ -1,8 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import type { InlineThread } from "../../ApiTypes";
-import { SecondaryButton } from "../../Button";
-import { SlideIn } from "../../SlideIn";
+import type { InlineThread } from "../ApiTypes";
+import { SecondaryButton } from "../Button";
+import { SlideIn } from "../SlideIn";
 import { FloatingComments, type FloatingComment } from "./FloatingComments";
 import { Thread } from "./Thread";
 import { attachedRange, type DocumentInlineCommentsProps } from "./types";
