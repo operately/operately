@@ -19,6 +19,13 @@ defmodule Operately.Comments.AnchorMappingTest do
     assert %{status: :unattached} = remap(anchor, old, doc("abc XYZ ghi"))
   end
 
+  test "keeps ranges when repeated interior letters have different diff alignments" do
+    old = doc("Hello world")
+    new = doc("Helllo world")
+    assert %{status: :attached, current_from: 1, current_to: 7} = remap(anchor(old, 1, 6, "Hello"), old, new)
+    assert %{status: :attached, current_from: 1, current_to: 6} = remap(anchor(new, 1, 7, "Helllo"), new, old)
+  end
+
   test "shared letters in an otherwise replaced passage are not sufficient evidence" do
     old = doc("Hello world")
     assert %{status: :unattached} = remap(anchor(old, 1, 6, "Hello"), old, doc("Changed"))

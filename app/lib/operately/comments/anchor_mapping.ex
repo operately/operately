@@ -13,6 +13,8 @@ defmodule Operately.Comments.AnchorMapping do
       %{
         old: old,
         new: new,
+        old_text: document_text(old),
+        new_text: document_text(new),
         unchanged: unchanged,
         forward: if(unchanged, do: %{}, else: correspondences(old_tokens, new_tokens)),
         reverse: if(unchanged, do: %{}, else: correspondences(Enum.reverse(old_tokens), Enum.reverse(new_tokens)))
@@ -45,13 +47,17 @@ defmodule Operately.Comments.AnchorMapping do
     selected = Enum.filter(mapping.old.tokens, &(&1.kind == :text and &1.from >= from and &1.to <= to))
     forward = mapped_tokens(selected, mapping.forward)
     reverse = mapped_tokens(selected, mapping.reverse)
+    range = token_range(forward)
 
-    if forward != [] and forward == reverse and meaningful_survivor?(selected, forward) do
-      {:ok, {hd(forward).from, List.last(forward).to}}
+    if range != nil and range == token_range(reverse) and meaningful_survivor?(selected, forward) and meaningful_survivor?(selected, reverse) do
+      {:ok, range}
     else
       :error
     end
   end
+
+  defp token_range([]), do: nil
+  defp token_range(tokens), do: {hd(tokens).from, List.last(tokens).to}
 
   defp mapped_tokens(tokens, matches) do
     Enum.flat_map(tokens, fn token ->
@@ -68,7 +74,7 @@ defmodule Operately.Comments.AnchorMapping do
 
   # Repeated text needs context; a changed quote needs surviving edges or context.
   defp unambiguous_context?(mapping, {from, to}, previous, current) do
-    repeated = repeated?(mapping.old, previous.quote) or repeated?(mapping.new, current.quote)
+    repeated = repeated?(mapping.old_text, previous.quote) or repeated?(mapping.new_text, current.quote)
     prefix_matches = String.ends_with?(current.prefix, previous.prefix) and (previous.prefix != "" or current.prefix == "")
     suffix_matches = String.starts_with?(current.suffix, previous.suffix) and (previous.suffix != "" or current.suffix == "")
 
@@ -84,10 +90,12 @@ defmodule Operately.Comments.AnchorMapping do
     selected != [] and Map.has_key?(mapping.forward, hd(selected).from) and Map.has_key?(mapping.forward, List.last(selected).from)
   end
 
-  defp repeated?(indexed, selected_text) do
+  defp repeated?(text, selected_text), do: length(:binary.matches(text, selected_text)) > 1
+
+  defp document_text(indexed) do
     case Selection.extract(indexed, {0, indexed.size}) do
-      {:ok, %{quote: text}} -> length(:binary.matches(text, selected_text)) > 1
-      _ -> false
+      {:ok, %{quote: text}} -> text
+      _ -> ""
     end
   end
 
