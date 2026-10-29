@@ -7,6 +7,7 @@ defmodule Operately.Operations.InlineThreadCreatingTest do
   test "creates the thread and initial message atomically" do
     ctx = setup_document()
     before = document_state(ctx)
+    activity_count = Repo.aggregate(Operately.Activities.Activity, :count)
     assert {:ok, thread} = InlineThreadCreating.run(ctx.creator, ctx.document, attrs(ctx))
     assert [message] = thread.messages
     assert message.author.id == ctx.creator.id
@@ -15,6 +16,7 @@ defmodule Operately.Operations.InlineThreadCreatingTest do
     assert thread.resolved_by == nil
     assert thread.document.id == ctx.document.id
     assert document_state(ctx) == before
+    assert Repo.aggregate(Operately.Activities.Activity, :count) == activity_count + 1
   end
 
   test "invalid content leaves no thread or message" do
@@ -113,6 +115,51 @@ defmodule Operately.Operations.InlineThreadCreatingTest do
     end)
   end
 
+  test "a concurrent document subscription does not roll back thread creation" do
+    Sandbox.unboxed_run(Repo, fn ->
+      ctx = setup_document()
+      parent = self()
+      list_id = ctx.document.subscription_list_id
+      Repo.delete_all(from s in Operately.Notifications.Subscription, where: s.subscription_list_id == ^list_id and s.person_id == ^ctx.creator.id)
+
+      try do
+        subscriber = Task.async(fn ->
+          Sandbox.unboxed_run(Repo, fn ->
+            Repo.transaction(fn ->
+              {:ok, %{subscription: subscription}} = Operately.Operations.NotificationsSubscribing.run(ctx.creator.id, list_id)
+              send(parent, :subscription_inserted)
+
+              receive do
+                :commit -> subscription
+              after
+                5_000 -> Repo.rollback(:test_timeout)
+              end
+            end)
+          end)
+        end)
+
+        assert_receive :subscription_inserted, 2_000
+        creator = Task.async(fn ->
+          Sandbox.unboxed_run(Repo, fn ->
+            send(parent, :creating_thread)
+            InlineThreadCreating.run(ctx.creator, ctx.document, attrs(ctx))
+          end)
+        end)
+
+        assert_receive :creating_thread, 2_000
+        assert Task.yield(creator, 100) == nil
+        send(subscriber.pid, :commit)
+        assert {:ok, subscription} = Task.await(subscriber)
+        assert {:ok, thread} = Task.await(creator)
+        assert [_message] = thread.messages
+        assert Repo.get_by!(Operately.Notifications.Subscription, subscription_list_id: list_id, person_id: ctx.creator.id).id == subscription.id
+      after
+        Repo.delete!(ctx.company)
+        Repo.delete!(ctx.account)
+      end
+    end)
+  end
+
   defp setup_document do
     %{}
     |> Factory.setup()
@@ -129,7 +176,6 @@ defmodule Operately.Operations.InlineThreadCreatingTest do
     %{
       document: Repo.reload!(ctx.document),
       versions: Repo.aggregate(Operately.ResourceHubs.DocumentVersion, :count),
-      activities: Repo.aggregate(Operately.Activities.Activity, :count),
       notifications: Repo.aggregate(Operately.Notifications.Notification, :count)
     }
   end

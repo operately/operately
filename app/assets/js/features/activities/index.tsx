@@ -1,3 +1,4 @@
+import ResourceHubDocumentInlineThreadResolutionChanged from "./ResourceHubDocumentInlineThreadResolutionChanged";
 import * as React from "react";
 import * as interfaces from "./interfaces";
 
@@ -159,6 +160,7 @@ export const DISPLAYED_IN_FEED = [
   "resource_hub_document_public_sharing_changed",
   "resource_hub_document_version_restored",
   "resource_hub_document_commented",
+  "resource_hub_document_inline_thread_resolution_changed",
   "resource_hub_document_deleted",
   "resource_hub_file_created",
   "resource_hub_file_edited",
@@ -378,6 +380,10 @@ function handler(activity: Activity) {
     .with("resource_hub_document_edited", () => ResourceHubDocumentEdited)
     .with("resource_hub_document_public_sharing_changed", () => ResourceHubDocumentPublicSharingChanged)
     .with("resource_hub_document_version_restored", () => ResourceHubDocumentVersionRestored)
+    .with(
+      "resource_hub_document_inline_thread_resolution_changed",
+      () => ResourceHubDocumentInlineThreadResolutionChanged,
+    )
     .with("resource_hub_document_commented", () => ResourceHubDocumentCommented)
     .with("resource_hub_document_deleted", () => ResourceHubDocumentDeleted)
     .with("resource_hub_file_created", () => ResourceHubFileCreated)

@@ -55,7 +55,7 @@ defmodule OperatelyWeb.Api.InlineThreads.CreateTest do
       assert length(thread.messages) == 1
       assert thread.resolved_at == nil
       assert Repo.reload!(ctx.document) == before
-      assert Repo.aggregate(Operately.Activities.Activity, :count) == activities
+      assert Repo.aggregate(Operately.Activities.Activity, :count) == activities + 1
     end
 
     test "rejects stale versions without inserting a thread", ctx do
