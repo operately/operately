@@ -214,3 +214,31 @@ test("empty documents keep their original layout and lend side padding to a new 
   await composer.waitFor({ state: "detached" });
   assert.deepEqual(await geometry(), original);
 });
+
+test("mobile readers can open and revisit an unattached thread without highlights", async () => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await visit("unattached-read-only");
+  assert.equal(await page.locator("[data-inline-thread]").count(), 0);
+  const preview = page.locator('[data-test-id="inline-comments-previews"]');
+  await preview.locator('[data-test-id="inline-select-removed"]').click();
+  const panel = page.locator('[data-test-id="inline-comments-panel"]');
+  await panel.locator('[data-test-id="inline-unattached"]').waitFor();
+  assert.equal(await panel.locator('[contenteditable="true"]').count(), 0);
+  await panel.getByRole("button", { name: "Close", exact: true }).click();
+  await preview.locator('[data-test-id="inline-select-removed"]').click();
+  await panel.locator('[data-test-id="inline-unattached"]').waitFor();
+});
+
+test("the composer cannot be edited while its submitted text is being saved", async () => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await visit("slow-posting");
+  await selectPassage();
+  const composer = page.locator('[data-test-id="inline-new-thread"]');
+  const editor = composer.locator(".ProseMirror[contenteditable]");
+  await editor.fill("Submitted text");
+  await composer.locator('[data-test-id="post-comment"]').click();
+  assert.equal(await editor.getAttribute("contenteditable"), "false");
+  await editor.pressSequentially("Must not be lost");
+  assert.equal(await editor.innerText(), "Submitted text");
+  await page.locator('[data-test-id="inline-thread-new-1"]').waitFor();
+});

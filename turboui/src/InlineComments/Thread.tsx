@@ -126,7 +126,8 @@ function useThreadDismissal(active: boolean, onSelectThread: DocumentInlineComme
       const card = cardRef.current;
       if (!card || !(event.target instanceof Node) || card.contains(event.target)) return;
       // Keep replies, message edits, and portalled menu actions open until finished.
-      if (card.querySelector('[contenteditable="true"], [aria-haspopup="menu"][data-state="open"]')) return;
+      if (card.querySelector('[contenteditable="true"], [aria-busy="true"], [aria-haspopup="menu"][data-state="open"]'))
+        return;
       onSelectThread(null);
     };
 

@@ -101,6 +101,8 @@ const initialThreads = [
 
 function Example({
   empty = false,
+  unattachedOnly = false,
+  postingDelay = 0,
   readOnly = false,
   loading = false,
   error = false,
@@ -112,15 +114,17 @@ function Example({
   const [threads, setThreads] = React.useState(() =>
     empty
       ? []
-      : initialThreads.map((thread, index) =>
-          ownComment && index === 0
-            ? {
-                ...thread,
-                author: person,
-                messages: thread.messages.map((message) => ({ ...message, author: person })),
-              }
-            : thread,
-        ),
+      : initialThreads
+          .filter((thread) => !unattachedOnly || thread.anchor.status === "unattached")
+          .map((thread, index) =>
+            ownComment && index === 0
+              ? {
+                  ...thread,
+                  author: person,
+                  messages: thread.messages.map((message) => ({ ...message, author: person })),
+                }
+              : thread,
+          ),
   );
   const [activeThreadId, setActive] = React.useState<string | null>(
     new URLSearchParams(window.location.search).get("inlineThread"),
@@ -159,6 +163,7 @@ function Example({
     },
     onReload: async () => setFailed(false),
     onCreate: async (selection, message) => {
+      if (postingDelay) await new Promise((resolve) => setTimeout(resolve, postingDelay));
       if (firstAttempt.current) {
         firstAttempt.current = false;
         setVersion(2);
@@ -264,3 +269,6 @@ export const Mobile: Story = {
 export const OwnComment: Story = { render: () => <Example ownComment /> };
 
 export const FeatureDisabled: Story = { render: () => <Example inlineCommentsEnabled={false} /> };
+
+export const UnattachedReadOnly: Story = { render: () => <Example readOnly unattachedOnly /> };
+export const SlowPosting: Story = { render: () => <Example empty postingDelay={1500} /> };

@@ -12,12 +12,18 @@ jest.mock("../RichEditor", () => ({
   hasLocalDraft: () => false,
   useEditor: () => {
     const [content, setContent] = React.useState<JSONContent>({});
-    const editor = React.useMemo(() => ({ commands: { setContent } }), []);
-    return { editor, content, setContent, getJson: () => content, empty: !content.text, clearLocalDraft };
+    const [editable, setEditable] = React.useState(true);
+    const editor = React.useMemo(() => ({ commands: { setContent }, setEditable }), []);
+    return { editor, editable, content, setContent, getJson: () => content, empty: !content.text, clearLocalDraft };
   },
-  Editor: ({ editor }: { editor: { content: JSONContent; setContent: (content: JSONContent) => void } }) => (
+  Editor: ({
+    editor,
+  }: {
+    editor: { editable: boolean; content: JSONContent; setContent: (content: JSONContent) => void };
+  }) => (
     <textarea
       aria-label="Comment"
+      readOnly={!editor.editable}
       value={editor.content.text ?? ""}
       onChange={(event) => editor.setContent({ type: "text", text: event.target.value })}
     />
@@ -43,8 +49,10 @@ it("keeps an immediately active composer and its draft until submission succeeds
   fireEvent.click(screen.getByRole("button", { name: "Post" }));
   expect(postComment).toHaveBeenCalledTimes(1);
   expect(clearLocalDraft).not.toHaveBeenCalled();
+  expect(screen.getByRole("textbox")).toHaveAttribute("readonly");
   await act(async () => request.resolve(false));
   expect(screen.getByRole("textbox")).toHaveValue("Keep this draft");
+  expect(screen.getByRole("textbox")).not.toHaveAttribute("readonly");
   expect(clearLocalDraft).not.toHaveBeenCalled();
 });
 
