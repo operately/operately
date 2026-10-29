@@ -20,6 +20,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
   );
   const contentRef = React.useRef<HTMLDivElement>(null);
   const frame = React.useRef<number>();
+  const composerVersion = React.useRef(0);
 
   // Switch between floating cards and the mobile panel at the desktop breakpoint.
   React.useEffect(() => {
@@ -38,6 +39,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
 
   // Reset local review state when switching documents or draft namespaces.
   React.useEffect(() => {
+    composerVersion.current += 1;
     setOpen(false);
     setCreating(false);
     setTarget(null);
@@ -55,6 +57,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
   // Cancel any pending selection measurement when the hook unmounts.
   React.useEffect(
     () => () => {
+      composerVersion.current += 1;
       if (frame.current !== undefined) cancelAnimationFrame(frame.current);
     },
     [],
@@ -90,6 +93,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
 
   const start = () => {
     if (!selection || !props?.canComment || selection.sourceVersion !== props.documentVersion) return;
+    composerVersion.current += 1;
     setTarget(selection);
     setTargetRange(selectionRange);
     setConflict(false);
@@ -133,13 +137,17 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
   );
 
   const cancelCreation = () => {
+    composerVersion.current += 1;
     setCreating(false);
     setTarget(null);
   };
 
   const createThread = async (content: JSONContent) => {
     if (!target || staleTarget) return false;
+    const submittedVersion = composerVersion.current;
     const result = await props.onCreate(target, content);
+    // A completed request must not change a newer document or passage composer.
+    if (submittedVersion !== composerVersion.current) return false;
     if (result === "conflict") setConflict(true);
     if (result !== "ok") return false;
     setCreating(false);
@@ -155,6 +163,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
           selectionRange: targetRange,
           content: (
             <ThreadComposer
+              key={props.draftKey}
               props={props}
               target={target}
               staleTarget={staleTarget}

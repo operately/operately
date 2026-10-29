@@ -209,3 +209,71 @@ it("reserves comment space only for visible threads or a new composer", () => {
   rerender(<Harness value={value} />);
   expect(review.hasFloatingComments).toBe(false);
 });
+
+it.each(["ok", "conflict"] as const)("ignores an old document's %s result", async (result) => {
+  let finish: (result: "ok" | "conflict") => void = () => {};
+  const request = new Promise<"ok" | "conflict">((resolve) => {
+    finish = resolve;
+  });
+  const first = props({ onCreate: jest.fn(() => request) });
+  const view = render(<Harness value={first} />);
+  select();
+  click("inline-add-selection");
+  fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+  view.rerender(<Harness value={props({ draftKey: "other-document" })} />);
+  select();
+  click("inline-add-selection");
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "New document draft" } });
+  await act(async () => finish(result));
+  expect(screen.getByRole("textbox")).toHaveValue("New document draft");
+  expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();
+});
+
+it("ignores a previous composer after selecting a new passage in the same document", async () => {
+  let finish: (result: "ok") => void = () => {};
+  const request = new Promise<"ok">((resolve) => {
+    finish = resolve;
+  });
+  render(<Harness value={props({ onCreate: jest.fn(() => request) })} />);
+  select();
+  click("inline-add-selection");
+  fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+  select();
+  click("inline-add-selection");
+  await act(async () => finish("ok"));
+  expect(screen.getByRole("textbox")).toBeVisible();
+  expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();
+});
+
+it("lets mobile readers open an unattached thread without a highlight", () => {
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: jest.fn(() => ({
+      matches: false,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    })),
+  });
+  const value = props({
+    canComment: false,
+    threads: [
+      {
+        ...thread,
+        anchor: {
+          ...thread.anchor,
+          status: "unattached",
+          currentFrom: null,
+          currentTo: null,
+        },
+      },
+    ],
+  });
+  const view = render(<Harness value={value} />);
+  expect(review.editorOptions?.ranges).toEqual([]);
+  expect(document.querySelector('[data-test-id="inline-select-one"]')).toBeVisible();
+  click("inline-select-one");
+  expect(value.onSelectThread).toHaveBeenCalledWith("one");
+  view.rerender(<Harness value={{ ...value, activeThreadId: "one" }} />);
+  expect(document.querySelector('[data-test-id="inline-comments-panel"]')).toBeInTheDocument();
+  delete (window as Partial<Window>).matchMedia;
+});

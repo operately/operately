@@ -40,30 +40,42 @@ export function CommentsPanel({ props, threads, composer, mobile, open, onClose,
   }));
 
   if (mobile) {
-    return (
-      <SlideIn
-        isOpen={open}
-        onClose={onClose}
-        width="100%"
-        title={t("Inline comments")}
-        showCloseButton={false}
-        closeOnBackdropClick={false}
-        trapFocus
-        testId="inline-comments-mobile"
-      >
-        <div className="p-4 space-y-4" data-test-id="inline-comments-panel">
-          <div className="flex justify-end">
-            <SecondaryButton size="xxs" onClick={onClose}>
-              {t("Close")}
-            </SecondaryButton>
-          </div>
+    const previews =
+      !open && (items.length > 0 || status) ? (
+        <div className="p-4 space-y-4" data-test-id="inline-comments-previews">
           {status}
-          {composer?.content}
           {items.map((item) => (
             <React.Fragment key={item.id}>{item.content}</React.Fragment>
           ))}
         </div>
-      </SlideIn>
+      ) : null;
+    return (
+      <>
+        {previews}
+        <SlideIn
+          isOpen={open}
+          onClose={onClose}
+          width="100%"
+          title={t("Inline comments")}
+          showCloseButton={false}
+          closeOnBackdropClick={false}
+          trapFocus
+          testId="inline-comments-mobile"
+        >
+          <div className="p-4 space-y-4" data-test-id="inline-comments-panel">
+            <div className="flex justify-end">
+              <SecondaryButton size="xxs" onClick={onClose}>
+                {t("Close")}
+              </SecondaryButton>
+            </div>
+            {status}
+            {composer?.content}
+            {items.map((item) => (
+              <React.Fragment key={item.id}>{item.content}</React.Fragment>
+            ))}
+          </div>
+        </SlideIn>
+      </>
     );
   }
 
@@ -72,14 +84,7 @@ export function CommentsPanel({ props, threads, composer, mobile, open, onClose,
   if (status) items.push({ id: "status", content: status });
 
   return (
-    <div
-      onKeyDown={(event) => {
-        if (event.key === "Escape" && !event.defaultPrevented) {
-          event.stopPropagation();
-          onClose();
-        }
-      }}
-    >
+    <div>
       {hasFloatingComments ? (
         <FloatingComments items={items} contentRef={contentRef} />
       ) : (
