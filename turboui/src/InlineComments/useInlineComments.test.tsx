@@ -161,6 +161,30 @@ it.each(["content", "outside"])(
   },
 );
 
+it.each(["pointer", "keyboard"])("preserves a completed %s selection across window blur and focus", async (method) => {
+  const value = props();
+  render(<Harness value={value} />);
+  if (method === "pointer") {
+    fireEvent(screen.getByTestId("document-content"), new MouseEvent("pointerdown", { bubbles: true, button: 0 }));
+  }
+  select();
+  act(() => {
+    if (method === "pointer") fireEvent.pointerUp(document.body);
+    fireEvent.blur(window);
+    fireEvent.focus(window);
+  });
+
+  expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeVisible();
+  click("inline-add-selection");
+  fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(value.onCreate).toHaveBeenCalledWith(
+      { sourceVersion: 1, from: 1, to: 6, quote: "Hello" },
+      expect.anything(),
+    ),
+  );
+});
+
 it.each(["pointercancel", "blur"])(
   "clears interrupted pointer selection on %s without blocking keyboard selection",
   (event) => {

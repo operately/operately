@@ -238,18 +238,23 @@ function usePointerSelection(
 
   React.useEffect(() => {
     setSelectingWithPointer(false);
-  }, [resetKey, enabled]);
-
-  React.useEffect(() => {
     if (!enabled) return;
 
+    // Track events synchronously so a blur immediately after release sees the finished drag.
+    let pointerSelectionActive = false;
     const beginSelection = (event: PointerEvent) => {
       if (event.button !== 0 || !(event.target instanceof Node)) return;
-      if (contentRef.current?.contains(event.target)) setSelectingWithPointer(true);
+      if (!contentRef.current?.contains(event.target)) return;
+      pointerSelectionActive = true;
+      setSelectingWithPointer(true);
     };
-    const finishSelection = () => setSelectingWithPointer(false);
-    const cancelSelection = () => {
+    const finishSelection = () => {
+      pointerSelectionActive = false;
       setSelectingWithPointer(false);
+    };
+    const cancelSelection = () => {
+      if (!pointerSelectionActive) return;
+      finishSelection();
       onCancel();
     };
 
@@ -264,7 +269,7 @@ function usePointerSelection(
       window.removeEventListener("pointercancel", cancelSelection, true);
       window.removeEventListener("blur", cancelSelection);
     };
-  }, [contentRef, enabled, onCancel]);
+  }, [contentRef, enabled, onCancel, resetKey]);
 
   return selectingWithPointer;
 }
