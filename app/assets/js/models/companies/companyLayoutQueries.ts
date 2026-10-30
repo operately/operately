@@ -59,6 +59,11 @@ function companyLayoutOptions(inputs: CompanyLayoutInputs) {
   };
 }
 
+export async function fetchCompany() {
+  const { company } = await queryClient.fetchQuery(companyLayoutOptions(companyLayoutInputs()).company);
+  return company;
+}
+
 export async function prefetchCompanyLayout(inputs: CompanyLayoutInputs) {
   const options = companyLayoutOptions(inputs);
   const [{ company }] = await Promise.all([
