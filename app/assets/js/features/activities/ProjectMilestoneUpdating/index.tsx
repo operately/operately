@@ -101,7 +101,7 @@ const ProjectMilestoneUpdating: ActivityHandler = {
   },
 };
 
-export function ProjectMilestoneDetail(props: { activity: Activity }) {
+function ProjectMilestoneDetail(props: { activity: Activity }) {
   const data = content(props.activity);
 
   const oldTimeframe = data.oldTimeframe;

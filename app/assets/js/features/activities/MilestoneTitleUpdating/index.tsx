@@ -112,7 +112,7 @@ function content(activity: Activity): ActivityContentMilestoneTitleUpdating {
   return activity.content as ActivityContentMilestoneTitleUpdating;
 }
 
-export function MilestoneTitleDetail({ activity }: { activity: Activity }) {
+function MilestoneTitleDetail({ activity }: { activity: Activity }) {
   return (
     <Trans
       i18nKey={'Previously, the milestone was called <name>"{{oldTitle}}"</name>.'}

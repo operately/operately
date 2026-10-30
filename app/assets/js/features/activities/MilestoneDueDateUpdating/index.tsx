@@ -100,7 +100,7 @@ const MilestoneDueDateUpdating: ActivityHandler = {
   },
 };
 
-export function MilestoneDueDateDetail({ activity }: { activity: Activity }) {
+function MilestoneDueDateDetail({ activity }: { activity: Activity }) {
   const { oldDueDate, newDueDate } = content(activity);
 
   if (!oldDueDate && newDueDate) {
