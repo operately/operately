@@ -20,6 +20,7 @@ defmodule Operately.Operations.ProjectCheckInDeleting do
     |> Multi.delete(:check_in, check_in)
     |> maybe_update_project(project, check_in, previous_check_in)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(check_in.project_id)
     |> Repo.extract_result(:check_in)
   end
 

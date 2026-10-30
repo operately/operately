@@ -31,6 +31,7 @@ defmodule Operately.Operations.ProjectCheckInEdit do
       |> handle_oban_jobs(check_in, attrs)
       |> IndexUpdates.enqueue(:search_project_check_in, "project_check_in", fn changes -> changes.check_in.id end)
       |> Repo.transaction()
+      |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(check_in.project_id)
       |> Repo.extract_result(:check_in)
       |> broadcast_if_published(author)
     end

@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemChecked do
   def call(conn, inputs) do
     with {:ok, _} <- find_me(conn) do
       Repo.transaction(fn -> update(conn, inputs) end)
+      |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(fn result -> result.project_id end)
       |> respond()
     else
       _ -> {:error, :unauthorized}
@@ -33,7 +34,7 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemChecked do
          {:ok, locked} <- Repo.Locking.lock_for_update(Repo, record),
          {:ok, content} <- TaskItems.set_checked(Map.fetch!(locked, inputs.field), inputs.expected_content, inputs.item_path, inputs.checked),
          {:ok, _} <- save_if_changed(conn, inputs, locked, content) do
-      %{success: true}
+      %{success: true, project_id: project_id(record)}
     else
       error -> Repo.rollback(error)
     end
@@ -47,7 +48,15 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemChecked do
     end
   end
 
-  defp respond({:ok, result}), do: {:ok, result}
+  defp project_id(%Operately.Projects.Project{id: id}), do: id
+  defp project_id(%{project_id: id}), do: id
+  defp project_id(%type{} = record) when type in [Operately.ResourceHubs.Document, Operately.ResourceHubs.File, Operately.ResourceHubs.Link] do
+    Repo.preload(record, :resource_hub).resource_hub.project_id
+  end
+
+  defp project_id(_), do: nil
+
+  defp respond({:ok, result}), do: {:ok, Map.delete(result, :project_id)}
   defp respond({:error, {:error, :content_conflict}}), do: {:error, :bad_request, gettext("The content has changed. Refresh and try again."), %{reason: "content_conflict"}}
   defp respond({:error, {:error, :invalid_task_item}}), do: {:error, :bad_request, gettext("The selected task item no longer exists")}
   defp respond({:error, {:error, :unauthorized}}), do: {:error, :forbidden}

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { type QueryClient, type QueryKey, useQueryClient } from "@tanstack/react-query";
+import { type QueryClient, type QueryFilters, type QueryKey, useQueryClient } from "@tanstack/react-query";
 import Api, {
   type CompaniesGetActivityInput,
   type NotificationsIsSubscribedInput,
@@ -15,25 +15,25 @@ export async function invalidateProjectPageQueries(
   projectId: string,
   refetchType: "active" | "none" = "none",
 ) {
-  const prefixes = [
+  await Promise.all(
+    projectPageFilters(projectId).map((filter) => client.invalidateQueries({ ...filter, refetchType })),
+  );
+}
+
+function projectPageFilters(projectId: string): QueryFilters[] {
+  return [
     Api.projects.getQueryKeyPrefix(),
     Api.projects.countChildrenQueryKeyPrefix(),
     Api.tasks.listQueryKeyPrefix(),
     Api.projects.listCheckInsQueryKeyPrefix(),
     Api.projects.listDiscussionsQueryKeyPrefix(),
-  ];
-  await Promise.all(
-    prefixes.map((queryKey) =>
-      client.invalidateQueries({
-        queryKey,
-        refetchType,
-        predicate: (query) => {
-          const input = query.queryKey[queryKey.length] as { id?: string; projectId?: string } | undefined;
-          return compareIds(input?.projectId ?? input?.id ?? null, projectId);
-        },
-      }),
-    ),
-  );
+  ].map((queryKey) => ({
+    queryKey,
+    predicate: (query) => {
+      const input = query.queryKey[queryKey.length] as { id?: string; projectId?: string } | undefined;
+      return compareIds(input?.projectId ?? input?.id ?? null, projectId);
+    },
+  }));
 }
 
 export function useInvalidateProjectPage() {
@@ -42,6 +42,35 @@ export function useInvalidateProjectPage() {
     (id: string, refetchType: "active" | "none" = "none") => invalidateProjectPageQueries(client, id, refetchType),
     [client],
   );
+}
+
+export async function invalidateProjectResourceHubQueries(client: QueryClient, resourceHubId: string) {
+  await Promise.all(
+    resourceHubFilters(resourceHubId).map((filter) => client.invalidateQueries({ ...filter, refetchType: "active" })),
+  );
+}
+
+export async function cancelProjectPageQueries(
+  client: QueryClient,
+  projectId: string,
+  resourceHubId: string | null | undefined,
+) {
+  const filters = [...projectPageFilters(projectId), ...(resourceHubId ? resourceHubFilters(resourceHubId) : [])];
+  await Promise.all(filters.map((filter) => client.cancelQueries(filter)));
+}
+
+function resourceHubFilters(resourceHubId: string): QueryFilters[] {
+  return [
+    Api.resource_hubs.getQueryKeyPrefix(),
+    Api.resource_hubs.listNodesQueryKeyPrefix(),
+    Api.resource_hubs.listDraftsQueryKeyPrefix(),
+  ].map((queryKey) => ({
+    queryKey,
+    predicate: (query) => {
+      const input = query.queryKey[queryKey.length] as { id?: string; resourceHubId?: string } | undefined;
+      return compareIds(input?.resourceHubId ?? input?.id ?? null, resourceHubId);
+    },
+  }));
 }
 
 export function invalidateProjectCheckInPageQueries(

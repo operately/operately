@@ -13,6 +13,21 @@ defmodule OperatelyWeb.Api.Links.CreateTest do
     ctx |> Factory.setup()
   end
 
+  test "publishes a project update for project links only", ctx do
+    ctx = ctx |> Factory.add_space(:space) |> Factory.add_project(:project, :space)
+      |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
+      |> Factory.fetch_default_resource_hub(:space_hub, :space) |> Factory.log_in_person(:creator)
+    topic = "api:project_updated:#{ctx.project.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
+    inputs = %{resource_hub_id: Paths.resource_hub_id(ctx.project_hub), name: "Reference", url: "https://example.com", type: "other"}
+    assert {200, _} = mutation(ctx.conn, [:links, :create], inputs)
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event"}
+    assert {200, _} = mutation(ctx.conn, [:links, :create], %{inputs | resource_hub_id: Paths.resource_hub_id(ctx.space_hub)})
+    refute_receive %Phoenix.Socket.Broadcast{topic: ^topic}
+    assert {400, _} = mutation(ctx.conn, [:links, :create], Map.delete(inputs, :name))
+    refute_receive %Phoenix.Socket.Broadcast{topic: ^topic}
+  end
+
   describe "destination folder authorization" do
     setup ctx do
       ctx

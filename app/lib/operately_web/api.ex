@@ -352,6 +352,7 @@ defmodule OperatelyWeb.Api do
       subscription(:reload_comments, S.ReloadComments)
       subscription(:unread_notifications_count, S.UnreadNotificationsCount)
       subscription(:profile_updated, S.ProfileUpdated)
+      subscription(:project_updated, S.ProjectUpdated)
       subscription(:billing_updated, S.BillingUpdated)
     end
   end

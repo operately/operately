@@ -11,6 +11,7 @@ defmodule Operately.Operations.ProjectContributorsAddition do
     |> add_contributors(project, contributors)
     |> insert_activity(author, project)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(project.id)
     |> case do
       {:ok, %{contributors: contribs}} -> {:ok, contribs}
       {:error, _step, reason, _} -> {:error, reason}

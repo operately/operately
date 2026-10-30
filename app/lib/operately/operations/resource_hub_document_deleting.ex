@@ -19,6 +19,7 @@ defmodule Operately.Operations.ResourceHubDocumentDeleting do
       |> Map.merge(Parent.parent_fields(document.resource_hub))
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(document.resource_hub.project_id)
     |> Repo.extract_result(:document)
   end
 end
