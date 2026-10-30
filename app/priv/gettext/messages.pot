@@ -1649,6 +1649,11 @@ msgid "%{author} edited <resources/> in the <parent>%{parentName}</parent> space
 msgstr ""
 
 #.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:40
+msgid "%{author} edited a KPI"
+msgstr ""
+
+#.frontend
 #: assets/js/features/activities/KpiAnnotationEdited/index.tsx:41
 msgid "%{author} edited a KPI annotation"
 msgstr ""
@@ -1656,6 +1661,11 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/KpiAnnotationEdited/index.tsx:45
 msgid "%{author} edited a KPI annotation in the <space>%{spaceName}</space> space"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:44
+msgid "%{author} edited a KPI in the <space>%{spaceName}</space> space"
 msgstr ""
 
 #.frontend
@@ -2022,6 +2032,16 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectContributorEdited/index.tsx:64
 msgid "%{author} reassigned %{personName} as a %{role} on the project"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:42
+msgid "%{author} recorded a KPI value"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:46
+msgid "%{author} recorded a KPI value in the <space>%{spaceName}</space> space"
 msgstr ""
 
 #.frontend
@@ -10050,6 +10070,11 @@ msgid "Edited"
 msgstr ""
 
 #.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:69
+msgid "Edited KPI: %{kpiName}"
+msgstr ""
+
+#.frontend
 #: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
 msgid "Edited a file"
 msgstr ""
@@ -12528,6 +12553,7 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:56
 #: assets/js/features/activities/KpiDeleted/index.tsx:51
+#: assets/js/features/activities/KpiEdited/index.tsx:53
 msgid "KPI: %{kpiName}"
 msgstr ""
 
@@ -12543,6 +12569,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/features/activities/KpiEntryDeleted/index.tsx:58
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:59
 msgid "KPI: %{value}"
 msgstr ""
 
@@ -16612,6 +16639,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:194
 msgid "Record update"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:90
+msgid "Recorded %{value} for %{kpiName}"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:89
+msgid "Recorded KPI value: %{value}"
 msgstr ""
 
 #.frontend
