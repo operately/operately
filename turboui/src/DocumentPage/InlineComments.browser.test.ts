@@ -42,9 +42,14 @@ test("select, post, reply, resolve, and reopen using the actual editor", async (
   await composer.locator('[data-test-id="post-comment"]').click();
   const thread = page.locator('[data-test-id="inline-thread-new-1"]');
   await thread.waitFor();
+  await thread.locator('[data-test-id="add-comment"]').waitFor();
+  assert.equal(await thread.locator('[contenteditable="true"]').count(), 0);
+  await thread.locator('[data-test-id="add-comment"]').click();
   await thread.locator('[contenteditable="true"]').fill("I will own this.");
   await thread.locator('[data-test-id="post-comment"]').click();
   await thread.locator('div[data-test-id^="comment-"][id]').nth(1).waitFor();
+  await thread.locator('[data-test-id="add-comment"]').waitFor();
+  assert.equal(await thread.locator('[contenteditable="true"]').count(), 0);
   assert.equal(await thread.locator('[data-test-id="inline-resolve-new-1"]').count(), 1);
   assert.equal(
     await thread.locator('div[data-test-id^="comment-"][id] [data-test-id="inline-resolve-new-1"]').count(),

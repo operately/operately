@@ -16,11 +16,13 @@ export function Thread({
   thread,
   props,
   active,
+  initiallyActiveReply,
   onSelect,
 }: {
   thread: InlineThread;
   props: DocumentInlineCommentsProps;
   active: boolean;
+  initiallyActiveReply: boolean;
   onSelect: () => void;
 }) {
   const { t } = useTranslation();
@@ -111,6 +113,7 @@ export function Thread({
           comments={comments}
           form={form}
           editingFirstMessage={editingFirstMessage}
+          initiallyActiveReply={initiallyActiveReply}
         />
       )}
     </section>
@@ -178,9 +181,17 @@ interface ThreadMessagesProps {
   comments: Comment[];
   form: CommentFormState;
   editingFirstMessage: boolean;
+  initiallyActiveReply: boolean;
 }
 
-function ThreadMessages({ thread, props, comments, form, editingFirstMessage }: ThreadMessagesProps) {
+function ThreadMessages({
+  thread,
+  props,
+  comments,
+  form,
+  editingFirstMessage,
+  initiallyActiveReply,
+}: ThreadMessagesProps) {
   const richTextHandlers = {
     ...props.richTextHandlers,
     taskList: { canEdit: false as const },
@@ -214,7 +225,7 @@ function ThreadMessages({ thread, props, comments, form, editingFirstMessage }: 
         <CommentInput
           compact
           hideToolbar
-          initiallyActive={!editingFirstMessage}
+          initiallyActive={initiallyActiveReply && !editingFirstMessage}
           currentUser={props.currentUser}
           form={form}
           richTextHandlers={props.richTextHandlers}
