@@ -6,6 +6,7 @@ import { Trans } from "../i18n";
 import i18n from "@/i18n";
 import { activityAuthorName, milestoneLink, projectLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
+import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
 const TaskMilestoneUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -30,6 +31,27 @@ const TaskMilestoneUpdating: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, task, oldMilestone, newMilestone } = content(activity);
+
+    if (hasAggregatedTasks(activity)) {
+      const sentence = groupedSentence(content(activity), page);
+      return (
+        <Trans
+          defaults={sentence}
+          values={{
+            author: activityAuthorName(activity),
+            oldName: oldMilestone?.title,
+            newName: newMilestone?.title,
+            projectName: project.name,
+          }}
+          components={{
+            tasks: <UpdatedTaskList activity={activity} paths={paths} />,
+            old: oldMilestone ? milestoneLink(paths, oldMilestone) : <React.Fragment />,
+            new: newMilestone ? milestoneLink(paths, newMilestone) : <React.Fragment />,
+            project: projectLink(paths, project),
+          }}
+        />
+      );
+    }
 
     let sentence: string;
     if (!oldMilestone && newMilestone) {
@@ -121,6 +143,33 @@ const TaskMilestoneUpdating: ActivityHandler = {
 
 function content(activity: Activity): ActivityContentTaskMilestoneUpdating {
   return activity.content as ActivityContentTaskMilestoneUpdating;
+}
+
+function groupedSentence({ oldMilestone, newMilestone }: ActivityContentTaskMilestoneUpdating, page: string) {
+  if (!oldMilestone && newMilestone) {
+    return page === "project"
+      ? i18n.t("{{author}} assigned tasks <tasks/> to milestone <new>{{newName}}</new>")
+      : i18n.t(
+          "{{author}} assigned tasks <tasks/> to milestone <new>{{newName}}</new> in <project>{{projectName}}</project>",
+        );
+  }
+  if (oldMilestone && !newMilestone) {
+    return page === "project"
+      ? i18n.t("{{author}} removed tasks <tasks/> from milestone <old>{{oldName}}</old>")
+      : i18n.t(
+          "{{author}} removed tasks <tasks/> from milestone <old>{{oldName}}</old> in <project>{{projectName}}</project>",
+        );
+  }
+  if (oldMilestone && newMilestone) {
+    return page === "project"
+      ? i18n.t("{{author}} moved tasks <tasks/> from milestone <old>{{oldName}}</old> to <new>{{newName}}</new>")
+      : i18n.t(
+          "{{author}} moved tasks <tasks/> from milestone <old>{{oldName}}</old> to <new>{{newName}}</new> in <project>{{projectName}}</project>",
+        );
+  }
+  return page === "project"
+    ? i18n.t("{{author}} updated milestones for tasks <tasks/>")
+    : i18n.t("{{author}} updated milestones for tasks <tasks/> in <project>{{projectName}}</project>");
 }
 
 export default TaskMilestoneUpdating;

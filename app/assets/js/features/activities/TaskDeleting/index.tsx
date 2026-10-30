@@ -5,6 +5,7 @@ import React from "react";
 import { Trans } from "../i18n";
 import { activityAuthorName, projectLink, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
+import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
 const TaskDeleting: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -38,6 +39,19 @@ const TaskDeleting: ActivityHandler = {
     const { taskName, project, space } = content(props.activity);
     const location = project ? projectLink(paths, project) : spaceLink(paths, space);
     const values = { author: activityAuthorName(props.activity), taskName, locationName: project?.name ?? space.name };
+
+    if (hasAggregatedTasks(props.activity)) {
+      const components = { location, tasks: <UpdatedTaskList activity={props.activity} paths={paths} /> };
+      return props.page === "project" || (props.page === "space" && !project) ? (
+        <Trans i18nKey="{{author}} deleted tasks <tasks/>" values={values} components={components} />
+      ) : (
+        <Trans
+          i18nKey="{{author}} deleted tasks <tasks/> in <location>{{locationName}}</location>"
+          values={values}
+          components={components}
+        />
+      );
+    }
 
     if (props.page === "project") {
       return <Trans i18nKey={'{{author}} deleted task "{{taskName}}"'} values={values} />;

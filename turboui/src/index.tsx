@@ -313,3 +313,5 @@ export * from "./CuratedTemplates";
 export * from "./SaasAdminAccountActionsMenu";
 
 export { TitleSetupPrompt } from "./TitleSetupPrompt";
+export { ActivityResourceList, normalizeActivityResourceEntries } from "./ActivityResourceList";
+export type { ActivityResourceEntry, ActivityResourceListProps } from "./ActivityResourceList";
