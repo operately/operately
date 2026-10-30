@@ -10,6 +10,8 @@ import { attachedRange, type DocumentInlineCommentsProps } from "./types";
 interface CommentsPanelProps {
   props: DocumentInlineCommentsProps;
   threads: InlineThread[];
+  replyThreadId: string | null;
+  onSelectThread: (id: string) => void;
   composer: FloatingComment | null;
   mobile: boolean;
   open: boolean;
@@ -17,7 +19,17 @@ interface CommentsPanelProps {
   contentRef: React.RefObject<HTMLDivElement>;
 }
 
-export function CommentsPanel({ props, threads, composer, mobile, open, onClose, contentRef }: CommentsPanelProps) {
+export function CommentsPanel({
+  props,
+  threads,
+  replyThreadId,
+  onSelectThread,
+  composer,
+  mobile,
+  open,
+  onClose,
+  contentRef,
+}: CommentsPanelProps) {
   const { t } = useTranslation();
   const missing = Boolean(
     props.activeThreadId &&
@@ -34,7 +46,8 @@ export function CommentsPanel({ props, threads, composer, mobile, open, onClose,
         thread={thread}
         props={props}
         active={thread.id === props.activeThreadId}
-        onSelect={() => props.onSelectThread(thread.id)}
+        initiallyActiveReply={thread.id === replyThreadId}
+        onSelect={() => onSelectThread(thread.id)}
       />
     ),
   }));

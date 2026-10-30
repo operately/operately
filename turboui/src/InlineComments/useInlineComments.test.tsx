@@ -32,8 +32,15 @@ beforeEach(() => {
 afterEach(() => jest.restoreAllMocks());
 jest.mock("../CommentSection", () => ({
   CommentItem: () => null,
-  CommentInput: ({ form, submitDisabled, onCancel }) => {
+  CommentInput: ({ form, submitDisabled, onCancel, initiallyActive }) => {
     const [text, setText] = React.useState("");
+    const [active, setActive] = React.useState(Boolean(initiallyActive));
+
+    React.useEffect(() => {
+      if (initiallyActive) setActive(true);
+    }, [initiallyActive]);
+
+    if (!active) return <button onClick={() => setActive(true)}>Write a reply</button>;
     return (
       <div>
         <textarea aria-label="Comment draft" value={text} onChange={(e) => setText(e.target.value)} />
@@ -164,6 +171,17 @@ it("opens resolved deep links and exposes overlapping threads without choosing o
   expect(document.querySelector('[data-test-id="inline-select-resolved"]')).toBeVisible();
 });
 
+it("activates the reply input when clicking the highlight of a thread opened through a link", () => {
+  const value = props({ activeThreadId: thread.id });
+  render(<Harness value={value} />);
+  expect(screen.queryByRole("textbox")).toBeNull();
+
+  act(() => review.editorOptions?.onThreadClick?.([thread.id]));
+
+  expect(value.onSelectThread).toHaveBeenCalledWith(thread.id);
+  expect(screen.getByRole("textbox")).toBeVisible();
+});
+
 it("allows readers to open threads without mutation controls", () => {
   render(<Harness value={props({ canComment: false, activeThreadId: "one" })} />);
   expect(document.querySelector('[data-test-id="inline-thread-one"]')).toBeVisible();
@@ -276,4 +294,25 @@ it("lets mobile readers open an unattached thread without a highlight", () => {
   view.rerender(<Harness value={{ ...value, activeThreadId: "one" }} />);
   expect(document.querySelector('[data-test-id="inline-comments-panel"]')).toBeInTheDocument();
   delete (window as Partial<Window>).matchMedia;
+});
+
+it("keeps a newly posted thread selected without activating its reply input", async () => {
+  let finish: (result: "ok") => void = () => {};
+  const request = new Promise<"ok">((resolve) => {
+    finish = resolve;
+  });
+  const value = props({ threads: [], onCreate: jest.fn(() => request) });
+  const view = render(<Harness value={value} />);
+  select();
+  click("inline-add-selection");
+  fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+  // The app refreshes threads and selects the created thread before onCreate completes.
+  view.rerender(<Harness value={{ ...value, threads: [thread], activeThreadId: thread.id }} />);
+  await act(async () => finish("ok"));
+  expect(document.querySelector('[data-test-id="inline-thread-one"]')).toBeVisible();
+  expect(document.querySelector('[data-test-id="inline-select-one"]')).toBeNull();
+  expect(screen.queryByRole("textbox")).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Write a reply" }));
+  expect(screen.getByRole("textbox")).toBeVisible();
 });
