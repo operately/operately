@@ -122,8 +122,8 @@ export function createInlineCommentsPlugin(options: InlineCommentsOptions): Plug
               "data-inline-thread": range.id,
               class:
                 range.id === current?.activeThreadId
-                  ? "bg-surface-highlight border-b-2 border-content-accent"
-                  : "bg-surface-bg-highlight border-b border-content-subtle",
+                  ? "!bg-yellow-200 dark:!bg-yellow-800"
+                  : "bg-yellow-100 dark:bg-yellow-900",
             }),
           ),
         );
