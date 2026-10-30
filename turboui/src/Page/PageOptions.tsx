@@ -4,6 +4,8 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Page } from ".";
 import { match } from "ts-pattern";
 import { SecondaryButton } from "../Button";
+import { UnstyledButton } from "../Button/UnstalyedButton";
+import { Tooltip } from "../Tooltip";
 import { DivLink } from "../Link";
 import { IconX, IconDots } from "../icons";
 import { createTestId } from "../TestableElement";
@@ -50,12 +52,35 @@ function OutsideButtons({ options }: { options: Page.Option[] }) {
   return (
     <div className="flex items-center gap-2">
       {options.map((option, index) =>
-        match(option.type)
-          .with("link", () => <OutsideLink key={index} {...option} />)
-          .with("action", () => <OutsideAction key={index} {...option} />)
-          .exhaustive(),
+        option.iconOnly ? (
+          <OutsideIcon key={index} {...option} />
+        ) : (
+          match(option.type)
+            .with("link", () => <OutsideLink key={index} {...option} />)
+            .with("action", () => <OutsideAction key={index} {...option} />)
+            .exhaustive()
+        ),
       )}
     </div>
+  );
+}
+
+function OutsideIcon(props: Page.Option) {
+  return (
+    <Tooltip content={props.label} size="sm">
+      <span className="flex">
+        <UnstyledButton
+          linkTo={props.type === "link" ? props.link : undefined}
+          onClick={props.type === "action" ? props.onClick : undefined}
+          ariaLabel={props.label}
+          testId={props.testId ?? "page-option-" + createTestId(props.label)}
+          className="p-1 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-md focus-visible:ring-2 focus-visible:ring-brand-1"
+        >
+          {React.createElement(props.icon, { size: 22, "aria-hidden": true })}
+          <span className="sr-only">{props.label}</span>
+        </UnstyledButton>
+      </span>
+    </Tooltip>
   );
 }
 
@@ -166,15 +191,11 @@ function Close({ onClick }) {
 }
 
 function splitOptions(isBigScreen: boolean, options: Page.Option[]): [Page.Option[], Page.Option[]] {
-  if (!isBigScreen) {
-    return [[], options];
-  }
-
   const outside: Page.Option[] = [];
   const inside: Page.Option[] = [];
 
   for (const option of options) {
-    if (option.keepOutsideOnBigScreen) {
+    if (option.keepOutside || (isBigScreen && option.keepOutsideOnBigScreen)) {
       outside.push(option);
     } else {
       inside.push(option);

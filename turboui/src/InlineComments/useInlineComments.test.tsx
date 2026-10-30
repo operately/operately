@@ -130,6 +130,39 @@ function click(testId: string) {
   fireEvent.click(element);
 }
 
+it("opens all threads in a desktop panel, including resolved and unattached threads", () => {
+  const value = props({
+    canComment: false,
+    threads: [
+      thread,
+      { ...thread, id: "resolved", resolvedAt: "2026-10-30T12:00:00Z" },
+      {
+        ...thread,
+        id: "unattached",
+        anchor: { ...thread.anchor, status: "unattached", currentFrom: null, currentTo: null },
+      },
+    ],
+  });
+  render(<Harness value={value} />);
+  expect(document.querySelector('[data-test-id="inline-thread-resolved"]')).toBeNull();
+  act(() => review.openAllComments?.());
+  const panel = document.querySelector('[data-test-id="inline-comments-panel"]');
+  expect(panel).toBeVisible();
+  expect(panel?.querySelectorAll("[data-resolved]")).toHaveLength(3);
+  expect(panel?.querySelector('[data-test-id="inline-thread-resolved"]')).toBeVisible();
+  expect(panel?.querySelector('[data-test-id="inline-unattached"]')).toBeVisible();
+  expect(screen.queryByRole("textbox")).toBeNull();
+  click("slide-in-close-button");
+  expect(document.querySelector('[data-test-id="inline-comments-panel"]')).toBeNull();
+  expect(document.querySelector('[data-test-id="inline-thread-resolved"]')).toBeNull();
+});
+
+it("shows an empty state in the all-comments panel", () => {
+  render(<Harness value={props({ threads: [] })} />);
+  act(() => review.openAllComments?.());
+  expect(document.querySelector('[data-test-id="inline-comments-empty"]')).toBeVisible();
+});
+
 it("captures the selection and preserves the draft through version conflicts", async () => {
   const onCreate = jest.fn(async () => "conflict" as const);
   const value = props({ onCreate });

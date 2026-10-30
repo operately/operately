@@ -46,6 +46,56 @@ async function selectPassage() {
   await page.locator('[data-test-id="inline-add-selection"]').click();
 }
 
+test.each([1440, 390])("header comments button opens all threads at %s px", async (width) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await visit();
+  const toggle = page.locator('[data-test-id="inline-comments-toggle"]');
+  const menu = page.locator('[data-test-id="options-button"]');
+  const toggleBox = await toggle.boundingBox();
+  const menuBox = await menu.boundingBox();
+  assert.ok(toggleBox && menuBox && toggleBox.x + toggleBox.width <= menuBox.x);
+  if (width >= 1024) {
+    const editBox = await page.locator('[data-test-id="edit-document-link"]').boundingBox();
+    assert.ok(editBox && editBox.x + editBox.width <= toggleBox.x);
+  }
+  assert.equal(await page.locator('[data-test-id="inline-thread-resolved"]').count(), 0);
+  await toggle.click();
+  const dialog = await waitForMobileDialog();
+  assert.equal(await dialog.locator("[data-resolved]").count(), 4);
+  assert.equal(await dialog.locator('div[data-test-id^="comment-"][id]').count(), 4);
+  assert.equal(await dialog.locator('[data-test-id="inline-unattached"]').count(), 1);
+  const resolvedGroup = dialog.locator('[data-test-id="inline-comments-resolved"]');
+  await resolvedGroup.locator('[data-test-id="inline-thread-resolved"]').waitFor();
+  const resolved = dialog.locator('[data-test-id="inline-thread-resolved"]');
+  await resolved.hover();
+  await resolved.locator('[data-test-id="inline-resolve-resolved"]').click();
+  await dialog.locator('[data-test-id="inline-thread-resolved"][data-resolved="false"]').waitFor();
+  assert.equal(await resolvedGroup.count(), 0);
+  await dialog.locator('[data-test-id="slide-in-close-button"]').focus();
+  await page.keyboard.press("Escape");
+  await dialog.waitFor({ state: "detached" });
+  assert.equal(await toggle.evaluate((element) => element === document.activeElement), true);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+});
+
+test("all-comments panel supports empty documents and read-only viewers", async () => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await visit("empty");
+  await page.locator('[data-test-id="inline-comments-toggle"]').click();
+  const dialog = await waitForMobileDialog();
+  await dialog.locator('[data-test-id="inline-comments-empty"]').waitFor();
+  await visit("read-only");
+  await page.locator('[data-test-id="inline-comments-toggle"]').click();
+  await waitForMobileDialog();
+  assert.equal(await dialog.locator("[data-resolved]").count(), 4);
+  assert.equal(
+    await dialog
+      .locator('[contenteditable="true"], [data-test-id^="inline-resolve-"], [data-test-id="add-comment"]')
+      .count(),
+    0,
+  );
+});
+
 test("select, post, reply, resolve, and reopen using the actual editor", async () => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await visit();
