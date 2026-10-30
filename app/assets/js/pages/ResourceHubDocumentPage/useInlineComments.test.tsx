@@ -220,3 +220,20 @@ describe.each(["create", "delete"] as const)("pending %s navigation", (action) =
     },
   );
 });
+
+it("uses preloaded threads on the first render without refetching on mount", () => {
+  client.setQueryData(
+    Api.inline_threads.listQueryKey({
+      resourceType: "resource_hub_document",
+      resourceId: document.id,
+    }),
+    { threads: [thread] },
+  );
+  const { result } = renderHook(() => useDocumentInlineComments(document), {
+    wrapper: Wrapper,
+    initialProps: undefined,
+  });
+  expect(result.current?.threads).toEqual([thread]);
+  expect(result.current?.loading).toBe(false);
+  expect(fetchThreads).not.toHaveBeenCalled();
+});
