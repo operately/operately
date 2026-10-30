@@ -3,6 +3,7 @@ import { configure, fireEvent, render, screen, within } from "@testing-library/r
 import { MemoryRouter } from "react-router";
 import { ActivityResourceList, ActivityResourceEntry } from ".";
 import { i18n, setupTestCatalog } from "../../test/i18n";
+import { assertPresent } from "../utils/assertions";
 
 setupTestCatalog();
 configure({ testIdAttribute: "data-test-id" });
@@ -51,15 +52,19 @@ test("bounds thirty resources and their details, expands and collapses with a st
 
 test("normalizes duplicate keys while keeping equal literal names and associated details", () => {
   const input = entries(4).map((entry) => ({ ...entry, name: "<deleted> & identical", path: undefined }));
+  const firstEntry = input[0];
+  assertPresent(firstEntry, "The fixture must contain an entry to duplicate");
   render(
     <MemoryRouter>
-      <ActivityResourceList entries={[...input, { ...input[0]!, details: <span>Later change</span> }]} locale="en" />
+      <ActivityResourceList entries={[...input, { ...firstEntry, details: <span>Later change</span> }]} locale="en" />
     </MemoryRouter>,
   );
   expect(screen.queryAllByRole("link")).toHaveLength(0);
   expect(screen.getAllByTestId("activity-resource-entry")).toHaveLength(3);
   expect(screen.getByRole("button").textContent).toContain("1");
-  expect(within(screen.getAllByTestId("activity-resource-entry")[0]!).getByText("Later change")).toBeTruthy();
+  const firstRenderedEntry = screen.getAllByTestId("activity-resource-entry")[0];
+  assertPresent(firstRenderedEntry, "The list must render the first resource entry");
+  expect(within(firstRenderedEntry).getByText("Later change")).toBeTruthy();
   fireEvent.click(screen.getByRole("button"));
   expect(screen.getAllByTestId("activity-resource-entry")).toHaveLength(4);
 });
@@ -72,7 +77,9 @@ test("expansion is independent and survives growing entries and language switchi
     </MemoryRouter>
   );
   const { rerender } = render(view(4, "en"));
-  fireEvent.click(screen.getAllByRole("button")[0]!);
+  const firstToggle = screen.getAllByRole("button")[0];
+  assertPresent(firstToggle, "The first list must have an expansion toggle");
+  fireEvent.click(firstToggle);
   rerender(view(30, "pt-BR"));
   await React.act(async () => {
     await i18n.changeLanguage("pt-BR");

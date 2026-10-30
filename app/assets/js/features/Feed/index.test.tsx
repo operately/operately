@@ -2,6 +2,7 @@
 import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { Activity } from "@/api";
+import { assertPresent } from "@/utils/assertions";
 import { Feed } from ".";
 
 jest.mock("../../../../../turboui/node_modules/react", () => jest.requireActual("react"));
@@ -176,7 +177,8 @@ it.each(["task_status_updating", "project_milestone_creation"])(
     try {
       await act(async () => root.render(renderPage(4)));
       expect(container.querySelectorAll("a")).toHaveLength(3);
-      const toggle = container.querySelector<HTMLButtonElement>("button")!;
+      const toggle = container.querySelector<HTMLButtonElement>("button");
+      assertPresent(toggle, "The grouped activity must have an expansion toggle");
       await act(async () => toggle.click());
       expect(container.querySelectorAll("a")).toHaveLength(4);
       await act(async () => root.render(renderPage(30)));

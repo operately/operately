@@ -1,5 +1,6 @@
 import React from "react";
 import { aggregateConsecutiveFeedActivities } from "@/models/activities";
+import { assertPresent } from "@/utils/assertions";
 import type { ActivityHandler } from "./interfaces";
 import { feedTestActivity, feedTestPaths, renderFeedTest } from "./testSupport";
 
@@ -26,7 +27,8 @@ export function testCompactHandler(handler: ActivityHandler, action: string) {
     `${action} keeps author, context, and bounded entries on %s feeds`,
     async (page) => {
       const batch = Array.from({ length: 30 }, (_, index) => feedTestActivity(action, index));
-      const activity = aggregateConsecutiveFeedActivities(batch)[0]!;
+      const activity = aggregateConsecutiveFeedActivities(batch)[0];
+      assertPresent(activity, "The batch must produce an aggregated activity");
       const view = await renderFeedTest(<>{handler.FeedItemTitle({ activity, page, paths: feedTestPaths })}</>);
       try {
         expect(view.container.querySelectorAll("[data-test-id=activity-resource-entry]")).toHaveLength(3);
