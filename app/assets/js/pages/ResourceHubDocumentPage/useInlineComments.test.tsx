@@ -134,6 +134,18 @@ it("returns a version conflict and refreshes the document without navigating", a
   expect(mockNavigate).not.toHaveBeenCalled();
 });
 
+it.each(["thread", null])("does not navigate when the selected thread is already %s", async (id) => {
+  mockLocation = { ...mockLocation, search: id ? `?inlineThread=${id}` : "" };
+  const { result } = renderHook(() => useDocumentInlineComments(document), {
+    wrapper: Wrapper,
+    initialProps: undefined,
+  });
+  await waitFor(() => expect(result.current?.loading).toBe(false));
+  act(() => result.current?.onSelectThread(id));
+  expect(mockNavigate).not.toHaveBeenCalled();
+  expect(fetchThreads).toHaveBeenCalledTimes(1);
+});
+
 it("clears a deleted empty thread selection while preserving the ordinary comment hash", async () => {
   jest
     .spyOn(Api.inline_threads, "deleteMessageMutationOptions")
@@ -162,7 +174,7 @@ describe.each(["create", "delete"] as const)("pending %s navigation", (action) =
       });
       const create = jest.fn(async () => {
         await pending;
-        return { thread };
+        return { thread: { ...thread, id: "new-thread" } };
       });
       const remove = jest.fn(async () => {
         await pending;
@@ -211,7 +223,11 @@ describe.each(["create", "delete"] as const)("pending %s navigation", (action) =
       if (destination === "unchanged") {
         expect(mockNavigate).toHaveBeenCalledTimes(1);
         expect(mockNavigate).toHaveBeenCalledWith(
-          { pathname: "/documents/doc", search: action === "create" ? "inlineThread=thread" : "", hash: "#message" },
+          {
+            pathname: "/documents/doc",
+            search: action === "create" ? "inlineThread=new-thread" : "",
+            hash: "#message",
+          },
           { replace: true, preventScrollReset: true },
         );
       } else {
