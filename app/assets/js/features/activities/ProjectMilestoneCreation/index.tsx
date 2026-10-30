@@ -6,6 +6,7 @@ import { Trans } from "../i18n";
 import i18n from "@/i18n";
 import { activityAuthorName, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
+import { hasAggregatedMilestones, UpdatedMilestoneGroup } from "../milestoneUpdatedResources";
 
 const ProjectMilestoneCreation: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -35,6 +36,7 @@ const ProjectMilestoneCreation: ActivityHandler = {
   },
 
   FeedItemTitle(props: FeedItemProps) {
+    if (hasAggregatedMilestones(props.activity)) return <UpdatedMilestoneGroup {...props} />;
     const { paths } = props;
     const project = content(props.activity).project;
     const milestoneName = content(props.activity).milestoneName;

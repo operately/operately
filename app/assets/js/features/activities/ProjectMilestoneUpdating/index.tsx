@@ -9,6 +9,7 @@ import { activityAuthorName, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { DateField } from "turboui";
 import { parseContextualDate } from "@/models/contextualDates";
+import { hasAggregatedMilestones, UpdatedMilestoneGroup } from "../milestoneUpdatedResources";
 
 const ProjectMilestoneUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -32,6 +33,27 @@ const ProjectMilestoneUpdating: ActivityHandler = {
   },
 
   FeedItemTitle(props: FeedItemProps) {
+    if (hasAggregatedMilestones(props.activity))
+      return (
+        <UpdatedMilestoneGroup
+          {...props}
+          detail={(entry) => (
+            <>
+              {content(entry).oldMilestoneName !== content(entry).newMilestoneName && (
+                <Trans
+                  i18nKey="{{author}} updated the milestone {{oldName}} to {{newName}}"
+                  values={{
+                    author: activityAuthorName(entry),
+                    oldName: content(entry).oldMilestoneName,
+                    newName: content(entry).newMilestoneName,
+                  }}
+                />
+              )}
+              <ProjectMilestoneDetail activity={entry} />
+            </>
+          )}
+        />
+      );
     const { paths } = props;
     const project = content(props.activity).project!;
     const oldName = content(props.activity).oldMilestoneName!;
@@ -55,58 +77,7 @@ const ProjectMilestoneUpdating: ActivityHandler = {
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
-    const data = content(props.activity);
-
-    const oldTimeframe = data.oldTimeframe;
-    const newTimeframe = data.newTimeframe;
-
-    // No timeframes to compare
-    if (!oldTimeframe && !newTimeframe) return null;
-
-    // Added timeframe/date
-    if (!oldTimeframe?.contextualEndDate && newTimeframe?.contextualEndDate) {
-      return (
-        <div className="text-sm text-gray-600 flex gap-1">
-          <Trans
-            i18nKey="Date added: <date/>"
-            components={{
-              date: <DateField date={parseContextualDate(newTimeframe.contextualEndDate)} readonly hideCalendarIcon />,
-            }}
-          />
-        </div>
-      );
-    }
-
-    // Removed timeframe/date
-    if (oldTimeframe?.contextualEndDate && !newTimeframe?.contextualEndDate) {
-      return (
-        <div className="text-sm text-gray-600">
-          <Trans i18nKey="Date removed" />
-        </div>
-      );
-    }
-
-    if (oldTimeframe?.contextualEndDate && newTimeframe?.contextualEndDate) {
-      const oldDateValue = oldTimeframe.contextualEndDate.value;
-      const newDateValue = newTimeframe.contextualEndDate.value;
-
-      // Only show date change if the values are actually different
-      if (oldDateValue !== newDateValue) {
-        return (
-          <div className="text-sm text-gray-600 flex gap-1">
-            <Trans
-              i18nKey="Date changed from <old/> to <new/>"
-              components={{
-                old: <DateField date={parseContextualDate(oldTimeframe.contextualEndDate)} readonly hideCalendarIcon />,
-                new: <DateField date={parseContextualDate(newTimeframe.contextualEndDate)} readonly hideCalendarIcon />,
-              }}
-            />
-          </div>
-        );
-      }
-    }
-
-    return null;
+    return hasAggregatedMilestones(props.activity) ? null : <ProjectMilestoneDetail activity={props.activity} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -129,6 +100,61 @@ const ProjectMilestoneUpdating: ActivityHandler = {
     return null;
   },
 };
+
+function ProjectMilestoneDetail(props: { activity: Activity }) {
+  const data = content(props.activity);
+
+  const oldTimeframe = data.oldTimeframe;
+  const newTimeframe = data.newTimeframe;
+
+  // No timeframes to compare
+  if (!oldTimeframe && !newTimeframe) return null;
+
+  // Added timeframe/date
+  if (!oldTimeframe?.contextualEndDate && newTimeframe?.contextualEndDate) {
+    return (
+      <div className="text-sm text-content-base flex flex-wrap gap-1">
+        <Trans
+          i18nKey="Date added: <date/>"
+          components={{
+            date: <DateField date={parseContextualDate(newTimeframe.contextualEndDate)} readonly hideCalendarIcon />,
+          }}
+        />
+      </div>
+    );
+  }
+
+  // Removed timeframe/date
+  if (oldTimeframe?.contextualEndDate && !newTimeframe?.contextualEndDate) {
+    return (
+      <div className="text-sm text-content-base">
+        <Trans i18nKey="Date removed" />
+      </div>
+    );
+  }
+
+  if (oldTimeframe?.contextualEndDate && newTimeframe?.contextualEndDate) {
+    const oldDateValue = oldTimeframe.contextualEndDate.value;
+    const newDateValue = newTimeframe.contextualEndDate.value;
+
+    // Only show date change if the values are actually different
+    if (oldDateValue !== newDateValue) {
+      return (
+        <div className="text-sm text-content-base flex flex-wrap gap-1">
+          <Trans
+            i18nKey="Date changed from <old/> to <new/>"
+            components={{
+              old: <DateField date={parseContextualDate(oldTimeframe.contextualEndDate)} readonly hideCalendarIcon />,
+              new: <DateField date={parseContextualDate(newTimeframe.contextualEndDate)} readonly hideCalendarIcon />,
+            }}
+          />
+        </div>
+      );
+    }
+  }
+
+  return null;
+}
 
 function content(activity: Activity): ActivityContentProjectMilestoneUpdating {
   return activity.content as ActivityContentProjectMilestoneUpdating;

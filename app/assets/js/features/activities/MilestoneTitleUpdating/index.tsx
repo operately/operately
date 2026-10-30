@@ -7,6 +7,7 @@ import { Trans } from "../i18n";
 import i18n from "@/i18n";
 import { activityAuthorName, milestoneLink, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
+import { hasAggregatedMilestones, UpdatedMilestoneGroup } from "../milestoneUpdatedResources";
 
 const MilestoneTitleUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -30,6 +31,29 @@ const MilestoneTitleUpdating: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
+    if (hasAggregatedMilestones(activity))
+      return (
+        <UpdatedMilestoneGroup
+          activity={activity}
+          page={page}
+          paths={paths}
+          detail={(entry) => (
+            <>
+              <span className="block">
+                <Trans
+                  i18nKey="{{author}} updated the milestone {{oldName}} to {{newName}}"
+                  values={{
+                    author: activityAuthorName(entry),
+                    oldName: content(entry).oldTitle,
+                    newName: content(entry).newTitle,
+                  }}
+                />
+              </span>
+              <MilestoneTitleDetail activity={entry} />
+            </>
+          )}
+        />
+      );
     const { project, milestone, newTitle } = content(activity);
     const title = milestone ? milestoneLink(paths, milestone, newTitle) : <React.Fragment />;
     const values = {
@@ -58,15 +82,7 @@ const MilestoneTitleUpdating: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
-    const { oldTitle } = content(activity);
-
-    return (
-      <Trans
-        i18nKey={'Previously, the milestone was called <name>"{{oldTitle}}"</name>.'}
-        values={{ oldTitle }}
-        components={{ name: <strong /> }}
-      />
-    );
+    return hasAggregatedMilestones(activity) ? null : <MilestoneTitleDetail activity={activity} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -94,6 +110,16 @@ const MilestoneTitleUpdating: ActivityHandler = {
 
 function content(activity: Activity): ActivityContentMilestoneTitleUpdating {
   return activity.content as ActivityContentMilestoneTitleUpdating;
+}
+
+function MilestoneTitleDetail({ activity }: { activity: Activity }) {
+  return (
+    <Trans
+      i18nKey={'Previously, the milestone was called <name>"{{oldTitle}}"</name>.'}
+      values={{ oldTitle: content(activity).oldTitle }}
+      components={{ name: <strong /> }}
+    />
+  );
 }
 
 export default MilestoneTitleUpdating;

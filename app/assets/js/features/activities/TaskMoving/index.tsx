@@ -6,6 +6,7 @@ import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Trans } from "../i18n";
 import i18n from "@/i18n";
 import { activityAuthorName, projectLink, spaceLink, taskLink } from "../feedItemLinks";
+import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
 const TaskMoving: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -60,6 +61,19 @@ const TaskMoving: ActivityHandler = {
         (data.destinationType === "project" ? i18n.t("a project") : i18n.t("a space")),
     };
     const components = { task: movedTask, destination: destinationLabel(paths, data) };
+    if (hasAggregatedTasks(activity)) {
+      return (
+        <Trans
+          i18nKey="{{author}} moved tasks <tasks/> from <origin>{{originName}}</origin> to <destination>{{destinationName}}</destination>"
+          values={{ ...values, originName: data.originProject?.name ?? data.originSpace?.name }}
+          components={{
+            ...components,
+            origin: originLabel(paths, data),
+            tasks: <UpdatedTaskList activity={activity} paths={paths} />,
+          }}
+        />
+      );
+    }
     return data.task ? (
       <Trans
         i18nKey="{{author}} moved the task <task>{{taskName}}</task> to <destination>{{destinationName}}</destination>"
@@ -76,6 +90,7 @@ const TaskMoving: ActivityHandler = {
   },
 
   FeedItemContent({ activity, paths }: FeedItemProps) {
+    if (hasAggregatedTasks(activity)) return null;
     const data = content(activity);
 
     return (

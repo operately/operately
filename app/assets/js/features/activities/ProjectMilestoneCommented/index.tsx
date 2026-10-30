@@ -10,6 +10,8 @@ import { activityAuthorName, commentPath, milestoneCommentLink, milestoneLink, p
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
+import { hasAggregatedMilestones, UpdatedMilestoneGroup } from "../milestoneUpdatedResources";
+import { isBodylessMilestoneLifecycle } from "@/models/activities";
 
 const ProjectMilestoneCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -39,6 +41,8 @@ const ProjectMilestoneCommented: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
+    if (hasAggregatedMilestones(activity) && isBodylessMilestoneLifecycle(activity))
+      return <UpdatedMilestoneGroup activity={activity} page={page} paths={paths} />;
     const { comment, commentAction, milestone, project } = content(activity);
     let sentence: string;
     switch (commentAction) {

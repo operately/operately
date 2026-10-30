@@ -4,7 +4,7 @@ import type { Activity } from "@/models/activities";
 import * as People from "@/models/people";
 import { Paths } from "@/routes/paths";
 import React from "react";
-import { Trans } from "react-i18next";
+import { Trans } from "../i18n";
 import { Link } from "turboui";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";

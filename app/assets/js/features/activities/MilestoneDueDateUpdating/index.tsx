@@ -9,6 +9,7 @@ import { activityAuthorName, milestoneLink, projectLink } from "../feedItemLinks
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { DateField } from "turboui";
 import { parseContextualDate } from "@/models/contextualDates";
+import { hasAggregatedMilestones, UpdatedMilestoneGroup } from "../milestoneUpdatedResources";
 
 const MilestoneDueDateUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -32,6 +33,15 @@ const MilestoneDueDateUpdating: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
+    if (hasAggregatedMilestones(activity))
+      return (
+        <UpdatedMilestoneGroup
+          activity={activity}
+          page={page}
+          paths={paths}
+          detail={(entry) => <MilestoneDueDateDetail activity={entry} />}
+        />
+      );
     const { project, milestone, milestoneName, newDueDate } = content(activity);
     const title = milestone ? milestoneLink(paths, milestone, milestoneName) : <React.Fragment />;
     const sentence =
@@ -60,53 +70,7 @@ const MilestoneDueDateUpdating: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
-    const { oldDueDate, newDueDate } = content(activity);
-
-    if (!oldDueDate && newDueDate) {
-      return (
-        <span>
-          <Trans
-            i18nKey="Due date was set to <date><value/></date>."
-            components={{
-              date: <span className="inline-block" />,
-              value: <DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon />,
-            }}
-          />
-        </span>
-      );
-    }
-
-    if (oldDueDate && !newDueDate) {
-      return (
-        <span>
-          <Trans
-            i18nKey="Due date <date><value/></date> was removed."
-            components={{
-              date: <span className="inline-block" />,
-              value: <DateField date={parseContextualDate(oldDueDate)} readonly hideCalendarIcon />,
-            }}
-          />
-        </span>
-      );
-    }
-
-    if (oldDueDate && newDueDate) {
-      return (
-        <span>
-          <Trans
-            i18nKey="Due date was changed from <old><oldDate/></old> to <new><newDate/></new>."
-            components={{
-              old: <span className="inline-block" />,
-              new: <span className="inline-block" />,
-              oldDate: <DateField date={parseContextualDate(oldDueDate)} readonly hideCalendarIcon />,
-              newDate: <DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon />,
-            }}
-          />
-        </span>
-      );
-    }
-
-    return <Trans i18nKey="Due date was updated." />;
+    return hasAggregatedMilestones(activity) ? null : <MilestoneDueDateDetail activity={activity} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -135,6 +99,56 @@ const MilestoneDueDateUpdating: ActivityHandler = {
     return content(props.activity).project!.name!;
   },
 };
+
+function MilestoneDueDateDetail({ activity }: { activity: Activity }) {
+  const { oldDueDate, newDueDate } = content(activity);
+
+  if (!oldDueDate && newDueDate) {
+    return (
+      <span>
+        <Trans
+          i18nKey="Due date was set to <date><value/></date>."
+          components={{
+            date: <span className="inline-block" />,
+            value: <DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon />,
+          }}
+        />
+      </span>
+    );
+  }
+
+  if (oldDueDate && !newDueDate) {
+    return (
+      <span>
+        <Trans
+          i18nKey="Due date <date><value/></date> was removed."
+          components={{
+            date: <span className="inline-block" />,
+            value: <DateField date={parseContextualDate(oldDueDate)} readonly hideCalendarIcon />,
+          }}
+        />
+      </span>
+    );
+  }
+
+  if (oldDueDate && newDueDate) {
+    return (
+      <span>
+        <Trans
+          i18nKey="Due date was changed from <old><oldDate/></old> to <new><newDate/></new>."
+          components={{
+            old: <span className="inline-block" />,
+            new: <span className="inline-block" />,
+            oldDate: <DateField date={parseContextualDate(oldDueDate)} readonly hideCalendarIcon />,
+            newDate: <DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon />,
+          }}
+        />
+      </span>
+    );
+  }
+
+  return <Trans i18nKey="Due date was updated." />;
+}
 
 function content(activity: Activity): ActivityContentMilestoneDueDateUpdating {
   return activity.content as ActivityContentMilestoneDueDateUpdating;
