@@ -42,8 +42,8 @@ defmodule Operately.Comments.InlineThreadNotificationsTest do
     assert Enum.sort(InlineThreadNotifications.recipients(reply)) == Enum.sort([ctx.creator.id, ctx.subscriber.id])
 
     {:ok, resolved} = InlineThreadResolving.run(ctx.creator, ctx.thread)
-    {:ok, replied} = InlineThreadReplying.run(ctx.subscriber, resolved, RichText.rich_text("Reply while resolved"))
-    assert replied.resolved_at == resolved.resolved_at
+    {:ok, reopened} = InlineThreadReopening.run(ctx.creator, resolved)
+    {:ok, _} = InlineThreadReplying.run(ctx.subscriber, reopened, RichText.rich_text("Reply after reopening"))
     assert Enum.sort(InlineThreadNotifications.recipients(activity(ctx.thread, ctx.subscriber.id))) == Enum.sort([ctx.creator.id, ctx.member.id])
   end
 
