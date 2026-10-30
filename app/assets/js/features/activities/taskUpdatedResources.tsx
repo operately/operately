@@ -1,127 +1,101 @@
-import type {
-  ActivityContentTaskAssigneeUpdating,
-  ActivityContentTaskDueDateUpdating,
-  ActivityContentTaskAdding,
-  ActivityContentTaskNameUpdating,
-  ActivityContentTaskStatusUpdating,
-} from "@/api";
+import type * as Api from "@/api";
 import { useLocale } from "@/contexts/TimezoneContext";
 import type { Activity } from "@/models/activities";
 import * as Activities from "@/models/activities";
 import type { Paths } from "@/routes/paths";
 import * as React from "react";
-import { Link } from "turboui";
-
-interface UpdatedTask {
-  key: string;
-  name: string;
-  path: string;
-}
-
-interface ListPart {
-  type: "element" | "literal";
-  value: string;
-}
+import { ActivityResourceList, type ActivityResourceEntry } from "turboui";
+import i18n from "@/i18n";
 
 export function UpdatedTaskList({ activity, paths }: { activity: Activity; paths: Paths }) {
   const locale = useLocale();
-  const tasks = updatedTasksForFeed(activity, paths);
-  const parts = listParts(tasks.length, locale);
-
-  return (
-    <>
-      {parts.map((part, index) => {
-        if (part.type === "literal") return <React.Fragment key={index}>{part.value}</React.Fragment>;
-
-        const task = tasks[Number(part.value)];
-        if (!task) return null;
-
-        return (
-          <Link key={task.key} to={task.path}>
-            {task.name}
-          </Link>
-        );
-      })}
-    </>
-  );
+  return <ActivityResourceList entries={updatedTasksForFeed(activity, paths)} locale={locale} />;
 }
 
 export function hasAggregatedTasks(activity: Activity): boolean {
   return Activities.getAggregatedActivities(activity).length > 1;
 }
 
-function updatedTasksForFeed(activity: Activity, paths: Paths): UpdatedTask[] {
+export function updatedTasksForFeed(activity: Activity, paths: Paths): ActivityResourceEntry[] {
   const seen = new Set<string>();
-
   return Activities.getAggregatedActivities(activity)
     .slice()
     .sort((a, b) => (a.insertedAt || "").localeCompare(b.insertedAt || ""))
-    .map((activity) => updatedTask(activity, paths))
-    .filter((task): task is UpdatedTask => task !== null)
+    .map((activity, index) => updatedTask(activity, paths, index))
+    .filter((task): task is ActivityResourceEntry => task !== null)
     .filter((task) => {
       if (seen.has(task.key)) return false;
-
       seen.add(task.key);
       return true;
     });
 }
 
-function updatedTask(activity: Activity, paths: Paths): UpdatedTask | null {
-  const data = taskUpdateContent(activity);
-  const task = data?.task;
-  const project = data?.project;
-  const space = data?.space;
-
-  if (!task?.id) return null;
-
-  let path: string;
-
-  if (project) {
-    path = paths.taskPath(task.id);
-  } else if (space?.id) {
-    path = paths.spaceKanbanPath(space.id, { taskId: task.id });
-  } else {
-    return null;
+function updatedTask(activity: Activity, paths: Paths, index: number): ActivityResourceEntry | null {
+  const fallbackKey = `activity:${activity.id ?? index}`;
+  if (activity.action === "task_deleting") {
+    const content = activity.content as Api.ActivityContentTaskDeleting;
+    return { key: fallbackKey, name: content.taskName };
+  }
+  if (activity.action === "task_moving") {
+    const content = activity.content as Api.ActivityContentTaskMoving;
+    const task = content.task;
+    const path = !task?.id
+      ? undefined
+      : content.destinationType === "project" && content.destinationProject?.id
+        ? paths.taskPath(task.id)
+        : content.destinationType === "space" && content.destinationSpace?.id
+          ? paths.spaceKanbanPath(content.destinationSpace.id, { taskId: task.id })
+          : undefined;
+    return { key: task?.id ?? fallbackKey, name: task?.name ?? content.taskName, path };
+  }
+  if (activity.action === "task_milestone_updating") {
+    const content = activity.content as Api.ActivityContentTaskMilestoneUpdating;
+    return {
+      key: content.task?.id ?? fallbackKey,
+      name: content.task?.name ?? i18n.t("task"),
+      path: content.task?.id && content.project?.id ? paths.taskPath(content.task.id) : undefined,
+    };
+  }
+  if (activity.action === "task_archive_updating") {
+    const content = activity.content as Api.ActivityContentTaskArchiveUpdating;
+    return {
+      key: content.task?.id ?? fallbackKey,
+      name: content.task?.name ?? content.name,
+      path: taskPath(content, paths),
+    };
   }
 
-  return {
-    key: task.id,
-    name: task.name,
-    path,
-  };
+  const content = taskUpdateContent(activity);
+  if (!content?.task?.id) return null;
+  const path = taskPath(content, paths);
+  if (!path) return null;
+  return { key: content.task.id, name: content.task.name, path };
 }
 
-function taskUpdateContent(
-  activity: Activity,
-):
-  | ActivityContentTaskAssigneeUpdating
-  | ActivityContentTaskDueDateUpdating
-  | ActivityContentTaskAdding
-  | ActivityContentTaskNameUpdating
-  | ActivityContentTaskStatusUpdating
-  | undefined {
+function taskPath(
+  content: { task: Api.Task | null; project?: Api.Project | null; space?: Api.Space | null },
+  paths: Paths,
+) {
+  if (!content.task?.id) return undefined;
+  // Preserve the original five consumers' project-presence semantics.
+  if (content.project) return paths.taskPath(content.task.id);
+  if (content.space?.id) return paths.spaceKanbanPath(content.space.id, { taskId: content.task.id });
+  return undefined;
+}
+
+function taskUpdateContent(activity: Activity) {
   switch (activity.action) {
     case "task_adding":
-      return activity.content as ActivityContentTaskAdding;
+      return activity.content as Api.ActivityContentTaskAdding;
     case "task_assignee_updating":
-      return activity.content as ActivityContentTaskAssigneeUpdating;
+      return activity.content as Api.ActivityContentTaskAssigneeUpdating;
     case "task_due_date_updating":
-      return activity.content as ActivityContentTaskDueDateUpdating;
+      return activity.content as Api.ActivityContentTaskDueDateUpdating;
     case "task_name_updating":
-      return activity.content as ActivityContentTaskNameUpdating;
+      return activity.content as Api.ActivityContentTaskNameUpdating;
     case "task_status_updating":
-      return activity.content as ActivityContentTaskStatusUpdating;
+      return activity.content as Api.ActivityContentTaskStatusUpdating;
     default:
       return undefined;
   }
-}
-
-function listParts(count: number, locale: string): ListPart[] {
-  const items = Array.from({ length: count }, (_, index) => String(index));
-  const listFormat = new Intl.ListFormat(locale, { style: "long", type: "conjunction" });
-
-  return listFormat.formatToParts(items).map((part) => ({
-    type: part.type === "element" ? "element" : "literal",
-    value: part.value,
-  }));
 }
