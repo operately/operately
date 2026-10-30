@@ -6,17 +6,17 @@ import Api, { type ResourceHubDocument, type InlineThread } from "@/api";
 import { renderHook, waitFor } from "@/__tests__/renderHook";
 import { useDocumentInlineComments } from "./useInlineComments";
 
-let mockEnabled = true;
+let mockSignedIn = true;
 const mockNavigate = jest.fn();
 let mockLocation = { key: "initial", pathname: "/documents/doc", search: "?inlineThread=thread", hash: "#message" };
 jest.mock("react-router", () => ({ useLocation: () => mockLocation, useNavigate: () => mockNavigate }));
 jest.mock("@/routes/useCompanyLoaderData", () => ({
   useCompanyLoaderData: () => ({
-    company: { id: "company", enabledExperimentalFeatures: mockEnabled ? ["document_inline_comments"] : [] },
+    company: { id: "company", enabledExperimentalFeatures: [] },
   }),
 }));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({
-  useMe: () => ({ id: "me", fullName: "Maya", avatarUrl: null }),
+  useMe: () => (mockSignedIn ? { id: "me", fullName: "Maya", avatarUrl: null } : null),
 }));
 jest.mock("@/routes/paths", () => ({
   usePaths: () => ({
@@ -76,7 +76,7 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 }
 
 beforeEach(() => {
-  mockEnabled = true;
+  mockSignedIn = true;
   mockLocation = { key: "initial", pathname: "/documents/doc", search: "?inlineThread=thread", hash: "#message" };
   mockNavigate.mockClear();
   Api.default.setBasePath("/api/v2");
@@ -92,10 +92,10 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-it.each(["disabled", "draft", "published"])(
-  "only fetches threads on enabled published documents: %s",
+it.each(["signed-out", "draft", "published"])(
+  "only fetches threads for signed-in users viewing published documents, without feature flags: %s",
   async (state) => {
-    mockEnabled = state !== "disabled";
+    mockSignedIn = state !== "signed-out";
     const doc: ResourceHubDocument = state === "draft" ? { ...document, state: "draft" } : document;
     const { result } = renderHook(() => ({ inline: useDocumentInlineComments(doc) }), {
       wrapper: Wrapper,
