@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import type { Page } from "playwright";
+import { waitForPageReady } from "@storybook/test-runner";
 
 declare const page: Page;
+
+beforeEach(() => {
+  page.setDefaultTimeout(5000);
+});
 
 async function visit(story = "review", thread?: string) {
   const url = new URL("iframe.html", process.env.TARGET_URL);
@@ -11,6 +16,14 @@ async function visit(story = "review", thread?: string) {
   await page.goto(url.href);
   await page.locator('[data-test-id="document-page"]').waitFor();
   await page.locator("body.light").waitFor();
+  await waitForPageReady(page);
+}
+
+async function waitForMobileDialog() {
+  const dialog = page.locator('[data-test-id="inline-comments-mobile"]');
+  // Focus does not wait for actionability; let the slide-in finish opening first.
+  await dialog.locator('[data-test-id="slide-in-close-button"]').click({ trial: true });
+  return dialog;
 }
 
 async function selectPassage() {
@@ -100,13 +113,13 @@ test("mobile panel preserves the draft on close and contains keyboard focus", as
   await page.setViewportSize({ width: 390, height: 844 });
   await visit("mobile");
   await selectPassage();
-  const dialog = page.locator('[data-test-id="inline-comments-mobile"]');
+  const dialog = await waitForMobileDialog();
   const editor = dialog.locator('[data-test-id="inline-new-thread"] [contenteditable="true"]');
   await editor.fill("Keep my mobile draft.");
-  await dialog.getByRole("button", { name: "Close", exact: true }).focus();
+  await dialog.locator('[data-test-id="slide-in-close-button"]').focus();
   await page.keyboard.press("Shift+Tab");
   assert.equal(await dialog.evaluate((element) => element.contains(document.activeElement)), true);
-  await dialog.getByRole("button", { name: "Close", exact: true }).click();
+  await dialog.locator('[data-test-id="slide-in-close-button"]').click();
   await dialog.waitFor({ state: "detached" });
   await page.locator('[data-inline-thread="checklist"]').first().click();
   await editor.waitFor();
@@ -117,9 +130,9 @@ test("mobile panel preserves the draft on close and contains keyboard focus", as
 test("mobile thread links open the panel and Escape restores focus", async () => {
   await page.setViewportSize({ width: 390, height: 844 });
   await visit("mobile", "checklist");
-  const dialog = page.locator('[data-test-id="inline-comments-mobile"]');
+  const dialog = await waitForMobileDialog();
   await dialog.locator('[data-test-id="inline-resolve-checklist"]').waitFor();
-  await dialog.getByRole("button", { name: "Close", exact: true }).focus();
+  await dialog.locator('[data-test-id="slide-in-close-button"]').focus();
   await page.keyboard.press("Escape");
   await dialog.waitFor({ state: "detached" });
   assert.equal(
@@ -235,10 +248,12 @@ test("mobile readers can open and revisit an unattached thread without highlight
   assert.equal(await page.locator("[data-inline-thread]").count(), 0);
   const preview = page.locator('[data-test-id="inline-comments-previews"]');
   await preview.locator('[data-test-id="inline-select-removed"]').click();
-  const panel = page.locator('[data-test-id="inline-comments-panel"]');
+  const dialog = await waitForMobileDialog();
+  const panel = dialog.locator('[data-test-id="inline-comments-panel"]');
   await panel.locator('[data-test-id="inline-unattached"]').waitFor();
   assert.equal(await panel.locator('[contenteditable="true"]').count(), 0);
-  await panel.getByRole("button", { name: "Close", exact: true }).click();
+  await dialog.locator('[data-test-id="slide-in-close-button"]').click();
+  await dialog.waitFor({ state: "detached" });
   await preview.locator('[data-test-id="inline-select-removed"]').click();
   await panel.locator('[data-test-id="inline-unattached"]').waitFor();
 });
