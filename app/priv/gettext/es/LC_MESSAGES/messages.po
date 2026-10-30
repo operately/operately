@@ -99,22 +99,22 @@ msgid "%{author} <action>commented</action> on <discussion>%{title}</discussion>
 msgstr "%{author} <action>comentó</action> sobre <discussion>%{title}</discussion> en el proyecto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:72
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:67
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document>"
 msgstr "%{author} <action>comentó</action> sobre <document>%{documentName}</document>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:65
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:60
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> goal"
 msgstr "%{author} <action>comentó</action> sobre <document>%{documentName}</document> en el objetivo <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:61
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:56
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> project"
 msgstr "%{author} <action>comentó</action> sobre <document>%{documentName}</document> en el proyecto <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:69
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:64
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> space"
 msgstr "%{author} <action>comentó</action> sobre <document>%{documentName}</document> en el espacio <parent>%{parentName}</parent>"
 
@@ -245,12 +245,12 @@ msgid "%{author} <action>commented</action> on the <activity>timeframe change</a
 msgstr "%{author} <action>comentó</action> sobre el <activity>cambio de período</activity> en el objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:48
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:52
 msgid "%{author} <action>commented</action> on the <milestone>%{milestoneName}</milestone> milestone"
 msgstr "%{author} <action>comentó</action> sobre el hito <milestone>%{milestoneName}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:49
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:53
 msgid "%{author} <action>commented</action> on the <milestone>%{milestoneName}</milestone> milestone in the <project>%{projectName}</project> project"
 msgstr "%{author} <action>comentó</action> sobre el hito <milestone>%{milestoneName}</milestone> en el proyecto <project>%{projectName}</project>"
 
@@ -580,6 +580,16 @@ msgid "%{author} added files:"
 msgstr "%{author} añadió archivos:"
 
 #.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:107
+msgid "%{author} added milestones <milestones/>"
+msgstr "%{author} añadió los hitos <milestones/>"
+
+#.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:108
+msgid "%{author} added milestones <milestones/> in <project>%{projectName}</project>"
+msgstr "%{author} añadió los hitos <milestones/> en el proyecto <project>%{projectName}</project>"
+
+#.frontend
 #: assets/js/features/activities/ProjectContributorsAddition/index.tsx:54
 msgid "%{author} added new contributors to a project"
 msgstr "%{author} añadió nuevos colaboradores a un proyecto"
@@ -615,12 +625,12 @@ msgid "%{author} added the %{goal_name} goal"
 msgstr "%{author} añadió el objetivo %{goal_name}"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCreation/index.tsx:44
+#: assets/js/features/activities/ProjectMilestoneCreation/index.tsx:46
 msgid "%{author} added the %{milestoneName} milestone"
 msgstr "%{author} añadió el hito %{milestoneName}"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCreation/index.tsx:51
+#: assets/js/features/activities/ProjectMilestoneCreation/index.tsx:53
 msgid "%{author} added the %{milestoneName} milestone to <project>%{projectName}</project>"
 msgstr "%{author} añadió el hito %{milestoneName} a <project>%{projectName}</project>"
 
@@ -698,14 +708,24 @@ msgid "%{author} added you to the %{space_name} space."
 msgstr "%{author} te añadió al espacio %{space_name}."
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:44
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:57
 msgid "%{author} archived <task>%{taskName}</task>"
 msgstr "%{author} archivó <task>%{taskName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:29
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:42
 msgid "%{author} archived <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr "%{author} archivó <task>%{taskName}</task> en <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:33
+msgid "%{author} archived tasks <tasks/>"
+msgstr "%{author} archivó las tareas <tasks/>"
+
+#.frontend
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:32
+msgid "%{author} archived tasks <tasks/> in <location>%{locationName}</location>"
+msgstr "%{author} archivó las tareas <tasks/> en <location>%{locationName}</location>"
 
 #.elixir
 #: lib/operately_email/templates/goal_archived.html.eex:1
@@ -804,14 +824,24 @@ msgid "%{author} assigned %{reviewer} as the reviewer on %{project_name}"
 msgstr "%{author} asignó el rol de revisor a %{reviewer} en %{project_name}"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:38
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:60
 msgid "%{author} assigned <task>%{taskName}</task> to milestone <new>%{newName}</new>"
 msgstr "%{author} asignó <task>%{taskName}</task> al hito <new>%{newName}</new>"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:39
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:61
 msgid "%{author} assigned <task>%{taskName}</task> to milestone <new>%{newName}</new> in <project>%{projectName}</project>"
 msgstr "%{author} asignó <task>%{taskName}</task> al hito <new>%{newName}</new> en <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:151
+msgid "%{author} assigned tasks <tasks/> to milestone <new>%{newName}</new>"
+msgstr "%{author} asignó las tareas <tasks/> al hito <new>%{newName}</new>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:152
+msgid "%{author} assigned tasks <tasks/> to milestone <new>%{newName}</new> in <project>%{projectName}</project>"
+msgstr "%{author} asignó las tareas <tasks/> al hito <new>%{newName}</new> en el proyecto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:177
@@ -1200,18 +1230,28 @@ msgstr "%{author} comentó sobre: %{name}"
 msgid "%{author} commented on: %{title}"
 msgstr "%{author} comentó sobre: %{title}"
 
+#.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:125
+msgid "%{author} completed milestones <milestones/>"
+msgstr "%{author} completó los hitos <milestones/>"
+
+#.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:126
+msgid "%{author} completed milestones <milestones/> in <project>%{projectName}</project>"
+msgstr "%{author} completó los hitos <milestones/> en el proyecto <project>%{projectName}</project>"
+
 #.elixir
 #: lib/operately_email/emails/project_milestone_commented_email.ex:66
 msgid "%{author} completed the %{milestone_name} milestone"
 msgstr "%{author} completó el hito %{milestone_name}"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:56
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:60
 msgid "%{author} completed the <milestone>%{milestoneName}</milestone> milestone"
 msgstr "%{author} completó el hito <milestone>%{milestoneName}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:57
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:61
 msgid "%{author} completed the <milestone>%{milestoneName}</milestone> milestone in the <project>%{projectName}</project> project"
 msgstr "%{author} completó el hito <milestone>%{milestoneName}</milestone> en el proyecto <project>%{projectName}</project>"
 
@@ -1466,15 +1506,35 @@ msgid "%{author} deleted a link: %{link_name}"
 msgstr "%{author} eliminó un enlace: %{link_name}"
 
 #.frontend
-#: assets/js/features/activities/TaskDeleting/index.tsx:43
-#: assets/js/features/activities/TaskDeleting/index.tsx:45
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:111
+msgid "%{author} deleted milestones <milestones/>"
+msgstr "%{author} eliminó los hitos <milestones/>"
+
+#.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:112
+msgid "%{author} deleted milestones <milestones/> in <project>%{projectName}</project>"
+msgstr "%{author} eliminó los hitos <milestones/> en el proyecto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/TaskDeleting/index.tsx:57
+#: assets/js/features/activities/TaskDeleting/index.tsx:59
 msgid "%{author} deleted task \"%{taskName}\""
 msgstr "%{author} eliminó la tarea «%{taskName}»"
 
 #.frontend
-#: assets/js/features/activities/TaskDeleting/index.tsx:48
+#: assets/js/features/activities/TaskDeleting/index.tsx:62
 msgid "%{author} deleted task \"%{taskName}\" in <location>%{locationName}</location>"
 msgstr "%{author} eliminó la tarea «%{taskName}» en <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/TaskDeleting/index.tsx:46
+msgid "%{author} deleted tasks <tasks/>"
+msgstr "%{author} eliminó las tareas <tasks/>"
+
+#.frontend
+#: assets/js/features/activities/TaskDeleting/index.tsx:48
+msgid "%{author} deleted tasks <tasks/> in <location>%{locationName}</location>"
+msgstr "%{author} eliminó las tareas <tasks/> en <location>%{locationName}</location>"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:55
@@ -1517,12 +1577,12 @@ msgid "%{author} deleted the \"%{linkName}\" link from <hub>%{hubName}</hub> in 
 msgstr "%{author} eliminó el enlace «%{linkName}» de <hub>%{hubName}</hub> en el espacio <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDeleting/index.tsx:36
+#: assets/js/features/activities/MilestoneDeleting/index.tsx:38
 msgid "%{author} deleted the \"%{milestoneName}\" milestone"
 msgstr "%{author} eliminó el hito «%{milestoneName}»"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDeleting/index.tsx:43
+#: assets/js/features/activities/MilestoneDeleting/index.tsx:45
 msgid "%{author} deleted the \"%{milestoneName}\" milestone in <project>%{projectName}</project>"
 msgstr "%{author} eliminó el hito «%{milestoneName}» en <project>%{projectName}</project>"
 
@@ -1903,14 +1963,29 @@ msgid "%{author} moved %{task_name}."
 msgstr "%{author} movió %{task_name}."
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:52
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:74
 msgid "%{author} moved <task>%{taskName}</task> from milestone <old>%{oldName}</old> to <new>%{newName}</new>"
 msgstr "%{author} movió <task>%{taskName}</task> del hito <old>%{oldName}</old> a <new>%{newName}</new>"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:55
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:77
 msgid "%{author} moved <task>%{taskName}</task> from milestone <old>%{oldName}</old> to <new>%{newName}</new> in <project>%{projectName}</project>"
 msgstr "%{author} movió <task>%{taskName}</task> del hito <old>%{oldName}</old> a <new>%{newName}</new> en <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/TaskMoving/index.tsx:66
+msgid "%{author} moved tasks <tasks/> from <origin>%{originName}</origin> to <destination>%{destinationName}</destination>"
+msgstr "%{author} movió las tareas <tasks/> de <origin>%{originName}</origin> a <destination>%{destinationName}</destination>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:165
+msgid "%{author} moved tasks <tasks/> from milestone <old>%{oldName}</old> to <new>%{newName}</new>"
+msgstr "%{author} movió las tareas <tasks/> del hito <old>%{oldName}</old> a <new>%{newName}</new>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:166
+msgid "%{author} moved tasks <tasks/> from milestone <old>%{oldName}</old> to <new>%{newName}</new> in <project>%{projectName}</project>"
+msgstr "%{author} movió las tareas <tasks/> del hito <old>%{oldName}</old> a <new>%{newName}</new> en el proyecto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/GoalSpaceUpdating/index.tsx:37
@@ -1928,12 +2003,12 @@ msgid "%{author} moved the project"
 msgstr "%{author} movió el proyecto"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:70
+#: assets/js/features/activities/TaskMoving/index.tsx:84
 msgid "%{author} moved the task \"%{taskName}\" to <destination>%{destinationName}</destination>"
 msgstr "%{author} movió la tarea «%{taskName}» a <destination>%{destinationName}</destination>"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:64
+#: assets/js/features/activities/TaskMoving/index.tsx:78
 msgid "%{author} moved the task <task>%{taskName}</task> to <destination>%{destinationName}</destination>"
 msgstr "%{author} movió la tarea <task>%{taskName}</task> a <destination>%{destinationName}</destination>"
 
@@ -1990,12 +2065,12 @@ msgid "%{author} re-opened the %{milestone_name} milestone"
 msgstr "%{author} reabrió el hito %{milestone_name}"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:64
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:68
 msgid "%{author} re-opened the <milestone>%{milestoneName}</milestone> milestone"
 msgstr "%{author} reabrió el hito <milestone>%{milestoneName}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:65
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:69
 msgid "%{author} re-opened the <milestone>%{milestoneName}</milestone> milestone in the <project>%{projectName}</project> project"
 msgstr "%{author} reabrió el hito <milestone>%{milestoneName}</milestone> en el proyecto <project>%{projectName}</project>"
 
@@ -2045,12 +2120,12 @@ msgid "%{author} removed %{personName} from the space"
 msgstr "%{author} eliminó a %{personName} del espacio"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:45
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:67
 msgid "%{author} removed <task>%{taskName}</task> from milestone <old>%{oldName}</old>"
 msgstr "%{author} quitó <task>%{taskName}</task> del hito <old>%{oldName}</old>"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:46
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:68
 msgid "%{author} removed <task>%{taskName}</task> from milestone <old>%{oldName}</old> in <project>%{projectName}</project>"
 msgstr "%{author} quitó <task>%{taskName}</task> del hito <old>%{oldName}</old> en <project>%{projectName}</project>"
 
@@ -2105,14 +2180,24 @@ msgid "%{author} removed description from milestone <milestone>%{title}</milesto
 msgstr "%{author} eliminó la descripción del hito <milestone>%{title}</milestone> en <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:41
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:51
 msgid "%{author} removed due date from the <milestone>%{title}</milestone> milestone"
 msgstr "%{author} eliminó la fecha de vencimiento del hito <milestone>%{title}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:46
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:56
 msgid "%{author} removed due date from the <milestone>%{title}</milestone> milestone in <project>%{projectName}</project>"
 msgstr "%{author} eliminó la fecha de vencimiento del hito <milestone>%{title}</milestone> en <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:158
+msgid "%{author} removed tasks <tasks/> from milestone <old>%{oldName}</old>"
+msgstr "%{author} quitó las tareas <tasks/> del hito <old>%{oldName}</old>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:159
+msgid "%{author} removed tasks <tasks/> from milestone <old>%{oldName}</old> in <project>%{projectName}</project>"
+msgstr "%{author} quitó las tareas <tasks/> del hito <old>%{oldName}</old> en el proyecto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:57
@@ -2218,14 +2303,24 @@ msgid "%{author} renamed <tasks/> in <location>%{locationName}</location>"
 msgstr "%{author} cambió el nombre de <tasks/> en <location>%{locationName}</location>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:43
+#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:67
 msgid "%{author} renamed milestone to <milestone>%{title}</milestone>"
 msgstr "%{author} cambió el nombre del hito a <milestone>%{title}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:51
+#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:75
 msgid "%{author} renamed milestone to <milestone>%{title}</milestone> in <project>%{projectName}</project>"
 msgstr "%{author} cambió el nombre del hito a <milestone>%{title}</milestone> en <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:115
+msgid "%{author} renamed milestones <milestones/>"
+msgstr "%{author} cambió el nombre de los hitos <milestones/>"
+
+#.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:116
+msgid "%{author} renamed milestones <milestones/> in <project>%{projectName}</project>"
+msgstr "%{author} cambió el nombre de los hitos <milestones/> en el proyecto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/TaskNameUpdating/index.tsx:80
@@ -2282,6 +2377,16 @@ msgstr "%{author} cambió el nombre del proyecto"
 msgid "%{author} reopened a comment thread on <document>%{documentName}</document>"
 msgstr "%{author} reabrió un hilo de comentarios en <document>%{documentName}</document>"
 
+#.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:128
+msgid "%{author} reopened milestones <milestones/>"
+msgstr "%{author} reabrió los hitos <milestones/>"
+
+#.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:129
+msgid "%{author} reopened milestones <milestones/> in <project>%{projectName}</project>"
+msgstr "%{author} reabrió los hitos <milestones/> en el proyecto <project>%{projectName}</project>"
+
 #.elixir
 #: lib/operately_email/templates/goal_reopening.html.eex:1
 msgid "%{author} reopened the %{goal_name} goal"
@@ -2323,12 +2428,12 @@ msgid "%{author} restored <document>%{documentName}</document> to a previous ver
 msgstr "%{author} restauró una versión anterior de <document>%{documentName}</document> en el espacio <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:46
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:59
 msgid "%{author} restored <task>%{taskName}</task> to the board"
 msgstr "%{author} restauró <task>%{taskName}</task> en el tablero"
 
 #.frontend
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:35
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:48
 msgid "%{author} restored <task>%{taskName}</task> to the board in <location>%{locationName}</location>"
 msgstr "%{author} restauró <task>%{taskName}</task> en el tablero de <location>%{locationName}</location>"
 
@@ -2341,6 +2446,16 @@ msgstr "%{author} restauró una versión anterior de un documento"
 #: assets/js/features/activities/CompanyMemberRestoring/index.tsx:45
 msgid "%{author} restored a member's account"
 msgstr "%{author} restauró la cuenta de un miembro"
+
+#.frontend
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:36
+msgid "%{author} restored tasks <tasks/> to the board"
+msgstr "%{author} restauró las tareas <tasks/> en el tablero"
+
+#.frontend
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:35
+msgid "%{author} restored tasks <tasks/> to the board in <location>%{locationName}</location>"
+msgstr "%{author} restauró las tareas <tasks/> en el tablero de <location>%{locationName}</location>"
 
 #.elixir
 #: lib/operately_email/templates/project_resuming.text.eex:1
@@ -2435,16 +2550,17 @@ msgid "%{author} updated %{personName}'s role on the <project>%{projectName}</pr
 msgstr "%{author} actualizó el rol de %{personName} en el proyecto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:61
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:83
 msgid "%{author} updated <task>%{taskName}</task> milestone"
 msgstr "%{author} actualizó el hito de <task>%{taskName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:62
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:84
 msgid "%{author} updated <task>%{taskName}</task> milestone in <project>%{projectName}</project>"
 msgstr "%{author} actualizó el hito de <task>%{taskName}</task> en <project>%{projectName}</project>"
 
 #.frontend
+#: ../turboui/src/ActivityResourceList/index.stories.tsx:44
 #: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:68
 msgid "%{author} updated assignees on <tasks/>"
 msgstr "%{author} actualizó las personas asignadas a <tasks/>"
@@ -2463,6 +2579,16 @@ msgstr "%{author} actualizó las personas asignadas a la tarea <task>%{taskName}
 #: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:216
 msgid "%{author} updated assignees on the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr "%{author} actualizó las personas asignadas a la tarea <task>%{taskName}</task> en <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:119
+msgid "%{author} updated due dates for milestones <milestones/>"
+msgstr "%{author} actualizó las fechas de vencimiento de los hitos <milestones/>"
+
+#.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:120
+msgid "%{author} updated due dates for milestones <milestones/> in <project>%{projectName}</project>"
+msgstr "%{author} actualizó las fechas de vencimiento de los hitos <milestones/> en el proyecto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/TaskDueDateUpdating/index.tsx:70
@@ -2493,6 +2619,27 @@ msgstr "%{author} actualizó la descripción del hito <milestone>%{title}</miles
 #: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:48
 msgid "%{author} updated milestone <milestone>%{title}</milestone> description in <project>%{projectName}</project>"
 msgstr "%{author} actualizó la descripción del hito <milestone>%{title}</milestone> en <project>%{projectName}</project>"
+
+#.frontend
+#: ../turboui/src/ActivityResourceList/index.stories.tsx:50
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:133
+msgid "%{author} updated milestones <milestones/>"
+msgstr "%{author} actualizó los hitos <milestones/>"
+
+#.frontend
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:134
+msgid "%{author} updated milestones <milestones/> in <project>%{projectName}</project>"
+msgstr "%{author} actualizó los hitos <milestones/> en el proyecto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:171
+msgid "%{author} updated milestones for tasks <tasks/>"
+msgstr "%{author} actualizó los hitos de las tareas <tasks/>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:172
+msgid "%{author} updated milestones for tasks <tasks/> in <project>%{projectName}</project>"
+msgstr "%{author} actualizó los hitos de las tareas <tasks/> en el proyecto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:56
@@ -2576,32 +2723,34 @@ msgid "%{author} updated the document: %{document_name}"
 msgstr "%{author} actualizó el documento: %{document_name}"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:40
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:50
 msgid "%{author} updated the due date for the <milestone>%{title}</milestone> milestone"
 msgstr "%{author} actualizó la fecha de vencimiento del hito <milestone>%{title}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:43
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:53
 msgid "%{author} updated the due date for the <milestone>%{title}</milestone> milestone in <project>%{projectName}</project>"
 msgstr "%{author} actualizó la fecha de vencimiento del hito <milestone>%{title}</milestone> en <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:44
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:66
 msgid "%{author} updated the milestone %{oldName}"
 msgstr "%{author} actualizó el hito %{oldName}"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:47
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:69
 msgid "%{author} updated the milestone %{oldName} in <project>%{projectName}</project>"
 msgstr "%{author} actualizó el hito %{oldName} en <project>%{projectName}</project>"
 
 #.frontend
+#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:43
 #: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:43
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:65
 msgid "%{author} updated the milestone %{oldName} to %{newName}"
 msgstr "%{author} cambió el hito %{oldName} a %{newName}"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:46
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:68
 msgid "%{author} updated the milestone %{oldName} to %{newName} in <project>%{projectName}</project>"
 msgstr "%{author} cambió el hito %{oldName} a %{newName} en <project>%{projectName}</project>"
 
@@ -3266,7 +3415,7 @@ msgid "(%{location}) %{author} commented on the project retrospective"
 msgstr "(%{location}) %{author} comentó sobre el balance final del proyecto"
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:23
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:19
 msgid "(%{location}) %{author} commented on: %{document_name}"
 msgstr "(%{location}) %{author} comentó sobre: %{document_name}"
 
@@ -5023,7 +5172,7 @@ msgid "A new invitation URL will be generated for %{name}."
 msgstr "Se generará una nueva URL de invitación para %{name}."
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCreation/index.tsx:78
+#: assets/js/features/activities/ProjectMilestoneCreation/index.tsx:80
 msgid "A new milestone \"%{milestoneName}\" was created"
 msgstr "Se creó un nuevo hito «%{milestoneName}»"
 
@@ -6187,7 +6336,7 @@ msgstr "Archivar producto"
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:499
 #: ../turboui/src/TaskPage/Sidebar.tsx:501
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:74
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:87
 msgid "Archive task"
 msgstr "Archivar tarea"
 
@@ -7693,7 +7842,7 @@ msgstr "Servidor del cliente"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:197
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:63
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:68
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:81
 #: ../turboui/src/Modal/index.tsx:143
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:94
 #: ../turboui/src/SlideIn/index.tsx:126
@@ -7747,12 +7896,12 @@ msgid "Closed At"
 msgstr "Fecha de cierre"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:133
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:137
 msgid "Closed a milestone"
 msgstr "Cerró un hito"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:122
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:126
 msgid "Closed milestone: %{title}"
 msgstr "Hito cerrado: %{title}"
 
@@ -7883,7 +8032,7 @@ msgstr "Comentario no publicado"
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentItem.tsx:361
-#: ../turboui/src/InlineComments/Thread.tsx:52
+#: ../turboui/src/InlineComments/Thread.tsx:54
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:84
 #: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
 msgid "Comment not updated"
@@ -7895,7 +8044,7 @@ msgid "Comment on this update"
 msgstr "Comenta sobre esta actualización"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:131
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:135
 msgid "Commented on a milestone"
 msgstr "Comentado sobre un hito"
 
@@ -7922,7 +8071,7 @@ msgid "Comments and task updates will appear here"
 msgstr "Los comentarios y las actualizaciones de tareas aparecerán aquí."
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:108
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:121
 msgid "Comments could not be loaded."
 msgstr "No se pudieron cargar los comentarios."
 
@@ -9057,17 +9206,17 @@ msgid "Date Type"
 msgstr "Tipo de fecha"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:70
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:117
 msgid "Date added: <date/>"
 msgstr "Fecha agregada: <date/>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:97
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:144
 msgid "Date changed from <old/> to <new/>"
 msgstr "Fecha cambiada de <old/> a <new/>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:84
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:131
 msgid "Date removed"
 msgstr "Fecha eliminada"
 
@@ -9865,7 +10014,7 @@ msgid "Due date (optional)"
 msgstr "Fecha de vencimiento (opcional)"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:82
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:123
 msgid "Due date <date><value/></date> was removed."
 msgstr "Se eliminó la fecha de vencimiento <date><value/></date>."
 
@@ -9885,17 +10034,17 @@ msgid "Due date between"
 msgstr "Fecha de vencimiento entre"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:96
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:137
 msgid "Due date was changed from <old><oldDate/></old> to <new><newDate/></new>."
 msgstr "La fecha de vencimiento se cambió de <old><oldDate/></old> a <new><newDate/></new>."
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:68
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:109
 msgid "Due date was set to <date><value/></date>."
 msgstr "La fecha de vencimiento se estableció en <date><value/></date>."
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:109
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:150
 msgid "Due date was updated."
 msgstr "Se actualizó la fecha de vencimiento."
 
@@ -12125,7 +12274,7 @@ msgid "Information"
 msgstr "Información"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:59
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:72
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:16
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:23
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:43
@@ -12204,7 +12353,7 @@ msgid "Invalid activation code"
 msgstr "Código de activación no válido"
 
 #.elixir
-#: lib/operately_web/api/companies/list_activities.ex:174
+#: lib/operately_web/api/companies/list_activities.ex:167
 msgid "Invalid activity cursor"
 msgstr "Cursor de actividad no válido"
 
@@ -13056,7 +13205,7 @@ msgid "Loading check-ins"
 msgstr "Cargando check-ins"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:103
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:116
 msgid "Loading comments..."
 msgstr "Cargando comentarios..."
 
@@ -13448,7 +13597,7 @@ msgid "Milestone"
 msgstr "Hito"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDeleting/index.tsx:70
+#: assets/js/features/activities/MilestoneDeleting/index.tsx:72
 msgid "Milestone \"%{milestoneName}\" was deleted"
 msgstr "Se eliminó el hito «%{milestoneName}»"
 
@@ -13539,7 +13688,7 @@ msgid "Milestone status"
 msgstr "Estado de hito"
 
 #.frontend
-#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:87
+#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:103
 msgid "Milestone was renamed to \"%{newTitle}\""
 msgstr "Se cambió el nombre del hito a «%{newTitle}»"
 
@@ -13722,7 +13871,7 @@ msgid "Move up"
 msgstr "Subir"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:109
+#: assets/js/features/activities/TaskMoving/index.tsx:124
 msgid "Moved task \"%{taskName}\" to %{destinationName}"
 msgstr "Se movió la tarea «%{taskName}» a %{destinationName}."
 
@@ -15778,7 +15927,7 @@ msgstr "Inténtalo de nuevo"
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:88
 #: ../turboui/src/CommentSection/CommentItem.tsx:215
-#: ../turboui/src/InlineComments/Thread.tsx:52
+#: ../turboui/src/InlineComments/Thread.tsx:54
 #: ../turboui/src/Reactions/index.tsx:58
 #: ../turboui/src/Reactions/index.tsx:204
 #: assets/js/models/people/usePeopleSearchError.ts:7
@@ -16035,7 +16184,7 @@ msgid "Previously, %{personName} was the reviewer."
 msgstr "Antes, %{personName} tenía el rol de revisor."
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:82
+#: assets/js/features/activities/TaskMoving/index.tsx:97
 msgid "Previously, it was in <origin>%{originName}</origin>"
 msgstr "Anteriormente estaba en <origin>%{originName}</origin>."
 
@@ -16045,7 +16194,8 @@ msgid "Previously, it was in the <space>%{spaceName}</space> space."
 msgstr "Anteriormente, estaba en el espacio <space>%{spaceName}</space>."
 
 #.frontend
-#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:64
+#: ../turboui/src/ActivityResourceList/index.stories.tsx:86
+#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:117
 msgid "Previously, the milestone was called <name>\"%{oldTitle}\"</name>."
 msgstr "Anteriormente, el hito se llamaba <name>«%{oldTitle}»</name>."
 
@@ -16322,8 +16472,8 @@ msgid "Project template"
 msgstr "Plantilla de proyecto"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDeleting/index.tsx:76
-#: assets/js/features/activities/TaskDeleting/index.tsx:82
+#: assets/js/features/activities/MilestoneDeleting/index.tsx:78
+#: assets/js/features/activities/TaskDeleting/index.tsx:96
 msgid "Project: %{projectName}"
 msgstr "Proyecto: %{projectName}"
 
@@ -16513,12 +16663,12 @@ msgid "Re-open Goal"
 msgstr "Reabrir objetivo"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:135
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:139
 msgid "Re-opened a milestone"
 msgstr "Reabrió un hito"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:124
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:128
 msgid "Re-opened milestone: %{title}"
 msgstr "Hito reabierto: %{title}"
 
@@ -16527,9 +16677,9 @@ msgstr "Hito reabierto: %{title}"
 #: assets/js/features/activities/CommentAdded/index.tsx:339
 #: assets/js/features/activities/DiscussionCommentSubmitted/index.tsx:99
 #: assets/js/features/activities/KpiEntryCommented/index.tsx:121
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:120
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:124
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:108
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
 #: assets/js/features/activities/ResourceHubFileCommented/index.tsx:113
 #: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:111
 #: assets/js/features/activities/SpaceTaskCommented/index.tsx:111
@@ -16543,7 +16693,7 @@ msgid "Re: a KPI"
 msgstr "Re: un KPI"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
 msgid "Re: a document"
 msgstr "Re: un documento"
 
@@ -17000,7 +17150,7 @@ msgid "Renews"
 msgstr "Renueva"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:240
+#: ../turboui/src/InlineComments/Thread.tsx:251
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:155
 #: ../turboui/src/MilestonePage/index.tsx:376
 msgid "Reopen"
@@ -17133,12 +17283,12 @@ msgid "Reset your password"
 msgstr "Restablece tu contraseña"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:240
+#: ../turboui/src/InlineComments/Thread.tsx:251
 msgid "Resolve"
 msgstr "Resolver"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:101
+#: ../turboui/src/InlineComments/Thread.tsx:103
 msgid "Resolved"
 msgstr "Resuelto"
 
@@ -17232,7 +17382,7 @@ msgstr "¿Restaurar esta versión?"
 
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:457
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:74
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:87
 msgid "Restore to board"
 msgstr "Restaurar en el tablero"
 
@@ -17310,7 +17460,7 @@ msgstr "Notas del balance final:"
 #: ../turboui/src/ContentListState/index.tsx:33
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:146
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:110
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:123
 msgid "Retry"
 msgstr "Reintentar"
 
@@ -18496,6 +18646,7 @@ msgstr[0] "Mostrar %{count} tarea completada"
 msgstr[1] "Mostrar %{count} tareas completadas"
 
 #.frontend
+#: ../turboui/src/ActivityResourceList/index.tsx:87
 #: ../turboui/src/DocsAndFiles/index.tsx:135
 msgid "Show 1 more"
 msgid_plural "Show %{count} more"
@@ -18518,6 +18669,11 @@ msgstr "Mostrar todo"
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:100
 msgid "Show closed statuses"
 msgstr "Mostrar estados cerrados"
+
+#.frontend
+#: ../turboui/src/ActivityResourceList/index.tsx:87
+msgid "Show less"
+msgstr "Mostrar menos"
 
 #.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:305
@@ -18892,7 +19048,7 @@ msgid "Space-wide Access"
 msgstr "Acceso para miembros del espacio"
 
 #.frontend
-#: assets/js/features/activities/TaskDeleting/index.tsx:84
+#: assets/js/features/activities/TaskDeleting/index.tsx:98
 msgid "Space: %{spaceName}"
 msgstr "Espacio: %{spaceName}"
 
@@ -19433,7 +19589,7 @@ msgid "Task \"%{taskName}\" was assigned to %{personName}"
 msgstr "La tarea «%{taskName}» fue asignada a %{personName}"
 
 #.frontend
-#: assets/js/features/activities/TaskDeleting/index.tsx:75
+#: assets/js/features/activities/TaskDeleting/index.tsx:89
 msgid "Task \"%{taskName}\" was deleted"
 msgstr "La tarea «%{taskName}» fue eliminada"
 
@@ -19490,7 +19646,7 @@ msgid "Task management"
 msgstr "Gestión de tareas"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:113
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:135
 msgid "Task milestone was updated"
 msgstr "Se actualizó el hito de la tarea"
 
@@ -19557,17 +19713,17 @@ msgid "Task title"
 msgstr "Título de la tarea"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:104
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:126
 msgid "Task was assigned to milestone \"%{title}\""
 msgstr "La tarea fue asignada al hito «%{title}»"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:108
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:130
 msgid "Task was moved from milestone \"%{oldTitle}\" to \"%{newTitle}\""
 msgstr "La tarea se trasladó del hito «%{oldTitle}» a «%{newTitle}»"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:106
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:128
 msgid "Task was removed from milestone \"%{title}\""
 msgstr "La tarea fue eliminada del hito «%{title}»"
 
@@ -19774,12 +19930,12 @@ msgid "That version could not be found. Choose another version from the history 
 msgstr "No se encontró esa versión. Elige otra del historial."
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:130
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:94
 msgid "The \"%{title}\" milestone due date was removed"
 msgstr "Se eliminó la fecha de vencimiento del hito «%{title}»"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:128
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:92
 msgid "The \"%{title}\" milestone due date was updated"
 msgstr "Se actualizó la fecha de vencimiento del hito «%{title}»"
 
@@ -20572,7 +20728,7 @@ msgid "This code has expired. Request a new code to continue."
 msgstr "Este código ha caducado. Solicita uno nuevo para continuar."
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:114
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:127
 msgid "This comment thread is no longer available."
 msgstr "Este hilo de comentarios ya no está disponible."
 
@@ -20881,7 +21037,7 @@ msgid "This package was exported from Operately %{manifestVersion}, but this ins
 msgstr "Este paquete se exportó desde Operately %{manifestVersion}, pero esta instancia usa %{currentVersion}. El error de importación puede estar relacionado con las diferencias entre versiones."
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:103
+#: ../turboui/src/InlineComments/Thread.tsx:105
 msgid "This passage is no longer available."
 msgstr "Este fragmento ya no está disponible."
 
@@ -23463,8 +23619,8 @@ msgid "a discussion"
 msgstr "una conversación"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:78
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:122
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:73
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:117
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:75
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:126
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:127
@@ -23504,19 +23660,20 @@ msgid "a link"
 msgstr "un enlace"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:77
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:81
+#: assets/js/features/activities/milestoneUpdatedResources.tsx:46
 msgid "a milestone"
 msgstr "un hito"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:60
-#: assets/js/features/activities/TaskMoving/index.tsx:88
+#: assets/js/features/activities/TaskMoving/index.tsx:61
+#: assets/js/features/activities/TaskMoving/index.tsx:103
 msgid "a project"
 msgstr "un proyecto"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:60
-#: assets/js/features/activities/TaskMoving/index.tsx:88
+#: assets/js/features/activities/TaskMoving/index.tsx:61
+#: assets/js/features/activities/TaskMoving/index.tsx:103
 msgid "a space"
 msgstr "un espacio"
 
@@ -23561,7 +23718,7 @@ msgid "added the link \"%{link_name}\""
 msgstr "añadió el enlace «%{link_name}»"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:137
+#: assets/js/features/activities/TaskMoving/index.tsx:152
 msgid "another destination"
 msgstr "otro destino"
 
@@ -23704,7 +23861,7 @@ msgid "commented on the discussion \"%{title}\""
 msgstr "comentó sobre la conversación «%{title}»"
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:47
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:39
 msgid "commented on the document \"%{document_name}\""
 msgstr "comentó sobre el documento «%{document_name}»"
 
@@ -24363,7 +24520,8 @@ msgid "submitted a check-in with status \"on track\""
 msgstr "publicó un check-in con el estado «según lo previsto»"
 
 #.frontend
-#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:69
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:91
+#: assets/js/features/activities/taskUpdatedResources.tsx:55
 msgid "task"
 msgstr "tarea"
 

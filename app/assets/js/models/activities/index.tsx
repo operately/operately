@@ -84,7 +84,8 @@ function canAggregate(left: FeedActivity, right: Activity): boolean {
     ((resourceHubEditAction(left.action) &&
       resourceHubEditAction(right.action) &&
       sameResourceHubEditLocation(left, right)) ||
-      (sameAction(left, right) && taskUpdateAction(left.action) && sameTaskUpdateLocation(left, right)))
+      (sameAction(left, right) && taskUpdateAction(left.action) && sameTaskUpdateLocation(left, right)) ||
+      (sameAction(left, right) && sameCompactUpdateContext(left, right)))
   );
 }
 
@@ -92,6 +93,88 @@ function sameActivityDay(left: Activity, right: Activity): boolean {
   if (!left.insertedAt || !right.insertedAt) return false;
 
   return Time.isSameDay(Time.parseISO(left.insertedAt), Time.parseISO(right.insertedAt));
+}
+
+// Context keys are explicit per operation: a shared location alone is not enough
+// to describe movement, assignment transitions, or archive/restore accurately.
+function sameCompactUpdateContext(left: Activity, right: Activity): boolean {
+  if (!left.author?.id || !right.author?.id) return false;
+  const leftKey = compactUpdateContext(left);
+  return leftKey !== undefined && leftKey === compactUpdateContext(right);
+}
+
+function locationKey(content: { project?: api.Project | null; space?: api.Space | null } | null | undefined) {
+  if (content?.project) return content.project.id ? `project:${content.project.id}` : undefined;
+  if (content?.space?.id) return `space:${content.space.id}`;
+  return undefined;
+}
+
+function compactUpdateContext(activity: Activity): string | undefined {
+  switch (activity.action) {
+    case "task_deleting":
+      return locationKey(activity.content as api.ActivityContentTaskDeleting);
+    case "task_archive_updating": {
+      const content = activity.content as api.ActivityContentTaskArchiveUpdating | undefined;
+      const location = locationKey(content);
+      return location && typeof content?.archived === "boolean" ? `${location}:${content.archived}` : undefined;
+    }
+    case "task_moving": {
+      const content = activity.content as api.ActivityContentTaskMoving | undefined;
+      if (!content) return undefined;
+      const origin =
+        content.originType === "project"
+          ? content.originProject?.id
+          : content.originType === "space"
+            ? content.originSpace?.id
+            : undefined;
+      const destination =
+        content.destinationType === "project"
+          ? content.destinationProject?.id
+          : content.destinationType === "space"
+            ? content.destinationSpace?.id
+            : undefined;
+      return origin && destination
+        ? JSON.stringify([content.originType, origin, content.destinationType, destination])
+        : undefined;
+    }
+    case "task_milestone_updating": {
+      const content = activity.content as api.ActivityContentTaskMilestoneUpdating | undefined;
+      if (!content?.project?.id) return undefined;
+      const oldId = content.oldMilestone === null ? null : content.oldMilestone?.id;
+      const newId = content.newMilestone === null ? null : content.newMilestone?.id;
+      if ((oldId !== null && !oldId) || (newId !== null && !newId)) return undefined;
+      return JSON.stringify([content.project.id, oldId, newId]);
+    }
+    case "project_milestone_commented": {
+      if (!isBodylessMilestoneLifecycle(activity)) return undefined;
+      const content = activity.content as api.ActivityContentProjectMilestoneCommented;
+      return content.project?.id ? JSON.stringify([content.project.id, content.commentAction]) : undefined;
+    }
+    case "project_milestone_creation":
+    case "project_milestone_updating":
+    case "milestone_title_updating":
+    case "milestone_due_date_updating":
+    case "milestone_deleting":
+      return (activity.content as api.ActivityContentProjectMilestoneCreation | undefined)?.project?.id || undefined;
+    default:
+      return undefined;
+  }
+}
+
+export function isBodylessMilestoneLifecycle(activity: Activity): boolean {
+  if (activity.action !== "project_milestone_commented") return false;
+  const content = activity.content as api.ActivityContentProjectMilestoneCommented | undefined;
+  if (content?.commentAction !== "complete" && content?.commentAction !== "reopen") return false;
+  const body: unknown = content.comment?.content;
+  if (body === undefined || body === null) return true;
+  if (typeof body !== "string") return false;
+  if (body.trim() === "") return true;
+  try {
+    const parsed: unknown = JSON.parse(body);
+    return parsed !== null && typeof parsed === "object" && !Array.isArray(parsed) && Object.keys(parsed).length === 0;
+  } catch {
+    return false;
+  }
 }
 
 function sameAction(left: Activity, right: Activity): boolean {

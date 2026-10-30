@@ -1,4 +1,4 @@
-import { Trans } from "react-i18next";
+import { Trans } from "../i18n";
 import i18n from "@/i18n";
 import React from "react";
 
