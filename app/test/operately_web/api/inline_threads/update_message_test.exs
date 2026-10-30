@@ -114,6 +114,17 @@ defmodule OperatelyWeb.Api.InlineThreads.UpdateMessageTest do
       assert Jason.decode!(hd(thread.messages).content) == RichText.rich_text("Edited")
       assert hd(thread.messages).id == hd(ctx.thread.messages).id
     end
+
+    test "authors must reopen resolved threads before editing messages", ctx do
+      assert {200, _} = mutation(ctx.conn, [:inline_threads, :resolve], %{thread_id: ctx.thread.id})
+      assert {400, _} = mutation(ctx.conn, [:inline_threads, :update_message], inputs(ctx))
+      message = Repo.get!(Operately.Updates.Comment, Operately.ShortUuid.decode!(hd(ctx.thread.messages).id))
+      assert message.content == Jason.decode!(hd(ctx.thread.messages).content)
+
+      assert {200, _} = mutation(ctx.conn, [:inline_threads, :reopen], %{thread_id: ctx.thread.id})
+      assert {200, %{thread: thread}} = mutation(ctx.conn, [:inline_threads, :update_message], inputs(ctx))
+      assert Jason.decode!(hd(thread.messages).content) == RichText.rich_text("Edited")
+    end
   end
 
   defp inputs(ctx), do: %{message_id: hd(ctx.thread.messages).id, content: Jason.encode!(RichText.rich_text("Edited"))}

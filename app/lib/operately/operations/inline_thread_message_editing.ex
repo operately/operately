@@ -8,6 +8,7 @@ defmodule Operately.Operations.InlineThreadMessageEditing do
     Multi.new()
     |> SharedSteps.lock_document(author, thread.resource_id)
     |> SharedSteps.lock_thread(thread)
+    |> SharedSteps.require_open_thread()
     |> SharedSteps.lock_message(message)
     |> SharedSteps.validate_content(content)
     |> Multi.update(:updated_message, fn %{message: locked} -> Comment.changeset(locked, %{content: content}) end)

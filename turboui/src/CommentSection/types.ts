@@ -54,6 +54,7 @@ export interface CommentFormState {
 
 export interface CommentItemProps {
   initiallyEditing?: boolean;
+  editDisabled?: boolean;
   comment: Comment;
   form: CommentFormState;
   commentParentType: string;

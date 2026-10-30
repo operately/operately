@@ -92,6 +92,7 @@ export function Thread({
               comment={firstMessage}
               appearance="inline"
               canEdit={props.canComment && !props.pending && compareIds(props.currentUser.id, firstMessage.author.id)}
+              editDisabled={Boolean(thread.resolvedAt)}
               onEdit={() => {
                 setEditingFirstMessage(true);
                 onSelect();
@@ -216,6 +217,7 @@ function ThreadMessages({
             form={form}
             currentUserId={props.currentUser.id}
             canComment={props.canComment}
+            editDisabled={Boolean(thread.resolvedAt)}
             commentParentType="inline_thread"
             richTextHandlers={richTextHandlers}
             formattedTimePreferences={props.formattedTimePreferences}

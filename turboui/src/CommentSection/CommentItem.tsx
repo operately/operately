@@ -55,9 +55,11 @@ export function CommentItem({
   onVisible,
   canManageComments = false,
   initiallyEditing = false,
+  editDisabled = false,
 }: CommentItemProps) {
   const isInline = appearance === "inline";
   const [isEditing, setIsEditing] = useState(initiallyEditing);
+  const showEditForm = isEditing && !editDisabled;
   const parsedContent = parseContent(comment.content);
   const onTaskItemChange = richTextHandlers.onCommentTaskItemChange;
   const isOwnComment = compareIds(currentUserId, comment.author.id);
@@ -68,7 +70,7 @@ export function CommentItem({
   const canAddReaction = Boolean(canComment && onAddReaction);
 
   const handleSaveEdit = async (content: any) => {
-    if (isInline && form.submitting) return false;
+    if (editDisabled || (isInline && form.submitting)) return false;
     if (form && form.editComment) {
       const success = await form.editComment(comment.id, content);
       if (success === false) return isInline ? false : undefined;
@@ -119,10 +121,11 @@ export function CommentItem({
       <FormattedTime {...formattedTimePreferences} time={comment.insertedAt} format="relative" />
     </span>
   );
-  const menu = !isEditing && (
+  const menu = !showEditForm && (
     <CommentMenu
       comment={comment}
       canEdit={canComment && (!isInline || !form.submitting) && (canManageComments || isOwnComment)}
+      editDisabled={editDisabled}
       appearance={appearance}
       onEdit={() => setIsEditing(true)}
       onDelete={form.deleteComment ? () => form.deleteComment?.(comment.id) : undefined}
@@ -162,7 +165,7 @@ export function CommentItem({
           </div>
         </div>
 
-        {isEditing ? (
+        {showEditForm ? (
           <CommentEditMode
             inline={isInline}
             content={parsedContent}
@@ -177,7 +180,7 @@ export function CommentItem({
             taskList={
               onTaskItemChange
                 ? {
-                    canEdit: canComment && (canManageComments || isOwnComment),
+                    canEdit: canComment && !editDisabled && (canManageComments || isOwnComment),
                     onChange: (change) => onTaskItemChange(comment.id, change),
                   }
                 : { canEdit: false }
@@ -198,12 +201,20 @@ export function CommentItem({
 interface CommentMenuProps {
   comment: CommentItemProps["comment"];
   canEdit: boolean;
+  editDisabled?: boolean;
   appearance: CommentAppearance;
   onEdit: () => void;
   onDelete?: () => void | Promise<void>;
 }
 
-export function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: CommentMenuProps) {
+export function CommentMenu({
+  comment,
+  canEdit,
+  editDisabled = false,
+  appearance,
+  onEdit,
+  onDelete,
+}: CommentMenuProps) {
   const { t } = useTranslation();
   const deleting = React.useRef(false);
   const handleDelete = async () => {
@@ -231,7 +242,7 @@ export function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: 
 
   const isFlat = appearance !== "card";
 
-  if (appearance === "inline" && !canEdit) return null;
+  if (appearance === "inline" && (!canEdit || (editDisabled && !onDelete))) return null;
 
   return (
     <Menu
@@ -251,13 +262,15 @@ export function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: 
       )}
       {canEdit && (
         <>
-          <MenuActionItem
-            onClick={onEdit}
-            icon={IconEdit}
-            testId={isFlat ? "edit-comment" : createTestId("edit", comment.id)}
-          >
-            {t("Edit")}
-          </MenuActionItem>
+          {!editDisabled && (
+            <MenuActionItem
+              onClick={onEdit}
+              icon={IconEdit}
+              testId={isFlat ? "edit-comment" : createTestId("edit", comment.id)}
+            >
+              {t("Edit")}
+            </MenuActionItem>
+          )}
           {onDelete && (
             <MenuActionItem
               onClick={handleDelete}

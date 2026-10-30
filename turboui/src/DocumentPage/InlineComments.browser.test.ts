@@ -80,6 +80,34 @@ test.each([1440, 390])("header comments button opens all threads at %s px", asyn
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
 });
 
+test.each([1440, 390])("resolved thread messages cannot be edited at %s px", async (width) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await visit("own-comment");
+  await page.locator('[data-test-id="inline-comments-toggle"]').click();
+  const dialog = await waitForMobileDialog();
+  const thread = dialog.locator('[data-test-id="inline-thread-checklist"]');
+  const message = thread.locator('div[data-test-id^="comment-"][id]');
+  await message.hover();
+  await message.locator('[data-test-id="comment-options"]').click();
+  await page.locator('[data-test-id="edit-comment"]').click();
+  await message.locator('[data-test-id="edit-comment-form"]').waitFor();
+  await thread.hover();
+  await thread.locator('[data-test-id="inline-resolve-checklist"]').click();
+  await dialog.locator('[data-test-id="inline-thread-checklist"][data-resolved="true"]').waitFor();
+  assert.equal(await message.locator('[data-test-id="edit-comment-form"]').count(), 0);
+  await message.hover();
+  await message.locator('[data-test-id="comment-options"]').click();
+  assert.equal(await page.locator('[data-test-id="edit-comment"]').count(), 0);
+  await page.locator('[data-test-id="delete-comment"]').waitFor();
+  await page.keyboard.press("Escape");
+  await thread.hover();
+  await thread.locator('[data-test-id="inline-resolve-checklist"]').click();
+  await dialog.locator('[data-test-id="inline-thread-checklist"][data-resolved="false"]').waitFor();
+  await message.hover();
+  await message.locator('[data-test-id="comment-options"]').click();
+  await page.locator('[data-test-id="edit-comment"]').waitFor();
+});
+
 test("all-comments panel supports empty documents and read-only viewers", async () => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await visit("empty");
