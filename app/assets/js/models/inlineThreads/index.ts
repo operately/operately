@@ -1,20 +1,41 @@
 import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import Api, { type ResourceHubDocument } from "@/api";
+import { useQueryClient } from "@tanstack/react-query";
+import Api, { type Company, type ResourceHubDocument } from "@/api";
+import { queryClient, useLoadedQuery } from "@/api/queryClient";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
+import { fetchCompany } from "@/models/companies/companyLayoutQueries";
+import { hasFeature } from "@/models/companies/hasFeature";
 
 export { useInlineThreadMutations, invalidateInlineThreadQueries } from "./inlineThreadLifecycle";
+
+function documentInlineThreadsEnabled(company: Company, document: ResourceHubDocument) {
+  return document.state === "published" && hasFeature(company, "document_inline_comments");
+}
+
+export async function prefetchDocumentInlineThreads(document: ResourceHubDocument) {
+  const company = await fetchCompany();
+
+  if (!documentInlineThreadsEnabled(company, document)) return;
+
+  // Keep failures in the query cache so the comments panel can offer a retry.
+  await queryClient
+    .fetchQuery({
+      ...Api.inline_threads.listQueryOptions({ resourceType: "resource_hub_document", resourceId: document.id }),
+      staleTime: 0,
+    })
+    .catch(() => undefined);
+}
 
 export function useDocumentInlineThreads(document: ResourceHubDocument) {
   const { company } = useCompanyLoaderData();
   const me = useMe();
   const client = useQueryClient();
-  const enabled = Boolean(
-    company.enabledExperimentalFeatures?.includes("document_inline_comments") && document.state === "published" && me,
-  );
+
+  const enabled = Boolean(documentInlineThreadsEnabled(company, document) && me);
+
   const input = { resourceType: "resource_hub_document" as const, resourceId: document.id };
-  const query = useQuery({ ...Api.inline_threads.listQueryOptions(input), enabled });
+  const query = useLoadedQuery({ ...Api.inline_threads.listQueryOptions(input), enabled, throwOnError: false });
   const threads = query.isError ? [] : (query.data?.threads ?? []);
 
   // A separately refreshed thread list may be ahead of the displayed document.
