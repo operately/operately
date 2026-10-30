@@ -59,6 +59,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.update_task_status(inputs.status)
       |> Steps.save_activity(:task_status_updating, &build_activity_content/1)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
@@ -124,6 +125,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.update_task_description(inputs.description)
       |> Steps.save_activity(:task_description_change, &build_activity_content(inputs, &1))
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
@@ -184,6 +186,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.update_task_name(inputs.name)
       |> Steps.save_activity(:task_name_updating, &build_activity_content/1)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
@@ -241,6 +244,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.update_task_due_date(inputs.due_date)
       |> Steps.save_activity(:task_due_date_updating, &build_activity_content/1)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
@@ -298,6 +302,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_task_reminders(inputs.reminders)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
@@ -334,6 +339,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.update_task_assignees(assignee_ids)
       |> Steps.save_activity(:task_assignee_updating, &build_activity_content(inputs, &1))
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
@@ -404,6 +410,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_milestone_and_ordering(inputs.milestone_id, inputs.index)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{
           task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full),
@@ -448,6 +455,7 @@ defmodule OperatelyWeb.Api.Tasks do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{ task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full) }
       end)
@@ -502,6 +510,7 @@ defmodule OperatelyWeb.Api.Tasks do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
@@ -531,6 +540,7 @@ defmodule OperatelyWeb.Api.Tasks do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
@@ -567,6 +577,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.delete_task()
       |> Steps.save_activity(:task_deleting, &build_activity_content/1)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
@@ -1133,6 +1144,15 @@ defmodule OperatelyWeb.Api.Tasks do
         e ->
           error_callback.(e)
       end
+    end
+
+    def broadcast_project_update(result) do
+      OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(result, fn changes ->
+        case changes[:project] do
+          %Operately.Projects.Project{id: id} -> id
+          _ -> nil
+        end
+      end)
     end
 
     def broadcast_review_count_update(result) do

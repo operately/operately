@@ -20,6 +20,7 @@ defmodule Operately.Operations.ProjectSpaceMoving do
     |> IndexUpdates.enqueue(:search_project, "project", project.id)
     |> CoreWorkIndexUpdates.enqueue_project(project.id)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(project.id)
     |> Repo.extract_result(:project)
   end
 

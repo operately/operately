@@ -38,9 +38,13 @@ defmodule Operately.Operations.TaskMoving do
         activity_content(task, destination_type, destination)
       end)
       |> Repo.transaction()
+      |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result([task.project_id, destination_project_id(destination_type, destination)])
       |> Repo.extract_result(:task)
     end
   end
+
+  defp destination_project_id(:project, destination), do: destination.id
+  defp destination_project_id(:space, _destination), do: nil
 
   defp destination_default_status(:project, project = %Project{}) do
     project

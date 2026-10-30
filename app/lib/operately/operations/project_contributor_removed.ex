@@ -11,6 +11,7 @@ defmodule Operately.Operations.ProjectContributorRemoved do
     |> delete_binding()
     |> insert_activity(author)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(contrib.project_id)
     |> Repo.extract_result(:contributor)
   end
 

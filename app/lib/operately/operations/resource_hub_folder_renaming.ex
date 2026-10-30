@@ -20,5 +20,6 @@ defmodule Operately.Operations.ResourceHubFolderRenaming do
       |> Map.merge(Parent.parent_fields(folder.resource_hub))
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(folder.resource_hub.project_id)
   end
 end

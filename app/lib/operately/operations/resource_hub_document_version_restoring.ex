@@ -27,6 +27,7 @@ defmodule Operately.Operations.ResourceHubDocumentVersionRestoring do
       end
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(document.resource_hub.project_id)
     |> case do
       {:ok, changes} ->
         {:ok, %{document: changes.document, restored_version: changes.restored_version}}

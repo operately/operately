@@ -24,6 +24,17 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemCheckedTest do
     assert Repo.reload!(message).content == message.content
   end
 
+  test "project checklist writes publish once after the outer transaction", ctx do
+    project = ctx.project |> Ecto.Changeset.change(description: content()) |> Repo.update!()
+    topic = "api:project_updated:#{project.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
+    assert {200, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs(project, :project, :description, content()))
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event"}
+    refute_receive %Phoenix.Socket.Broadcast{topic: ^topic}
+    assert {400, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], %{inputs(project, :project, :description, content()) | item_path: [999]})
+    refute_receive %Phoenix.Socket.Broadcast{topic: ^topic}
+  end
+
   test "checkbox snapshots keep URL labels while conflict detection remains active", ctx do
     source = content()
     url = Paths.project_path(ctx.company, ctx.project)

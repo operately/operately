@@ -39,6 +39,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying do
     |> ResourceHubIndex.enqueue_folder_tree(:search_folder_tree, fn changes -> changes.new_folder.id end)
     |> insert_activity(author, folder, dest_resource_hub)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(dest_resource_hub.project_id)
     |> Repo.extract_result(:new_folder)
   end
 

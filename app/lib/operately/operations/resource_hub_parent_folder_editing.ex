@@ -21,6 +21,7 @@ defmodule Operately.Operations.ResourceHubParentFolderEditing do
         |> Map.merge(Parent.parent_fields(resource.resource_hub))
       end)
       |> Repo.transaction()
+      |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(resource.resource_hub.project_id)
       |> handle_transaction_result(changeset)
     rescue
       e in Postgrex.Error ->
