@@ -19,6 +19,7 @@ const document = {
   content: "",
   resourceHubId: "hub1",
   parentFolderId: "folder1",
+  state: "published",
 };
 const response = {
   document,
@@ -52,7 +53,7 @@ async function visit() {
   return inputs;
 }
 
-it("prefetches and subscribes without duplicate requests on mount or cached route re-entry", async () => {
+it("caches document data while refreshing threads on route re-entry", async () => {
   const inputs = await visit();
   expect(inputs).not.toHaveProperty("document");
 
@@ -64,7 +65,8 @@ it("prefetches and subscribes without duplicate requests on mount or cached rout
   await visit();
   renderHook(useLoadedData, { initialProps: undefined, wrapper });
 
-  expect(axios.get).toHaveBeenCalledTimes(5);
+  expect(axios.get).toHaveBeenCalledTimes(6);
+  expect(axios.get).not.toHaveBeenCalledWith(expect.stringContaining("/get_company"), expect.anything());
 });
 
 it("updates after invalidation and keeps cached content after a background failure", async () => {
@@ -180,7 +182,6 @@ it("waits for inline comments before completing the loader", async () => {
       data: {
         ...response,
         document: { ...document, state: "published" },
-        company: { enabledExperimentalFeatures: ["document_inline_comments"] },
       },
     });
   });
@@ -207,7 +208,6 @@ it("loads new replies when revisiting a document with cached threads", async () 
   const publishedResponse = {
     ...response,
     document: { ...document, state: "published" },
-    company: { enabledExperimentalFeatures: ["document_inline_comments"] },
     threads: [thread],
   };
   jest.mocked(axios.get).mockImplementation(async (url) => ({
@@ -229,12 +229,11 @@ it("loads new replies when revisiting a document with cached threads", async () 
   expect(axios.get).toHaveBeenCalledWith(expect.stringContaining("/inline_threads/list"), expect.anything());
 });
 
-it.each(["disabled", "draft"])("does not preload inline comments for %s documents", async (state) => {
+it("does not preload inline comments for draft documents", async () => {
   jest.mocked(axios.get).mockResolvedValue({
     data: {
       ...response,
-      document: { ...document, state: state === "draft" ? "draft" : "published" },
-      company: { enabledExperimentalFeatures: state === "disabled" ? [] : ["document_inline_comments"] },
+      document: { ...document, state: "draft" },
     },
   });
   await visit();

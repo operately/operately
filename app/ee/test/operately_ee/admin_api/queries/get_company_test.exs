@@ -36,7 +36,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetCompanyTest do
       assert result.company.enabled_features == ["legacy_flag"]
       assert result.available_features == ExperimentalFeatures.available()
       assert "project_templates" in result.available_features
-      assert "document_inline_comments" in result.available_features
+      refute "document_inline_comments" in result.available_features
     end
 
     test "returns not found for an unknown company", ctx do
