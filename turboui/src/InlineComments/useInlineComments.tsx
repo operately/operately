@@ -8,6 +8,7 @@ import { CommentsPanel } from "./CommentsPanel";
 
 export function useInlineComments(props?: DocumentInlineCommentsProps) {
   const [open, setOpen] = React.useState(false);
+  const [replyThreadId, setReplyThreadId] = React.useState<string | null>(null);
   const [overlap, setOverlap] = React.useState<string[]>([]);
   const [selection, setSelection] = React.useState<InlineCommentTarget | null>(null);
   const [selectionRange, setSelectionRange] = React.useState<Range | null>(null);
@@ -41,6 +42,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
   React.useEffect(() => {
     composerVersion.current += 1;
     setOpen(false);
+    setReplyThreadId(null);
     setCreating(false);
     setTarget(null);
     setTargetRange(null);
@@ -65,8 +67,15 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
 
   const close = () => {
     setOpen(false);
+    setReplyThreadId(null);
     props?.onSelectThread(null);
     contentRef.current?.focus();
+  };
+
+  // Open a reply only for explicit selection, not after creation or following a link.
+  const selectThread = (id: string | null) => {
+    setReplyThreadId(id);
+    props?.onSelectThread(id);
   };
 
   const onSelectionChange = (next: InlineCommentSelection | null) => {
@@ -101,7 +110,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
     setOpen(true);
     setOverlap([]);
     setSelectionRange(null);
-    props.onSelectThread(null);
+    selectThread(null);
   };
 
   if (!props)
@@ -128,7 +137,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
       setOpen(true);
       setSelectionRange(null);
       setOverlap(ids.length > 1 ? ids : []);
-      props.onSelectThread(ids.length === 1 ? (ids[0] ?? null) : null);
+      selectThread(ids.length === 1 ? (ids[0] ?? null) : null);
     },
   };
 
@@ -186,6 +195,8 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
       <CommentsPanel
         props={props}
         threads={visibleThreads}
+        replyThreadId={replyThreadId}
+        onSelectThread={selectThread}
         composer={composer}
         mobile={mobile}
         open={open}

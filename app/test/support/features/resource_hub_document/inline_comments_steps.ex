@@ -47,6 +47,7 @@ defmodule Operately.Support.Features.ResourceHubDocument.InlineCommentsSteps do
 
   step :reply, ctx do
     ctx
+    |> UI.click(css: "[data-test-id='inline-thread-#{ctx.thread_id}'] [data-test-id='add-comment']")
     |> UI.fill_rich_text(testid: "inline-thread-#{ctx.thread_id}", with: "I will own this.")
     |> UI.click(css: "[data-test-id='inline-thread-#{ctx.thread_id}'] [data-test-id='post-comment']")
     |> UI.assert_has(Wallaby.Query.css("[data-test-id='inline-thread-#{ctx.thread_id}'] div[data-test-id^='comment-'][id]", count: 2))
