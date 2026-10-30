@@ -1,5 +1,7 @@
 import type { TaskListInteraction } from "../RichEditor/taskLists";
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { IconMessage } from "../icons";
 
 import type { AvatarPerson } from "../Avatar";
 import { CommentSection, type CommentSectionProps } from "../CommentSection";
@@ -122,7 +124,21 @@ export namespace DocumentPage {
 }
 
 export function DocumentPage(props: DocumentPage.Props) {
+  const { t } = useTranslation();
   const review = useInlineComments(props.state === "published" ? props.inlineComments : undefined);
+  const options: Page.Option[] = [...(props.options ?? [])];
+
+  if (review.enabled) {
+    options.push({
+      type: "action",
+      icon: IconMessage,
+      label: t("Inline comments"),
+      onClick: review.openAllComments,
+      keepOutside: true,
+      iconOnly: true,
+      testId: "inline-comments-toggle",
+    });
+  }
 
   return (
     <div className={review.hasFloatingComments ? "xl:pr-[23rem]" : undefined}>
@@ -130,7 +146,7 @@ export function DocumentPage(props: DocumentPage.Props) {
         title={props.pageTitle}
         size={review.hasFloatingComments ? "medium" : "large"}
         navigation={props.navigation}
-        options={props.options}
+        options={options}
         testId={props.testId ?? "document-page"}
       >
         <div className={`min-h-[600px] px-4 py-10 sm:px-12 ${review.hasFloatingComments ? "lg:px-12" : "lg:px-28"}`}>

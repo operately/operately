@@ -100,22 +100,22 @@ msgid "%{author} <action>commented</action> on <discussion>%{title}</discussion>
 msgstr "%{author}: <action>комментарий</action> в обсуждении <discussion>%{title}</discussion> по проекту <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:72
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:67
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document>"
 msgstr "%{author}: <action>комментарий</action> к документу <document>%{documentName}</document>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:65
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:60
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> goal"
 msgstr "%{author}: <action>комментарий</action> к документу <document>%{documentName}</document> в цели <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:61
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:56
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> project"
 msgstr "%{author}: <action>комментарий</action> к документу <document>%{documentName}</document> в проекте <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:69
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:64
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> space"
 msgstr "%{author}: <action>комментарий</action> к документу <document>%{documentName}</document> в пространстве <parent>%{parentName}</parent>"
 
@@ -3303,7 +3303,7 @@ msgid "(%{location}) %{author} commented on the project retrospective"
 msgstr "(%{location}) %{author}: комментарий к итогам проекта"
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:23
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:19
 msgid "(%{location}) %{author} commented on: %{document_name}"
 msgstr "(%{location}) %{author}: комментарий к «%{document_name}»"
 
@@ -7864,7 +7864,6 @@ msgstr "Хост клиента"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:197
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:63
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:68
 #: ../turboui/src/Modal/index.tsx:143
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:94
 #: ../turboui/src/SlideIn/index.tsx:126
@@ -8054,7 +8053,7 @@ msgstr "Комментарий не опубликован"
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentItem.tsx:361
-#: ../turboui/src/InlineComments/Thread.tsx:52
+#: ../turboui/src/InlineComments/Thread.tsx:57
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:84
 #: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
 msgid "Comment not updated"
@@ -8093,7 +8092,7 @@ msgid "Comments and task updates will appear here"
 msgstr "Комментарии и обновления задач появятся здесь"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:108
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:144
 msgid "Comments could not be loaded."
 msgstr "Не удалось загрузить комментарии."
 
@@ -10128,6 +10127,7 @@ msgstr "Более ранняя версия"
 #: ../turboui/src/Checklist/index.tsx:520
 #: ../turboui/src/CommentSection/CommentItem.tsx:259
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:68
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:254
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
@@ -12129,6 +12129,7 @@ msgid "History"
 msgstr "История"
 
 #.frontend
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:260
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:93
 #: assets/js/pages/ResourceHubDocumentPage/Options.tsx:60
 #: assets/js/pages/ResourceHubDocumentVersionComparisonPage/navigation.tsx:18
@@ -12304,7 +12305,9 @@ msgid "Information"
 msgstr "Информация"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:59
+#: ../turboui/src/DocumentPage/index.tsx:134
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:76
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:82
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:16
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:23
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:43
@@ -12383,7 +12386,7 @@ msgid "Invalid activation code"
 msgstr "Недействительный код активации"
 
 #.elixir
-#: lib/operately_web/api/companies/list_activities.ex:174
+#: lib/operately_web/api/companies/list_activities.ex:167
 msgid "Invalid activity cursor"
 msgstr "Некорректный курсор истории действий"
 
@@ -13235,7 +13238,7 @@ msgid "Loading check-ins"
 msgstr "Загрузка отчётов о ходе работы"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:103
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:139
 msgid "Loading comments..."
 msgstr "Загрузка комментариев..."
 
@@ -14533,6 +14536,11 @@ msgstr "Нет целей, чтобы показать."
 #: ../turboui/src/CompanyImportPage/index.tsx:288
 msgid "No imports yet. Upload a package above to create the first one."
 msgstr "Импорта пока не было. Загрузите пакет данных выше, чтобы выполнить первый импорт."
+
+#.frontend
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:89
+msgid "No inline comments yet."
+msgstr "Комментариев к тексту пока нет."
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:464
@@ -15959,7 +15967,7 @@ msgstr "Пожалуйста, попробуйте ещё раз."
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:88
 #: ../turboui/src/CommentSection/CommentItem.tsx:215
-#: ../turboui/src/InlineComments/Thread.tsx:52
+#: ../turboui/src/InlineComments/Thread.tsx:57
 #: ../turboui/src/Reactions/index.tsx:58
 #: ../turboui/src/Reactions/index.tsx:204
 #: assets/js/models/people/usePeopleSearchError.ts:7
@@ -16712,7 +16720,7 @@ msgstr "Веха снова открыта: %{title}"
 #: assets/js/features/activities/KpiEntryCommented/index.tsx:121
 #: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:120
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:108
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
 #: assets/js/features/activities/ResourceHubFileCommented/index.tsx:113
 #: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:111
 #: assets/js/features/activities/SpaceTaskCommented/index.tsx:111
@@ -16726,7 +16734,7 @@ msgid "Re: a KPI"
 msgstr "Re: KPI"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
 msgid "Re: a document"
 msgstr "Re: Документ"
 
@@ -17183,7 +17191,7 @@ msgid "Renews"
 msgstr "Продление"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:240
+#: ../turboui/src/InlineComments/Thread.tsx:254
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:155
 #: ../turboui/src/MilestonePage/index.tsx:376
 msgid "Reopen"
@@ -17316,12 +17324,13 @@ msgid "Reset your password"
 msgstr "Сбросьте пароль"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:240
+#: ../turboui/src/InlineComments/Thread.tsx:254
 msgid "Resolve"
 msgstr "Отметить как решённое"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:101
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:99
+#: ../turboui/src/InlineComments/Thread.tsx:106
 msgid "Resolved"
 msgstr "Решено"
 
@@ -17493,7 +17502,7 @@ msgstr "Заметки к итогам:"
 #: ../turboui/src/ContentListState/index.tsx:33
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:146
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:110
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:146
 msgid "Retry"
 msgstr "Повторить"
 
@@ -20778,7 +20787,7 @@ msgid "This code has expired. Request a new code to continue."
 msgstr "Срок действия кода истёк. Запросите новый код, чтобы продолжить."
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:114
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:150
 msgid "This comment thread is no longer available."
 msgstr "Эта ветка комментариев больше недоступна."
 
@@ -21099,7 +21108,7 @@ msgid "This package was exported from Operately %{manifestVersion}, but this ins
 msgstr "Этот пакет был экспортирован из Operately %{manifestVersion}, но этот экземпляр работает под управлением %{currentVersion}. Сбой импорта может быть связан с различиями версий."
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:103
+#: ../turboui/src/InlineComments/Thread.tsx:108
 msgid "This passage is no longer available."
 msgstr "Этот фрагмент больше недоступен."
 
@@ -23699,8 +23708,8 @@ msgid "a discussion"
 msgstr "обсуждение"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:78
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:122
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:73
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:117
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:75
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:126
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:127
@@ -23940,7 +23949,7 @@ msgid "commented on the discussion \"%{title}\""
 msgstr "— комментарий в обсуждении «%{title}»"
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:47
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:39
 msgid "commented on the document \"%{document_name}\""
 msgstr "— комментарий к документу «%{document_name}»"
 

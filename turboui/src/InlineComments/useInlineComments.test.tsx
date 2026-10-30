@@ -40,7 +40,12 @@ jest.mock("../CommentSection", () => ({
       if (initiallyActive) setActive(true);
     }, [initiallyActive]);
 
-    if (!active) return <button onClick={() => setActive(true)}>Write a reply</button>;
+    if (!active)
+      return (
+        <button data-test-id="inline-reply-button" onClick={() => setActive(true)}>
+          Write a reply
+        </button>
+      );
     return (
       <div>
         <textarea aria-label="Comment draft" value={text} onChange={(e) => setText(e.target.value)} />
@@ -129,6 +134,56 @@ function click(testId: string) {
   if (!element) throw new Error(`Missing ${testId}`);
   fireEvent.click(element);
 }
+
+it("opens all threads in a desktop panel, including resolved and unattached threads", () => {
+  const value = props({
+    canComment: false,
+    threads: [
+      thread,
+      { ...thread, id: "resolved", resolvedAt: "2026-10-30T12:00:00Z" },
+      {
+        ...thread,
+        id: "unattached",
+        anchor: { ...thread.anchor, status: "unattached", currentFrom: null, currentTo: null },
+      },
+    ],
+  });
+  render(<Harness value={value} />);
+  expect(document.querySelector('[data-test-id="inline-thread-resolved"]')).toBeNull();
+  act(() => review.openAllComments?.());
+  const panel = document.querySelector('[data-test-id="inline-comments-panel"]');
+  expect(panel).toBeVisible();
+  expect(panel?.querySelectorAll("[data-resolved]")).toHaveLength(3);
+  expect(panel?.querySelector('[data-test-id="inline-thread-resolved"]')).toBeVisible();
+  expect(panel?.querySelector('[data-test-id="inline-unattached"]')).toBeVisible();
+  expect(screen.queryByRole("textbox")).toBeNull();
+  click("slide-in-close-button");
+  expect(document.querySelector('[data-test-id="inline-comments-panel"]')).toBeNull();
+  expect(document.querySelector('[data-test-id="inline-thread-resolved"]')).toBeNull();
+});
+
+it.each([false, true])("only allows replies while the thread is open (all-comments panel: %s)", (showAll) => {
+  const value = props({ activeThreadId: thread.id });
+  const { rerender } = render(<Harness value={value} />);
+  if (showAll) act(() => review.openAllComments?.());
+  click("inline-reply-button");
+  expect(screen.getByRole("textbox")).toBeVisible();
+
+  rerender(<Harness value={{ ...value, threads: [{ ...thread, resolvedAt: thread.insertedAt }] }} />);
+  expect(screen.queryByRole("textbox")).toBeNull();
+  expect(document.querySelector('[data-test-id="inline-reply-button"]')).toBeNull();
+  expect(document.querySelector('[data-test-id="inline-resolve-one"]')).toBeInTheDocument();
+  expect(value.onReply).not.toHaveBeenCalled();
+
+  rerender(<Harness value={value} />);
+  expect(document.querySelector('[data-test-id="inline-reply-button"]')).toBeVisible();
+});
+
+it("shows an empty state in the all-comments panel", () => {
+  render(<Harness value={props({ threads: [] })} />);
+  act(() => review.openAllComments?.());
+  expect(document.querySelector('[data-test-id="inline-comments-empty"]')).toBeVisible();
+});
 
 it("captures the selection and preserves the draft through version conflicts", async () => {
   const onCreate = jest.fn(async () => "conflict" as const);
@@ -313,6 +368,6 @@ it("keeps a newly posted thread selected without activating its reply input", as
   expect(document.querySelector('[data-test-id="inline-thread-one"]')).toBeVisible();
   expect(document.querySelector('[data-test-id="inline-select-one"]')).toBeNull();
   expect(screen.queryByRole("textbox")).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Write a reply" }));
+  click("inline-reply-button");
   expect(screen.getByRole("textbox")).toBeVisible();
 });

@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type { JSONContent } from "@tiptap/core";
 import { DocumentPage, type DocumentInlineCommentsProps } from ".";
 import type { InlineThread, Person } from "../ApiTypes";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
+import { IconEdit, IconHistory } from "../icons";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 const meta = {
@@ -111,6 +113,7 @@ function Example({
   ownComment = false,
   inlineCommentsEnabled = true,
 }) {
+  const { t } = useTranslation();
   const [threads, setThreads] = React.useState(() =>
     empty
       ? []
@@ -244,6 +247,18 @@ function Example({
         mentionedPersonLookup={handlers.mentionedPersonLookup}
         taskList={{ canEdit: false }}
         inlineComments={inlineCommentsEnabled ? inlineComments : undefined}
+        options={[
+          {
+            type: "link",
+            icon: IconEdit,
+            label: t("Edit"),
+            link: "#edit",
+            keepOutsideOnBigScreen: true,
+            testId: "edit-document-link",
+            hidden: readOnly,
+          },
+          { type: "link", icon: IconHistory, label: t("History of changes"), link: "#history" },
+        ]}
         hideDraftActions
         hideReactions
         hideComments

@@ -8,6 +8,7 @@ import { CommentsPanel } from "./CommentsPanel";
 
 export function useInlineComments(props?: DocumentInlineCommentsProps) {
   const [open, setOpen] = React.useState(false);
+  const [showAll, setShowAll] = React.useState(false);
   const [replyThreadId, setReplyThreadId] = React.useState<string | null>(null);
   const [overlap, setOverlap] = React.useState<string[]>([]);
   const [selection, setSelection] = React.useState<InlineCommentTarget | null>(null);
@@ -42,6 +43,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
   React.useEffect(() => {
     composerVersion.current += 1;
     setOpen(false);
+    setShowAll(false);
     setReplyThreadId(null);
     setCreating(false);
     setTarget(null);
@@ -67,9 +69,10 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
 
   const close = () => {
     setOpen(false);
+    setShowAll(false);
     setReplyThreadId(null);
     props?.onSelectThread(null);
-    contentRef.current?.focus();
+    if (!showAll) contentRef.current?.focus();
   };
 
   // Open a reply only for explicit selection, not after creation or following a link.
@@ -121,6 +124,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
       comments: null,
       floatingAction: null,
       editorOptions: undefined,
+      openAllComments: undefined,
     };
 
   const staleTarget = conflict || target?.sourceVersion !== props.documentVersion;
@@ -189,16 +193,22 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
     hasFloatingComments,
     contentRef,
     editorOptions,
+    openAllComments: () => {
+      setShowAll(true);
+      setOpen(true);
+      setSelectionRange(null);
+    },
     floatingAction:
       selectionRange && props.canComment ? <SelectionAction range={selectionRange} onAdd={start} /> : null,
     comments: (
       <CommentsPanel
         props={props}
-        threads={visibleThreads}
+        threads={showAll ? props.threads : visibleThreads}
         replyThreadId={replyThreadId}
         onSelectThread={selectThread}
         composer={composer}
         mobile={mobile}
+        showAll={showAll}
         open={open}
         onClose={close}
         contentRef={contentRef}
