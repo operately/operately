@@ -1649,6 +1649,11 @@ msgid "%{author} edited <resources/> in the <parent>%{parentName}</parent> space
 msgstr "%{author} a modifié <resources/> dans l’espace <parent>%{parentName}</parent>"
 
 #.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:40
+msgid "%{author} edited a KPI"
+msgstr "%{author} a modifié un KPI"
+
+#.frontend
 #: assets/js/features/activities/KpiAnnotationEdited/index.tsx:41
 msgid "%{author} edited a KPI annotation"
 msgstr "%{author} a modifié une annotation d’un KPI"
@@ -1657,6 +1662,11 @@ msgstr "%{author} a modifié une annotation d’un KPI"
 #: assets/js/features/activities/KpiAnnotationEdited/index.tsx:45
 msgid "%{author} edited a KPI annotation in the <space>%{spaceName}</space> space"
 msgstr "%{author} a modifié une annotation d’un KPI dans l’espace <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:44
+msgid "%{author} edited a KPI in the <space>%{spaceName}</space> space"
+msgstr "%{author} a modifié un KPI dans l’espace <space>%{spaceName}</space>"
 
 #.frontend
 #: assets/js/features/activities/KpiEntryEdited/index.tsx:41
@@ -2023,6 +2033,16 @@ msgstr "%{author} a réattribué le rôle de %{role} à %{personName} pour le pr
 #: assets/js/features/activities/ProjectContributorEdited/index.tsx:64
 msgid "%{author} reassigned %{personName} as a %{role} on the project"
 msgstr "%{author} a réattribué le rôle de %{role} à %{personName} pour le projet"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:42
+msgid "%{author} recorded a KPI value"
+msgstr "%{author} a enregistré une valeur de KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:46
+msgid "%{author} recorded a KPI value in the <space>%{spaceName}</space> space"
+msgstr "%{author} a enregistré une valeur de KPI dans l’espace <space>%{spaceName}</space>"
 
 #.frontend
 #: assets/js/features/activities/CompanyOwnerRemoving/index.tsx:38
@@ -10142,6 +10162,11 @@ msgid "Edited"
 msgstr "Modifié"
 
 #.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:69
+msgid "Edited KPI: %{kpiName}"
+msgstr "KPI modifié : %{kpiName}"
+
+#.frontend
 #: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
 msgid "Edited a file"
 msgstr "A modifié un fichier"
@@ -12635,6 +12660,7 @@ msgstr "Modèle de KPI"
 #.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:56
 #: assets/js/features/activities/KpiDeleted/index.tsx:51
+#: assets/js/features/activities/KpiEdited/index.tsx:53
 msgid "KPI: %{kpiName}"
 msgstr "KPI : %{kpiName}"
 
@@ -12650,6 +12676,7 @@ msgstr "KPI : %{title}"
 
 #.frontend
 #: assets/js/features/activities/KpiEntryDeleted/index.tsx:58
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:59
 msgid "KPI: %{value}"
 msgstr "KPI : %{value}"
 
@@ -16763,6 +16790,16 @@ msgstr "Enregistrez la valeur actuelle en <unit>%{unit}</unit>."
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:194
 msgid "Record update"
 msgstr "Enregistrer une valeur"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:90
+msgid "Recorded %{value} for %{kpiName}"
+msgstr "Valeur %{value} enregistrée pour %{kpiName}"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:89
+msgid "Recorded KPI value: %{value}"
+msgstr "Valeur de KPI enregistrée : %{value}"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:423

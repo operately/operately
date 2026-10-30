@@ -1654,6 +1654,11 @@ msgid "%{author} edited <resources/> in the <parent>%{parentName}</parent> space
 msgstr "%{author}: изменены материалы <resources/> в пространстве <parent>%{parentName}</parent>"
 
 #.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:40
+msgid "%{author} edited a KPI"
+msgstr "%{author}: KPI изменён"
+
+#.frontend
 #: assets/js/features/activities/KpiAnnotationEdited/index.tsx:41
 msgid "%{author} edited a KPI annotation"
 msgstr "%{author}: изменено примечание к KPI"
@@ -1662,6 +1667,11 @@ msgstr "%{author}: изменено примечание к KPI"
 #: assets/js/features/activities/KpiAnnotationEdited/index.tsx:45
 msgid "%{author} edited a KPI annotation in the <space>%{spaceName}</space> space"
 msgstr "%{author}: изменено примечание к KPI в пространстве <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:44
+msgid "%{author} edited a KPI in the <space>%{spaceName}</space> space"
+msgstr "%{author}: в пространстве <space>%{spaceName}</space> изменён KPI"
 
 #.frontend
 #: assets/js/features/activities/KpiEntryEdited/index.tsx:41
@@ -2030,6 +2040,16 @@ msgstr "%{author}: участнику %{personName} переназначена �
 #: assets/js/features/activities/ProjectContributorEdited/index.tsx:64
 msgid "%{author} reassigned %{personName} as a %{role} on the project"
 msgstr "%{author}: участнику %{personName} переназначена роль «%{role}» в проекте"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:42
+msgid "%{author} recorded a KPI value"
+msgstr "%{author}: записано значение KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:46
+msgid "%{author} recorded a KPI value in the <space>%{spaceName}</space> space"
+msgstr "%{author}: в пространстве <space>%{spaceName}</space> записано значение KPI"
 
 #.frontend
 #: assets/js/features/activities/CompanyOwnerRemoving/index.tsx:38
@@ -10317,6 +10337,11 @@ msgid "Edited"
 msgstr "Изменено"
 
 #.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:69
+msgid "Edited KPI: %{kpiName}"
+msgstr "Изменён KPI: %{kpiName}"
+
+#.frontend
 #: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
 msgid "Edited a file"
 msgstr "Файл изменён"
@@ -12814,6 +12839,7 @@ msgstr "Шаблон KPI"
 #.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:56
 #: assets/js/features/activities/KpiDeleted/index.tsx:51
+#: assets/js/features/activities/KpiEdited/index.tsx:53
 msgid "KPI: %{kpiName}"
 msgstr "KPI: %{kpiName}"
 
@@ -12829,6 +12855,7 @@ msgstr "KPI: %{title}"
 
 #.frontend
 #: assets/js/features/activities/KpiEntryDeleted/index.tsx:58
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:59
 msgid "KPI: %{value}"
 msgstr "KPI: %{value}"
 
@@ -16946,6 +16973,16 @@ msgstr "Запишите текущее значение в <unit>%{unit}</unit>
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:194
 msgid "Record update"
 msgstr "Записать значение"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:90
+msgid "Recorded %{value} for %{kpiName}"
+msgstr "Записано значение %{value} для %{kpiName}"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:89
+msgid "Recorded KPI value: %{value}"
+msgstr "Записано значение KPI: %{value}"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:423
