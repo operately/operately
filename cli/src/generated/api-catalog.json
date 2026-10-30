@@ -418,9 +418,9 @@
         "goal",
         "milestone",
         "document",
+        "kpi",
         "project_check_in",
         "project_retrospective",
-        "kpi",
         "project_discussion",
         "goal_discussion",
         "goal_check_in",
@@ -528,6 +528,10 @@
         },
         {
           "name": "activity_content_kpi_created",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_kpi_deleted",
           "kind": "named"
         },
         {
@@ -24229,6 +24233,43 @@
             "name": "resolved",
             "type": {
               "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_kpi_deleted": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "kpi_name",
+            "type": {
+              "name": "string",
               "kind": "named"
             },
             "optional": false,

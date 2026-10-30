@@ -520,6 +520,12 @@ export interface ActivityContentKpiCreated {
   kpiName: string;
 }
 
+export interface ActivityContentKpiDeleted {
+  __typename: "activity_content_kpi_deleted";
+  space: Space | null;
+  kpiName: string;
+}
+
 export interface ActivityContentKpiEntryCommented {
   __typename: "activity_content_kpi_entry_commented";
   space: Space;
@@ -2963,6 +2969,7 @@ export type ActivityContent =
   | ActivityContentDiscussionEditing
   | ActivityContentDiscussionPosting
   | ActivityContentKpiCreated
+  | ActivityContentKpiDeleted
   | ActivityContentKpiEntryCommented
   | ActivityContentKpiEntryEdited
   | ActivityContentKpiEntryDeleted
