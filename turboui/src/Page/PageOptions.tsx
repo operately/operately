@@ -11,7 +11,8 @@ import { IconX, IconDots } from "../icons";
 import { createTestId } from "../TestableElement";
 import { useWindowSizeBiggerOrEqualTo } from "../utils/useWindowSizeBreakpoint";
 
-import classNames from "classnames";
+const iconButtonClassName =
+  "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md cursor-pointer text-content-dimmed hover:text-content-base hover:bg-surface-dimmed focus-visible:text-content-base focus-visible:bg-surface-dimmed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-1";
 
 export function PageOptions({ options, testId = "options-button" }: { options?: Page.Option[]; testId?: string }) {
   const [open, setOpen] = React.useState(false);
@@ -74,7 +75,7 @@ function OutsideIcon(props: Page.Option) {
           onClick={props.type === "action" ? props.onClick : undefined}
           ariaLabel={props.label}
           testId={props.testId ?? "page-option-" + createTestId(props.label)}
-          className="p-1 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-md focus-visible:ring-2 focus-visible:ring-brand-1"
+          className={iconButtonClassName}
         >
           {React.createElement(props.icon, { size: 22, "aria-hidden": true })}
           <span className="sr-only">{props.label}</span>
@@ -105,14 +106,9 @@ function OutsideAction(props: Page.Option) {
 }
 
 function Trigger({ testId }: { testId: string }) {
-  const className = classNames({
-    "rounded-full border border-surface-outline cursor-pointer": true,
-    "p-1 hover:bg-surface-dimmed": true,
-  });
-
   return (
-    <DropdownMenu.Trigger className={className} data-test-id={testId}>
-      <IconDots size={20} />
+    <DropdownMenu.Trigger className={iconButtonClassName} data-test-id={testId}>
+      <IconDots size={22} />
     </DropdownMenu.Trigger>
   );
 }
