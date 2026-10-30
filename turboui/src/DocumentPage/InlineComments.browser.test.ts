@@ -46,6 +46,43 @@ async function selectPassage() {
   await page.locator('[data-test-id="inline-add-selection"]').click();
 }
 
+test("offers Add comment only after releasing a text-selection drag", async () => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await visit();
+  const paragraph = page.locator('.ProseMirror[contenteditable="false"] p').first();
+  await paragraph.scrollIntoViewIfNeeded();
+  const points = await paragraph.evaluate((element) => {
+    const text = document.createTreeWalker(element, NodeFilter.SHOW_TEXT).nextNode();
+    if (!text) throw new Error("Missing passage text");
+    const pointAt = (offset: number) => {
+      const range = document.createRange();
+      range.setStart(text, offset);
+      range.setEnd(text, offset + 1);
+      const rect = range.getBoundingClientRect();
+      return { x: rect.left + 1, y: rect.top + rect.height / 2 };
+    };
+    return { start: pointAt(0), middle: pointAt(3), end: pointAt(6) };
+  });
+  const action = page.locator('[data-test-id="inline-add-selection"]');
+  await page.mouse.move(points.start.x, points.start.y);
+  await page.mouse.down();
+  for (const point of [points.middle, points.end]) {
+    await page.mouse.move(point.x, point.y, { steps: 5 });
+    await page.waitForFunction(() => Boolean(window.getSelection()?.toString()));
+    // Allow selection notifications and the floating action's measurement to settle.
+    await page.evaluate(
+      () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))),
+    );
+    assert.equal(await action.count(), 0);
+  }
+  const selectedText = await page.evaluate(() => window.getSelection()?.toString());
+  await page.mouse.up();
+  await action.waitFor({ state: "visible" });
+  assert.equal(await page.evaluate(() => window.getSelection()?.toString()), selectedText);
+  await action.click();
+  await page.locator('[data-test-id="inline-new-thread"]').waitFor();
+});
+
 test.each([1440, 390])("header comments button opens all threads at %s px", async (width) => {
   await page.setViewportSize({ width, height: 1000 });
   await visit();

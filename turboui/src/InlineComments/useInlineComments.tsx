@@ -24,6 +24,16 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
   const frame = React.useRef<number>();
   const composerVersion = React.useRef(0);
 
+  const cancelPointerSelection = React.useCallback(() => {
+    if (frame.current !== undefined) cancelAnimationFrame(frame.current);
+    setSelectionRange(null);
+  }, []);
+  const selectingWithPointer = usePointerSelection(contentRef, {
+    enabled: props?.canComment ?? false,
+    resetKey: props?.draftKey,
+    onCancel: cancelPointerSelection,
+  });
+
   // Switch between floating cards and the mobile panel at the desktop breakpoint.
   React.useEffect(() => {
     if (typeof matchMedia === "undefined") return;
@@ -199,7 +209,9 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
       setSelectionRange(null);
     },
     floatingAction:
-      selectionRange && props.canComment ? <SelectionAction range={selectionRange} onAdd={start} /> : null,
+      selectionRange && props.canComment && !selectingWithPointer ? (
+        <SelectionAction range={selectionRange} onAdd={start} />
+      ) : null,
     comments: (
       <CommentsPanel
         props={props}
@@ -215,4 +227,44 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
       />
     ),
   };
+}
+
+// Keep tracking the selection, but offer its action only after the drag ends.
+function usePointerSelection(
+  contentRef: React.RefObject<HTMLElement>,
+  { enabled, resetKey, onCancel }: { enabled: boolean; resetKey?: string; onCancel: () => void },
+) {
+  const [selectingWithPointer, setSelectingWithPointer] = React.useState(false);
+
+  React.useEffect(() => {
+    setSelectingWithPointer(false);
+  }, [resetKey, enabled]);
+
+  React.useEffect(() => {
+    if (!enabled) return;
+
+    const beginSelection = (event: PointerEvent) => {
+      if (event.button !== 0 || !(event.target instanceof Node)) return;
+      if (contentRef.current?.contains(event.target)) setSelectingWithPointer(true);
+    };
+    const finishSelection = () => setSelectingWithPointer(false);
+    const cancelSelection = () => {
+      setSelectingWithPointer(false);
+      onCancel();
+    };
+
+    // Capture release outside the content, including events stopped by other controls.
+    window.addEventListener("pointerdown", beginSelection, true);
+    window.addEventListener("pointerup", finishSelection, true);
+    window.addEventListener("pointercancel", cancelSelection, true);
+    window.addEventListener("blur", cancelSelection);
+    return () => {
+      window.removeEventListener("pointerdown", beginSelection, true);
+      window.removeEventListener("pointerup", finishSelection, true);
+      window.removeEventListener("pointercancel", cancelSelection, true);
+      window.removeEventListener("blur", cancelSelection);
+    };
+  }, [contentRef, enabled, onCancel]);
+
+  return selectingWithPointer;
 }

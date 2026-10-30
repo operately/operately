@@ -119,21 +119,61 @@ function Harness({ value }: { value?: DocumentInlineCommentsProps }) {
     </MemoryRouter>
   );
 }
-function select() {
+function select(to = 5) {
   const range = document.createRange();
   const text = screen.getByTestId("document-content").firstChild;
   if (!text) throw new Error("Missing document text");
   range.setStart(text, 0);
-  range.setEnd(text, 5);
+  range.setEnd(text, to);
   window.getSelection()?.removeAllRanges();
   window.getSelection()?.addRange(range);
-  act(() => review.editorOptions?.onSelectionChange?.({ from: 1, to: 6, quote: "Hello" }));
+  act(() => review.editorOptions?.onSelectionChange?.({ from: 1, to: to + 1, quote: range.toString() }));
 }
 function click(testId: string) {
   const element = document.querySelector<HTMLElement>(`[data-test-id="${testId}"]`);
   if (!element) throw new Error(`Missing ${testId}`);
   fireEvent.click(element);
 }
+
+it.each(["content", "outside"])(
+  "waits for pointer release on %s before offering the final selection",
+  async (releaseOn) => {
+    const value = props();
+    render(<Harness value={value} />);
+    const content = screen.getByTestId("document-content");
+    select();
+    expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeVisible();
+
+    fireEvent(content, new MouseEvent("pointerdown", { bubbles: true, button: 0 }));
+    expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeNull();
+    select(11);
+    expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeNull();
+
+    fireEvent.pointerUp(releaseOn === "content" ? content : document.body);
+    click("inline-add-selection");
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    await waitFor(() =>
+      expect(value.onCreate).toHaveBeenCalledWith(
+        { sourceVersion: 1, from: 1, to: 12, quote: "Hello world" },
+        expect.anything(),
+      ),
+    );
+  },
+);
+
+it.each(["pointercancel", "blur"])(
+  "clears interrupted pointer selection on %s without blocking keyboard selection",
+  (event) => {
+    render(<Harness value={props()} />);
+    fireEvent(screen.getByTestId("document-content"), new MouseEvent("pointerdown", { bubbles: true, button: 0 }));
+    select();
+    fireEvent(window, new Event(event));
+    expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeNull();
+
+    select(11);
+    expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeVisible();
+  },
+);
 
 it("opens all threads in a desktop panel, including resolved and unattached threads", () => {
   const value = props({
