@@ -66,6 +66,7 @@ export default ActivityHandler;
 
 export const DISPLAYED_IN_FEED = [
   "kpi_created",
+  "kpi_deleted",
   "kpi_entry_commented",
   "kpi_entry_edited",
   "kpi_entry_deleted",
@@ -216,6 +217,7 @@ import GoalCheckInCommented from "@/features/activities/GoalCheckInCommented";
 import GoalClosing from "@/features/activities/GoalClosing";
 import GoalCreated from "@/features/activities/GoalCreated";
 import KpiCreated from "@/features/activities/KpiCreated";
+import KpiDeleted from "@/features/activities/KpiDeleted";
 import KpiEntryCommented from "@/features/activities/KpiEntryCommented";
 import KpiEntryEdited from "@/features/activities/KpiEntryEdited";
 import KpiEntryDeleted from "@/features/activities/KpiEntryDeleted";
@@ -340,6 +342,7 @@ function handler(activity: Activity) {
     .with("goal_closing", () => GoalClosing)
     .with("goal_created", () => GoalCreated)
     .with("kpi_created", () => KpiCreated)
+    .with("kpi_deleted", () => KpiDeleted)
     .with("kpi_entry_commented", () => KpiEntryCommented)
     .with("kpi_entry_edited", () => KpiEntryEdited)
     .with("kpi_entry_deleted", () => KpiEntryDeleted)
