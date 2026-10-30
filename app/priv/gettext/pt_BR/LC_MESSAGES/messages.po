@@ -105,22 +105,22 @@ msgid "%{author} <action>commented</action> on <discussion>%{title}</discussion>
 msgstr "%{author} <action>comentou</action> em <discussion>%{title}</discussion> no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:72
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:67
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document>"
 msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:65
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:60
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> goal"
 msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document> no objetivo <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:61
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:56
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> project"
 msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document> no projeto <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:69
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:64
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> space"
 msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document> no espaço <parent>%{parentName}</parent>"
 
@@ -3278,7 +3278,7 @@ msgid "(%{location}) %{author} commented on the project retrospective"
 msgstr "(%{location}) %{author} comentou na retrospectiva do projeto"
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:23
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:19
 msgid "(%{location}) %{author} commented on: %{document_name}"
 msgstr "(%{location}) %{author} comentou em: %{document_name}"
 
@@ -7840,7 +7840,6 @@ msgstr "Host do cliente"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:197
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:63
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:68
 #: ../turboui/src/Modal/index.tsx:143
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:94
 #: ../turboui/src/SlideIn/index.tsx:126
@@ -8030,7 +8029,7 @@ msgstr "Comentário não publicado"
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentItem.tsx:361
-#: ../turboui/src/InlineComments/Thread.tsx:52
+#: ../turboui/src/InlineComments/Thread.tsx:57
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:84
 #: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
 msgid "Comment not updated"
@@ -8069,7 +8068,7 @@ msgid "Comments and task updates will appear here"
 msgstr "Comentários e atualizações de tarefas aparecerão aqui"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:108
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:144
 msgid "Comments could not be loaded."
 msgstr "Não foi possível carregar os comentários."
 
@@ -10160,6 +10159,7 @@ msgstr "Versão anterior"
 #: ../turboui/src/Checklist/index.tsx:520
 #: ../turboui/src/CommentSection/CommentItem.tsx:259
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:68
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:254
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
@@ -12249,6 +12249,7 @@ msgid "History"
 msgstr "Histórico"
 
 #.frontend
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:260
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:93
 #: assets/js/pages/ResourceHubDocumentPage/Options.tsx:60
 #: assets/js/pages/ResourceHubDocumentVersionComparisonPage/navigation.tsx:18
@@ -12424,7 +12425,9 @@ msgid "Information"
 msgstr "Informações"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:59
+#: ../turboui/src/DocumentPage/index.tsx:134
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:76
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:82
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:16
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:23
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:43
@@ -12503,7 +12506,7 @@ msgid "Invalid activation code"
 msgstr "Código de ativação inválido"
 
 #.elixir
-#: lib/operately_web/api/companies/list_activities.ex:174
+#: lib/operately_web/api/companies/list_activities.ex:167
 msgid "Invalid activity cursor"
 msgstr "Cursor de atividade inválido"
 
@@ -13360,7 +13363,7 @@ msgid "Loading check-ins"
 msgstr "Carregando check-ins"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:103
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:139
 msgid "Loading comments..."
 msgstr "Carregando comentários..."
 
@@ -14711,6 +14714,11 @@ msgstr "Nenhum objetivo para mostrar."
 #: ../turboui/src/CompanyImportPage/index.tsx:288
 msgid "No imports yet. Upload a package above to create the first one."
 msgstr "Nenhuma importação ainda. Envie um pacote acima para criar a primeira."
+
+#.frontend
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:89
+msgid "No inline comments yet."
+msgstr "Ainda não há comentários no texto."
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:464
@@ -16191,7 +16199,7 @@ msgstr "Tente novamente"
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:88
 #: ../turboui/src/CommentSection/CommentItem.tsx:215
-#: ../turboui/src/InlineComments/Thread.tsx:52
+#: ../turboui/src/InlineComments/Thread.tsx:57
 #: ../turboui/src/Reactions/index.tsx:58
 #: ../turboui/src/Reactions/index.tsx:204
 #: assets/js/models/people/usePeopleSearchError.ts:7
@@ -16960,7 +16968,7 @@ msgstr "Reabriu o marco: %{title}"
 #: assets/js/features/activities/KpiEntryCommented/index.tsx:121
 #: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:120
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:108
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
 #: assets/js/features/activities/ResourceHubFileCommented/index.tsx:113
 #: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:111
 #: assets/js/features/activities/SpaceTaskCommented/index.tsx:111
@@ -16974,7 +16982,7 @@ msgid "Re: a KPI"
 msgstr "Re: um KPI"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
 msgid "Re: a document"
 msgstr "Re: um documento"
 
@@ -17446,7 +17454,7 @@ msgid "Renews"
 msgstr "Renova em"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:240
+#: ../turboui/src/InlineComments/Thread.tsx:254
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:155
 #: ../turboui/src/MilestonePage/index.tsx:376
 msgid "Reopen"
@@ -17589,12 +17597,13 @@ msgid "Reset your password"
 msgstr "Redefina sua senha"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:240
+#: ../turboui/src/InlineComments/Thread.tsx:254
 msgid "Resolve"
 msgstr "Resolver"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:101
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:99
+#: ../turboui/src/InlineComments/Thread.tsx:106
 msgid "Resolved"
 msgstr "Resolvido"
 
@@ -17771,7 +17780,7 @@ msgstr "Notas da retrospectiva:"
 #: ../turboui/src/ContentListState/index.tsx:33
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:146
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:110
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:146
 msgid "Retry"
 msgstr "Tentar novamente"
 
@@ -21073,7 +21082,7 @@ msgid "This code has expired. Request a new code to continue."
 msgstr "Este código expirou. Solicite um novo código para continuar."
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:114
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:150
 msgid "This comment thread is no longer available."
 msgstr "Esta conversa de comentários não está mais disponível."
 
@@ -21404,7 +21413,7 @@ msgid "This package was exported from Operately %{manifestVersion}, but this ins
 msgstr "Este pacote foi exportado do Operately %{manifestVersion}, mas esta instância está na versão %{currentVersion}. A falha na importação pode estar relacionada às diferenças de versão."
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:103
+#: ../turboui/src/InlineComments/Thread.tsx:108
 msgid "This passage is no longer available."
 msgstr "Este trecho não está mais disponível."
 
@@ -24052,8 +24061,8 @@ msgid "a discussion"
 msgstr "uma discussão"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:78
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:122
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:73
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:117
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:75
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:126
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:127
@@ -24338,7 +24347,7 @@ msgid "commented on the discussion \"%{title}\""
 msgstr "comentou na discussão \"%{title}\""
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:47
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:39
 msgid "commented on the document \"%{document_name}\""
 msgstr "comentou no documento \"%{document_name}\""
 

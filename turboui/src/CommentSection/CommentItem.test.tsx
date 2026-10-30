@@ -78,6 +78,41 @@ const form: CommentFormState = {
   deleteComment: jest.fn(),
 };
 
+it("disabling editing closes an open editor and retains the delete action", async () => {
+  const user = userEvent.setup();
+  const item = (editDisabled: boolean) => (
+    <MemoryRouter>
+      <CommentItem
+        comment={comment}
+        form={form}
+        commentParentType="inline_thread"
+        canComment
+        currentUserId={comment.author.id}
+        appearance="inline"
+        initiallyEditing
+        editDisabled={editDisabled}
+        richTextHandlers={{
+          mentionedPersonLookup: async () => null,
+          resolveResourceLinks: null,
+          taskList: { canEdit: false },
+          onCommentTaskItemChange: null,
+        }}
+        formattedTimePreferences={defaultFormattedTimePreferences}
+      />
+    </MemoryRouter>
+  );
+  const { rerender } = render(item(false));
+  expect(getByTestId("edit-comment-form")).toBeInTheDocument();
+  rerender(item(true));
+  expect(document.querySelector('[data-test-id="edit-comment-form"]')).toBeNull();
+  await user.click(getByTestId("comment-options"));
+  expect(document.querySelector('[data-test-id="edit-comment"]')).toBeNull();
+  expect(getByTestId("delete-comment")).toBeInTheDocument();
+  await user.keyboard("{Escape}");
+  rerender(item(false));
+  expect(getByTestId("edit-comment-form")).toBeInTheDocument();
+});
+
 function getByTestId(testId: string) {
   const el = document.querySelector<HTMLElement>(`[data-test-id="${testId}"]`);
   if (!el) throw new Error(`Could not find element with data-test-id="${testId}"`);

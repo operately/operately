@@ -4,12 +4,15 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Page } from ".";
 import { match } from "ts-pattern";
 import { SecondaryButton } from "../Button";
+import { UnstyledButton } from "../Button/UnstalyedButton";
+import { Tooltip } from "../Tooltip";
 import { DivLink } from "../Link";
 import { IconX, IconDots } from "../icons";
 import { createTestId } from "../TestableElement";
 import { useWindowSizeBiggerOrEqualTo } from "../utils/useWindowSizeBreakpoint";
 
-import classNames from "classnames";
+const iconButtonClassName =
+  "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md cursor-pointer text-content-dimmed hover:text-content-base hover:bg-surface-dimmed focus-visible:text-content-base focus-visible:bg-surface-dimmed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-1";
 
 export function PageOptions({ options, testId = "options-button" }: { options?: Page.Option[]; testId?: string }) {
   const [open, setOpen] = React.useState(false);
@@ -50,12 +53,35 @@ function OutsideButtons({ options }: { options: Page.Option[] }) {
   return (
     <div className="flex items-center gap-2">
       {options.map((option, index) =>
-        match(option.type)
-          .with("link", () => <OutsideLink key={index} {...option} />)
-          .with("action", () => <OutsideAction key={index} {...option} />)
-          .exhaustive(),
+        option.iconOnly ? (
+          <OutsideIcon key={index} {...option} />
+        ) : (
+          match(option.type)
+            .with("link", () => <OutsideLink key={index} {...option} />)
+            .with("action", () => <OutsideAction key={index} {...option} />)
+            .exhaustive()
+        ),
       )}
     </div>
+  );
+}
+
+function OutsideIcon(props: Page.Option) {
+  return (
+    <Tooltip content={props.label} size="sm">
+      <span className="flex">
+        <UnstyledButton
+          linkTo={props.type === "link" ? props.link : undefined}
+          onClick={props.type === "action" ? props.onClick : undefined}
+          ariaLabel={props.label}
+          testId={props.testId ?? "page-option-" + createTestId(props.label)}
+          className={iconButtonClassName}
+        >
+          {React.createElement(props.icon, { size: 22, "aria-hidden": true })}
+          <span className="sr-only">{props.label}</span>
+        </UnstyledButton>
+      </span>
+    </Tooltip>
   );
 }
 
@@ -80,14 +106,9 @@ function OutsideAction(props: Page.Option) {
 }
 
 function Trigger({ testId }: { testId: string }) {
-  const className = classNames({
-    "rounded-full border border-surface-outline cursor-pointer": true,
-    "p-1 hover:bg-surface-dimmed": true,
-  });
-
   return (
-    <DropdownMenu.Trigger className={className} data-test-id={testId}>
-      <IconDots size={20} />
+    <DropdownMenu.Trigger className={iconButtonClassName} data-test-id={testId}>
+      <IconDots size={22} />
     </DropdownMenu.Trigger>
   );
 }
@@ -166,15 +187,11 @@ function Close({ onClick }) {
 }
 
 function splitOptions(isBigScreen: boolean, options: Page.Option[]): [Page.Option[], Page.Option[]] {
-  if (!isBigScreen) {
-    return [[], options];
-  }
-
   const outside: Page.Option[] = [];
   const inside: Page.Option[] = [];
 
   for (const option of options) {
-    if (option.keepOutsideOnBigScreen) {
+    if (option.keepOutside || (isBigScreen && option.keepOutsideOnBigScreen)) {
       outside.push(option);
     } else {
       inside.push(option);
