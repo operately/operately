@@ -5,6 +5,7 @@ import React from "react";
 import { Trans } from "../i18n";
 import { activityAuthorName, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
+import { hasAggregatedMilestones, UpdatedMilestoneGroup } from "../milestoneUpdatedResources";
 
 const MilestoneDeleting: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -28,6 +29,7 @@ const MilestoneDeleting: ActivityHandler = {
   },
 
   FeedItemTitle(props: FeedItemProps) {
+    if (hasAggregatedMilestones(props.activity)) return <UpdatedMilestoneGroup {...props} />;
     const { paths } = props;
     const { milestoneName, project } = content(props.activity);
 

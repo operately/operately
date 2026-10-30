@@ -5,7 +5,12 @@ import { aggregateConsecutiveFeedActivities, type Activity } from "@/models/acti
 import Handler from ".";
 import { usePaths } from "@/routes/paths";
 
+jest.mock("../../../../../../turboui/node_modules/react", () => jest.requireActual("react"));
+jest.mock("../../../../../../turboui/src/Link", () => ({
+  Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
+}));
 jest.mock("turboui", () => ({
+  ...jest.requireActual("../../../../../../turboui/src/ActivityResourceList"),
   Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
 }));
 jest.mock("@/contexts/TimezoneContext", () => ({ useLocale: () => "en" }));

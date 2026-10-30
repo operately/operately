@@ -185,7 +185,7 @@ function ActivityGroupItems({
   targetRef: React.RefCallback<HTMLDivElement>;
 }) {
   return (
-    <div className="flex-1 flex flex-col gap-4">
+    <div className="min-w-0 flex-1 flex flex-col gap-4">
       {group.activities.map((activity) => (
         <ErrorBoundary key={activity.id} fallback={<div>{activity.action}</div>}>
           <ActivityItem
@@ -226,7 +226,7 @@ function ActivityItem({
 
   return (
     <div
-      className={classNames("group flex flex-1 gap-3", alignement)}
+      className={classNames("group min-w-0 flex flex-1 gap-3", alignement)}
       data-test-id="feed-activity-item"
       data-activity-id={activity.id}
       ref={targetRef}
@@ -235,7 +235,7 @@ function ActivityItem({
         <Avatar person={author!} size="small" />
       </DivLink>
 
-      <div className="w-full break-words -mt-0.5">
+      <div className="min-w-0 w-full break-words -mt-0.5">
         <div className="text-sm font-bold text-content-accent">{title}</div>
         {content && <div className="text-sm w-full mt-0.5">{content}</div>}
       </div>
