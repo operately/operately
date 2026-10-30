@@ -1412,6 +1412,16 @@ msgid "%{author} deleted \"%{fileName}\" from <hub>%{hubName}</hub> in the <pare
 msgstr "%{author} a supprimé « %{fileName} » de <hub>%{hubName}</hub> dans l’espace <parent>%{parentName}</parent>"
 
 #.frontend
+#: assets/js/features/activities/KpiDeleted/index.tsx:38
+msgid "%{author} deleted a KPI"
+msgstr "%{author} a supprimé un KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiDeleted/index.tsx:42
+msgid "%{author} deleted a KPI in the <space>%{spaceName}</space> space"
+msgstr "%{author} a supprimé un KPI dans l’espace <space>%{spaceName}</space>"
+
+#.frontend
 #: assets/js/features/activities/KpiEntryDeleted/index.tsx:42
 msgid "%{author} deleted a KPI update"
 msgstr "%{author} a supprimé une valeur enregistrée d’un KPI"
@@ -9302,6 +9312,11 @@ msgid "Delete “%{name}”?"
 msgstr "Supprimer « %{name} » ?"
 
 #.frontend
+#: assets/js/features/activities/KpiDeleted/index.tsx:67
+msgid "Deleted KPI: %{kpiName}"
+msgstr "KPI supprimé : %{kpiName}"
+
+#.frontend
 #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
 msgid "Deleted a document"
 msgstr "A supprimé un document"
@@ -12619,6 +12634,7 @@ msgstr "Modèle de KPI"
 
 #.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:56
+#: assets/js/features/activities/KpiDeleted/index.tsx:51
 msgid "KPI: %{kpiName}"
 msgstr "KPI : %{kpiName}"
 
