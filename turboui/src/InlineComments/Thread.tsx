@@ -224,7 +224,7 @@ function ThreadMessages({
           />
         );
       })}
-      {props.canComment && (
+      {props.canComment && !thread.resolvedAt && (
         <CommentInput
           compact
           hideToolbar

@@ -67,9 +67,11 @@ test.each([1440, 390])("header comments button opens all threads at %s px", asyn
   const resolvedGroup = dialog.locator('[data-test-id="inline-comments-resolved"]');
   await resolvedGroup.locator('[data-test-id="inline-thread-resolved"]').waitFor();
   const resolved = dialog.locator('[data-test-id="inline-thread-resolved"]');
+  assert.equal(await resolved.locator('[data-test-id="add-comment"], [contenteditable="true"]').count(), 0);
   await resolved.hover();
   await resolved.locator('[data-test-id="inline-resolve-resolved"]').click();
   await dialog.locator('[data-test-id="inline-thread-resolved"][data-resolved="false"]').waitFor();
+  await resolved.locator('[data-test-id="add-comment"]').waitFor();
   assert.equal(await resolvedGroup.count(), 0);
   await dialog.locator('[data-test-id="slide-in-close-button"]').focus();
   await page.keyboard.press("Escape");
