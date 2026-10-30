@@ -68,19 +68,13 @@ export function CommentsPanel({
         <SlideIn
           isOpen={open}
           onClose={onClose}
-          width="100%"
+          width="min(28rem, 100%)"
           title={t("Inline comments")}
-          showCloseButton={false}
           closeOnBackdropClick={false}
           trapFocus
           testId="inline-comments-mobile"
         >
-          <div className="p-4 space-y-4" data-test-id="inline-comments-panel">
-            <div className="flex justify-end">
-              <SecondaryButton size="xxs" onClick={onClose}>
-                {t("Close")}
-              </SecondaryButton>
-            </div>
+          <div className="p-4 pt-12 space-y-4" data-test-id="inline-comments-panel">
             {status}
             {composer?.content}
             {items.map((item) => (

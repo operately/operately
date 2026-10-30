@@ -4,6 +4,19 @@ import { waitForPageReady } from "@storybook/test-runner";
 
 declare const page: Page;
 
+async function waitForMenuAnimations() {
+  await page.getByRole("menu").evaluateAll(async (menus) => {
+    await Promise.all(
+      menus.flatMap((menu) =>
+        menu
+          .getAnimations()
+          .filter((animation) => animation.playState === "running")
+          .map((animation) => animation.finished),
+      ),
+    );
+  });
+}
+
 describe("Board column colors in a browser", () => {
   test.each([
     [1280, "light"],
@@ -35,11 +48,15 @@ describe("Board column colors in a browser", () => {
       let selectedMode = "soft";
       for (const mode of ["vivid", "bordered", "none", "soft"]) {
         await display.click();
+        await page.locator('[data-test-id="display-menu"]').waitFor();
+        // Opening a submenu while its parent moves can dismiss it during pointer travel.
+        await waitForMenuAnimations();
 
         if (width >= 640) await page.getByRole("menuitem", { name: /Column colors/ }).click();
 
         const selectedOption = page.locator(`[data-test-id="column-colors-${selectedMode}"]`);
         assert.equal(await selectedOption.getAttribute("aria-checked"), "true");
+        await waitForMenuAnimations();
 
         await page.locator(`[data-test-id="column-colors-${mode}"]`).click();
         await page.waitForFunction(
