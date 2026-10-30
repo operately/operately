@@ -28,8 +28,8 @@ defmodule Operately.Operations.TaskMoving do
   end
 
   defp persist_move(author, task, destination_type, destination) do
-    with {:ok, status} <- destination_default_status(destination_type, destination) do
-      attrs = move_attrs(destination_type, destination, status)
+    with {:ok, status, selection} <- destination_status(task, destination_type, destination) do
+      attrs = move_attrs(destination_type, destination) |> Map.merge(status_attrs(task, status, selection))
 
       Multi.new()
       |> Multi.update(:task, Task.changeset(task, attrs))
@@ -40,6 +40,31 @@ defmodule Operately.Operations.TaskMoving do
       |> Repo.transaction()
       |> Repo.extract_result(:task)
     end
+  end
+
+  defp destination_status(task = %Task{project_id: project_id}, :space, space = %Group{}) when not is_nil(project_id) do
+    matching_status =
+      space.task_statuses
+      |> List.wrap()
+      |> Enum.find(&equivalent_status?(&1, task.task_status))
+
+    case matching_status do
+      nil -> destination_default_status(:space, space) |> status_with_selection(:fallback)
+      status -> status_to_map(status) |> status_with_selection(:equivalent)
+    end
+  end
+
+  defp destination_status(_task, destination_type, destination) do
+    destination_default_status(destination_type, destination) |> status_with_selection(:default)
+  end
+
+  defp status_with_selection({:ok, status}, selection), do: {:ok, status, selection}
+  defp status_with_selection(error, _selection), do: error
+
+  defp equivalent_status?(_destination_status, nil), do: false
+
+  defp equivalent_status?(destination_status, source_status) do
+    destination_status.value == source_status.value && destination_status.closed == source_status.closed
   end
 
   defp destination_default_status(:project, project = %Project{}) do
@@ -68,23 +93,25 @@ defmodule Operately.Operations.TaskMoving do
     end
   end
 
-  defp move_attrs(:project, destination, status) do
+  defp move_attrs(:project, destination) do
     %{
       milestone_id: nil,
       project_id: destination.id,
       space_id: nil,
-      task_status: status,
     }
   end
 
-  defp move_attrs(:space, destination, status) do
+  defp move_attrs(:space, destination) do
     %{
       milestone_id: nil,
       project_id: nil,
       space_id: destination.id,
-      task_status: status,
     }
   end
+
+  defp status_attrs(_task, status, :equivalent), do: %{task_status: status, status: status.value}
+  defp status_attrs(task, status, :fallback), do: Task.status_change_attrs(task, status)
+  defp status_attrs(_task, status, :default), do: %{task_status: status}
 
   defp activity_content(task, destination_type, destination) do
     destination_project_id =

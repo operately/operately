@@ -10,11 +10,14 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
   import Operately.CommentsFixtures
   import Operately.MessagesFixtures
   import Operately.KpisFixtures
+  import Operately.NotificationsFixtures
 
   alias Operately.Repo
   alias Operately.Support.RichText
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
+  alias Operately.Operations.TaskMoving
+  alias Operately.Tasks.Task
 
   test "a thread referenced by multiple activities returns each comment once", ctx do
     ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator) |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
@@ -221,6 +224,69 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
 
       assert res.message ==
                "Invalid value for enum comment_list_entity_type: milestone. Allowed values: project_check_in, project_retrospective, project_discussion, goal_update, goal_discussion, message, resource_hub_document, resource_hub_file, resource_hub_link, space_task, project_task, kpi_entry"
+    end
+  end
+
+  describe "task comments" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_company_member(:origin_member)
+      |> Factory.add_company_member(:destination_member)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
+      |> Factory.preload(:task, [:space, project: :group])
+      |> Factory.add_comment(:project_comment, :task, content: RichText.rich_text("Before the move"))
+      |> Factory.add_reactions(:project_reaction, :project_comment)
+      |> Factory.add_space(:destination_space, company_permissions: Binding.no_access())
+      |> Factory.enable_space_tool(:destination_space, :tasks)
+      |> Factory.add_space(:second_project_space)
+      |> Factory.add_project(:second_project, :second_project_space)
+      |> add_task_comment_access_members()
+    end
+
+    test "lists every task comment once after repeated moves", ctx do
+      project_notification = add_unread_comment_notification(ctx.project_comment, ctx.creator)
+
+      {:ok, first_move} = TaskMoving.run(ctx.creator, ctx.task, :space, ctx.destination_space)
+      space_task = Task.get!(:system, id: first_move.task.id, opts: [preload: [:project, :space]])
+
+      ctx =
+        ctx
+        |> Map.put(:task, space_task)
+        |> Factory.add_comment(:space_comment, :task, content: RichText.rich_text("After the move"))
+
+      space_notification = add_unread_comment_notification(ctx.space_comment, ctx.creator)
+
+      assert {200, space_response} = list_task_comments(ctx.conn, ctx.task, "space_task")
+      assert Enum.map(space_response.comments, & &1.id) == [Paths.comment_id(ctx.project_comment), Paths.comment_id(ctx.space_comment)]
+      assert Enum.map(space_response.comments, & &1.notification.id) == [project_notification.id, space_notification.id]
+
+      expected_project_comment = ctx.project_comment |> Repo.preload([:author, reactions: :person]) |> serialize(level: :full)
+      assert Map.drop(hd(space_response.comments), [:notification]) == Map.drop(expected_project_comment, [:notification])
+
+      {:ok, second_move} = TaskMoving.run(ctx.creator, ctx.task, :project, ctx.second_project)
+      project_task = Task.get!(:system, id: second_move.task.id, opts: [preload: [:project, :space]])
+
+      assert {200, project_response} = list_task_comments(ctx.conn, project_task, "project_task")
+      assert Enum.map(project_response.comments, & &1.id) == [Paths.comment_id(ctx.project_comment), Paths.comment_id(ctx.space_comment)]
+      assert Enum.map(project_response.comments, & &1.notification.id) == [project_notification.id, space_notification.id]
+    end
+
+    test "authorizes historical comments through the current destination", ctx do
+      {:ok, moved} = TaskMoving.run(ctx.creator, ctx.task, :space, ctx.destination_space)
+      task = Task.get!(:system, id: moved.task.id, opts: [preload: [:project, :space]])
+
+      destination_ctx = Factory.log_in_person(ctx, :destination_member)
+      assert {200, response} = list_task_comments(destination_ctx.conn, task, "space_task")
+      assert Enum.map(response.comments, & &1.id) == [Paths.comment_id(ctx.project_comment)]
+
+      origin_ctx = Factory.log_in_person(ctx, :origin_member)
+      assert {200, response} = list_task_comments(origin_ctx.conn, task, "space_task")
+      assert response.comments == []
     end
   end
 
@@ -823,6 +889,33 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
       Repo.preload(comment, :author)
       |> serialize(level: :full)
     end)
+  end
+
+  defp add_unread_comment_notification(comment, person) do
+    activity = from(a in Activity, where: a.content["comment_id"] == ^comment.id) |> Repo.one!()
+    notification_fixture(person_id: person.id, activity_id: activity.id, read: false, read_at: nil)
+  end
+
+  defp add_task_comment_access_members(ctx) do
+    Operately.ProjectsFixtures.contributor_fixture(ctx.creator, %{
+      project_id: ctx.project.id,
+      person_id: ctx.origin_member.id,
+      permissions: Binding.view_access(),
+      responsibility: "Origin project member"
+    })
+
+    {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.destination_space.id, [
+      %{id: ctx.destination_member.id, access_level: Binding.view_access()}
+    ])
+
+    ctx
+  end
+
+  defp list_task_comments(conn, task, entity_type) do
+    query(conn, [:comments, :list], %{
+      entity_id: Paths.task_id(task),
+      entity_type: entity_type
+    })
   end
 
   defp create_message(creator_id, space_id) do

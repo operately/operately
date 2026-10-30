@@ -387,6 +387,104 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
     end
   end
 
+  describe "project-to-space status selection" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.enable_space_tool(:space, :tasks)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
+      |> Factory.add_space(:destination_space)
+      |> Factory.enable_space_tool(:destination_space, :tasks)
+    end
+
+    test "preserves an equivalent open status using destination metadata", ctx do
+      source_status = Enum.find(ctx.project.task_statuses, &(&1.value == "in_progress"))
+      closed_status = Enum.find(ctx.project.task_statuses, &(&1.value == "done"))
+
+      destination_space =
+        set_space_statuses(ctx.destination_space, [
+          status("Ready", :gray, "ready"),
+          status("Underway", :blue, "in_progress")
+        ])
+
+      destination_status = Enum.find(destination_space.task_statuses, &(&1.value == "in_progress"))
+      {:ok, closed_task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, closed_status))
+      {:ok, task} = Operately.Tasks.update_task(closed_task, Task.status_change_attrs(closed_task, source_status))
+
+      assert task.reopened_at
+      assert {200, res} = move_to_space(ctx.conn, task, destination_space)
+
+      moved_task = Repo.reload(task)
+
+      assert moved_task.id == task.id
+      assert_status_matches(moved_task.task_status, destination_status)
+      assert moved_task.status == "in_progress"
+      assert moved_task.closed_at == task.closed_at
+      assert moved_task.reopened_at == task.reopened_at
+      assert res.task.status.id == destination_status.id
+      assert res.task.status.value == destination_status.value
+      assert res.task.status.closed == destination_status.closed
+    end
+
+    test "preserves an equivalent closed status and closure timestamps when moving to the project's space", ctx do
+      source_status = Enum.find(ctx.project.task_statuses, &(&1.value == "done"))
+      destination_status = Enum.find(ctx.space.task_statuses, &(&1.value == "done"))
+      {:ok, task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, source_status))
+
+      assert {200, _res} = move_to_space(ctx.conn, task, ctx.space)
+
+      moved_task = Repo.reload(task)
+
+      assert_status_matches(moved_task.task_status, destination_status)
+      assert moved_task.status == "done"
+      assert moved_task.closed_at == task.closed_at
+      assert moved_task.reopened_at == task.reopened_at
+    end
+
+    test "uses the destination default and reopens a closed task when no equivalent status exists", ctx do
+      source_status = Enum.find(ctx.project.task_statuses, &(&1.value == "done"))
+      destination_space = set_space_statuses(ctx.destination_space, [status("Ready", :gray, "ready")])
+      destination_status = hd(destination_space.task_statuses)
+      {:ok, task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, source_status))
+
+      assert task.closed_at
+      refute task.reopened_at
+      assert {200, _res} = move_to_space(ctx.conn, task, destination_space)
+
+      moved_task = Repo.reload(task)
+
+      assert_status_matches(moved_task.task_status, destination_status)
+      assert moved_task.status == "ready"
+      refute moved_task.closed_at
+      assert moved_task.reopened_at
+    end
+
+    test "does not match a destination status with different closed meaning", ctx do
+      source_status = Enum.find(ctx.project.task_statuses, &(&1.value == "done"))
+
+      destination_space =
+        set_space_statuses(ctx.destination_space, [
+          status("Ready", :gray, "ready"),
+          status("Still active", :blue, "done")
+        ])
+
+      {:ok, task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, source_status))
+
+      assert {200, _res} = move_to_space(ctx.conn, task, destination_space)
+
+      moved_task = Repo.reload(task)
+
+      assert moved_task.task_status.value == "ready"
+      refute moved_task.task_status.closed
+      refute moved_task.closed_at
+      assert moved_task.reopened_at
+    end
+  end
+
   defp assert_destination_changed(task, destination, :project) do
     assert task.project_id == destination.id
     assert task.space_id == nil
@@ -521,5 +619,19 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
       index: 0,
       closed: Keyword.get(opts, :closed, false)
     }
+  end
+
+  defp move_to_space(conn, task, destination_space) do
+    mutation(conn, [:tasks, :move], %{
+      task_id: Paths.task_id(task),
+      destination_type: "space",
+      destination_id: Paths.space_id(destination_space)
+    })
+  end
+
+  defp assert_status_matches(actual, expected) do
+    fields = [:id, :label, :color, :index, :value, :closed]
+
+    assert Map.take(actual, fields) == Map.take(expected, fields)
   end
 end
