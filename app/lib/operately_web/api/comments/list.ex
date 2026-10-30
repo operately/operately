@@ -14,6 +14,9 @@ defmodule OperatelyWeb.Api.Comments.List do
   alias Operately.Comments.CommentThread
   alias Operately.Activities.Activity
 
+  @task_comment_types [:project_task, :space_task]
+  @task_comment_actions ["project_task_commented", "space_task_commented"]
+
   inputs do
     field :entity_id, :id, null: false
     field :entity_type, :comment_list_entity_type, null: false
@@ -53,24 +56,20 @@ defmodule OperatelyWeb.Api.Comments.List do
     from(c in Comment,
       join: task in Operately.Tasks.Task, on: c.entity_id == task.id,
       join: project in assoc(task, :project), as: :project,
-      where: task.id == ^id and c.entity_type == :project_task
+      where: task.id == ^id and c.entity_type in ^@task_comment_types
     )
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :project)
     |> Repo.all()
-    |> load_notifications(person, action: "project_task_commented")
+    |> load_notifications(person, actions: @task_comment_actions)
   end
 
   defp load(id, :space_task, person) do
-    from(c in Comment,
-      join: task in Operately.Tasks.Task, on: c.entity_id == task.id,
-      join: space in assoc(task, :space), as: :space,
-      where: task.id == ^id and c.entity_type == :space_task
-    )
+    from(c in Comment, join: task in Operately.Tasks.Task, on: c.entity_id == task.id, join: space in assoc(task, :space), as: :space, where: task.id == ^id and c.entity_type in ^@task_comment_types)
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :space)
     |> Repo.all()
-    |> load_notifications(person, action: "space_task_commented")
+    |> load_notifications(person, actions: @task_comment_actions)
   end
 
   defp load(id, :kpi_entry, person) do
@@ -175,12 +174,16 @@ defmodule OperatelyWeb.Api.Comments.List do
   end
 
   defp load_notifications(comments, person, action: action) do
+    load_notifications(comments, person, actions: [action])
+  end
+
+  defp load_notifications(comments, person, actions: actions) do
     comment_ids = Enum.map(comments, & &1.id)
 
     notifications =
       from(n in Operately.Notifications.Notification,
         join: a in assoc(n, :activity),
-        where: a.action == ^action,
+        where: a.action in ^actions,
         where: a.content["comment_id"] in ^comment_ids,
         where: n.person_id == ^person.id,
         where: not n.read,
