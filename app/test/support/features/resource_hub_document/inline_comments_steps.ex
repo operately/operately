@@ -4,8 +4,7 @@ defmodule Operately.Support.Features.ResourceHubDocument.InlineCommentsSteps do
   step :setup, ctx do
     ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_resource_hub(:hub, :space, :creator)
     ctx = Factory.add_document(ctx, :document, :hub, content: Operately.Support.RichText.rich_text("Review this passage before Friday."))
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "document_inline_comments")
-    ctx |> Map.put(:company, company) |> UI.login_as(ctx.creator)
+    UI.login_as(ctx, ctx.creator)
   end
 
   step :visit_document, ctx do
