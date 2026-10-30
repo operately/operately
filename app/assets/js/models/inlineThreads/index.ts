@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import Api, { type Company, type ResourceHubDocument } from "@/api";
-import { useLoadedQuery } from "@/api/queryClient";
+import { queryClient, useLoadedQuery } from "@/api/queryClient";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { fetchCompany } from "@/models/companies/companyLayoutQueries";
@@ -19,8 +19,11 @@ export async function prefetchDocumentInlineThreads(document: ResourceHubDocumen
   if (!documentInlineThreadsEnabled(company, document)) return;
 
   // Keep failures in the query cache so the comments panel can offer a retry.
-  await Api.inline_threads
-    .listQuery({ resourceType: "resource_hub_document", resourceId: document.id })
+  await queryClient
+    .fetchQuery({
+      ...Api.inline_threads.listQueryOptions({ resourceType: "resource_hub_document", resourceId: document.id }),
+      staleTime: 0,
+    })
     .catch(() => undefined);
 }
 

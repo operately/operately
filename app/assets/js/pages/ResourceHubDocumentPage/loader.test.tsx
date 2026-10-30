@@ -202,6 +202,33 @@ it("waits for inline comments before completing the loader", async () => {
   ).toEqual({ threads: [{ id: "thread1" }] });
 });
 
+it("loads new replies when revisiting a document with cached threads", async () => {
+  const thread = { id: "thread1", messages: [{ id: "message1" }] };
+  const publishedResponse = {
+    ...response,
+    document: { ...document, state: "published" },
+    company: { enabledExperimentalFeatures: ["document_inline_comments"] },
+    threads: [thread],
+  };
+  jest.mocked(axios.get).mockImplementation(async (url) => ({
+    data: url.endsWith("/inline_threads/list") ? { threads: [thread] } : publishedResponse,
+  }));
+  await visit();
+
+  const updatedThread = { ...thread, messages: [...thread.messages, { id: "reply1" }] };
+  jest.mocked(axios.get).mockClear();
+  jest.mocked(axios.get).mockResolvedValue({ data: { threads: [updatedThread] } });
+  await visit();
+
+  expect(
+    queryClient.getQueryData(
+      Api.inline_threads.listQueryKey({ resourceType: "resource_hub_document", resourceId: "doc1" }),
+    ),
+  ).toEqual({ threads: [updatedThread] });
+  expect(axios.get).toHaveBeenCalledTimes(1);
+  expect(axios.get).toHaveBeenCalledWith(expect.stringContaining("/inline_threads/list"), expect.anything());
+});
+
 it.each(["disabled", "draft"])("does not preload inline comments for %s documents", async (state) => {
   jest.mocked(axios.get).mockResolvedValue({
     data: {
