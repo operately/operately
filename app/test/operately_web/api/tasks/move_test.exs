@@ -44,6 +44,23 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
   @destination_project_permissions_table for row <- @project_permissions_table, origin_type <- [:project, :space], do: Map.put(row, :origin_type, origin_type)
   @destination_space_permissions_table for row <- @space_permissions_table, origin_type <- [:project, :space], do: Map.put(row, :origin_type, origin_type)
 
+  test "publishes to both projects on a move and neither on failure", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:origin, :space)
+      |> Factory.add_project(:destination, :space) |> Factory.add_project_milestone(:milestone, :origin)
+      |> Factory.add_project_task(:task, :milestone) |> Factory.log_in_person(:creator)
+    origin_topic = "api:project_updated:#{ctx.origin.id}"
+    destination_topic = "api:project_updated:#{ctx.destination.id}"
+    Enum.each([origin_topic, destination_topic], &OperatelyWeb.Endpoint.subscribe/1)
+    inputs = %{task_id: Paths.task_id(ctx.task), destination_type: "project", destination_id: Paths.project_id(ctx.destination)}
+
+    assert {200, _} = mutation(ctx.conn, [:tasks, :move], inputs)
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^origin_topic, event: "event"}
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^destination_topic, event: "event"}
+    refute_receive %Phoenix.Socket.Broadcast{event: "event"}
+    assert {400, _} = mutation(ctx.conn, [:tasks, :move], inputs)
+    refute_receive %Phoenix.Socket.Broadcast{event: "event"}
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:tasks, :move], %{})

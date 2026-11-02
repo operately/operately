@@ -41,6 +41,7 @@ defmodule Operately.Operations.TaskArchiveUpdating do
       end
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(task.project_id)
     |> case do
       {:ok, %{task: updated}} -> {:ok, updated}
       {:error, _step, reason, _changes} -> {:error, reason}
