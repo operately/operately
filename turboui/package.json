@@ -30,9 +30,9 @@
     "test:package": "node scripts/check-package.mjs"
   },
   "devDependencies": {
-    "@storybook/addon-docs": "10.5.0",
-    "@storybook/addon-themes": "10.5.0",
-    "@storybook/react-vite": "10.5.0",
+    "@storybook/addon-docs": "10.6.2",
+    "@storybook/addon-themes": "10.6.2",
+    "@storybook/react-vite": "10.6.2",
     "@storybook/test-runner": "^0.24.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
@@ -63,7 +63,7 @@
     "react-select": "^5.8.0",
     "react-spinners": "^0.13.8",
     "react-textarea-autosize": "^8.5.9",
-    "storybook": "10.5.0",
+    "storybook": "10.6.2",
     "tailwindcss": "^3.4.17",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.3",
