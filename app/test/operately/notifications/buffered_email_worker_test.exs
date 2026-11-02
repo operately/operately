@@ -485,6 +485,84 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     end
   end
 
+  for count <- [1, 2] do
+    test "skips a batch containing #{count} deleted document comment notifications", ctx do
+      ctx = setup_document_comment(ctx)
+      notifications = Enum.map(1..unquote(count), fn _ -> document_comment_notification(ctx, ctx.comment) end)
+      {:ok, _} = Operately.Updates.delete_comment(ctx.comment)
+
+      assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+
+      batch = Notifications.get_email_batch!(ctx.batch.id)
+      assert batch.status == :skipped
+      assert is_nil(batch.sent_at)
+      assert is_nil(batch.error)
+
+      for notification <- notifications do
+        notification = Notifications.get_notification!(notification.id)
+        refute notification.email_sent
+        assert is_nil(notification.email_sent_at)
+      end
+
+      assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+      refute_email_sent()
+    end
+  end
+
+  test "delivers valid digest items while omitting a deleted document comment", ctx do
+    ctx =
+      ctx
+      |> setup_document_comment()
+      |> Factory.add_comment(:valid_comment, :document, content: Operately.Support.RichText.rich_text("Remaining comment"))
+
+    skipped = document_comment_notification(ctx, ctx.comment)
+    sent = document_comment_notification(ctx, ctx.valid_comment)
+    {:ok, _} = Operately.Updates.delete_comment(ctx.comment)
+
+    assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+
+    assert_email_sent(fn email ->
+      assert email.to == [{"", ctx.creator.email}]
+      assert email.html_body =~ "Remaining comment"
+      assert email.text_body =~ "Remaining comment"
+      refute email.html_body =~ "Deleted comment"
+      refute email.text_body =~ "Deleted comment"
+      true
+    end)
+
+    batch = Notifications.get_email_batch!(ctx.batch.id)
+    assert batch.status == :sent
+    refute is_nil(batch.sent_at)
+    assert is_nil(batch.error)
+    assert Notifications.get_notification!(sent.id).email_sent
+    refute Notifications.get_notification!(skipped.id).email_sent
+  end
+
+  defp setup_document_comment(ctx) do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_document(:document, :hub)
+    |> Factory.preload(:document, [:node, :resource_hub])
+    |> Factory.add_comment(:comment, :document, content: Operately.Support.RichText.rich_text("Deleted comment"))
+  end
+
+  defp document_comment_notification(ctx, comment) do
+    activity =
+      activity_fixture(
+        author_id: ctx.creator.id,
+        action: "resource_hub_document_commented",
+        content: %{"document_id" => ctx.document.id, "comment_id" => comment.id}
+      )
+
+    notification_fixture(
+      activity_id: activity.id,
+      person_id: ctx.creator.id,
+      email_batch_id: ctx.batch.id,
+      email_sent: false,
+      email_sent_at: nil
+    )
+  end
+
   defp setup_check_in_comment(ctx, type) do
     ctx =
       case type do

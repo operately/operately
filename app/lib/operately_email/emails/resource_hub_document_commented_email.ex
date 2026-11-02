@@ -4,13 +4,20 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCommentedEmail do
 
   alias OperatelyEmail.Emails.ResourceHubEmail
   alias OperatelyWeb.Paths
-  alias Operately.{Repo, Updates}
+  alias Operately.Repo
+  alias Operately.Updates.Comment
 
   def send(person, activity) do
+    case Repo.get(Comment, activity.content["comment_id"]) do
+      nil -> :skip
+      comment -> send_email(person, activity, comment)
+    end
+  end
+
+  defp send_email(person, activity, comment) do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
     document = ResourceHubEmail.load_document(activity.content["document_id"])
     parent = ResourceHubEmail.parent(document)
-    comment = Updates.get_comment!(activity.content["comment_id"])
 
     company
     |> new()
@@ -25,11 +32,17 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCommentedEmail do
   end
 
   def buffered_item(_person, activity) do
+    case Repo.get(Comment, activity.content["comment_id"]) do
+      nil -> :skip
+      comment -> build_buffered_item(activity, comment)
+    end
+  end
+
+  defp build_buffered_item(activity, comment) do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     document = ResourceHubEmail.load_document(activity.content["document_id"])
     parent = ResourceHubEmail.parent(document)
-    comment = Updates.get_comment!(activity.content["comment_id"])
     %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(comment.content)
 
     %{
