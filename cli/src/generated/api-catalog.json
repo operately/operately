@@ -24366,7 +24366,7 @@
               "kind": "named"
             },
             "optional": false,
-            "nullable": true,
+            "nullable": false,
             "has_default": false
           },
           {
@@ -24374,6 +24374,17 @@
             "name": "kpi",
             "type": {
               "name": "kpi",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "entry",
+            "type": {
+              "name": "kpi_entry",
               "kind": "named"
             },
             "optional": false,
