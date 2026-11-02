@@ -26,7 +26,7 @@ async function waitForMobileDialog() {
   return dialog;
 }
 
-async function selectPassage() {
+async function selectPassage(openComposer = true) {
   await page
     .locator('.ProseMirror[contenteditable="false"]')
     .first()
@@ -43,8 +43,43 @@ async function selectPassage() {
       selection?.removeAllRanges();
       selection?.addRange(range);
     });
-  await page.locator('[data-test-id="inline-add-selection"]').click();
+  if (openComposer) await page.locator('[data-test-id="inline-add-selection"]').click();
 }
+
+test.each([1440, 390])("selection action is visible and clear of the text at %s px", async (width) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await visit();
+  const paper = page.locator('[data-test-id="document-page"]');
+  const before = await paper.boundingBox();
+  await selectPassage(false);
+  const action = page.locator('[data-test-id="inline-add-selection"]');
+  await action.waitFor({ state: "visible" });
+  const button = await action.boundingBox();
+  const selection = await page.evaluate(() => {
+    const range = window.getSelection()?.getRangeAt(0);
+    if (!range) throw new Error("Missing selection");
+    const rect = range.getBoundingClientRect();
+    const firstLine = range.getClientRects()[0] ?? rect;
+    return { bottom: rect.bottom, lineCenter: firstLine.top + firstLine.height / 2, text: range.toString() };
+  });
+  assert.ok(button && button.height >= (width >= 1280 ? 32 : 36));
+  assert.ok(button.width < 180);
+  assert.ok((await action.textContent())?.trim());
+  assert.deepEqual(await paper.boundingBox(), before);
+  assert.ok(await action.getAttribute("aria-label"));
+  if (width >= 1280) {
+    const content = await page.locator('.ProseMirror[contenteditable="false"]').first().boundingBox();
+    assert.ok(content && before && button.x >= content.x + content.width);
+    assert.ok(Math.abs(button.y + button.height / 2 - selection.lineCenter) <= 1);
+    assert.ok(button.x + button.width <= width);
+  } else {
+    assert.ok(button.y >= selection.bottom);
+  }
+  await action.click();
+  const composer = page.locator('[data-test-id="inline-new-thread"]');
+  await composer.waitFor();
+  assert.equal(await composer.locator("blockquote").textContent(), selection.text);
+});
 
 test("offers Add comment only after releasing a text-selection drag", async () => {
   await page.setViewportSize({ width: 1440, height: 1000 });
