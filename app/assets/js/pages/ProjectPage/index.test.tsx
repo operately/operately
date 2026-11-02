@@ -8,15 +8,20 @@ import { ProjectPage, showErrorToast } from "turboui";
 import PageModule from "./index";
 
 const mockRefresh = jest.fn();
+jest.mock("@/models/projects/useProjectUpdates", () => ({ useProjectUpdates: jest.fn() }));
 jest.mock("./loader", () => ({ loader: jest.fn(), useLoadedData: jest.fn(), useRefreshCore: () => mockRefresh }));
 const mockNavigate = jest.fn();
 const mockEmpty: [] = [];
 const mockPaths = new Proxy({}, { get: (_, name) => (id: string) => `/${String(name)}/${id ?? ""}` });
 let mockProps: ProjectPage.Props;
+const mockPageMount = jest.fn();
 
 jest.mock("turboui", () => ({
   showErrorToast: jest.fn(),
   ProjectPage: (props: ProjectPage.Props) => {
+    React.useEffect(() => {
+      mockPageMount();
+    }, []);
     mockProps = props;
     return null;
   },
@@ -125,6 +130,7 @@ describe("Project Page detail actions", () => {
       .spyOn(Api.project_templates, "createFromProjectMutationOptions")
       .mockReturnValue({ mutationFn: requests.template });
     const loadedData = {
+      projectInput: { id: "project-1" },
       data: {
         project: {
           id: "project-1",
@@ -205,9 +211,10 @@ describe("Project Page detail actions", () => {
       void mockProps.updateProjectName("Renamed");
     });
     const loaded = jest.mocked(useLoadedData).mock.results.at(-1)?.value as ReturnType<typeof useLoadedData>;
-    jest
-      .mocked(useLoadedData)
-      .mockReturnValue({ ...loaded, data: { ...loaded.data, project: { ...loaded.data.project, description: "{}" } } });
+    jest.mocked(useLoadedData).mockReturnValue({
+      ...loaded,
+      data: { ...loaded.data, project: { ...loaded.data.project, id: "renamed-project-1", description: "{}" } },
+    });
     const Page = PageModule.Page;
     await act(async () =>
       root.render(
@@ -219,6 +226,7 @@ describe("Project Page detail actions", () => {
     expect(mockProps.project.name).toBe("Renamed");
     await act(async () => save.resolve({ project: { id: "project-1", name: "Renamed" } }));
     expect(mockProps.project.name).toBe("Renamed");
+    expect(mockPageMount).toHaveBeenCalledTimes(1);
   });
 
   const fields = [

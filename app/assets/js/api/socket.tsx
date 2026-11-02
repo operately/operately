@@ -6,9 +6,10 @@ type Payload = { [key: string]: any };
 
 var socket: Socket | null = null;
 var sharedHeaders: Payload = {};
+const EMPTY_PAYLOAD: Payload = {};
 
 function connect(): Socket {
-  if (socket) return socket!;
+  if (socket) return socket;
 
   const params = {
     token: window.appConfig.api.socketToken,
@@ -26,24 +27,33 @@ export function setHeaders(headers: Payload) {
   sharedHeaders = headers;
 }
 
-export function useSubscription(channelName: string, callback: () => void, payload: Payload = {}) {
+export function useSubscription(
+  channelName: string,
+  callback: () => void,
+  payload: Payload = EMPTY_PAYLOAD,
+  onJoined?: () => void,
+) {
+  const callbacks = React.useRef({ callback, onJoined });
+  callbacks.current = { callback, onJoined };
+  const headers = sharedHeaders;
+
   React.useEffect(() => {
     let socket = connect();
-    let data = { ...sharedHeaders, ...payload };
+    let data = { ...headers, ...payload };
     const channel = socket.channel(channelName, data);
 
-    channel.on("event", callback);
+    const binding = channel.on("event", () => callbacks.current.callback());
 
     channel
       .join()
-      .receive("ok", () => {})
+      .receive("ok", () => callbacks.current.onJoined?.())
       .receive("error", (resp: string) => {
         console.log("Unable to subscribe", resp);
       });
 
     return () => {
-      channel.off("event", callback);
+      channel.off("event", binding);
       channel.leave();
     };
-  }, [channelName, callback, payload]);
+  }, [channelName, payload, headers]);
 }
