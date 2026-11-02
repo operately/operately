@@ -29,6 +29,7 @@ export { BulletDot } from "./BulletDot";
 export * from "./ImageWithPlaceholder";
 export * from "./icons";
 export * from "./Link";
+export * from "./ActivityTaskList";
 export * from "./Menu";
 export * from "./NotificationRow";
 export * from "./OptionsMenuItem";

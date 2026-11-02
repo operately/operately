@@ -1649,7 +1649,7 @@ msgid "%{author} edited <resources/> in the <parent>%{parentName}</parent> space
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/KpiEdited/index.tsx:40
+#: assets/js/features/activities/KpiEdited/index.tsx:42
 msgid "%{author} edited a KPI"
 msgstr ""
 
@@ -1664,7 +1664,7 @@ msgid "%{author} edited a KPI annotation in the <space>%{spaceName}</space> spac
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/KpiEdited/index.tsx:44
+#: assets/js/features/activities/KpiEdited/index.tsx:46
 msgid "%{author} edited a KPI in the <space>%{spaceName}</space> space"
 msgstr ""
 
@@ -2480,6 +2480,7 @@ msgid "%{author} updated assignees on <tasks/>"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ActivityTaskList/index.stories.tsx:89
 #: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:62
 msgid "%{author} updated assignees on <tasks/> in <location>%{locationName}</location>"
 msgstr ""
@@ -6928,7 +6929,7 @@ msgstr ""
 #: ../turboui/src/Checklist/index.tsx:330
 #: ../turboui/src/Checklist/index.tsx:379
 #: ../turboui/src/CommentSection/CommentInput.tsx:241
-#: ../turboui/src/CommentSection/CommentItem.tsx:387
+#: ../turboui/src/CommentSection/CommentItem.tsx:400
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:37
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:46
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
@@ -7751,6 +7752,7 @@ msgid "Codes are valid for up to 5 minutes."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ActivityTaskList/index.tsx:50
 #: ../turboui/src/PageDescription/index.tsx:136
 #: ../turboui/src/PeopleOrgChartPage/index.tsx:90
 msgid "Collapse"
@@ -7820,7 +7822,7 @@ msgid "Comment not added"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:215
+#: ../turboui/src/CommentSection/CommentItem.tsx:226
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:93
 msgid "Comment not deleted"
 msgstr ""
@@ -7829,16 +7831,16 @@ msgstr ""
 #: ../turboui/src/CommentSection/CommentInput.tsx:71
 #: ../turboui/src/CommentSection/CommentInput.tsx:88
 #: ../turboui/src/CommentSection/CommentInput.tsx:94
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:90
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:99
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:91
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:100
 msgid "Comment not posted"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:361
+#: ../turboui/src/CommentSection/CommentItem.tsx:374
 #: ../turboui/src/InlineComments/Thread.tsx:57
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:84
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:109
 msgid "Comment not updated"
 msgstr ""
 
@@ -8445,7 +8447,7 @@ msgid "Copy failed"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:249
+#: ../turboui/src/CommentSection/CommentItem.tsx:260
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:42
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:49
 msgid "Copy link"
@@ -9051,7 +9053,7 @@ msgstr ""
 #: ../turboui/src/AccountApiTokensPage/index.tsx:398
 #: ../turboui/src/AccountApiTokensPage/index.tsx:524
 #: ../turboui/src/Checklist/index.tsx:530
-#: ../turboui/src/CommentSection/CommentItem.tsx:268
+#: ../turboui/src/CommentSection/CommentItem.tsx:281
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:77
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:113
 #: ../turboui/src/GoalPage/Sidebar.tsx:406
@@ -9893,7 +9895,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:520
-#: ../turboui/src/CommentSection/CommentItem.tsx:259
+#: ../turboui/src/CommentSection/CommentItem.tsx:271
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:68
 #: ../turboui/src/DocumentPage/InlineComments.stories.tsx:254
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
@@ -10060,7 +10062,7 @@ msgid "Edit update — %{name}"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:342
+#: ../turboui/src/CommentSection/CommentItem.tsx:355
 msgid "Edit your comment..."
 msgstr ""
 
@@ -10070,7 +10072,7 @@ msgid "Edited"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/KpiEdited/index.tsx:69
+#: assets/js/features/activities/KpiEdited/index.tsx:71
 msgid "Edited KPI: %{kpiName}"
 msgstr ""
 
@@ -10870,7 +10872,7 @@ msgid "Failed to change plan"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:228
+#: ../turboui/src/CommentSection/CommentItem.tsx:239
 msgid "Failed to copy comment link to clipboard"
 msgstr ""
 
@@ -12069,7 +12071,7 @@ msgid "Information"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/DocumentPage/index.tsx:134
+#: ../turboui/src/DocumentPage/index.tsx:135
 #: ../turboui/src/InlineComments/CommentsPanel.tsx:76
 #: ../turboui/src/InlineComments/CommentsPanel.tsx:82
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:16
@@ -12553,7 +12555,7 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:56
 #: assets/js/features/activities/KpiDeleted/index.tsx:51
-#: assets/js/features/activities/KpiEdited/index.tsx:53
+#: assets/js/features/activities/KpiEdited/index.tsx:55
 msgid "KPI: %{kpiName}"
 msgstr ""
 
@@ -15088,7 +15090,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:255
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:113
-#: ../turboui/src/CommentSection/CommentItem.tsx:239
+#: ../turboui/src/CommentSection/CommentItem.tsx:250
 msgid "Options"
 msgstr ""
 
@@ -15686,7 +15688,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:88
-#: ../turboui/src/CommentSection/CommentItem.tsx:215
+#: ../turboui/src/CommentSection/CommentItem.tsx:226
 #: ../turboui/src/InlineComments/Thread.tsx:57
 #: ../turboui/src/Reactions/index.tsx:58
 #: ../turboui/src/Reactions/index.tsx:204
@@ -16911,7 +16913,7 @@ msgid "Renews"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:254
+#: ../turboui/src/InlineComments/Thread.tsx:256
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:155
 #: ../turboui/src/MilestonePage/index.tsx:376
 msgid "Reopen"
@@ -17034,13 +17036,13 @@ msgid "Reset your password"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:254
+#: ../turboui/src/InlineComments/Thread.tsx:256
 msgid "Resolve"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/InlineComments/CommentsPanel.tsx:99
-#: ../turboui/src/InlineComments/Thread.tsx:106
+#: ../turboui/src/InlineComments/Thread.tsx:107
 msgid "Resolved"
 msgstr ""
 
@@ -17559,7 +17561,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:155
 #: ../turboui/src/AccountSettingsPage/index.tsx:89
-#: ../turboui/src/CommentSection/CommentItem.tsx:384
+#: ../turboui/src/CommentSection/CommentItem.tsx:397
 #: ../turboui/src/DocumentEditPage/index.tsx:83
 #: ../turboui/src/ProfileEditPage/index.tsx:142
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:443
@@ -18366,6 +18368,13 @@ msgid "Short ID"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ActivityTaskList/index.tsx:50
+msgid "Show %{count} more task"
+msgid_plural "Show %{count} more tasks"
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
 #: ../turboui/src/TaskBoard/components/TaskList.tsx:211
 msgid "Show 1 completed task"
 msgid_plural "Show %{count} completed tasks"
@@ -19160,7 +19169,7 @@ msgid "Subscription ended"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:226
+#: ../turboui/src/CommentSection/CommentItem.tsx:237
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:48
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:213
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:328
@@ -19781,7 +19790,7 @@ msgid "The comment is still on this page. Try again."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:226
+#: ../turboui/src/CommentSection/CommentItem.tsx:237
 msgid "The comment link has been copied to your clipboard"
 msgstr ""
 
@@ -20732,7 +20741,7 @@ msgid "This package was exported from Operately %{manifestVersion}, but this ins
 msgstr ""
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:108
+#: ../turboui/src/InlineComments/Thread.tsx:109
 msgid "This passage is no longer available."
 msgstr ""
 
@@ -21386,7 +21395,7 @@ msgid "Undo"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:228
+#: ../turboui/src/CommentSection/CommentItem.tsx:239
 msgid "Unexpected error"
 msgstr ""
 
@@ -23199,10 +23208,10 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:71
 #: ../turboui/src/CommentSection/CommentInput.tsx:94
-#: ../turboui/src/CommentSection/CommentItem.tsx:361
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:90
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:99
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
+#: ../turboui/src/CommentSection/CommentItem.tsx:374
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:91
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:100
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:109
 msgid "Your draft has been kept for retry."
 msgstr ""
 

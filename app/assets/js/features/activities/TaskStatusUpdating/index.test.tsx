@@ -4,8 +4,10 @@ import { createRoot } from "react-dom/client";
 import { aggregateConsecutiveFeedActivities, type Activity } from "@/models/activities";
 import Handler from ".";
 import { usePaths } from "@/routes/paths";
+import { MemoryRouter } from "react-router";
 
 jest.mock("turboui", () => ({
+  ...jest.requireActual("turboui"),
   Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
 }));
 jest.mock("@/contexts/TimezoneContext", () => ({ useLocale: () => "en" }));
@@ -98,7 +100,11 @@ for (const inProject of [true, false]) {
 
     async function render(item: Activity) {
       await act(async () => {
-        root.render(<Title item={item} />);
+        root.render(
+          <MemoryRouter>
+            <Title item={item} />
+          </MemoryRouter>,
+        );
       });
     }
 
@@ -120,6 +126,19 @@ for (const inProject of [true, false]) {
       if (!aggregated) throw new Error("Expected an aggregated activity");
       await render(aggregated);
       expect(taskLinks()).toEqual([taskPath("first"), taskPath("second")]);
+
+      const extended = aggregateConsecutiveFeedActivities([
+        first,
+        second,
+        activity("third", inProject),
+        activity("fourth", inProject),
+      ])[0];
+      if (!extended) throw new Error("Expected an extended aggregate");
+      await render(extended);
+      expect(taskLinks()).toEqual([taskPath("first"), taskPath("second"), taskPath("third")]);
+      expect(container.querySelector("button")?.textContent).toBe("Show 1 more task");
+      await render(aggregated);
+      expect(container.querySelector("button")).toBeNull();
 
       await render(first);
       expect(taskLinks()).toEqual([taskPath("first")]);

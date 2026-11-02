@@ -2761,6 +2761,8 @@
   "Show closed statuses": "Geschlossene Statusoptionen anzeigen",
   "Show previous check-in": "Vorherigen Check-in anzeigen",
   "Show update badge": "Hinweis auf neue Version anzeigen",
+  "Show {{count}} more task_one": "{{count}} weitere Aufgabe anzeigen",
+  "Show {{count}} more task_other": "{{count}} weitere Aufgaben anzeigen",
   "Shows what needs to happen next for this work to progress.": "Zeigt, was als Nächstes passieren muss, damit diese Arbeit vorankommt.",
   "Sign In": "Anmelden",
   "Sign Out": "Abmelden",
