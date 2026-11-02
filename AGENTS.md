@@ -148,6 +148,7 @@ end
 For writing, organizing, and running tests, use the **writing-tests** skill
 (`.agents/skills/writing-tests/SKILL.md`).
 
+- Keep new coverage proportionate to the change. Each test must protect a credible regression that existing coverage does not catch. Test shared behavior at its owning component or module; add handler or page-context cases only for distinct behavior or integration risks. Follow the skill's guidance on fixtures and test boundaries.
 - When testing behavior or page state, assert stable outcomes, semantic state, or `data-test-id` selectors instead of exact UI copy. Assert exact text only when the wording itself is the behavior under test; do not use user-facing prose as a proxy for application state.
 
 ### Feature Test Notes
@@ -166,6 +167,7 @@ For writing, organizing, and running tests, use the **writing-tests** skill
 - DCO required: all commits must be signed off. Agents should always use `git commit -s` or `git commit --signoff` when committing. Example: `git commit -s -m "feat: add goal editor"` (see `docs/commit_sign-off.md`).
 - PR title format enforced: `feat: ...`, `fix: ...`, `chore: ...`, or `docs: ...` (checked by `scripts/pr-name-check`).
 - PRs should include: clear description, screenshots for UI changes, migration notes if DB changes, and linked issues.
+- Screenshots captured for review are temporary artifacts. Attach them to the PR or link to them through an available artifact service; do not commit them to the repository. If no attachment or artifact route is available, explain that limitation in the PR.
 
 ## Security & Configuration Tips
 
