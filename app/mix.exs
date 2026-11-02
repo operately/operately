@@ -67,7 +67,7 @@ defmodule Operately.MixProject do
       {:sentry, "~> 14.0"},
       {:swoosh, "~> 1.29.0"},
       {:gen_smtp, "~> 1.1"},
-      {:gettext, "~> 0.26"},
+      {:gettext, "~> 1.0"},
       {:earmark_parser, "~> 1.4"},
       {:html_entities, "~> 0.5"},
 
