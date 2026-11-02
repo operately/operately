@@ -7,6 +7,8 @@ jest.mock("@sentry/react", () => ({
   captureException: jest.fn(),
 }));
 
+
+
 function getResponseHandlers(client: any) {
   return client.interceptors.response.handlers.filter(Boolean);
 }
