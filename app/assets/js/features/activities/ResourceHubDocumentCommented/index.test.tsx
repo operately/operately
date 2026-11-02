@@ -14,7 +14,8 @@ jest.mock("turboui", () => ({
 
 jest.mock("@/routes/paths", () => ({
   usePaths: () => ({
-    resourceHubDocumentPath: (id: string) => `/documents/${id}`,
+    resourceHubDocumentPath: (id: string, opts?: { inlineThread?: string | null }) =>
+      `/documents/${id}` + (opts?.inlineThread ? `?inlineThread=${encodeURIComponent(opts.inlineThread)}` : ""),
     spacePath: (id: string) => `/spaces/${id}`,
   }),
 }));
@@ -35,6 +36,30 @@ describe("ResourceHubDocumentCommented", () => {
       <>{ResourceHubDocumentCommented.FeedItemTitle({ paths: usePaths(), activity, page })}</>,
     );
   }
+
+  it.each(["initial-message", "reply-message"])("links notifications to the inline thread and %s", (messageId) => {
+    const inlineActivity = {
+      ...activity,
+      content: {
+        ...activity.content,
+        inlineThreadId: "thread-1",
+        comment: { id: messageId },
+      },
+    } as Activity;
+
+    expect(ResourceHubDocumentCommented.pagePath(usePaths(), inlineActivity)).toBe(
+      `/documents/doc-1?inlineThread=thread-1#${messageId}`,
+    );
+  });
+
+  it("keeps the parent fallback when an inline comment's document is unavailable", () => {
+    const inlineActivity = {
+      ...activity,
+      content: { space: { id: "space-1" }, inlineThreadId: "thread-1", comment: { id: "message-1" } },
+    } as Activity;
+
+    expect(ResourceHubDocumentCommented.pagePath(usePaths(), inlineActivity)).toBe("/spaces/space-1");
+  });
 
   afterEach(async () => {
     i18n.removeResourceBundle("pt-BR", "translation");

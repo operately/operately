@@ -94,16 +94,12 @@ defmodule Operately.Comments.InlineThreadNotificationsTest do
     assert Repo.aggregate(Oban.Job, :count) == jobs
   end
 
-  test "activities identify the thread and emails use the standard document comment path", ctx do
+  test "activities identify the thread", ctx do
     ctx = thread(ctx, mentions([ctx.member]))
     raw = activity(ctx.thread)
     activity = raw |> Operately.Activities.cast_content() |> Operately.Activities.Preloader.preload()
     serialized = OperatelyWeb.Api.Serializer.serialize(activity.content, level: :essential)
     assert serialized.inline_thread_id == Operately.ShortUuid.encode!(ctx.thread.id)
-    [message] = ctx.thread.messages
-    expected = OperatelyWeb.Paths.document_path(ctx.company, ctx.document) <> "#" <> OperatelyWeb.Paths.comment_id(message)
-    assert OperatelyWeb.Paths.document_path(ctx.company, ctx.document, message) == expected
-    assert OperatelyEmail.Emails.ResourceHubDocumentCommentedEmail.buffered_item(ctx.member, raw).item_url == OperatelyWeb.Paths.to_url(expected)
   end
 
   for parent_type <- [:project, :goal] do

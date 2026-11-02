@@ -332,8 +332,10 @@ export class Paths {
     return this.createCompanyPath(["files", fileId, "edit"]);
   }
 
-  resourceHubDocumentPath(documentId: string) {
-    return this.createCompanyPath(["documents", documentId]);
+  resourceHubDocumentPath(documentId: string, opts?: { inlineThread?: string | null }) {
+    const path = this.createCompanyPath(["documents", documentId]);
+
+    return path + encodeUrlParams(opts?.inlineThread ? { inlineThread: opts.inlineThread } : undefined);
   }
 
   resourceHubDocumentVersionsPath(documentId: string) {
