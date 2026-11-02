@@ -8,14 +8,22 @@ import { IconTable } from "../../icons";
 import { ToolbarButton } from "./ToolbarButton";
 import { canExecuteEditorCommand } from "./canExecuteEditorCommand";
 
-export function TableButton({ editor, iconSize }: { editor: Editor | null; iconSize: number }) {
+export function TableButton({
+  editor,
+  iconSize,
+  tabIndex = -1,
+}: {
+  editor: Editor | null;
+  iconSize: number;
+  tabIndex?: number;
+}) {
   const { t } = useTranslation();
   if (!editor || editor.isDestroyed || !editor.isEditable) return null;
 
   return (
     <ToolbarButton
       title={t("Table")}
-      tabIndex={0}
+      tabIndex={tabIndex}
       aria-label={t("Table")}
       disabled={!canExecuteEditorCommand(editor, (can) => can.command(insertTableFromToolbar))}
       onClick={() => {
