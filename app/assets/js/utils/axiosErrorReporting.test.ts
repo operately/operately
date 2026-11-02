@@ -22,6 +22,8 @@ function getRejectedHandler(client: any) {
   return latest.rejected;
 }
 
+
+
 describe("installSentryAxiosInterceptor", () => {
   beforeEach(() => {
     jest.mocked(Sentry.captureException).mockReset();
