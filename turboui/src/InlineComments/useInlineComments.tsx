@@ -210,7 +210,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
     },
     floatingAction:
       selectionRange && props.canComment && !selectingWithPointer ? (
-        <SelectionAction range={selectionRange} onAdd={start} />
+        <SelectionAction range={selectionRange} contentRef={contentRef} mobile={mobile} onAdd={start} />
       ) : null,
     comments: (
       <CommentsPanel
