@@ -111,7 +111,8 @@ defmodule Operately.Support.Features.Projects.ProjectPageContentSteps do
   step :assert_content_requests, ctx, expected do
     attempts(ctx, 5, fn ->
       Wallaby.Browser.execute_script(ctx.session, "return window.projectContentRequests", fn requests ->
-        assert Enum.sort(requests) == Enum.sort(expected)
+        # Joining the live subscription refreshes any loader-prefetched content.
+        assert Enum.sort(Enum.uniq(requests)) == Enum.sort(expected)
       end)
     end)
   end
