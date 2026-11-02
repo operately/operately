@@ -21,6 +21,7 @@ defmodule Operately.Operations.InlineThreadCreating do
     |> Multi.insert(:message, fn %{thread: thread} ->
       Comment.changeset(%{entity_id: thread.id, entity_type: :inline_thread, author_id: author.id, content: attrs.content})
     end)
+    |> Operately.Operations.InlineThreads.Events.comment(author)
     |> SharedSteps.preload_thread(:thread)
     |> Repo.transaction()
     |> SharedSteps.result(:loaded_thread)

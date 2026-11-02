@@ -302,6 +302,25 @@ defmodule OperatelyWeb.Api.Types do
     field :kpi_name, :string
   end
 
+  object :activity_content_kpi_deleted, for: Operately.Activities.Content.KpiDeleted do
+    field :space, :space, null: true
+    field :kpi_name, :string, null: false
+  end
+
+  object :activity_content_kpi_edited, for: Operately.Activities.Content.KpiEdited do
+    field :space, :space, null: true
+    field :kpi, :kpi, null: true
+    field :old_name, :string, null: false
+    field :new_name, :string, null: false
+  end
+
+  object :activity_content_kpi_entry_logged, for: Operately.Activities.Content.KpiEntryLogged do
+    field :space, :space, null: true
+    field :kpi, :kpi, null: true
+    field :value, :float, null: false
+    field :period, :date, null: false
+  end
+
   object :activity_content_kpi_entry_commented, for: Operately.Activities.Content.KpiEntryCommented do
     field :space, :space, null: false
     field :kpi, :kpi, null: true
@@ -1254,6 +1273,9 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_discussion_editing,
       :activity_content_discussion_posting,
       :activity_content_kpi_created,
+      :activity_content_kpi_deleted,
+      :activity_content_kpi_edited,
+      :activity_content_kpi_entry_logged,
       :activity_content_kpi_entry_commented,
       :activity_content_kpi_entry_edited,
       :activity_content_kpi_entry_deleted,
@@ -1307,6 +1329,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_project_review_submitted,
       :activity_content_project_timeline_edited,
       :activity_content_resource_hub_document_commented,
+      :activity_content_resource_hub_document_inline_thread_resolution_changed,
       :activity_content_resource_hub_document_created,
       :activity_content_resource_hub_document_deleted,
       :activity_content_resource_hub_document_edited,
@@ -1454,6 +1477,16 @@ defmodule OperatelyWeb.Api.Types do
     field? :document, :resource_hub_document, null: true
   end
 
+  object :activity_content_resource_hub_document_inline_thread_resolution_changed, for: Operately.Activities.Content.ResourceHubDocumentInlineThreadResolutionChanged do
+    field? :goal, :goal, null: true
+    field? :project, :project, null: true
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :document, :resource_hub_document, null: true
+    field :inline_thread_id, :id, null: false
+    field :resolved, :boolean, null: false
+  end
+
   object :activity_content_resource_hub_document_commented, for: Operately.Activities.Content.ResourceHubDocumentCommented do
     field? :goal, :goal, null: true
     field? :project, :project, null: true
@@ -1461,6 +1494,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :resource_hub, :resource_hub, null: true
     field? :document, :resource_hub_document, null: true
     field? :comment, :comment, null: true
+    field? :inline_thread_id, :id, null: true
   end
 
   object :activity_content_resource_hub_link_created, for: Operately.Activities.Content.ResourceHubLinkCreated do

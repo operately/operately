@@ -1413,6 +1413,16 @@ msgid "%{author} deleted \"%{fileName}\" from <hub>%{hubName}</hub> in the <pare
 msgstr "%{author} hat „%{fileName}“ aus <hub>%{hubName}</hub> im Arbeitsbereich <parent>%{parentName}</parent> gelöscht"
 
 #.frontend
+#: assets/js/features/activities/KpiDeleted/index.tsx:38
+msgid "%{author} deleted a KPI"
+msgstr "%{author} hat eine KPI gelöscht"
+
+#.frontend
+#: assets/js/features/activities/KpiDeleted/index.tsx:42
+msgid "%{author} deleted a KPI in the <space>%{spaceName}</space> space"
+msgstr "%{author} hat eine KPI im Arbeitsbereich <space>%{spaceName}</space> gelöscht"
+
+#.frontend
 #: assets/js/features/activities/KpiEntryDeleted/index.tsx:42
 msgid "%{author} deleted a KPI update"
 msgstr "%{author} hat einen erfassten KPI-Wert gelöscht"
@@ -1640,6 +1650,11 @@ msgid "%{author} edited <resources/> in the <parent>%{parentName}</parent> space
 msgstr "%{author} hat <resources/> im Arbeitsbereich <parent>%{parentName}</parent> bearbeitet"
 
 #.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:40
+msgid "%{author} edited a KPI"
+msgstr "%{author} hat eine KPI bearbeitet"
+
+#.frontend
 #: assets/js/features/activities/KpiAnnotationEdited/index.tsx:41
 msgid "%{author} edited a KPI annotation"
 msgstr "%{author} hat eine KPI-Anmerkung bearbeitet"
@@ -1648,6 +1663,11 @@ msgstr "%{author} hat eine KPI-Anmerkung bearbeitet"
 #: assets/js/features/activities/KpiAnnotationEdited/index.tsx:45
 msgid "%{author} edited a KPI annotation in the <space>%{spaceName}</space> space"
 msgstr "%{author} hat eine KPI-Anmerkung im Arbeitsbereich <space>%{spaceName}</space> bearbeitet"
+
+#.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:44
+msgid "%{author} edited a KPI in the <space>%{spaceName}</space> space"
+msgstr "%{author} hat eine KPI im Arbeitsbereich <space>%{spaceName}</space> bearbeitet"
 
 #.frontend
 #: assets/js/features/activities/KpiEntryEdited/index.tsx:41
@@ -2016,6 +2036,16 @@ msgid "%{author} reassigned %{personName} as a %{role} on the project"
 msgstr "%{author} hat %{personName} die Rolle „%{role}“ im Projekt neu zugewiesen"
 
 #.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:42
+msgid "%{author} recorded a KPI value"
+msgstr "%{author} hat einen KPI-Wert erfasst"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:46
+msgid "%{author} recorded a KPI value in the <space>%{spaceName}</space> space"
+msgstr "%{author} hat einen KPI-Wert im Arbeitsbereich <space>%{spaceName}</space> erfasst"
+
+#.frontend
 #: assets/js/features/activities/CompanyOwnerRemoving/index.tsx:38
 msgid "%{author} removed %{personName} as an account owner"
 msgstr "%{author} hat %{personName} die Inhaberrechte entzogen"
@@ -2278,6 +2308,11 @@ msgstr "%{author} hat das Ziel umbenannt"
 msgid "%{author} renamed the project"
 msgstr "%{author} hat das Projekt umbenannt"
 
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:30
+msgid "%{author} reopened a comment thread on <document>%{documentName}</document>"
+msgstr "%{author} hat einen Kommentarstrang zu <document>%{documentName}</document> wieder geöffnet"
+
 #.elixir
 #: lib/operately_email/templates/goal_reopening.html.eex:1
 msgid "%{author} reopened the %{goal_name} goal"
@@ -2287,6 +2322,11 @@ msgstr "%{author} hat das Ziel „%{goal_name}“ wieder geöffnet"
 #: lib/operately_email/templates/goal_reopening.text.eex:1
 msgid "%{author} reopened the goal \"%{goal_name}\"."
 msgstr "%{author} hat das Ziel „%{goal_name}“ wieder geöffnet."
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:29
+msgid "%{author} resolved a comment thread on <document>%{documentName}</document>"
+msgstr "%{author} hat einen Kommentarstrang zu <document>%{documentName}</document> als erledigt markiert"
 
 #.frontend
 #: assets/js/features/activities/CompanyMemberRestoring/index.tsx:38
@@ -5031,7 +5071,7 @@ msgstr "Eine neue Aufgabe namens „%{task_name}“ wurde in diesem Projekt erst
 #.elixir
 #: lib/operately_web/api/documents/restore_version.ex:57
 #: lib/operately_web/api/documents/update.ex:44
-#: lib/operately_web/api/inline_threads/create.ex:48
+#: lib/operately_web/api/inline_threads/create.ex:41
 msgid "A newer version of this document exists"
 msgstr "Es gibt eine neuere Version dieses Dokuments"
 
@@ -5528,6 +5568,11 @@ msgstr "Spalte links hinzufügen"
 #: ../turboui/src/RichEditor/components/tableActions.ts:28
 msgid "Add column right"
 msgstr "Spalte rechts hinzufügen"
+
+#.frontend
+#: ../turboui/src/InlineComments/SelectionAction.tsx:43
+msgid "Add comment"
+msgstr "Kommentar hinzufügen"
 
 #.frontend
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:113
@@ -6944,8 +6989,8 @@ msgstr "Darf nicht dieselbe Person wie der Champion sein"
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:151
 #: ../turboui/src/Checklist/index.tsx:330
 #: ../turboui/src/Checklist/index.tsx:379
-#: ../turboui/src/CommentSection/CommentInput.tsx:186
-#: ../turboui/src/CommentSection/CommentItem.tsx:316
+#: ../turboui/src/CommentSection/CommentInput.tsx:241
+#: ../turboui/src/CommentSection/CommentItem.tsx:387
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:37
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:46
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
@@ -7502,6 +7547,11 @@ msgstr "Tarif auswählen"
 msgid "Choose a plan with more member capacity."
 msgstr "Wähle einen Tarif mit Platz für mehr Mitglieder."
 
+#~ #.frontend
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:142
+#~ msgid "Choose a thread for this passage."
+#~ msgstr "Wähle einen Kommentarverlauf für diese Textstelle aus."
+
 #.elixir
 #: lib/operately/comments/create_milestone_comment_operation.ex:110
 msgid "Choose a valid open task resolution"
@@ -7676,8 +7726,8 @@ msgstr "Client-Host"
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
 #: ../turboui/src/Modal/index.tsx:143
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:94
-#: ../turboui/src/SlideIn/index.tsx:120
-#: ../turboui/src/SlideIn/index.tsx:122
+#: ../turboui/src/SlideIn/index.tsx:126
+#: ../turboui/src/SlideIn/index.tsx:128
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:134
 #: ../turboui/src/TaskBoard/KanbanView/DeleteStatusModal.tsx:55
 msgid "Close"
@@ -7847,19 +7897,25 @@ msgid "Comment not added"
 msgstr "Kommentar nicht hinzugefügt"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:183
+#: ../turboui/src/CommentSection/CommentItem.tsx:215
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:93
 msgid "Comment not deleted"
 msgstr "Kommentar nicht gelöscht"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:69
-#: ../turboui/src/CommentSection/CommentInput.tsx:75
+#: ../turboui/src/CommentSection/CommentInput.tsx:71
+#: ../turboui/src/CommentSection/CommentInput.tsx:88
+#: ../turboui/src/CommentSection/CommentInput.tsx:94
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:90
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:99
 msgid "Comment not posted"
 msgstr "Kommentar nicht veröffentlicht"
 
 #.frontend
+#: ../turboui/src/CommentSection/CommentItem.tsx:361
+#: ../turboui/src/InlineComments/Thread.tsx:57
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:84
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
 msgid "Comment not updated"
 msgstr "Kommentar nicht aktualisiert"
 
@@ -7894,6 +7950,11 @@ msgstr "Kommentare & Aktivitäten"
 #: ../turboui/src/Timeline/Timeline.tsx:125
 msgid "Comments and task updates will appear here"
 msgstr "Kommentare und Aufgabenupdates erscheinen hier"
+
+#.frontend
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:144
+msgid "Comments could not be loaded."
+msgstr "Die Kommentare konnten nicht geladen werden."
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:313
@@ -8466,7 +8527,7 @@ msgid "Copy failed"
 msgstr "Kopieren fehlgeschlagen"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:207
+#: ../turboui/src/CommentSection/CommentItem.tsx:249
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:42
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:49
 msgid "Copy link"
@@ -9072,7 +9133,7 @@ msgstr "Konto deaktivieren"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:398
 #: ../turboui/src/AccountApiTokensPage/index.tsx:524
 #: ../turboui/src/Checklist/index.tsx:530
-#: ../turboui/src/CommentSection/CommentItem.tsx:225
+#: ../turboui/src/CommentSection/CommentItem.tsx:268
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:77
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:113
 #: ../turboui/src/GoalPage/Sidebar.tsx:406
@@ -9270,6 +9331,11 @@ msgstr "Erfassten Wert löschen"
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:180
 msgid "Delete “%{name}”?"
 msgstr "„%{name}“ löschen?"
+
+#.frontend
+#: assets/js/features/activities/KpiDeleted/index.tsx:67
+msgid "Deleted KPI: %{kpiName}"
+msgstr "KPI gelöscht: %{kpiName}"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
@@ -9920,8 +9986,9 @@ msgstr "Frühere Version"
 
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:520
-#: ../turboui/src/CommentSection/CommentItem.tsx:216
+#: ../turboui/src/CommentSection/CommentItem.tsx:259
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:68
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:254
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
@@ -10086,7 +10153,7 @@ msgid "Edit update — %{name}"
 msgstr "Erfassten Wert bearbeiten – %{name}"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:289
+#: ../turboui/src/CommentSection/CommentItem.tsx:342
 msgid "Edit your comment..."
 msgstr "Deinen Kommentar bearbeiten …"
 
@@ -10094,6 +10161,11 @@ msgstr "Deinen Kommentar bearbeiten …"
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:559
 msgid "Edited"
 msgstr "Bearbeitet"
+
+#.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:69
+msgid "Edited KPI: %{kpiName}"
+msgstr "KPI bearbeitet: %{kpiName}"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
@@ -10891,7 +10963,7 @@ msgid "Failed to change plan"
 msgstr "Tarif konnte nicht geändert werden"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:194
+#: ../turboui/src/CommentSection/CommentItem.tsx:228
 msgid "Failed to copy comment link to clipboard"
 msgstr "Kommentarlink konnte nicht in die Zwischenablage kopiert werden"
 
@@ -11893,7 +11965,7 @@ msgid "Hide completed"
 msgstr "Abgeschlossene ausblenden"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:217
+#: ../turboui/src/CommentSection/CommentInput.tsx:272
 msgid "Hide list"
 msgstr "Liste ausblenden"
 
@@ -11919,6 +11991,7 @@ msgid "History"
 msgstr "Verlauf"
 
 #.frontend
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:260
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:93
 #: assets/js/pages/ResourceHubDocumentPage/Options.tsx:60
 #: assets/js/pages/ResourceHubDocumentVersionComparisonPage/navigation.tsx:18
@@ -12094,6 +12167,16 @@ msgid "Information"
 msgstr "Information"
 
 #.frontend
+#: ../turboui/src/DocumentPage/index.tsx:134
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:76
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:82
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:16
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:23
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:43
+msgid "Inline comments"
+msgstr "Textkommentare"
+
+#.frontend
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:203
 msgid "Inserted"
 msgstr "Eingefügt"
@@ -12165,7 +12248,7 @@ msgid "Invalid activation code"
 msgstr "Ungültiger Aktivierungscode"
 
 #.elixir
-#: lib/operately_web/api/companies/list_activities.ex:166
+#: lib/operately_web/api/companies/list_activities.ex:167
 msgid "Invalid activity cursor"
 msgstr "Ungültiger Aktivitätscursor"
 
@@ -12577,6 +12660,8 @@ msgstr "KPI-Vorlage"
 
 #.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:56
+#: assets/js/features/activities/KpiDeleted/index.tsx:51
+#: assets/js/features/activities/KpiEdited/index.tsx:53
 msgid "KPI: %{kpiName}"
 msgstr "KPI: %{kpiName}"
 
@@ -12592,6 +12677,7 @@ msgstr "KPI: %{title}"
 
 #.frontend
 #: assets/js/features/activities/KpiEntryDeleted/index.tsx:58
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:59
 msgid "KPI: %{value}"
 msgstr "KPI: %{value}"
 
@@ -13015,6 +13101,11 @@ msgstr "Aktive Unternehmen werden geladen …"
 #: ../turboui/src/ContentListState/index.tsx:19
 msgid "Loading check-ins"
 msgstr "Check-ins werden geladen"
+
+#.frontend
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:139
+msgid "Loading comments..."
+msgstr "Kommentare werden geladen..."
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:134
@@ -14312,6 +14403,11 @@ msgid "No imports yet. Upload a package above to create the first one."
 msgstr "Noch keine Importe. Lade oben ein Datenpaket hoch, um den ersten Import zu erstellen."
 
 #.frontend
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:89
+msgid "No inline comments yet."
+msgstr "Noch keine Inline-Kommentare."
+
+#.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:464
 msgid "No matching accounts found"
 msgstr "Keine passenden Konten gefunden"
@@ -15130,6 +15226,7 @@ msgstr "Optional. Leer lassen, um die Mitteilung bis zur Deaktivierung oder Lös
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:255
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:113
+#: ../turboui/src/CommentSection/CommentItem.tsx:239
 msgid "Options"
 msgstr "Optionen"
 
@@ -15731,8 +15828,9 @@ msgid "Please try again"
 msgstr "Versuche es erneut"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:69
-#: ../turboui/src/CommentSection/CommentItem.tsx:183
+#: ../turboui/src/CommentSection/CommentInput.tsx:88
+#: ../turboui/src/CommentSection/CommentItem.tsx:215
+#: ../turboui/src/InlineComments/Thread.tsx:57
 #: ../turboui/src/Reactions/index.tsx:58
 #: ../turboui/src/Reactions/index.tsx:204
 #: assets/js/models/people/usePeopleSearchError.ts:7
@@ -15763,7 +15861,7 @@ msgid "Please wait…"
 msgstr "Bitte warten …"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:182
+#: ../turboui/src/CommentSection/CommentInput.tsx:237
 #: assets/js/pages/DiscussionNewPage/index.tsx:56
 msgid "Post"
 msgstr "Veröffentlichen"
@@ -16695,6 +16793,16 @@ msgid "Record update"
 msgstr "Wert erfassen"
 
 #.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:90
+msgid "Recorded %{value} for %{kpiName}"
+msgstr "%{value} für %{kpiName} erfasst"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:89
+msgid "Recorded KPI value: %{value}"
+msgstr "KPI-Wert erfasst: %{value}"
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:423
 msgid "Recorded by"
 msgstr "Erfasst von"
@@ -16954,6 +17062,7 @@ msgid "Renews"
 msgstr "Verlängert sich"
 
 #.frontend
+#: ../turboui/src/InlineComments/Thread.tsx:254
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:155
 #: ../turboui/src/MilestonePage/index.tsx:376
 msgid "Reopen"
@@ -17084,6 +17193,17 @@ msgstr "Anweisungen zum Zurücksetzen des Passworts"
 #: lib/operately_email/templates/reset_password.html.eex:1
 msgid "Reset your password"
 msgstr "Setze dein Passwort zurück"
+
+#.frontend
+#: ../turboui/src/InlineComments/Thread.tsx:254
+msgid "Resolve"
+msgstr "Erledigen"
+
+#.frontend
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:99
+#: ../turboui/src/InlineComments/Thread.tsx:106
+msgid "Resolved"
+msgstr "Erledigt"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:125
@@ -17253,6 +17373,7 @@ msgstr "Rückblicknotizen:"
 #: ../turboui/src/ContentListState/index.tsx:33
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:146
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:146
 msgid "Retry"
 msgstr "Erneut versuchen"
 
@@ -17604,7 +17725,7 @@ msgstr "Speichern"
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:155
 #: ../turboui/src/AccountSettingsPage/index.tsx:89
-#: ../turboui/src/CommentSection/CommentItem.tsx:313
+#: ../turboui/src/CommentSection/CommentItem.tsx:384
 #: ../turboui/src/DocumentEditPage/index.tsx:83
 #: ../turboui/src/ProfileEditPage/index.tsx:142
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:443
@@ -17990,6 +18111,11 @@ msgstr "Ziel auswählen"
 #: ../turboui/src/Forms/SelectGoal.tsx:84
 msgid "Select a goal …"
 msgstr "Ziel auswählen …"
+
+#~ #.frontend
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:201
+#~ msgid "Select a passage to add an inline comment."
+#~ msgstr "Wähle eine Textstelle aus, um einen Textkommentar hinzuzufügen."
 
 #.frontend
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:191
@@ -18445,6 +18571,11 @@ msgstr[1] "%{count} weitere Einträge anzeigen"
 msgid "Show all"
 msgstr "Alle anzeigen"
 
+#~ #.frontend
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:144
+#~ msgid "Show all comments"
+#~ msgstr "Alle Kommentare anzeigen"
+
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:96
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:100
@@ -18456,6 +18587,12 @@ msgstr "Geschlossene Statusoptionen anzeigen"
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Show previous check-in"
 msgstr "Vorherigen Check-in anzeigen"
+
+#~ #.frontend
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:137
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:138
+#~ msgid "Show resolved"
+#~ msgstr "Erledigte anzeigen"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:63
@@ -19225,7 +19362,7 @@ msgid "Subscription ended"
 msgstr "Abonnement beendet"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:192
+#: ../turboui/src/CommentSection/CommentItem.tsx:226
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:48
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:213
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:328
@@ -19846,7 +19983,7 @@ msgid "The comment is still on this page. Try again."
 msgstr "Der Kommentar ist noch auf dieser Seite. Versuche es erneut."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:192
+#: ../turboui/src/CommentSection/CommentItem.tsx:226
 msgid "The comment link has been copied to your clipboard"
 msgstr "Der Kommentarlink wurde in deine Zwischenablage kopiert"
 
@@ -19887,6 +20024,11 @@ msgstr "Das aktuelle Abonnement endet am Ende des laufenden Abrechnungszeitraums
 #: lib/operately_email/templates/task_description_change.text.eex:11
 msgid "The description was cleared."
 msgstr "Die Beschreibung wurde geleert."
+
+#.frontend
+#: ../turboui/src/InlineComments/ThreadComposer.tsx:26
+msgid "The document changed. Select the passage again to post your saved comment."
+msgstr "Das Dokument wurde geändert. Wähle die Textstelle erneut aus, um deinen gespeicherten Kommentar zu veröffentlichen."
 
 #.frontend
 #: assets/js/pages/ProjectTemplateDocumentPage/index.tsx:49
@@ -20375,6 +20517,11 @@ msgstr[1] "Die %{count} Projektrollen dieser Person bleiben unzugewiesen."
 msgid "There are no deactivated team members in %{companyName}. To remove access for departing team members, visit the <actionLink>Manage Team Members</actionLink> page."
 msgstr "In %{companyName} gibt es keine deaktivierten Teammitglieder. Um ausscheidenden Teammitgliedern den Zugriff zu entziehen, öffne <actionLink>Teammitglieder verwalten</actionLink>."
 
+#~ #.frontend
+#~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:202
+#~ msgid "There are no inline comments to show."
+#~ msgstr "Es sind keine Textkommentare vorhanden."
+
 #.frontend
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:41
 msgid "There was an error updating your password. Please try again."
@@ -20493,19 +20640,24 @@ msgid "This code has expired. Request a new code to continue."
 msgstr "Dieser Code ist abgelaufen. Fordere einen neuen Code an, um fortzufahren."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:260
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:150
+msgid "This comment thread is no longer available."
+msgstr "Dieser Kommentarverlauf ist nicht mehr verfügbar."
+
+#.frontend
+#: ../turboui/src/CommentSection/CommentInput.tsx:315
 msgid "This comment will notify %{first} and %{second}"
 msgstr "Dieser Kommentar benachrichtigt %{first} und %{second}"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:272
+#: ../turboui/src/CommentSection/CommentInput.tsx:327
 msgid "This comment will notify %{first}, %{second}, and 1 other."
 msgid_plural "This comment will notify %{first}, %{second}, and %{count} others."
 msgstr[0] "Dieser Kommentar benachrichtigt %{first}, %{second} und 1 weitere Person."
 msgstr[1] "Dieser Kommentar benachrichtigt %{first}, %{second} und %{count} weitere Personen."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:251
+#: ../turboui/src/CommentSection/CommentInput.tsx:306
 msgid "This comment will notify %{name}"
 msgstr "Dieser Kommentar benachrichtigt %{name}"
 
@@ -20796,6 +20948,11 @@ msgstr "Dieses Datenpaket ist zu groß, um hier importiert zu werden."
 msgid "This package was exported from Operately %{manifestVersion}, but this instance is running %{currentVersion}. The import failure may be related to version differences."
 msgstr "Dieses Datenpaket wurde aus Operately %{manifestVersion} exportiert, aber diese Instanz verwendet %{currentVersion}. Der Importfehler könnte mit den Versionsunterschieden zusammenhängen."
 
+#.frontend
+#: ../turboui/src/InlineComments/Thread.tsx:108
+msgid "This passage is no longer available."
+msgstr "Diese Textstelle ist nicht mehr verfügbar."
+
 #.elixir
 #: lib/operately_email/templates/reset_password.text.eex:6
 msgid "This password reset link will expire in 24 hours for security reasons."
@@ -21053,17 +21210,17 @@ msgid "Timezone"
 msgstr "Zeitzone"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:243
+#: ../turboui/src/CommentSection/CommentInput.tsx:298
 msgid "Tip: @-mention someone to notify them about this milestone."
 msgstr "Tipp: Erwähne jemanden mit @, um diese Person über diesen Meilenstein zu benachrichtigen."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:242
+#: ../turboui/src/CommentSection/CommentInput.tsx:297
 msgid "Tip: @-mention someone to notify them about this task."
 msgstr "Tipp: Erwähne jemanden mit @, um diese Person über diese Aufgabe zu benachrichtigen."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:225
+#: ../turboui/src/CommentSection/CommentInput.tsx:280
 msgid "Tip: Subscribe if you want notifications too."
 msgstr "Tipp: Abonniere die Benachrichtigungen, wenn du sie auch erhalten möchtest."
 
@@ -21452,7 +21609,7 @@ msgid "Undo"
 msgstr "Rückgängig machen"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:194
+#: ../turboui/src/CommentSection/CommentItem.tsx:228
 msgid "Unexpected error"
 msgstr "Unerwarteter Fehler"
 
@@ -21879,7 +22036,7 @@ msgid "Uploading files will be blocked once the storage limit is reached."
 msgstr "Das Hochladen von Dateien wird gesperrt, sobald das Speicherlimit erreicht ist."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:182
+#: ../turboui/src/CommentSection/CommentInput.tsx:237
 #: ../turboui/src/Forms/Submit.tsx:26
 msgid "Uploading..."
 msgstr "Wird hochgeladen …"
@@ -22262,7 +22419,7 @@ msgid "View access"
 msgstr "Lesezugriff"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:217
+#: ../turboui/src/CommentSection/CommentInput.tsx:272
 msgid "View all"
 msgstr "Alle ansehen"
 
@@ -22777,8 +22934,8 @@ msgid "Workflow not updated"
 msgstr "Arbeitsablauf nicht aktualisiert"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:105
-#: ../turboui/src/CommentSection/CommentInput.tsx:126
+#: ../turboui/src/CommentSection/CommentInput.tsx:130
+#: ../turboui/src/CommentSection/CommentInput.tsx:158
 msgid "Write a comment here..."
 msgstr "Schreibe hier einen Kommentar …"
 
@@ -23268,7 +23425,12 @@ msgid "Your current email stays active until you confirm this code."
 msgstr "Deine aktuelle E-Mail-Adresse bleibt aktiv, bis du diesen Code bestätigst."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:75
+#: ../turboui/src/CommentSection/CommentInput.tsx:71
+#: ../turboui/src/CommentSection/CommentInput.tsx:94
+#: ../turboui/src/CommentSection/CommentItem.tsx:361
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:90
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:99
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
 msgid "Your draft has been kept for retry."
 msgstr "Dein Entwurf wurde für einen erneuten Versuch beibehalten."
 
@@ -23382,6 +23544,7 @@ msgstr "eine Diskussion"
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:127
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:160
 #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:39
+#: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:34
 #: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:29
 msgid "a document"
 msgstr "ein Dokument"

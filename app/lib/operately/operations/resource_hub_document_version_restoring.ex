@@ -51,6 +51,7 @@ defmodule Operately.Operations.ResourceHubDocumentVersionRestoring do
       content: source.content,
       current_version: next_version
     }))
+    |> Operately.Operations.InlineThreads.ReconcileAnchors.add(locked)
     |> Multi.insert(:restored_version, fn changes ->
       DocumentVersion.changeset(%{
         document_id: changes.document.id,

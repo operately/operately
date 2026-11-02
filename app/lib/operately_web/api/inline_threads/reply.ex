@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.InlineThreads.Reply do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :thread, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
-      {:error, :operation, %{error: :invalid_content}} -> {:error, :bad_request}
+      {:error, :operation, %{error: reason}} when reason in [:invalid_content, :thread_resolved] -> {:error, :bad_request}
       {:error, :operation, %{error: reason}} when reason in [:not_found, :forbidden] -> {:error, reason}
       _ -> {:error, :internal_server_error}
     end

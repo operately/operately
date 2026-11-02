@@ -5,6 +5,8 @@ import { TaskList } from "@tiptap/extension-list";
 import { tableExtensions } from "./extensions/Table";
 import { TaskItemExtension } from "./extensions/TaskItem";
 
+import { InlineComments, type InlineCommentsOptions } from "./extensions/InlineComments";
+
 import Blob from "./Blob";
 import FakeTextSelection from "./extensions/FakeTextSelection";
 import { HeadingExtension } from "./extensions/Heading";
@@ -14,6 +16,7 @@ import { mentionExtensions } from "./mentionExtensions";
 import type { RichEditorHandlers } from "./useEditor";
 
 export type CreateRichEditorExtensionsOptions = {
+  inlineComments?: InlineCommentsOptions;
   editable?: boolean;
   placeholder?: PlaceholderOptions["placeholder"];
   thumbnailBlobs?: boolean;
@@ -64,6 +67,8 @@ export function createRichEditorExtensions(
   }
 
   extensions.push(...mentionExtensions(handlers, editable, options.portalContainer), Highlight, FakeTextSelection);
+
+  if (options.inlineComments) extensions.push(InlineComments.configure(options.inlineComments));
 
   return extensions;
 }

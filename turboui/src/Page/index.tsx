@@ -17,6 +17,8 @@ export namespace Page {
     hidden?: boolean;
     testId?: string;
     keepOutsideOnBigScreen?: boolean;
+    keepOutside?: boolean;
+    iconOnly?: boolean;
   }
 
   export interface Props {

@@ -19,6 +19,7 @@ const document = {
   content: "",
   resourceHubId: "hub1",
   parentFolderId: "folder1",
+  state: "published",
 };
 const response = {
   document,
@@ -26,6 +27,8 @@ const response = {
   folder: { id: "folder1" },
   versions: [],
   subscribed: false,
+  company: { enabledExperimentalFeatures: [] },
+  threads: [],
 };
 
 const wrapper = ({ children }: React.PropsWithChildren) => (
@@ -33,6 +36,7 @@ const wrapper = ({ children }: React.PropsWithChildren) => (
 );
 
 beforeEach(() => {
+  window.appConfig = { billingEnabled: false } as typeof window.appConfig;
   queryClient.clear();
   jest.clearAllMocks();
   Api.default.setBasePath("/api/v2");
@@ -49,7 +53,7 @@ async function visit() {
   return inputs;
 }
 
-it("prefetches and subscribes without duplicate requests on mount or cached route re-entry", async () => {
+it("caches document data while refreshing threads on route re-entry", async () => {
   const inputs = await visit();
   expect(inputs).not.toHaveProperty("document");
 
@@ -61,7 +65,8 @@ it("prefetches and subscribes without duplicate requests on mount or cached rout
   await visit();
   renderHook(useLoadedData, { initialProps: undefined, wrapper });
 
-  expect(axios.get).toHaveBeenCalledTimes(4);
+  expect(axios.get).toHaveBeenCalledTimes(6);
+  expect(axios.get).not.toHaveBeenCalledWith(expect.stringContaining("/get_company"), expect.anything());
 });
 
 it("updates after invalidation and keeps cached content after a background failure", async () => {
@@ -105,7 +110,7 @@ it("does not fetch a folder for a document at the hub root", async () => {
 
   expect(result.current.folder).toBeUndefined();
   expect(result.current.isCurrentUserSubscribed).toBe(false);
-  expect(axios.get).toHaveBeenCalledTimes(3);
+  expect(axios.get).toHaveBeenCalledTimes(4);
 });
 
 it("starts independent queries before the document request finishes", async () => {
@@ -163,4 +168,74 @@ it("guards unavailable cached hub data", async () => {
   } finally {
     log.mockRestore();
   }
+});
+
+it("waits for inline comments before completing the loader", async () => {
+  let finishThreads: (value: { data: { threads: { id: string }[] } }) => void = () => {};
+  jest.mocked(axios.get).mockImplementation((url) => {
+    if (url.endsWith("/inline_threads/list")) {
+      return new Promise((resolve) => {
+        finishThreads = resolve;
+      });
+    }
+    return Promise.resolve({
+      data: {
+        ...response,
+        document: { ...document, state: "published" },
+      },
+    });
+  });
+  const finished = jest.fn();
+  const pending = visit().then(finished);
+  await waitFor(() =>
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining("/inline_threads/list"), expect.anything()),
+  );
+  expect(finished).not.toHaveBeenCalled();
+  finishThreads({ data: { threads: [{ id: "thread1" }] } });
+  await pending;
+  expect(
+    queryClient.getQueryData(
+      Api.inline_threads.listQueryKey({
+        resourceType: "resource_hub_document",
+        resourceId: "doc1",
+      }),
+    ),
+  ).toEqual({ threads: [{ id: "thread1" }] });
+});
+
+it("loads new replies when revisiting a document with cached threads", async () => {
+  const thread = { id: "thread1", messages: [{ id: "message1" }] };
+  const publishedResponse = {
+    ...response,
+    document: { ...document, state: "published" },
+    threads: [thread],
+  };
+  jest.mocked(axios.get).mockImplementation(async (url) => ({
+    data: url.endsWith("/inline_threads/list") ? { threads: [thread] } : publishedResponse,
+  }));
+  await visit();
+
+  const updatedThread = { ...thread, messages: [...thread.messages, { id: "reply1" }] };
+  jest.mocked(axios.get).mockClear();
+  jest.mocked(axios.get).mockResolvedValue({ data: { threads: [updatedThread] } });
+  await visit();
+
+  expect(
+    queryClient.getQueryData(
+      Api.inline_threads.listQueryKey({ resourceType: "resource_hub_document", resourceId: "doc1" }),
+    ),
+  ).toEqual({ threads: [updatedThread] });
+  expect(axios.get).toHaveBeenCalledTimes(1);
+  expect(axios.get).toHaveBeenCalledWith(expect.stringContaining("/inline_threads/list"), expect.anything());
+});
+
+it("does not preload inline comments for draft documents", async () => {
+  jest.mocked(axios.get).mockResolvedValue({
+    data: {
+      ...response,
+      document: { ...document, state: "draft" },
+    },
+  });
+  await visit();
+  expect(axios.get).not.toHaveBeenCalledWith(expect.stringContaining("/inline_threads/list"), expect.anything());
 });

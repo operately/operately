@@ -174,6 +174,7 @@ export { NewDocumentPage } from "./NewDocumentPage";
 export { DocumentEditPage } from "./DocumentEditPage";
 export type { DocumentEditPage as DocumentEditPageTypes } from "./DocumentEditPage/types";
 export { DocumentPage } from "./DocumentPage";
+export type { DocumentInlineCommentsProps, InlineCommentTarget } from "./DocumentPage";
 export { DocumentTitle } from "./DocumentTitle";
 export { OngoingDraftActions } from "./OngoingDraftActions";
 export { LinkNewPage } from "./LinkNewPage";
@@ -234,6 +235,11 @@ export { SpaceKanbanPage } from "./SpaceKanbanPage";
 export { Summary } from "./RichContent";
 export { displayDate, nodeDisplayInsertedAt, withNodeDisplayInsertedAt, type DraftableResource } from "./utils/drafts";
 export { Editor, hasLocalDraft, useEditor } from "./RichEditor";
+export type {
+  InlineCommentRange,
+  InlineCommentSelection,
+  InlineCommentsOptions,
+} from "./RichEditor/extensions/InlineComments";
 export type { RichEditorHandlers } from "./RichEditor/useEditor";
 export type { RichTextHandlers, CommentTaskItemChangeHandler } from "./RichContent/types";
 export type { TaskListInteraction, TaskItemChange } from "./RichEditor/taskLists";

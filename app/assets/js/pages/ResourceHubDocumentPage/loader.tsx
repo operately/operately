@@ -1,5 +1,6 @@
 import { invalidateResourceHubInteractionQueries } from "@/models/resourceHubs/resourceHubInteractionQueries";
 import Api from "@/api";
+import { prefetchDocumentInlineThreads } from "@/models/inlineThreads";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import { useQueryClient } from "@tanstack/react-query";
@@ -35,6 +36,7 @@ export async function loader({ params }) {
     : null;
 
   await Promise.all([
+    prefetchDocumentInlineThreads(document),
     Api.resource_hubs.getQuery(hubInput),
     folderInput ? Api.resource_hubs.getFolderQuery(folderInput) : undefined,
   ]);

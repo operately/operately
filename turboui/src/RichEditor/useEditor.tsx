@@ -9,6 +9,12 @@ import { clearLocalDraft, isRichTextEmpty, LocalDraftOptions, readLocalDraft, wr
 import { SearchFn } from "./extensions/MentionPeople";
 import { restoreRichTextSource } from "../RichContent/restoreSource";
 import { createResourceLinkPlugin, type ResolveResourceLinks } from "./extensions/Link/resourceLinks";
+import {
+  InlineCommentCommands,
+  createInlineCommentsPlugin,
+  inlineCommentsKey,
+  type InlineCommentsOptions,
+} from "./extensions/InlineComments";
 import { normalizeRichTextContent } from "./richTextContent";
 
 export interface Person {
@@ -40,6 +46,7 @@ export interface RichEditorHandlers {
 }
 
 interface UseEditorProps {
+  inlineComments?: InlineCommentsOptions;
   placeholder?: string;
   content?: any;
   onSave?: (data: OnSaveData) => void;
@@ -98,14 +105,19 @@ export function useEditor(props: UseEditorProps): EditorState {
   const placeholderRef = React.useRef(props.placeholder);
   const placeholder = React.useCallback(() => placeholderRef.current ?? "", []);
 
+  const inlineCommentsRef = React.useRef(props.inlineComments);
+  inlineCommentsRef.current = props.inlineComments;
+
   const extensions = React.useMemo(
-    () =>
-      createRichEditorExtensions(props.handlers, {
+    () => [
+      ...createRichEditorExtensions(props.handlers, {
         editable: props.editable,
         placeholder,
         thumbnailBlobs: props.thumbnailBlobs,
         portalContainer: embedding?.portalContainer,
       }),
+      InlineCommentCommands,
+    ],
     [
       props.handlers.uploadFile,
       props.handlers.peopleSearch,
@@ -198,13 +210,37 @@ export function useEditor(props: UseEditorProps): EditorState {
     };
   }, [editor, props.editable, props.handlers.resolveResourceLinks]);
 
+  const inlineCommentsEnabled = props.inlineComments !== undefined;
+
+  React.useEffect(() => {
+    if (!editor || !inlineCommentsEnabled) return;
+
+    editor.registerPlugin(
+      createInlineCommentsPlugin({
+        ranges: restoredDraft ? [] : (inlineCommentsRef.current?.ranges ?? []),
+        activeThreadId: inlineCommentsRef.current?.activeThreadId,
+        onSelectionChange: (selection) => inlineCommentsRef.current?.onSelectionChange?.(selection),
+        onThreadClick: (ids) => inlineCommentsRef.current?.onThreadClick?.(ids),
+      }),
+    );
+
+    return () => {
+      editor.unregisterPlugin(inlineCommentsKey);
+    };
+  }, [editor, inlineCommentsEnabled, restoredDraft]);
+
   const setContent = React.useCallback(
     (content: any) => {
       if (!editor) return;
       const source = props.editable ? restoreRichTextSource(content) : content;
-      editor.commands.setContent(normalizeRichTextContent(props.transformContent?.(source) ?? source), {
-        emitUpdate: false,
-      });
+      editor
+        .chain()
+        .setContent(normalizeRichTextContent(props.transformContent?.(source) ?? source), { emitUpdate: false })
+        .command(({ tr }) => {
+          tr.setMeta(inlineCommentsKey, { ranges: inlineCommentsRef.current?.ranges ?? [] });
+          return true;
+        })
+        .run();
     },
     [editor, props.transformContent, props.editable],
   );
@@ -215,6 +251,18 @@ export function useEditor(props: UseEditorProps): EditorState {
     if (!editor || props.editable) return;
     setContent(JSON.parse(contentKey));
   }, [editor, props.editable, contentKey, setContent]);
+
+  // Callback/active changes must not reset ranges that already moved with local edits.
+  const rangesKey = JSON.stringify(props.inlineComments?.ranges ?? []);
+  React.useEffect(() => {
+    if (!editor || !inlineCommentsKey.getState(editor.state)) return;
+    editor.commands.setInlineCommentRanges(restoredDraft ? [] : JSON.parse(rangesKey));
+  }, [editor, rangesKey, restoredDraft, inlineCommentsEnabled]);
+
+  React.useEffect(() => {
+    if (!editor || !inlineCommentsKey.getState(editor.state)) return;
+    editor.commands.setActiveInlineThread(props.inlineComments?.activeThreadId ?? null);
+  }, [editor, props.inlineComments?.activeThreadId, inlineCommentsEnabled]);
 
   const getJson = React.useCallback(() => {
     if (!editor) return null;

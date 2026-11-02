@@ -1,3 +1,4 @@
+import ResourceHubDocumentInlineThreadResolutionChanged from "./ResourceHubDocumentInlineThreadResolutionChanged";
 import * as React from "react";
 import * as interfaces from "./interfaces";
 
@@ -65,6 +66,9 @@ export default ActivityHandler;
 
 export const DISPLAYED_IN_FEED = [
   "kpi_created",
+  "kpi_deleted",
+  "kpi_entry_logged",
+  "kpi_edited",
   "kpi_entry_commented",
   "kpi_entry_edited",
   "kpi_entry_deleted",
@@ -159,6 +163,7 @@ export const DISPLAYED_IN_FEED = [
   "resource_hub_document_public_sharing_changed",
   "resource_hub_document_version_restored",
   "resource_hub_document_commented",
+  "resource_hub_document_inline_thread_resolution_changed",
   "resource_hub_document_deleted",
   "resource_hub_file_created",
   "resource_hub_file_edited",
@@ -214,6 +219,9 @@ import GoalCheckInCommented from "@/features/activities/GoalCheckInCommented";
 import GoalClosing from "@/features/activities/GoalClosing";
 import GoalCreated from "@/features/activities/GoalCreated";
 import KpiCreated from "@/features/activities/KpiCreated";
+import KpiDeleted from "@/features/activities/KpiDeleted";
+import KpiEntryLogged from "@/features/activities/KpiEntryLogged";
+import KpiEdited from "@/features/activities/KpiEdited";
 import KpiEntryCommented from "@/features/activities/KpiEntryCommented";
 import KpiEntryEdited from "@/features/activities/KpiEntryEdited";
 import KpiEntryDeleted from "@/features/activities/KpiEntryDeleted";
@@ -338,6 +346,9 @@ function handler(activity: Activity) {
     .with("goal_closing", () => GoalClosing)
     .with("goal_created", () => GoalCreated)
     .with("kpi_created", () => KpiCreated)
+    .with("kpi_deleted", () => KpiDeleted)
+    .with("kpi_entry_logged", () => KpiEntryLogged)
+    .with("kpi_edited", () => KpiEdited)
     .with("kpi_entry_commented", () => KpiEntryCommented)
     .with("kpi_entry_edited", () => KpiEntryEdited)
     .with("kpi_entry_deleted", () => KpiEntryDeleted)
@@ -378,6 +389,10 @@ function handler(activity: Activity) {
     .with("resource_hub_document_edited", () => ResourceHubDocumentEdited)
     .with("resource_hub_document_public_sharing_changed", () => ResourceHubDocumentPublicSharingChanged)
     .with("resource_hub_document_version_restored", () => ResourceHubDocumentVersionRestored)
+    .with(
+      "resource_hub_document_inline_thread_resolution_changed",
+      () => ResourceHubDocumentInlineThreadResolutionChanged,
+    )
     .with("resource_hub_document_commented", () => ResourceHubDocumentCommented)
     .with("resource_hub_document_deleted", () => ResourceHubDocumentDeleted)
     .with("resource_hub_file_created", () => ResourceHubFileCreated)

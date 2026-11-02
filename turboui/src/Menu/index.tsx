@@ -13,6 +13,7 @@ import { useWindowSizeBreakpoints } from "../utils/useWindowSizeBreakpoint";
 type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
 
 interface MenuProps extends TestableElement {
+  triggerIcon?: React.ComponentType<{ size: number }>;
   triggerLabel?: string;
   ariaLabel?: string;
   children: React.ReactNode;
@@ -94,6 +95,7 @@ export function Menu(props: MenuProps) {
 
 function Trigger(props: MenuProps) {
   const embedding = useEmbedding();
+  const TriggerIcon = props.triggerIcon ?? IconDots;
   if (props.anchorPosition) {
     // A noninteractive anchor positions a controlled menu at a context-click location.
     const trigger = (
@@ -141,7 +143,7 @@ function Trigger(props: MenuProps) {
             <IconChevronDown size={16} />
           </>
         ) : (
-          <IconDots size={20} />
+          <TriggerIcon size={20} />
         )}
       </DropdownMenu.Trigger>
     );

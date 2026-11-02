@@ -7,6 +7,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@/__tests__/renderHook";
 import {
   companyLayoutInputs,
+  fetchCompany,
   prefetchCompanyLayout,
   useCompanyLayoutQueries,
   useRefreshCompanyLayout,
@@ -37,6 +38,20 @@ function responses(name: string, status: string, count: number) {
           : { accessState: { status } },
   }));
 }
+
+it("reuses the layout's company cache and fetches separately after switching companies", async () => {
+  responses("Original", "active", 1);
+  await prefetchCompanyLayout(companyLayoutInputs());
+  jest.mocked(axios.get).mockClear();
+
+  expect((await fetchCompany()).name).toBe("Original");
+  expect(axios.get).not.toHaveBeenCalled();
+
+  Api.default.setHeaders({ "x-company-id": "destination" });
+  responses("Destination", "active", 1);
+  expect((await fetchCompany()).name).toBe("Destination");
+  expect(axios.get).toHaveBeenCalledTimes(1);
+});
 
 it("refreshes the layout's subscribed data for a billing signal without unrelated queries", async () => {
   responses("Before", "active", 1);
