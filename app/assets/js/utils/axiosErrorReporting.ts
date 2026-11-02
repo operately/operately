@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/react";
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 
 const instrumentedClients = new WeakSet<AxiosInstance>();
 
@@ -70,8 +70,28 @@ function captureAxiosError(error: unknown) {
       method: error.config?.method,
       url: error.config?.url,
       status: error.response?.status,
+      code: error.code,
+      timeout_ms: error.config?.timeout,
+      has_response: error.response !== undefined,
+      transport: classifyAxiosTransport(error),
     },
   });
+}
+
+function classifyAxiosTransport(error: AxiosError): "http_response" | "timeout" | "network" | "unknown" {
+  if (error.response !== undefined) {
+    return "http_response";
+  }
+
+  if (error.code === "ECONNABORTED" || error.code === "ETIMEDOUT") {
+    return "timeout";
+  }
+
+  if (error.code === "ERR_NETWORK") {
+    return "network";
+  }
+
+  return "unknown";
 }
 
 function isSentryEnabled(): boolean {
