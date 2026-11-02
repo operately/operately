@@ -33,6 +33,7 @@ defmodule Operately.Operations.ResourceHubLinkEditing do
       |> Map.merge(Parent.parent_fields(link.resource_hub))
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(link.resource_hub.project_id)
     |> Repo.extract_result(:link_with_node)
   end
 end

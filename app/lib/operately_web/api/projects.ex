@@ -160,6 +160,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -191,6 +192,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_kanban(inputs.status, inputs.kanban_state)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
@@ -233,6 +235,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -265,6 +268,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.update_task_statuses(inputs.task_statuses)
       |> Steps.replace_deleted_task_statuses(replacements)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -302,6 +306,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -343,6 +348,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -380,6 +386,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -419,6 +426,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{milestone: OperatelyWeb.Api.Serializer.serialize(changes.milestone)}
@@ -475,6 +483,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{milestone: OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)}
       end)
@@ -508,6 +517,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.delete_reactions()
       |> Steps.delete_project()
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{project: OperatelyWeb.Api.Serializer.serialize(changes.deleted_project)}
       end)
@@ -1172,6 +1182,15 @@ defmodule OperatelyWeb.Api.Projects do
 
     def commit(multi) do
       Operately.Repo.transaction(multi)
+    end
+
+    def broadcast_project_update(result) do
+      OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(result, fn changes ->
+        case changes[:project] do
+          %Operately.Projects.Project{id: id} -> id
+          _ -> nil
+        end
+      end)
     end
 
     def broadcast_review_count_update(result) do

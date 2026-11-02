@@ -16,6 +16,7 @@ defmodule Operately.Operations.ResourceHubDocumentPublishing do
       publish_multi(author, document, locked, attrs)
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(document.resource_hub.project_id)
     |> Repo.extract_result(:result)
   end
 

@@ -28,6 +28,7 @@ defmodule Operately.Operations.ResourceHubFileEditing do
       |> Map.merge(Parent.parent_fields(file.resource_hub))
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(file.resource_hub.project_id)
     |> Repo.extract_result(:file_with_node)
   end
 end

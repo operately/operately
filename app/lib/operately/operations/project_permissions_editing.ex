@@ -12,6 +12,7 @@ defmodule Operately.Operations.ProjectPermissionsEditing do
     |> update_bindings(project, attrs)
     |> insert_activity(author, project)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(project.id)
   end
 
   defp update_bindings(multi, project, attrs) do
