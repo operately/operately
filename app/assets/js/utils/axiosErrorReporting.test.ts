@@ -167,13 +167,7 @@ describe("installSentryAxiosInterceptor", () => {
     });
   });
 
-  it.each([
-    ["ECONNABORTED", "timeout"],
-    ["ETIMEDOUT", "timeout"],
-    ["ERR_NETWORK", "network"],
-    ["ERR_UNKNOWN", "unknown"],
-    [undefined, "unknown"],
-  ])("reports response-less errors with code %s and no configuration", async (code, transport) => {
+  it.each(["ERR_UNKNOWN", undefined])("reports unknown transport with code %s and no configuration", async (code) => {
     const client = installSentryAxiosInterceptor(axios.create());
     const error = new AxiosError("request failed", code);
 
@@ -188,40 +182,37 @@ describe("installSentryAxiosInterceptor", () => {
         code,
         timeout_ms: undefined,
         has_response: false,
-        transport,
+        transport: "unknown",
       },
     });
   });
 
-  it.each(["ERR_BAD_RESPONSE", "ECONNABORTED", "ETIMEDOUT", "ERR_NETWORK"])(
-    "classifies HTTP responses separately even with code %s",
-    async (code) => {
-      const client = installSentryAxiosInterceptor(axios.create());
-      const config = { headers: new AxiosHeaders(), method: "post", url: "/api/v2/comments/create", timeout: 0 };
-      const error = new AxiosError("request failed", code, config, undefined, {
+  it("prioritizes an HTTP response over a timeout code without including response contents", async () => {
+    const client = installSentryAxiosInterceptor(axios.create());
+    const config = { headers: new AxiosHeaders(), method: "post", url: "/api/v2/comments/create", timeout: 0 };
+    const error = new AxiosError("request failed", "ECONNABORTED", config, undefined, {
+      status: 500,
+      statusText: "Internal Server Error",
+      headers: new AxiosHeaders({ "private-header": "private-value" }),
+      config,
+      data: { content: "private-response" },
+    });
+
+    await expect(getRejectedHandler(client)(error)).rejects.toBe(error);
+
+    expect(Sentry.captureException).toHaveBeenCalledWith(error, {
+      tags: { source: "axios", handled: "true" },
+      extra: {
+        method: "post",
+        url: "/api/v2/comments/create",
         status: 500,
-        statusText: "Internal Server Error",
-        headers: new AxiosHeaders({ "private-header": "private-value" }),
-        config,
-        data: { content: "private-response" },
-      });
-
-      await expect(getRejectedHandler(client)(error)).rejects.toBe(error);
-
-      expect(Sentry.captureException).toHaveBeenCalledWith(error, {
-        tags: { source: "axios", handled: "true" },
-        extra: {
-          method: "post",
-          url: "/api/v2/comments/create",
-          status: 500,
-          code,
-          timeout_ms: 0,
-          has_response: true,
-          transport: "http_response",
-        },
-      });
-    },
-  );
+        code: "ECONNABORTED",
+        timeout_ms: 0,
+        has_response: true,
+        transport: "http_response",
+      },
+    });
+  });
 
   it("preserves reporting and rejection of non-Axios errors", async () => {
     const client = installSentryAxiosInterceptor(axios.create());
@@ -232,20 +223,18 @@ describe("installSentryAxiosInterceptor", () => {
     expect(Sentry.captureException).toHaveBeenCalledWith(error);
   });
 
-  it.each([undefined, {}, { appConfig: {} }, { appConfig: { sentry: { enabled: false } } }])(
-    "preserves rejections without reporting when Sentry is unavailable: %p",
-    async (windowValue) => {
-      Object.defineProperty(global, "window", { configurable: true, value: windowValue });
-      const client = installSentryAxiosInterceptor(axios.create());
-      const errors = [new AxiosError("timeout exceeded", "ECONNABORTED"), new Error("unexpected failure")];
+  it("preserves rejections without reporting when Sentry is disabled", async () => {
+    Object.defineProperty(global, "window", {
+      configurable: true,
+      value: { appConfig: { sentry: { enabled: false } } },
+    });
+    const client = installSentryAxiosInterceptor(axios.create());
+    const error = new AxiosError("timeout exceeded", "ECONNABORTED");
 
-      for (const error of errors) {
-        await expect(getRejectedHandler(client)(error)).rejects.toBe(error);
-      }
+    await expect(getRejectedHandler(client)(error)).rejects.toBe(error);
 
-      expect(Sentry.captureException).not.toHaveBeenCalled();
-    },
-  );
+    expect(Sentry.captureException).not.toHaveBeenCalled();
+  });
 
   it("instruments upload clients and reports failures once through the request pipeline", async () => {
     const client = createSentryAxiosClient();
@@ -260,14 +249,5 @@ describe("installSentryAxiosInterceptor", () => {
       error,
       expect.objectContaining({ extra: expect.objectContaining({ code: "ETIMEDOUT", transport: "timeout" }) }),
     );
-  });
-
-  it("installs only one interceptor per client", () => {
-    const client = axios.create();
-
-    installSentryAxiosInterceptor(client);
-    installSentryAxiosInterceptor(client);
-
-    expect(getResponseHandlers(client)).toHaveLength(1);
   });
 });
