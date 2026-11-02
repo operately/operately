@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Subscriptions.ProjectUpdatedTest do
     ctx = Factory.add_project(ctx, :private, :space, company_access_level: 0, space_access_level: 0)
     socket = socket(OperatelyWeb.ApiSocket, "test", %{person: ctx.viewer, company: ctx.company})
 
-    for id <- [nil, 123, [], "invalid", Ecto.UUID.generate(), Paths.project_id(ctx.private)] do
+    for id <- [nil, 123, [], "", "invalid", Ecto.UUID.generate(), Paths.project_id(ctx.private)] do
       assert {:error, _} = ProjectUpdated.join("project_updated", %{"projectId" => id}, socket)
     end
   end

@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Subscriptions.ProjectUpdated do
 
   def join(_name, %{"projectId" => id}, %{assigns: %{person: person, company: company}} = socket) when is_binary(id) do
     with true <- person.company_id == company.id,
-         {:ok, id} <- Helpers.decode_id(id),
+         {:ok, id} when not is_nil(id) <- Helpers.decode_id(id),
          {:ok, project} <- Project.get(person, id: id, company_id: company.id) do
       {:ok, socket, [project.id]}
     else
