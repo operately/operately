@@ -111,7 +111,7 @@ function MobileToolbar() {
 
           <div className="shrink-0">
             <MobilePopupTools>
-              <TableButton editor={editor} iconSize={20} />
+              <TableButton editor={editor} iconSize={20} tabIndex={0} />
               <TaskListButton editor={editor} iconSize={20} />
               <NumberListButton editor={editor} iconSize={20} />
               <BlockquoteButton editor={editor} iconSize={20} />
