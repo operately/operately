@@ -79,6 +79,7 @@ defmodule Operately.Projects do
     |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
     |> CoreWorkIndexUpdates.enqueue_project(fn changes -> changes.project.id end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(project.id)
     |> Repo.extract_result(:project)
   end
 

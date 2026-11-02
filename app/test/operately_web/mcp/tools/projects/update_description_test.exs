@@ -13,12 +13,17 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.UpdateDescriptionTest do
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
 
+    topic = "api:project_updated:#{ctx.project.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
+
     assert {:ok, %{project: project}} =
              UpdateDescription.call(ToolConnHelper.conn(ctx), %{
                "project_id" => Paths.project_id(ctx.project),
                "description" => "Updated project description"
              })
 
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
+    refute_receive %Phoenix.Socket.Broadcast{topic: ^topic}
     assert project.id == Paths.project_id(ctx.project)
     assert ToolConnHelper.reload(ctx.project) |> Map.get(:description) |> ToolConnHelper.rich_text_to_string() == "Updated project description"
   end

@@ -30,6 +30,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
     |> ResourceHubIndex.enqueue_resource(:search_files, :file, fn changes -> Enum.map(changes.result, & &1.id) end)
     |> insert_activity(author, hub)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(hub.project_id)
     |> extract_result()
     |> maybe_enqueue_near_limit_warning(company, previous_storage_usage)
   end

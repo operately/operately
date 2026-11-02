@@ -41,6 +41,7 @@ defmodule Operately.Operations.ResourceHubLinkCreating do
       |> Map.merge(Parent.parent_fields(hub))
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(hub.project_id)
     |> Repo.extract_result(:link_with_node)
   end
 end

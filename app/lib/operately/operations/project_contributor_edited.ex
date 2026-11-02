@@ -60,6 +60,7 @@ defmodule Operately.Operations.ProjectContributorEdited do
       }
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(contributor.project_id)
     |> Repo.extract_result(:new_contributor)
   end
 
@@ -95,6 +96,7 @@ defmodule Operately.Operations.ProjectContributorEdited do
       }
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(old_contributor.project_id)
     |> Repo.extract_result(:old_contributor)
   end
 
@@ -125,6 +127,7 @@ defmodule Operately.Operations.ProjectContributorEdited do
       }
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(contributor.project_id)
     |> Repo.extract_result(:contributor)
   end
 

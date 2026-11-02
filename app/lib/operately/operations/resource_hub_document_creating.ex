@@ -36,6 +36,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
     end)
     |> record_activity(author, hub, attrs)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(hub.project_id)
     |> Repo.extract_result(:document_with_node)
   end
 

@@ -56,6 +56,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
       |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_milestone_kanban_state(inputs.status, inputs.kanban_state)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{task: Serializer.serialize(changes.updated_task_with_preloads, level: :full)}
@@ -97,6 +98,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{milestone: Serializer.serialize(changes.updated_milestone)}
       end)
@@ -138,6 +140,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{milestone: Serializer.serialize(changes.updated_milestone)}
       end)
@@ -179,6 +182,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{milestone: Serializer.serialize(changes.updated_milestone)}
@@ -218,6 +222,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
       |> Steps.delete_milestone()
       |> Steps.remove_milestone_from_ordering_state()
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
@@ -247,6 +252,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
       |> Steps.validate_ordering_state(inputs.ordering_state)
       |> Steps.update_project_ordering_state()
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{project: Serializer.serialize(changes.updated_project, level: :full)}
       end)
@@ -483,6 +489,15 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
         e ->
           error_callback.(e)
       end
+    end
+
+    def broadcast_project_update(result) do
+      OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(result, fn changes ->
+        case changes[:project] do
+          %Operately.Projects.Project{id: id} -> id
+          _ -> nil
+        end
+      end)
     end
 
     def broadcast_review_count_update(result) do
