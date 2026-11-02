@@ -20,7 +20,9 @@ const ResourceHubDocumentCommented: ActivityHandler = {
 
   pagePath(paths, activity: Activity): string {
     const data = content(activity);
-    const resourcePath = data.document?.id ? paths.resourceHubDocumentPath(data.document.id) : null;
+    const resourcePath = data.document?.id
+      ? paths.resourceHubDocumentPath(data.document.id, { inlineThread: data.inlineThreadId })
+      : null;
 
     return commentedResourcePath(paths, data, resourcePath, data.comment);
   },

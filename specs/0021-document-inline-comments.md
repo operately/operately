@@ -14,7 +14,7 @@ Build reusable rich-text UI and resource-aware backend operations so discussions
 - Support replies, mentions, editing/deleting one's own messages, and resolve/reopen. Resolved threads remain viewable but must be reopened before replying or editing messages. Keep existing whole-document comments separate.
 - Inherit document access: viewing requires document view permission; creating, replying, and resolving/reopening require comment permission. Commenting must not require document edit permission. Enforce company read-only restrictions and recheck access on every request.
 - Preserve threads when their text changes or disappears. Show the original quote and an unattached state when the location cannot be established reliably; never silently attach to another occurrence of the same text.
-- Notify eligible participants/subscribers and mentioned people through existing notification infrastructure. Direct thread links open the document and selected thread. Selecting the thread and message from notification, feed, and email links is deferred.
+- Notify eligible participants/subscribers and mentioned people through existing notification infrastructure. Direct thread links open the document and selected thread. Email and notification links select the thread and message, including resolved threads. Feed links remain deferred.
 - Exclude threads, quotes, and participant information from public document sharing. Existing authenticated activity and notification APIs may return inline-comment events subject to their normal permissions.
 - Translate all system copy and reuse existing TurboUI controls, comment inputs, message rendering, and rich-text components.
 
@@ -105,7 +105,7 @@ Discussions and other rich-text resources are a separate follow-up, reusing the 
 - Thread creation and replies notify the document's current subscribers and eligible mentioned people. All threads share the document's existing subscription list and its send-to-everyone setting; there are no separate thread subscriptions. Recipients are deduplicated, the acting author is excluded, and current published-document access is checked at notification dispatch. Email delivery and notification listing use the already-dispatched notification without another eligibility check, following existing notification behavior.
 - Authors and eligible mentioned people automatically join the document subscription list. Existing canceled subscriptions stay canceled. Creating or replying with a mention uses the existing direct-mention email preference and buffering infrastructure. Edits and deletions do not send new notifications.
 - Resolve/reopen record a separate activity only when the state changes; they do not notify subscribers. Resolved threads must be reopened before replying; accepted replies notify document subscribers as usual.
-- Document-comment notification, feed, and email links use the existing document URL and message hash, without selecting the inline thread. Resolution links open the thread, including resolved threads. Existing whole-document comments keep their original links and recipient behavior.
+- Inline-comment emails, both immediate and buffered, include `?inlineThread=<id>#<message-id>` to open the thread and scroll to the message without activating a reply. This also works for resolved threads and the mobile panel. Notifications-page links also include the thread parameter and message hash. Feed links still use the document URL and message hash without selecting the inline thread. Resolution links open the thread, including resolved threads. Existing whole-document comments keep their original links and recipient behavior.
 - No new endpoints, migrations, external API, MCP, or CLI actions are added. Existing authenticated activity and notification reads include inline-thread events for authorized clients, including API-token and MCP OAuth clients. The additive activity fields/types are regenerated in both clients and the CLI catalog. The frontend feature flag has been removed for release.
 - Existing document subscription controls apply to inline comments. Deleting an empty thread preserves the document subscription list. Notification dispatch excludes deleted threads, messages, and documents. Comprehensive thread copy/delete/export/import coverage remains in PR 5.
 
@@ -113,7 +113,7 @@ Discussions and other rich-text resources are a separate follow-up, reusing the 
 
 These tasks are outside the current release scope:
 
-- [ ] Make notification, feed, and email links select the correct thread and message, including resolved threads.
+- [ ] Make feed links select the correct thread and message, including resolved threads.
 - [ ] Preserve the mobile preview’s Edit selection when opening the panel.
 - [ ] Complete keyboard-only selection, commenting, and navigation; handle Escape inside reply editors and restore focus without losing drafts.
 - [ ] Improve dense-thread layouts: active-card priority, long conversations, passage connectors, and overlapping-thread selection.

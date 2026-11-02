@@ -1,5 +1,6 @@
 defmodule Operately.Support.Features.ResourceHubDocument.InlineCommentsSteps do
   use Operately.FeatureCase
+  import Ecto.Query
 
   step :setup, ctx do
     ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_resource_hub(:hub, :space, :creator)
@@ -66,5 +67,39 @@ defmodule Operately.Support.Features.ResourceHubDocument.InlineCommentsSteps do
     |> UI.assert_has(testid: "inline-comments-floating")
     |> UI.assert_has(Wallaby.Query.css("[data-test-id='inline-thread-#{ctx.thread_id}'] div[data-test-id^='comment-'][id]", count: 2))
     |> UI.take_screenshot()
+  end
+
+  step :setup_email_link, ctx, resolved do
+    ctx = Factory.add_inline_thread(ctx, :thread, :document, from: 1, to: 7, quote: "Review")
+    [initial] = ctx.thread.messages
+    {:ok, thread} = Operately.Operations.InlineThreadReplying.run(ctx.creator, ctx.thread, Operately.Support.RichText.rich_text("Follow-up"))
+    [reply] = Enum.reject(thread.messages, &(&1.id == initial.id))
+    if resolved, do: Operately.Operations.InlineThreadResolving.run(ctx.creator, thread)
+
+    activity = Repo.one!(from a in Operately.Activities.Activity, where: a.action == "resource_hub_document_commented" and a.content["comment_id"] == ^reply.id)
+    email = OperatelyEmail.Emails.ResourceHubDocumentCommentedEmail.buffered_item(ctx.creator, activity)
+
+    Map.merge(ctx, %{email_url: email.item_url, reply_id: Paths.comment_id(reply), thread_id: Operately.ShortUuid.encode!(thread.id)})
+  end
+
+  step :follow_email_link, ctx, width do
+    ctx = Map.update!(ctx, :session, &Wallaby.Browser.resize_window(&1, width, 900))
+
+    ctx =
+      ctx
+      |> UI.visit(ctx.email_url)
+      |> UI.assert_has(testid: "comment-#{ctx.reply_id}")
+      |> UI.refute_has(css: "[data-test-id='inline-thread-#{ctx.thread_id}'] [contenteditable='true']")
+
+    UI.execute("assert_linked_message_visible", ctx, fn session ->
+      attempts(ctx, 20, fn ->
+        Wallaby.Browser.execute_script(session, """
+        const message = document.getElementById(#{Jason.encode!(ctx.reply_id)});
+        const rect = message.getBoundingClientRect();
+        return location.hash === '#' + message.id && rect.top >= 0 && rect.bottom <= window.innerHeight;
+        """, fn visible -> assert visible end)
+      end)
+      session
+    end)
   end
 end
