@@ -46,6 +46,24 @@ defmodule OperatelyWeb.Api.Subscriptions.ProjectUpdatedTest do
     refute_receive %Phoenix.Socket.Broadcast{topic: ^topic}
   end
 
+  test "broadcasts to an explicit project after a successful transaction and preserves the result", ctx do
+    topic = "api:project_updated:#{ctx.project.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
+    assert {:ok, :updated} = result = Operately.Repo.transaction(fn -> :updated end)
+
+    assert ^result = ProjectUpdated.broadcast_result(result, ctx.project.id)
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
+  end
+
+  test "resolves the project from a successful transaction result and preserves the result", ctx do
+    topic = "api:project_updated:#{ctx.project.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
+    assert {:ok, %{project_id: _}} = result = Operately.Repo.transaction(fn -> %{project_id: ctx.project.id} end)
+
+    assert ^result = ProjectUpdated.broadcast_result(result, fn changes -> changes.project_id end)
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
+  end
+
   test "channel returns a rejected subscription without crashing", ctx do
     socket = socket(OperatelyWeb.ApiSocket, "test", %{account: Operately.Repo.preload(ctx.viewer, :account).account})
 
