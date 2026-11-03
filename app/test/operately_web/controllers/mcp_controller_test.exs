@@ -58,7 +58,7 @@ defmodule OperatelyWeb.McpControllerTest do
     assert conn.status == 401
     challenge = get_resp_header(conn, "www-authenticate") |> List.first()
     assert challenge =~ "resource_metadata="
-    assert challenge =~ ~s(scope="mcp:read")
+    assert challenge =~ ~s(scope="mcp:read mcp:write")
     refute challenge =~ "error="
   end
 
@@ -152,6 +152,7 @@ defmodule OperatelyWeb.McpControllerTest do
     assert fetch_tool["description"] =~ "/:company_id/projects/:project_id"
     assert fetch_tool["description"] =~ "/:company_id/goals/:goal_id"
     assert fetch_tool["inputSchema"]["properties"]["url"]["description"] =~ "Accepted paths:"
+
     assert fetch_tool["_meta"]["examples"] |> Enum.map(& &1["title"]) == [
              "Fetch a project page URL",
              "Fetch a goal page URL",
@@ -174,20 +175,21 @@ defmodule OperatelyWeb.McpControllerTest do
              "openWorldHint" => false
            }
 
-    assert Enum.sort(create_comment_tool["inputSchema"]["properties"]["parent_type"]["enum"]) == Enum.sort([
-             "goal_check_in",
-             "project_check_in",
-             "goal_discussion",
-             "project_discussion",
-             "space_discussion",
-             "milestone",
-             "document",
-             "file",
-             "link",
-             "project_task",
-             "space_task",
-             "kpi_update"
-           ])
+    assert Enum.sort(create_comment_tool["inputSchema"]["properties"]["parent_type"]["enum"]) ==
+             Enum.sort([
+               "goal_check_in",
+               "project_check_in",
+               "goal_discussion",
+               "project_discussion",
+               "space_discussion",
+               "milestone",
+               "document",
+               "file",
+               "link",
+               "project_task",
+               "space_task",
+               "kpi_update"
+             ])
 
     assert create_comment_tool["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
     assert create_comment_tool["_meta"]["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
