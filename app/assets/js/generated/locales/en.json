@@ -3129,6 +3129,8 @@
   "This authorization request must include a PKCE code challenge.": "This authorization request must include a PKCE code challenge.",
   "This billing interval is not available right now": "This billing interval is not available right now",
   "This change applies to all your companies. Your existing sessions remain signed in.": "This change applies to all your companies. Your existing sessions remain signed in.",
+  "This client can view workspace data.": "This client can view workspace data.",
+  "This client can view, create, update, delete, and archive workspace content.": "This client can view, create, update, delete, and archive workspace content.",
   "This client uses a localhost redirect URI. Confirm that you trust the local application before approving.": "This client uses a localhost redirect URI. Confirm that you trust the local application before approving.",
   "This code has expired. Request a new code to continue.": "This code has expired. Request a new code to continue.",
   "This comment will notify {{first}} and {{second}}": "This comment will notify {{first}} and {{second}}",
