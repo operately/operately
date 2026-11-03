@@ -145,6 +145,24 @@ it("supports calls without a request and refreshes invalidated core queries", as
   expect(requestedPaths()).toEqual(["/api/v2/projects/get"]);
 });
 
+it("reuses hover-preloaded core data during navigation and mounting", async () => {
+  await visit();
+  expect(requestedPaths()).toContain("/api/v2/projects/get");
+  jest.mocked(axios.get).mockClear();
+
+  jest.mocked(Pages.useLoadedData).mockReturnValue(await visit());
+  const { result, unmount } = renderHook(useLoadedData, {
+    initialProps: undefined,
+    wrapper: ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
+  });
+  try {
+    expect(result.current.data.project).toEqual(project);
+    expect(axios.get).not.toHaveBeenCalled();
+  } finally {
+    unmount();
+  }
+});
+
 it("keeps the loaded project visible when the optional space request fails before mounting", async () => {
   const error = Object.assign(new Error("Service unavailable"), { response: { status: 503 } });
   jest
