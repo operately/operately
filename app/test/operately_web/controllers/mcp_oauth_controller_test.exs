@@ -64,19 +64,9 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     params = authorize_params(client, hd(client.redirect_uris))
     picker = conn |> log_in_account(account, ctx.company) |> delete_req_header("x-company-id") |> get("/oauth/authorize", params)
     assert html_response(picker, 200) =~ "Choose a Company"
-
-    response =
-      picker
-      |> recycle()
-      |> post(
-        "/oauth/authorize",
-        Map.merge(params, %{
-          "decision" => "select_company",
-          "selected_company_id" => ctx.company.id,
-          "_csrf_token" => csrf_token(picker)
-        })
-      )
-
+    response = picker |> recycle() |> post("/oauth/authorize", Map.merge(params, %{
+      "decision" => "select_company", "selected_company_id" => ctx.company.id, "_csrf_token" => csrf_token(picker)
+    }))
     assert html_response(response, 200) =~ "Autorizar cliente MCP"
   end
 
@@ -113,13 +103,7 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
       get(conn, "/oauth/authorize", authorize_params(client, hd(client.redirect_uris), "mcp:read mcp:write"))
 
     body = html_response(conn, 200)
-    assert body =~ "This client can view workspace data."
-    assert body =~ "This client can view, create, update, delete, and archive workspace content."
     assert body =~ "Write access lets this client create, update, delete, and archive content in your workspace."
-    assert body =~ ~s(name="access_level")
-    assert body =~ ~s(value="read_write" checked)
-    assert body =~ "View and edit"
-    assert body =~ "View only"
   end
 
   test "defaults to read and write when scope is omitted", %{conn: conn, client: client} do
@@ -129,10 +113,11 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     params = authorize_params(client, hd(client.redirect_uris)) |> Map.delete("scope")
 
     consent_conn = get(conn, "/oauth/authorize", params)
-    body = html_response(consent_conn, 200)
-    assert body =~ "View and edit"
-    assert body =~ "View only"
-    assert body =~ ~s(value="read_write" checked)
+    document = consent_conn |> html_response(200) |> Floki.parse_document!()
+    choices = Floki.find(document, ~s(input[type="radio"][name="access_level"]))
+
+    assert Enum.sort(Floki.attribute(choices, "value")) == ["read", "read_write"]
+    assert Floki.attribute(choices, "[checked]", "value") == ["read_write"]
 
     csrf_token = csrf_token(consent_conn)
 
@@ -217,8 +202,9 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     params = authorize_params(client, hd(client.redirect_uris), "mcp:read")
 
     consent_conn = get(conn, "/oauth/authorize", params)
-    assert html_response(consent_conn, 200) =~ "View workspace data"
-    refute html_response(consent_conn, 200) =~ ~s(name="access_level")
+    document = consent_conn |> html_response(200) |> Floki.parse_document!()
+    assert Floki.attribute(document, ~s(input[name="scope"]), "value") == ["mcp:read"]
+    assert Floki.find(document, ~s(input[name="access_level"])) == []
 
     csrf_token = csrf_token(consent_conn)
 

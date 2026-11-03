@@ -193,32 +193,15 @@ defmodule OperatelyWeb.McpOAuthController do
     })
 
     case reason do
-      :invalid_redirect_uri ->
-        render_error(conn, 400, gettext("Invalid Redirect URI"), gettext("The requested redirect URI is not registered for this client."))
-
-      :invalid_target_resource ->
-        render_error(conn, 400, gettext("Invalid Resource"), gettext("The authorization request must target this server's canonical MCP endpoint."))
-
-      :invalid_scope ->
-        render_error(conn, 400, gettext("Invalid Scope"), gettext("The authorization request contains an unsupported scope."))
-
-      :missing_code_challenge ->
-        render_error(conn, 400, gettext("Missing PKCE Challenge"), gettext("This authorization request must include a PKCE code challenge."))
-
-      :unsupported_code_challenge_method ->
-        render_error(conn, 400, gettext("Unsupported PKCE Method"), gettext("Only the S256 PKCE challenge method is supported."))
-
-      :unsupported_client_authentication ->
-        render_error(conn, 400, gettext("Unsupported Client Authentication"), gettext("Only public OAuth clients using token_endpoint_auth_method=none are supported."))
-
-      :invalid_client ->
-        render_error(conn, 400, gettext("Invalid Client"), gettext("The OAuth client is not registered for this Operately MCP server."))
-
-      :invalid_request ->
-        render_error(conn, 400, gettext("Invalid Request"), gettext("The authorization request is missing required parameters or contains invalid values."))
-
-      _ ->
-        render_error(conn, 500, gettext("Authorization Error"), gettext("Operately couldn't complete this authorization request."))
+      :invalid_redirect_uri -> render_error(conn, 400, gettext("Invalid Redirect URI"), gettext("The requested redirect URI is not registered for this client."))
+      :invalid_target_resource -> render_error(conn, 400, gettext("Invalid Resource"), gettext("The authorization request must target this server's canonical MCP endpoint."))
+      :invalid_scope -> render_error(conn, 400, gettext("Invalid Scope"), gettext("The authorization request contains an unsupported scope."))
+      :missing_code_challenge -> render_error(conn, 400, gettext("Missing PKCE Challenge"), gettext("This authorization request must include a PKCE code challenge."))
+      :unsupported_code_challenge_method -> render_error(conn, 400, gettext("Unsupported PKCE Method"), gettext("Only the S256 PKCE challenge method is supported."))
+      :unsupported_client_authentication -> render_error(conn, 400, gettext("Unsupported Client Authentication"), gettext("Only public OAuth clients using token_endpoint_auth_method=none are supported."))
+      :invalid_client -> render_error(conn, 400, gettext("Invalid Client"), gettext("The OAuth client is not registered for this Operately MCP server."))
+      :invalid_request -> render_error(conn, 400, gettext("Invalid Request"), gettext("The authorization request is missing required parameters or contains invalid values."))
+      _ -> render_error(conn, 500, gettext("Authorization Error"), gettext("Operately couldn't complete this authorization request."))
     end
   end
 
