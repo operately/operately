@@ -17,9 +17,9 @@ Destructive tools (for example archive or delete) require `mcp:write` only. Ther
 
 ### Default behavior
 
-If a client omits the `scope` parameter during authorization, the grant receives **`mcp:read` only**. Clients that need write access must request `mcp:write` explicitly.
+The unauthenticated MCP challenge and omitted `scope` parameter both request **`mcp:read` and `mcp:write`**. The consent screen selects **View and edit** by default. The person can choose **View only**, which grants `mcp:read` and leaves `mcp:write` off the token.
 
-This matches the CLI split between read-only and write API tokens.
+A client that explicitly requests `mcp:read` alone cannot be upgraded to write on that screen. The grant never includes a scope the client did not request.
 
 ## Connecting a client
 

@@ -43,7 +43,9 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     body = html_response(response, 200)
     assert body =~ "Autorizar cliente MCP"
     assert body =~ ~s(lang="pt-BR")
-    assert body =~ "Visualizar dados do ambiente de trabalho"
+    assert body =~ "Visualizar e editar"
+    assert body =~ "Somente leitura"
+    assert body =~ "Este cliente pode visualizar dados do ambiente de trabalho."
     assert body =~ "mcp:read mcp:write"
     assert body =~ client.client_name
     assert body =~ ctx.company.name
@@ -101,21 +103,21 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
       get(conn, "/oauth/authorize", authorize_params(client, hd(client.redirect_uris), "mcp:read mcp:write"))
 
     body = html_response(conn, 200)
-    assert body =~ "View workspace data"
-    assert body =~ "Create, update, delete, and archive workspace content"
     assert body =~ "Write access lets this client create, update, delete, and archive content in your workspace."
   end
 
-  test "defaults to read-only scope when scope is omitted", %{conn: conn, client: client} do
+  test "defaults to read and write when scope is omitted", %{conn: conn, client: client} do
     account = account_fixture()
     company = company_fixture(%{company_name: "Default Scope Co"}, account)
     conn = log_in_account(conn, account, company)
     params = authorize_params(client, hd(client.redirect_uris)) |> Map.delete("scope")
 
     consent_conn = get(conn, "/oauth/authorize", params)
-    body = html_response(consent_conn, 200)
-    assert body =~ "View workspace data"
-    refute body =~ "Create, update, delete, and archive workspace content"
+    document = consent_conn |> html_response(200) |> Floki.parse_document!()
+    choices = Floki.find(document, ~s(input[type="radio"][name="access_level"]))
+
+    assert Enum.sort(Floki.attribute(choices, "value")) == ["read", "read_write"]
+    assert Floki.attribute(choices, "[checked]", "value") == ["read_write"]
 
     csrf_token = csrf_token(consent_conn)
 
@@ -147,7 +149,94 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     token_body = Jason.decode!(token_conn.resp_body)
 
     assert token_conn.status == 200
+    assert token_body["scope"] == "mcp:read mcp:write"
+  end
+
+  test "lets the user grant view only when the client requested read and write", %{conn: conn, client: client} do
+    account = account_fixture()
+    company = company_fixture(%{company_name: "View Only Co"}, account)
+    conn = log_in_account(conn, account, company)
+    params = authorize_params(client, hd(client.redirect_uris), "mcp:read mcp:write")
+
+    consent_conn = get(conn, "/oauth/authorize", params)
+    csrf_token = csrf_token(consent_conn)
+
+    redirect_conn =
+      consent_conn
+      |> recycle()
+      |> post(
+        "/oauth/authorize",
+        Map.merge(params, %{"decision" => "approve", "access_level" => "read", "_csrf_token" => csrf_token})
+      )
+
+    code =
+      redirect_conn
+      |> redirected_to()
+      |> URI.parse()
+      |> Map.fetch!(:query)
+      |> URI.decode_query()
+      |> Map.fetch!("code")
+
+    token_conn =
+      redirect_conn
+      |> recycle()
+      |> post("/oauth/token", %{
+        "grant_type" => "authorization_code",
+        "client_id" => client.client_id,
+        "redirect_uri" => hd(client.redirect_uris),
+        "resource" => Mcp.canonical_resource_uri(),
+        "code" => code,
+        "code_verifier" => "test-verifier"
+      })
+
+    token_body = Jason.decode!(token_conn.resp_body)
+
+    assert token_conn.status == 200
     assert token_body["scope"] == "mcp:read"
+  end
+
+  test "does not grant write when the client requested view only", %{conn: conn, client: client} do
+    account = account_fixture()
+    company = company_fixture(%{company_name: "No Upgrade Co"}, account)
+    conn = log_in_account(conn, account, company)
+    params = authorize_params(client, hd(client.redirect_uris), "mcp:read")
+
+    consent_conn = get(conn, "/oauth/authorize", params)
+    document = consent_conn |> html_response(200) |> Floki.parse_document!()
+    assert Floki.attribute(document, ~s(input[name="scope"]), "value") == ["mcp:read"]
+    assert Floki.find(document, ~s(input[name="access_level"])) == []
+
+    csrf_token = csrf_token(consent_conn)
+
+    redirect_conn =
+      consent_conn
+      |> recycle()
+      |> post(
+        "/oauth/authorize",
+        Map.merge(params, %{"decision" => "approve", "access_level" => "read_write", "_csrf_token" => csrf_token})
+      )
+
+    code =
+      redirect_conn
+      |> redirected_to()
+      |> URI.parse()
+      |> Map.fetch!(:query)
+      |> URI.decode_query()
+      |> Map.fetch!("code")
+
+    token_conn =
+      redirect_conn
+      |> recycle()
+      |> post("/oauth/token", %{
+        "grant_type" => "authorization_code",
+        "client_id" => client.client_id,
+        "redirect_uri" => hd(client.redirect_uris),
+        "resource" => Mcp.canonical_resource_uri(),
+        "code" => code,
+        "code_verifier" => "test-verifier"
+      })
+
+    assert Jason.decode!(token_conn.resp_body)["scope"] == "mcp:read"
   end
 
   test "shows a company picker when the account belongs to multiple companies", %{conn: conn, client: client} do

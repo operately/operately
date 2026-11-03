@@ -3129,6 +3129,8 @@
   "This authorization request must include a PKCE code challenge.": "Diese Autorisierungsanfrage muss eine PKCE-Code-Challenge enthalten.",
   "This billing interval is not available right now": "Dieses Abrechnungsintervall ist derzeit nicht verfügbar",
   "This change applies to all your companies. Your existing sessions remain signed in.": "Diese Änderung gilt für alle deine Unternehmen. Deine bestehenden Sitzungen bleiben angemeldet.",
+  "This client can view workspace data.": "Dieser Client kann Daten in deinem Arbeitsbereich ansehen.",
+  "This client can view, create, update, delete, and archive workspace content.": "Dieser Client kann Inhalte in deinem Arbeitsbereich ansehen, erstellen, aktualisieren, löschen und archivieren.",
   "This client uses a localhost redirect URI. Confirm that you trust the local application before approving.": "Dieser Client verwendet eine localhost-Weiterleitungs-URI. Stelle vor der Genehmigung sicher, dass du der lokalen Anwendung vertraust.",
   "This code has expired. Request a new code to continue.": "Dieser Code ist abgelaufen. Fordere einen neuen Code an, um fortzufahren.",
   "This comment will notify {{first}} and {{second}}": "Dieser Kommentar benachrichtigt {{first}} und {{second}}",
