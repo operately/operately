@@ -33,13 +33,7 @@ export function CommentsPanel({
   contentRef,
 }: CommentsPanelProps) {
   const { t } = useTranslation();
-  const missing = Boolean(
-    props.activeThreadId &&
-    !props.loading &&
-    !props.error &&
-    !props.threads.some((thread) => thread.id === props.activeThreadId),
-  );
-  const status = props.loading || props.error || missing ? <CommentStatus props={props} missing={missing} /> : null;
+  const status = props.loading || props.error ? <CommentStatus props={props} /> : null;
   const items = threads.map((thread) => ({
     id: thread.id,
     resolved: Boolean(thread.resolvedAt),
@@ -130,7 +124,7 @@ export function CommentsPanel({
   );
 }
 
-function CommentStatus({ props, missing }: { props: DocumentInlineCommentsProps; missing: boolean }) {
+function CommentStatus({ props }: { props: DocumentInlineCommentsProps }) {
   const { t } = useTranslation();
   return (
     <>
@@ -147,7 +141,6 @@ function CommentStatus({ props, missing }: { props: DocumentInlineCommentsProps;
           </SecondaryButton>
         </div>
       )}
-      {missing && <p role="status">{t("This comment thread is no longer available.")}</p>}
     </>
   );
 }
