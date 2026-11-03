@@ -1,12 +1,15 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type { JSONContent } from "@tiptap/core";
 import type { InlineCommentSelection, InlineCommentsOptions } from "../RichEditor/extensions/InlineComments";
 import { attachedRange, type DocumentInlineCommentsProps, type InlineCommentTarget } from "./types";
 import { SelectionAction } from "./SelectionAction";
 import { ThreadComposer } from "./ThreadComposer";
 import { CommentsPanel } from "./CommentsPanel";
+import { showInfoToast } from "../Toasts";
 
 export function useInlineComments(props?: DocumentInlineCommentsProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
   const [showAll, setShowAll] = React.useState(false);
   const [replyThreadId, setReplyThreadId] = React.useState<string | null>(null);
@@ -23,6 +26,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
   const contentRef = React.useRef<HTMLDivElement>(null);
   const frame = React.useRef<number>();
   const composerVersion = React.useRef(0);
+  const notifiedMissingThread = React.useRef<string | null>(null);
 
   const cancelPointerSelection = React.useCallback(() => {
     if (frame.current !== undefined) cancelAnimationFrame(frame.current);
@@ -67,6 +71,26 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
   React.useEffect(() => {
     if (props?.activeThreadId) setOpen(true);
   }, [props?.activeThreadId, props?.draftKey]);
+
+  React.useEffect(() => {
+    if (!props?.activeThreadId) {
+      notifiedMissingThread.current = null;
+      return;
+    }
+    if (props.loading || props.error || props.pending) return;
+    if (props.threads.some((thread) => thread.id === props.activeThreadId)) return;
+
+    const key = `${props.draftKey}:${props.activeThreadId}`;
+    if (notifiedMissingThread.current === key) return;
+
+    notifiedMissingThread.current = key;
+
+    showInfoToast(t("Comment no longer available"), t("It was likely deleted."));
+    setOpen(false);
+    setShowAll(false);
+    setReplyThreadId(null);
+    props.onSelectThread(null);
+  }, [props, t]);
 
   // Cancel any pending selection measurement when the hook unmounts.
   React.useEffect(

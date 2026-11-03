@@ -99,22 +99,22 @@ msgid "%{author} <action>commented</action> on <discussion>%{title}</discussion>
 msgstr "%{author} <action>a commenté</action> la discussion <discussion>%{title}</discussion> dans le projet <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:67
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:72
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document>"
 msgstr "%{author} <action>a commenté</action> le document <document>%{documentName}</document>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:60
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:65
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> goal"
 msgstr "%{author} <action>a commenté</action> le document <document>%{documentName}</document> dans l’objectif <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:56
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:61
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> project"
 msgstr "%{author} <action>a commenté</action> le document <document>%{documentName}</document> dans le projet <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:64
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:69
 msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> space"
 msgstr "%{author} <action>a commenté</action> le document <document>%{documentName}</document> dans l’espace <parent>%{parentName}</parent>"
 
@@ -2850,7 +2850,7 @@ msgid "%{duration} <status>overdue</status>."
 msgstr "<status>En retard</status> de %{duration}."
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:78
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:77
 msgid "%{first} or %{second}"
 msgstr "%{first} ou %{second}"
 
@@ -3297,7 +3297,7 @@ msgid "(%{location}) %{author} commented on the project retrospective"
 msgstr "(%{location}) %{author} a commenté le bilan du projet"
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:19
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:26
 msgid "(%{location}) %{author} commented on: %{document_name}"
 msgstr "(%{location}) %{author} a ajouté un commentaire sur : %{document_name}"
 
@@ -5570,7 +5570,8 @@ msgid "Add column right"
 msgstr "Insérer une colonne à droite"
 
 #.frontend
-#: ../turboui/src/InlineComments/SelectionAction.tsx:43
+#: ../turboui/src/InlineComments/SelectionAction.tsx:61
+#: ../turboui/src/InlineComments/SelectionAction.tsx:68
 msgid "Add comment"
 msgstr "Ajouter un commentaire"
 
@@ -6465,7 +6466,7 @@ msgstr "Au moins 12 caractères"
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:13
 #: lib/operately_web/api/project_templates/helpers.ex:25
-#: lib/operately_web/api/projects.ex:782
+#: lib/operately_web/api/projects.ex:792
 #: lib/operately_web/api/spaces.ex:363
 msgid "At least one task status is required"
 msgstr "Au moins un statut de tâche est requis"
@@ -6855,7 +6856,7 @@ msgstr "Le contenu est requis"
 
 #.frontend
 #: ../turboui/src/RichEditor/components/BoldButton.tsx:13
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:59
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:58
 msgid "Bold"
 msgstr "Gras"
 
@@ -6885,7 +6886,7 @@ msgid "Bullet List"
 msgstr "Liste à puces"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:78
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:77
 msgid "Bulleted list"
 msgstr "Liste à puces"
 
@@ -7553,7 +7554,7 @@ msgstr "Choisissez un forfait autorisant davantage de membres."
 #~ msgstr "Sélectionnez un fil de commentaires pour ce passage."
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:110
+#: lib/operately/comments/create_milestone_comment_operation.ex:111
 msgid "Choose a valid open task resolution"
 msgstr "Choisissez une option valide pour les tâches ouvertes"
 
@@ -7603,7 +7604,7 @@ msgid "Choose someone else"
 msgstr "Choisir une autre personne"
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:92
+#: lib/operately/comments/create_milestone_comment_operation.ex:93
 msgid "Choose what happens to the open tasks before completing the milestone"
 msgstr "Choisissez le traitement des tâches ouvertes avant de terminer le jalon"
 
@@ -7725,7 +7726,7 @@ msgstr "Hôte du client"
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:63
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
 #: ../turboui/src/Modal/index.tsx:143
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:94
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:93
 #: ../turboui/src/SlideIn/index.tsx:126
 #: ../turboui/src/SlideIn/index.tsx:128
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:134
@@ -7813,7 +7814,7 @@ msgid "Code Block"
 msgstr "Bloc de code"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:81
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:80
 msgid "Code block"
 msgstr "Bloc de code"
 
@@ -7893,6 +7894,11 @@ msgid "Comment by %{author} on %{date}"
 msgstr "Commentaire de %{author} le %{date}"
 
 #.frontend
+#: ../turboui/src/InlineComments/useInlineComments.tsx:87
+msgid "Comment no longer available"
+msgstr "Commentaire indisponible"
+
+#.frontend
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:70
 msgid "Comment not added"
 msgstr "Commentaire non ajouté"
@@ -7953,7 +7959,7 @@ msgid "Comments and task updates will appear here"
 msgstr "Les commentaires et les mises à jour de la tâche apparaîtront ici"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:144
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:138
 msgid "Comments could not be loaded."
 msgstr "Impossible de charger les commentaires."
 
@@ -10545,10 +10551,10 @@ msgstr "Saisissez zéro ou un nombre positif de jours."
 #: assets/js/pages/MilestonePage/index.tsx:74
 #: assets/js/pages/MilestonePage/useComments.tsx:78
 #: assets/js/pages/ProfilePage/index.tsx:77
-#: assets/js/pages/ProjectPage/index.tsx:212
-#: assets/js/pages/ProjectPage/index.tsx:293
-#: assets/js/pages/ProjectPage/index.tsx:794
-#: assets/js/pages/ProjectPage/index.tsx:823
+#: assets/js/pages/ProjectPage/index.tsx:215
+#: assets/js/pages/ProjectPage/index.tsx:296
+#: assets/js/pages/ProjectPage/index.tsx:797
+#: assets/js/pages/ProjectPage/index.tsx:826
 #: assets/js/pages/SpaceKpisPage/page.tsx:102
 #: assets/js/pages/SpacePage/page.tsx:119
 #: assets/js/pages/TaskPage/index.tsx:84
@@ -10974,7 +10980,7 @@ msgid "Failed to create account"
 msgstr "Impossible de créer le compte"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:794
+#: assets/js/pages/ProjectPage/index.tsx:797
 msgid "Failed to create milestone"
 msgstr "Impossible de créer le jalon"
 
@@ -11027,7 +11033,7 @@ msgid "Failed to delete company"
 msgstr "Impossible de supprimer l’entreprise"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:293
+#: assets/js/pages/ProjectPage/index.tsx:296
 msgid "Failed to delete project"
 msgstr "Impossible de supprimer le projet"
 
@@ -11241,7 +11247,7 @@ msgid "Failed to update due date."
 msgstr "Impossible de modifier l’échéance."
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:823
+#: assets/js/pages/ProjectPage/index.tsx:826
 msgid "Failed to update milestone"
 msgstr "Impossible de mettre à jour le jalon"
 
@@ -11368,7 +11374,7 @@ msgid "Failed to update task statuses"
 msgstr "Impossible de modifier les statuts de tâche"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:212
+#: assets/js/pages/ProjectPage/index.tsx:215
 msgid "Failed to update tasks view"
 msgstr "Impossible de modifier la vue des tâches"
 
@@ -11577,7 +11583,7 @@ msgid "Forgot password?"
 msgstr "Mot de passe oublié ?"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:100
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:99
 msgid "Format text as you type using these shortcuts."
 msgstr "Mettez le texte en forme pendant la saisie grâce à ces raccourcis."
 
@@ -11933,10 +11939,10 @@ msgstr "Dispose d’un accès complet au projet et peut effectuer toute action, 
 
 #.frontend
 #: ../turboui/src/RichEditor/components/HeadingButtons.tsx:22
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:68
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:69
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:70
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:71
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:72
 msgid "Heading %{level}"
 msgstr "Titre de niveau %{level}"
 
@@ -11977,7 +11983,7 @@ msgid "Hide previous check-in"
 msgstr "Masquer le point d’avancement précédent"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:62
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:61
 msgid "Highlight"
 msgstr "Surlignage"
 
@@ -12169,8 +12175,8 @@ msgstr "Informations"
 
 #.frontend
 #: ../turboui/src/DocumentPage/index.tsx:135
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:70
 #: ../turboui/src/InlineComments/CommentsPanel.tsx:76
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:82
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:16
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:23
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:43
@@ -12351,8 +12357,8 @@ msgid "Invalid profile update"
 msgstr "Mise à jour du profil invalide"
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:746
-#: lib/operately_web/api/tasks.ex:752
+#: lib/operately_web/api/tasks.ex:757
+#: lib/operately_web/api/tasks.ex:763
 msgid "Invalid reminders"
 msgstr "Rappels invalides"
 
@@ -12376,7 +12382,7 @@ msgstr "Paramètres de message système invalides"
 #.elixir
 #: lib/operately/operations/kanban_state_updating.ex:57
 #: lib/operately/operations/kanban_state_updating.ex:69
-#: lib/operately_web/api/tasks.ex:1117
+#: lib/operately_web/api/tasks.ex:1128
 msgid "Invalid status"
 msgstr "Statut invalide"
 
@@ -12555,6 +12561,11 @@ msgid "It is scheduled for %{due_date}."
 msgstr "La date prévue est le %{due_date}."
 
 #.frontend
+#: ../turboui/src/InlineComments/useInlineComments.tsx:87
+msgid "It was likely deleted."
+msgstr "Il a probablement été supprimé."
+
+#.frontend
 #: ../turboui/src/OngoingDraftActions/index.tsx:59
 msgid "It will be posted on <date/> at <time/>."
 msgstr "La publication est prévue le <date/> à <time/>."
@@ -12566,7 +12577,7 @@ msgstr "Il est à nouveau disponible pour créer des projets."
 
 #.frontend
 #: ../turboui/src/RichEditor/components/ItalicButton.tsx:13
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:60
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:59
 msgid "Italic"
 msgstr "Italique"
 
@@ -12965,7 +12976,7 @@ msgid "Limited"
 msgstr "Limité"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:63
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:62
 #: ../turboui/src/SearchPage/index.tsx:313
 #: assets/js/pages/ResourceHubEditLinkPage/navigation.tsx:22
 msgid "Link"
@@ -13104,7 +13115,7 @@ msgid "Loading check-ins"
 msgstr "Chargement des points d’avancement"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:139
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:133
 msgid "Loading comments..."
 msgstr "Chargement des commentaires..."
 
@@ -13413,7 +13424,7 @@ msgstr "Marquer la tâche comme terminée"
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:19
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:22
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:23
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:91
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:90
 #: ../turboui/src/RichEditor/components/Toolbar.tsx:170
 #: ../turboui/src/RichEditor/components/Toolbar.tsx:171
 #: ../turboui/src/RichEditor/components/Toolbar.tsx:179
@@ -13528,8 +13539,8 @@ msgstr "Le jalon n’est pas %{name}"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:55
-#: lib/operately_web/api/tasks.ex:901
-#: lib/operately_web/api/tasks.ex:921
+#: lib/operately_web/api/tasks.ex:912
+#: lib/operately_web/api/tasks.ex:932
 msgid "Milestone must belong to the same project as the task"
 msgstr "Le jalon doit appartenir au même projet que la tâche"
 
@@ -13557,10 +13568,10 @@ msgstr "Jalon non supprimé"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:49
-#: lib/operately_web/api/projects.ex:636
-#: lib/operately_web/api/projects.ex:651
-#: lib/operately_web/api/projects/milestones.ex:285
-#: lib/operately_web/api/tasks.ex:674
+#: lib/operately_web/api/projects.ex:646
+#: lib/operately_web/api/projects.ex:661
+#: lib/operately_web/api/projects/milestones.ex:291
+#: lib/operately_web/api/tasks.ex:685
 msgid "Milestone not found"
 msgstr "Jalon introuvable"
 
@@ -13929,14 +13940,14 @@ msgstr "Besoin d’aide ? <guides>Guides de configuration</guides>"
 #: assets/js/pages/InviteTeamPage/index.tsx:75
 #: assets/js/pages/InviteTeamPage/index.tsx:88
 #: assets/js/pages/InviteTeamPage/index.tsx:99
-#: assets/js/pages/ProjectPage/index.tsx:98
-#: assets/js/pages/ProjectPage/index.tsx:108
-#: assets/js/pages/ProjectPage/index.tsx:124
-#: assets/js/pages/ProjectPage/index.tsx:130
-#: assets/js/pages/ProjectPage/index.tsx:136
-#: assets/js/pages/ProjectPage/index.tsx:671
-#: assets/js/pages/ProjectPage/index.tsx:677
-#: assets/js/pages/ProjectPage/index.tsx:683
+#: assets/js/pages/ProjectPage/index.tsx:101
+#: assets/js/pages/ProjectPage/index.tsx:111
+#: assets/js/pages/ProjectPage/index.tsx:127
+#: assets/js/pages/ProjectPage/index.tsx:133
+#: assets/js/pages/ProjectPage/index.tsx:139
+#: assets/js/pages/ProjectPage/index.tsx:674
+#: assets/js/pages/ProjectPage/index.tsx:680
+#: assets/js/pages/ProjectPage/index.tsx:686
 msgid "Network Error"
 msgstr "Erreur réseau"
 
@@ -14404,7 +14415,7 @@ msgid "No imports yet. Upload a package above to create the first one."
 msgstr "Aucun import pour le moment. Ajoutez une archive de données ci-dessus pour créer le premier."
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:89
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:83
 msgid "No inline comments yet."
 msgstr "Aucun commentaire dans le texte pour le moment."
 
@@ -14877,7 +14888,7 @@ msgid "Numbered List"
 msgstr "Liste numérotée"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:79
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:78
 msgid "Numbered list"
 msgstr "Liste numérotée"
 
@@ -16310,21 +16321,21 @@ msgstr "Nom du projet"
 
 #.frontend
 #: assets/js/pages/MilestonePage/index.tsx:65
-#: assets/js/pages/ProjectPage/index.tsx:91
+#: assets/js/pages/ProjectPage/index.tsx:94
 #: assets/js/pages/TaskPage/index.tsx:65
 msgid "Project name cannot be empty"
 msgstr "Le nom du projet ne peut pas être vide"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:597
-#: lib/operately_web/api/projects.ex:612
-#: lib/operately_web/api/projects.ex:642
-#: lib/operately_web/api/projects.ex:677
+#: lib/operately_web/api/projects.ex:607
+#: lib/operately_web/api/projects.ex:622
+#: lib/operately_web/api/projects.ex:652
+#: lib/operately_web/api/projects.ex:687
 #: lib/operately_web/api/projects/discussions.ex:205
-#: lib/operately_web/api/projects/milestones.ex:276
-#: lib/operately_web/api/tasks.ex:626
-#: lib/operately_web/api/tasks.ex:665
-#: lib/operately_web/api/tasks.ex:680
+#: lib/operately_web/api/projects/milestones.ex:282
+#: lib/operately_web/api/tasks.ex:637
+#: lib/operately_web/api/tasks.ex:676
+#: lib/operately_web/api/tasks.ex:691
 msgid "Project not found"
 msgstr "Projet introuvable"
 
@@ -16536,7 +16547,7 @@ msgstr "Résultats de la recherche rapide"
 
 #.frontend
 #: ../turboui/src/RichEditor/components/BlockquoteButton.tsx:13
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:80
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:79
 msgid "Quote"
 msgstr "Citation"
 
@@ -16582,7 +16593,7 @@ msgstr "A rouvert le jalon : %{title}"
 #: assets/js/features/activities/KpiEntryCommented/index.tsx:121
 #: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:120
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:108
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
 #: assets/js/features/activities/ResourceHubFileCommented/index.tsx:113
 #: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:111
 #: assets/js/features/activities/SpaceTaskCommented/index.tsx:111
@@ -16596,7 +16607,7 @@ msgid "Re: a KPI"
 msgstr "Re : un KPI"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
 msgid "Re: a document"
 msgstr "Re : un document"
 
@@ -17132,7 +17143,7 @@ msgid "Replacement"
 msgstr "Remplacement"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:810
+#: lib/operately_web/api/projects.ex:820
 #: lib/operately_web/api/spaces.ex:397
 msgid "Replacement statuses must be existing statuses that are not being deleted"
 msgstr "Les statuts de remplacement doivent déjà exister et ne pas être en cours de suppression"
@@ -17201,7 +17212,7 @@ msgid "Resolve"
 msgstr "Résoudre"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:99
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:93
 #: ../turboui/src/InlineComments/Thread.tsx:107
 msgid "Resolved"
 msgstr "Résolu"
@@ -17374,7 +17385,7 @@ msgstr "Notes du bilan :"
 #: ../turboui/src/ContentListState/index.tsx:33
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:146
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:146
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:140
 msgid "Retry"
 msgstr "Réessayer"
 
@@ -17390,25 +17401,25 @@ msgstr "Affichage d’une vue hiérarchique de tous les objectifs et projets de 
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:88
-#: assets/js/pages/ProjectPage/index.tsx:124
+#: assets/js/pages/ProjectPage/index.tsx:127
 msgid "Reverted the access levels to their previous values."
 msgstr "Les niveaux d’accès précédents ont été rétablis."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:116
-#: assets/js/pages/ProjectPage/index.tsx:677
+#: assets/js/pages/ProjectPage/index.tsx:680
 msgid "Reverted the champion to its previous value."
 msgstr "Le responsable précédent a été rétabli."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:81
-#: assets/js/pages/ProjectPage/index.tsx:98
+#: assets/js/pages/ProjectPage/index.tsx:101
 msgid "Reverted the description to its previous value."
 msgstr "La description précédente a été rétablie."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:110
-#: assets/js/pages/ProjectPage/index.tsx:130
+#: assets/js/pages/ProjectPage/index.tsx:133
 msgid "Reverted the due date to its previous value."
 msgstr "L’échéance précédente a été rétablie."
 
@@ -17419,26 +17430,26 @@ msgstr "Le nom précédent de l’objectif a été rétabli."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:128
-#: assets/js/pages/ProjectPage/index.tsx:108
+#: assets/js/pages/ProjectPage/index.tsx:111
 msgid "Reverted the parent goal to its previous value."
 msgstr "L’objectif parent précédent a été rétabli."
 
 #.frontend
 #: assets/js/pages/MilestonePage/index.tsx:64
-#: assets/js/pages/ProjectPage/index.tsx:90
+#: assets/js/pages/ProjectPage/index.tsx:93
 #: assets/js/pages/TaskPage/index.tsx:64
 msgid "Reverted the project name to its previous value."
 msgstr "Le nom précédent du projet a été rétabli."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:122
-#: assets/js/pages/ProjectPage/index.tsx:683
+#: assets/js/pages/ProjectPage/index.tsx:686
 msgid "Reverted the reviewer to its previous value."
 msgstr "Le référent précédent a été rétabli."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:98
-#: assets/js/pages/ProjectPage/index.tsx:671
+#: assets/js/pages/ProjectPage/index.tsx:674
 msgid "Reverted the space to its previous value."
 msgstr "L’espace précédent a été rétabli."
 
@@ -17448,7 +17459,7 @@ msgid "Reverted the start date to its previous value."
 msgstr "La date de début précédente a été rétablie."
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:136
+#: assets/js/pages/ProjectPage/index.tsx:139
 msgid "Reverted the started date to its previous value."
 msgstr "La date de démarrage précédente a été rétablie."
 
@@ -18083,7 +18094,7 @@ msgid "Select a Space"
 msgstr "Sélectionner un espace"
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:105
+#: lib/operately/comments/create_milestone_comment_operation.ex:106
 msgid "Select a closed task status"
 msgstr "Sélectionner un statut de tâche fermé"
 
@@ -18783,7 +18794,7 @@ msgid "Some dates are before the project start date."
 msgstr "Certaines dates précèdent la date de début du projet."
 
 #.elixir
-#: lib/operately_web/api/projects/milestones.ex:347
+#: lib/operately_web/api/projects/milestones.ex:353
 msgid "Some milestone IDs do not belong to this project"
 msgstr "Certains identifiants de jalon n’appartiennent pas à ce projet"
 
@@ -18953,7 +18964,7 @@ msgid "Space members will have full access."
 msgstr "Les membres de l’espace disposeront d’un accès complet."
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:635
+#: lib/operately_web/api/tasks.ex:646
 msgid "Space not found"
 msgstr "Espace introuvable"
 
@@ -19282,7 +19293,7 @@ msgid "Storage used"
 msgstr "Stockage utilisé"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:61
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:60
 #: ../turboui/src/RichEditor/components/StrikeButton.tsx:13
 msgid "Strikethrough"
 msgstr "Barré"
@@ -19416,8 +19427,8 @@ msgid "TASKS"
 msgstr "TÂCHES"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableButton.tsx:17
-#: ../turboui/src/RichEditor/components/TableButton.tsx:19
+#: ../turboui/src/RichEditor/components/TableButton.tsx:25
+#: ../turboui/src/RichEditor/components/TableButton.tsx:27
 #: ../turboui/src/RichEditor/extensions/Table.ts:49
 #: ../turboui/src/WorkMap/components/WorkMapNavigation.tsx:33
 msgid "Table"
@@ -19587,12 +19598,12 @@ msgid "Task not deleted"
 msgstr "Tâche non supprimée"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:606
-#: lib/operately_web/api/projects.ex:621
-#: lib/operately_web/api/projects/milestones.ex:297
+#: lib/operately_web/api/projects.ex:616
+#: lib/operately_web/api/projects.ex:631
+#: lib/operately_web/api/projects/milestones.ex:303
 #: lib/operately_web/api/spaces.ex:313
-#: lib/operately_web/api/tasks.ex:647
-#: lib/operately_web/api/tasks.ex:659
+#: lib/operately_web/api/tasks.ex:658
+#: lib/operately_web/api/tasks.ex:670
 msgid "Task not found"
 msgstr "Tâche introuvable"
 
@@ -20642,10 +20653,10 @@ msgstr "Ce client utilise une URI de redirection localhost. Vérifiez que vous f
 msgid "This code has expired. Request a new code to continue."
 msgstr "Ce code a expiré. Demandez un nouveau code pour continuer."
 
-#.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:150
-msgid "This comment thread is no longer available."
-msgstr "Ce fil de commentaires n’est plus disponible."
+#~ #.frontend
+#~ #: ../turboui/src/InlineComments/CommentsPanel.tsx:150
+#~ msgid "This comment thread is no longer available."
+#~ msgstr "Ce fil de commentaires n’est plus disponible."
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:315
@@ -21228,7 +21239,7 @@ msgid "Tip: Subscribe if you want notifications too."
 msgstr "Conseil : suivez cet élément pour recevoir aussi les notifications."
 
 #.elixir
-#: lib/operately_web/api/projects/milestones.ex:364
+#: lib/operately_web/api/projects/milestones.ex:370
 msgid "Title cannot be empty"
 msgstr "Le titre ne peut pas être vide"
 
@@ -21799,7 +21810,7 @@ msgid "Update badge setting saved"
 msgstr "Paramètre de l’indicateur de nouvelle version enregistré"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:638
+#: assets/js/pages/ProjectPage/index.tsx:641
 #: assets/js/pages/TaskPage/index.tsx:329
 msgid "Update failed"
 msgstr "Échec de la mise à jour"
@@ -23534,8 +23545,8 @@ msgid "a discussion"
 msgstr "une discussion"
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:73
-#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:117
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:78
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:122
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:75
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:126
 #: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:127
@@ -23775,7 +23786,7 @@ msgid "commented on the discussion \"%{title}\""
 msgstr "a commenté la discussion « %{title} »"
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:39
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:52
 msgid "commented on the document \"%{document_name}\""
 msgstr "a commenté le document « %{document_name} »"
 
@@ -25642,7 +25653,7 @@ msgid "is not"
 msgstr "n’est pas"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:140
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:139
 msgctxt "keyboard key"
 msgid "Space"
 msgstr "Espace"

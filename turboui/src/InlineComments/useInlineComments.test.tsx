@@ -6,6 +6,9 @@ import type { InlineThread } from "../ApiTypes";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { useInlineComments } from "./useInlineComments";
 import type { DocumentInlineCommentsProps } from "./types";
+import { showInfoToast } from "../Toasts";
+
+jest.mock("../Toasts", () => ({ showInfoToast: jest.fn(), showErrorToast: jest.fn() }));
 
 jest.mock("./SelectionAction", () => ({
   SelectionAction: ({ onAdd }) => (
@@ -24,6 +27,7 @@ jest.mock("./FloatingComments", () => ({
   ),
 }));
 beforeEach(() => {
+  jest.clearAllMocks();
   jest.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
     callback(0);
     return 1;
@@ -134,6 +138,48 @@ function click(testId: string) {
   if (!element) throw new Error(`Missing ${testId}`);
   fireEvent.click(element);
 }
+
+it("notifies once and clears a missing thread without leaving an inline status or panel", () => {
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: jest.fn(() => ({ matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() })),
+  });
+  const value = props({ activeThreadId: "deleted", threads: [] });
+  const { rerender } = render(<Harness value={value} />);
+
+  expect(showInfoToast).toHaveBeenCalledWith("Comment no longer available", "It was likely deleted.");
+  expect(value.onSelectThread).toHaveBeenCalledWith(null);
+  expect(screen.queryByRole("status")).toBeNull();
+  expect(document.querySelector('[data-test-id="inline-comments-panel"]')).toBeNull();
+
+  rerender(<Harness value={{ ...value }} />);
+  expect(showInfoToast).toHaveBeenCalledTimes(1);
+
+  rerender(<Harness value={{ ...value, activeThreadId: null }} />);
+  rerender(<Harness value={value} />);
+  expect(showInfoToast).toHaveBeenCalledTimes(2);
+  delete (window as Partial<Window>).matchMedia;
+});
+
+it.each(["loading", "error", "pending"] as const)(
+  "waits until %s clears before reporting a missing thread",
+  (state) => {
+    const value = props({ activeThreadId: "deleted", threads: [] });
+    const { rerender } = render(<Harness value={{ ...value, [state]: true }} />);
+    expect(showInfoToast).not.toHaveBeenCalled();
+    expect(value.onSelectThread).not.toHaveBeenCalled();
+
+    rerender(<Harness value={value} />);
+    expect(showInfoToast).toHaveBeenCalledTimes(1);
+  },
+);
+
+it("does not report an available resolved thread as missing", () => {
+  render(
+    <Harness value={props({ activeThreadId: thread.id, threads: [{ ...thread, resolvedAt: thread.insertedAt }] })} />,
+  );
+  expect(showInfoToast).not.toHaveBeenCalled();
+});
 
 it.each(["content", "outside"])(
   "waits for pointer release on %s before offering the final selection",
