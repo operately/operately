@@ -37,7 +37,9 @@ defmodule Operately.Support.Features.HoverPreloadingSteps do
     assert Wallaby.Browser.current_path(ctx.session) == original_path
 
     ctx = ctx |> UI.click(css: selector) |> UI.assert_page(path)
-    assert_request_count(ctx, endpoint, 1)
+    # Projects refresh once after joining live updates to catch changes since the preload.
+    expected_after_navigation = if resource == :project, do: 2, else: 1
+    assert_request_count(ctx, endpoint, expected_after_navigation)
     ctx
   end
 
@@ -48,16 +50,16 @@ defmodule Operately.Support.Features.HoverPreloadingSteps do
       (#{Jason.encode!(endpoint)} !== "/api/v2/spaces/get" ||
         (new URL(entry.name).searchParams.get("id") === #{Jason.encode!(Paths.space_id(ctx.space))} &&
          new URL(entry.name).searchParams.get("include_unread_notifications") === "true"))
-    ).length;
+    ).map(entry => entry.name);
     """
 
     assert {:ok, ^expected} =
              Wallaby.Browser.retry(fn ->
-               Wallaby.Browser.execute_script(ctx.session, script, fn count -> send(self(), {:request_count, count}) end)
+               Wallaby.Browser.execute_script(ctx.session, script, fn requests -> send(self(), {:requests, requests}) end)
 
                receive do
-                 {:request_count, ^expected} -> {:ok, expected}
-                 {:request_count, count} -> {:error, {:request_count, count}}
+                 {:requests, requests} when length(requests) == expected -> {:ok, expected}
+                 {:requests, requests} -> {:error, {:unexpected_requests, requests}}
                end
              end)
   end
