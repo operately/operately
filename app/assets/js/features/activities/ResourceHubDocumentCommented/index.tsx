@@ -50,7 +50,10 @@ const ResourceHubDocumentCommented: ActivityHandler = {
     }
 
     if (data.document?.id) {
-      action = commentedLink(paths.resourceHubDocumentPath(data.document.id), data.comment);
+      action = commentedLink(
+        paths.resourceHubDocumentPath(data.document.id, { inlineThread: data.inlineThreadId }),
+        data.comment,
+      );
     }
 
     const sentence =
