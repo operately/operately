@@ -45,6 +45,8 @@ defmodule OperatelyWeb.McpOAuthController do
 
         "approve" ->
           with {:ok, company} <- selected_company(companies, params),
+               {:ok, scopes} <- Mcp.grant_scopes(request.scopes, params["access_level"]),
+               request = %{request | scopes: scopes, scope_string: Mcp.scopes_to_string(scopes)},
                {:ok, grant} <- Mcp.upsert_grant(account, company, request),
                {:ok, _code, raw_code} <- Mcp.issue_authorization_code(grant, request) do
             redirect(conn, external: append_query_params(request.redirect_uri, %{"code" => raw_code, "state" => request.state}))

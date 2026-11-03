@@ -58,7 +58,7 @@ defmodule OperatelyWeb.McpControllerTest do
     assert conn.status == 401
     challenge = get_resp_header(conn, "www-authenticate") |> List.first()
     assert challenge =~ "resource_metadata="
-    assert challenge =~ ~s(scope="mcp:read")
+    assert challenge =~ ~s(scope="mcp:read mcp:write")
     refute challenge =~ "error="
   end
 
