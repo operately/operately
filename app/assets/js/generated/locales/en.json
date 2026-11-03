@@ -2761,6 +2761,8 @@
   "Show closed statuses": "Show closed statuses",
   "Show previous check-in": "Show previous check-in",
   "Show update badge": "Show update badge",
+  "Show {{count}} more task_one": "Show {{count}} more task",
+  "Show {{count}} more task_other": "Show {{count}} more tasks",
   "Shows what needs to happen next for this work to progress.": "Shows what needs to happen next for this work to progress.",
   "Sign In": "Sign In",
   "Sign Out": "Sign Out",
