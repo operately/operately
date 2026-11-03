@@ -5,15 +5,14 @@ import { waitForPageReady } from "@storybook/test-runner";
 declare const page: Page;
 
 async function waitForMenuAnimations() {
+  // Radix disables animations until positioning finishes. Waiting only for running
+  // animations can return before the opening animation has even started.
+  await page.waitForFunction(() => {
+    const menus = [...document.querySelectorAll<HTMLElement>('[role="menu"]')];
+    return menus.length > 0 && menus.every((menu) => menu.style.animationName !== "none");
+  });
   await page.getByRole("menu").evaluateAll(async (menus) => {
-    await Promise.all(
-      menus.flatMap((menu) =>
-        menu
-          .getAnimations()
-          .filter((animation) => animation.playState === "running")
-          .map((animation) => animation.finished),
-      ),
-    );
+    await Promise.all(menus.flatMap((menu) => menu.getAnimations().map((animation) => animation.finished)));
   });
 }
 
