@@ -1,14 +1,24 @@
 defmodule Operately.Operations.ResourceHubRenaming do
   alias Ecto.Multi
   alias Operately.{Activities, Repo}
+  alias Operately.Repo.Locking
   alias Operately.ResourceHubs.{Parent, ResourceHub}
 
   def run(author, hub, new_name) do
     name = String.trim(new_name)
+
+    Multi.new()
+    |> Multi.run(:locked_hub, fn repo, _ -> Locking.lock_for_update(repo, hub) end)
+    |> Multi.merge(fn %{locked_hub: current} -> rename(author, current, name) end)
+    |> Repo.transaction()
+    |> normalize_result()
+  end
+
+  defp rename(author, hub, name) do
     changeset = ResourceHub.changeset(hub, %{name: name})
 
     if changeset.valid? and name == hub.name do
-      {:ok, %{hub: hub}}
+      Multi.put(Multi.new(), :hub, hub)
     else
       Multi.new()
       |> Multi.update(:hub, changeset)
@@ -16,8 +26,6 @@ defmodule Operately.Operations.ResourceHubRenaming do
         Parent.parent_fields(hub)
         |> Map.merge(%{resource_hub_id: hub.id, old_name: hub.name, new_name: changes.hub.name})
       end)
-      |> Repo.transaction()
-      |> normalize_result()
     end
   end
 
