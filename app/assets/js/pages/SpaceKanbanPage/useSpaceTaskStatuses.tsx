@@ -1,9 +1,10 @@
+import i18n from "@/i18n";
 import * as React from "react";
 
 import * as Tasks from "@/models/tasks";
 import * as Spaces from "@/models/spaces";
 
-import { SpaceKanbanPage } from "turboui";
+import { SpaceKanbanPage, showErrorToast } from "turboui";
 
 interface UseSpaceTaskStatusesOptions {
   spaceId: string;
@@ -63,7 +64,7 @@ export function useSpaceTaskStatuses({ spaceId, tasks, setTasks }: UseSpaceTaskS
         });
       } catch (e) {
         setTasks(previousTasks);
-        throw e;
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to update task statuses"));
       }
     },
     [setTasks, spaceId, tasks, updateTaskStatuses],

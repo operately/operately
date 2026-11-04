@@ -106,7 +106,7 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.sleep(300)
   end
 
-  step :open_status_delete_modal, ctx, status_value do
+  step :request_status_deletion, ctx, status_value do
     ctx
     |> UI.click(testid: UI.testid(["status-menu-trigger", status_value]))
     |> UI.click(testid: UI.testid(["delete-status", status_value]))
@@ -191,18 +191,13 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.sleep(150)
   end
 
-  step :delete_status, ctx, opts do
+  step :delete_empty_status, ctx, opts do
     value = Keyword.fetch!(opts, :value)
-    replacement_value =
-      Keyword.get(opts, :replacement_value) ||
-        Enum.find(ctx.status_values, fn v -> v != value end) ||
-        hd(ctx.status_values)
 
     ctx
-    |> open_status_delete_modal(value)
-    |> select_deleted_status_replacement(replacement_value: replacement_value)
-    |> UI.click(testid: "delete-status-confirm")
-    |> UI.sleep(400)
+    |> request_status_deletion(value)
+    |> assert_status_absent(value: value)
+    |> UI.refute_has(testid: "delete-status-modal")
   end
 
   step :add_inline_task, ctx, opts do

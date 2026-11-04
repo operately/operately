@@ -85,6 +85,8 @@ export interface KanbanBoardProps {
   onTaskArchiveChange?: TaskBoardProps["onTaskArchiveChange"];
   milestone?: TaskBoard.Milestone;
   tasks: TaskBoard.Task[];
+  /** All tasks in the project or space, before filtering. */
+  statusUsageTasks?: TaskBoard.Task[];
   statuses: StatusSelector.StatusOption[];
   kanbanState: KanbanState;
   canEdit: boolean;
