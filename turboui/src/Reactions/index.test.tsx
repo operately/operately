@@ -148,6 +148,110 @@ it.each([false, true])("dismisses another list's removal mode across instances (
 
 setupTestCatalog();
 
+describe("picker keyboard navigation", () => {
+  function openPicker() {
+    const onAddReaction = jest.fn();
+    const { container } = render(<Reactions reactions={[]} onAddReaction={onAddReaction} />);
+    const trigger = container.querySelector('[aria-haspopup="dialog"]');
+    if (!trigger) throw new Error("Reaction picker trigger missing");
+    fireEvent.click(trigger);
+    return { trigger, search: screen.getByRole("textbox"), onAddReaction };
+  }
+
+  function emojiButton(emoji: string) {
+    const button = screen.getByText(emoji).closest("button");
+    if (!button) throw new Error(`Emoji button missing: ${emoji}`);
+    return button;
+  }
+
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
+
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = jest.fn();
+  });
+
+  afterEach(() => {
+    Element.prototype.scrollIntoView = originalScrollIntoView;
+  });
+
+  it("selects the first search result with Enter and restores focus", async () => {
+    const { trigger, search, onAddReaction } = openPicker();
+    expect(search).toHaveFocus();
+    fireEvent.change(search, { target: { value: "salute" } });
+    fireEvent.keyDown(search, { key: "Enter" });
+    expect(onAddReaction).toHaveBeenCalledWith("🫡");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
+  it("moves across eight-column rows and returns to search from the first row", () => {
+    const { search } = openPicker();
+    fireEvent.keyDown(search, { key: "ArrowDown" });
+    expect(emojiButton("👍")).toHaveFocus();
+    fireEvent.keyDown(emojiButton("👍"), { key: "ArrowLeft" });
+    expect(emojiButton("👍")).toHaveFocus();
+    fireEvent.keyDown(emojiButton("👍"), { key: "ArrowRight" });
+    expect(emojiButton("❤️")).toHaveFocus();
+    fireEvent.keyDown(emojiButton("❤️"), { key: "ArrowDown" });
+    expect(emojiButton("👏")).toHaveFocus();
+    fireEvent.keyDown(emojiButton("👏"), { key: "ArrowLeft" });
+    expect(emojiButton("💪")).toHaveFocus();
+    fireEvent.keyDown(emojiButton("💪"), { key: "ArrowUp" });
+    expect(emojiButton("👍")).toHaveFocus();
+    expect(emojiButton("👍").scrollIntoView).toHaveBeenCalledWith({ block: "nearest", inline: "nearest" });
+    const tabStops = within(screen.getByRole("grid"))
+      .getAllByRole("button")
+      .filter((button) => button.tabIndex === 0);
+    expect(tabStops).toEqual([emojiButton("👍")]);
+    fireEvent.keyDown(emojiButton("👍"), { key: "ArrowUp" });
+    expect(search).toHaveFocus();
+  });
+
+  it("handles the incomplete final row without wrapping or losing focus", () => {
+    const { search } = openPicker();
+    const buttons = within(screen.getByRole("grid")).getAllByRole("button");
+    const last = buttons.at(-1);
+    if (!last) throw new Error("Expected emojis");
+    fireEvent.keyDown(search, { key: "ArrowDown" });
+    for (let column = 1; column < 8; column++)
+      fireEvent.keyDown(document.activeElement ?? search, { key: "ArrowRight" });
+    for (let row = 1; row < Math.ceil(buttons.length / 8); row++) {
+      fireEvent.keyDown(document.activeElement ?? search, { key: "ArrowDown" });
+    }
+    expect(last).toHaveFocus();
+    fireEvent.keyDown(last, { key: "ArrowDown" });
+    fireEvent.keyDown(last, { key: "ArrowRight" });
+    expect(last).toHaveFocus();
+  });
+
+  it("resets navigation after filtering and ignores empty results and IME confirmation", () => {
+    const { search, onAddReaction } = openPicker();
+    fireEvent.keyDown(search, { key: "ArrowDown" });
+    fireEvent.keyDown(emojiButton("👍"), { key: "ArrowDown" });
+    act(() => search.focus());
+    fireEvent.change(search, { target: { value: "no-such-emoji" } });
+    fireEvent.keyDown(search, { key: "ArrowDown" });
+    fireEvent.keyDown(search, { key: "Enter" });
+    expect(search).toHaveFocus();
+    expect(onAddReaction).not.toHaveBeenCalled();
+    fireEvent.change(search, { target: { value: "salute" } });
+    fireEvent.keyDown(search, { key: "Enter", isComposing: true });
+    expect(onAddReaction).not.toHaveBeenCalled();
+    fireEvent.keyDown(search, { key: "ArrowDown" });
+    expect(emojiButton("🫡")).toHaveFocus();
+    expect(emojiButton("🫡")).toHaveAttribute("tabindex", "0");
+  });
+
+  it("dismisses with Escape and restores focus to the trigger", async () => {
+    const { trigger, search, onAddReaction } = openPicker();
+    fireEvent.keyDown(search, { key: "ArrowDown" });
+    fireEvent.keyDown(document.activeElement ?? search, { key: "Escape" });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(onAddReaction).not.toHaveBeenCalled();
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+});
+
 it("finds reactions using Portuguese aliases without accents and retains English aliases", async () => {
   await i18n.changeLanguage("pt-BR");
   const onAddReaction = jest.fn();

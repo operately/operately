@@ -34,7 +34,11 @@ const INITIAL_REACTIONS: Reactions.Reaction[] = [
   { id: "reaction-3", emoji: "🚀", person: TEAMMATES[1] ?? CURRENT_USER },
 ];
 
-function toReactionPerson(person: { id: string; fullName: string; avatarUrl: string | null }): Reactions.Reaction["person"] {
+function toReactionPerson(person: {
+  id: string;
+  fullName: string;
+  avatarUrl: string | null;
+}): Reactions.Reaction["person"] {
   return {
     id: person.id,
     fullName: person.fullName,
@@ -60,6 +64,14 @@ function StoryContainer({ children }: { children: React.ReactNode }) {
 }
 
 export const Interactive: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Keyboard: open the picker with Enter or Space, search and press Enter, or use arrow keys to browse. Escape closes the picker and restores focus.",
+      },
+    },
+  },
   args: {
     size: 24,
     canAddReaction: true,
