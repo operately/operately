@@ -108,8 +108,12 @@ defmodule Operately.ResourceHubs.Parent do
   end
 
   def potential_subscribers(%ResourceHub{} = hub) do
-    hub = preload_parent(hub, people: true)
+    hub
+    |> preload_parent(people: true)
+    |> preloaded_potential_subscribers()
+  end
 
+  def preloaded_potential_subscribers(%ResourceHub{} = hub) do
     case parent_type(hub) do
       :space ->
         Subscriber.from_space_members(hub.space.members)

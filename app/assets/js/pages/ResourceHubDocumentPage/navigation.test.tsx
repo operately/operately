@@ -14,10 +14,6 @@ describe("buildDocumentPageNavigation", () => {
           }),
           space: null,
         }),
-        resourceHub({
-          permissions: { canEdit: true },
-          potentialSubscribers: [{ id: "person-1" }],
-        }),
         paths,
       ),
     ).toEqual([
