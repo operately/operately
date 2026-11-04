@@ -10,6 +10,7 @@ import {
   createMockFolder,
   createMockFolderNode,
   createMockResourceHub,
+  createMockPermissions,
   useMockSharedListPageProps,
 } from "./mockData";
 
@@ -31,11 +32,15 @@ type Story = StoryObj<typeof meta>;
 function StoryPage({
   empty = false,
   searchMode = "results",
+  renameFails = false,
 }: {
   empty?: boolean;
   searchMode?: "results" | "empty" | "error";
+  renameFails?: boolean;
 }) {
-  const [resourceHub] = React.useState(() => createMockResourceHub());
+  const [resourceHub, setResourceHub] = React.useState(() =>
+    createMockResourceHub({ permissions: createMockPermissions({ canRenameHub: true }) }),
+  );
   const [nodes, setNodes] = React.useState(() =>
     empty
       ? []
@@ -79,6 +84,10 @@ function StoryPage({
       {...sharedProps}
       title={resourceHub.name ?? "Resource Hub"}
       resourceHub={resourceHub}
+      renameCollection={async (_id, name) => {
+        if (renameFails) throw new Error("Rename failed");
+        setResourceHub((current) => ({ ...current, name }));
+      }}
       search={{
         search: async () => {
           if (searchMode === "error") throw new Error("Search failed");
@@ -114,6 +123,50 @@ export const Default: Story = {
 export const Empty: Story = {
   args: {} as ResourceHubPage.Props,
   render: () => <StoryPage empty />,
+};
+
+async function openRename(canvasElement: HTMLElement) {
+  const options = canvasElement.querySelector<HTMLElement>('[data-test-id="options-button"]');
+  if (!options) throw new Error("Missing page options");
+  await userEvent.click(options);
+  const rename = document.querySelector<HTMLElement>('[data-test-id="rename-collection"]');
+  if (!rename) throw new Error("Missing rename action");
+  await userEvent.click(rename);
+  return within(document.body);
+}
+
+export const RenameCollection: Story = {
+  args: {} as ResourceHubPage.Props,
+  render: () => <StoryPage empty />,
+  play: async ({ canvasElement }) => {
+    const body = await openRename(canvasElement);
+    const input = body.getByRole("textbox");
+    await expect(input).toHaveValue("Engineering Handbook");
+    await userEvent.clear(input);
+    await userEvent.type(input, "  Team library  ");
+    const save = document.querySelector<HTMLElement>('[data-test-id="save-collection-name"]');
+    if (!save) throw new Error("Missing save action");
+    await userEvent.click(save);
+    await expect(within(canvasElement).findByText("Team library")).resolves.toBeVisible();
+    await expect(body.queryByRole("dialog")).not.toBeInTheDocument();
+  },
+};
+
+export const RenameError: Story = {
+  args: {} as ResourceHubPage.Props,
+  render: () => <StoryPage renameFails />,
+  play: async ({ canvasElement }) => {
+    const body = await openRename(canvasElement);
+    const input = body.getByRole("textbox");
+    await userEvent.clear(input);
+    await userEvent.type(input, "Draft name");
+    const save = document.querySelector<HTMLElement>('[data-test-id="save-collection-name"]');
+    if (!save) throw new Error("Missing save action");
+    await userEvent.click(save);
+    await expect(body.findByRole("alert")).resolves.toBeVisible();
+    await expect(input).toHaveValue("Draft name");
+    await expect(input).toBeEnabled();
+  },
 };
 
 export const NoSearchResults: Story = {
