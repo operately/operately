@@ -5,6 +5,7 @@ import * as React from "react";
 
 import classNames from "../utils/classnames";
 import { Avatar } from "../Avatar";
+import { UnstyledButton } from "../Button/UnstalyedButton";
 import { IconMoodPlus, IconTrash, IconX } from "../icons";
 import { showErrorToast } from "../Toasts";
 import { compareIds } from "../utils/ids";
@@ -209,14 +210,15 @@ function AddReaction({ size, onAddReaction }: AddReactionProps) {
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger asChild>
-        <div className="text-content-accent cursor-pointer bg-surface-dimmed rounded-full p-1">
-          <IconMoodPlus size={size - 2} />
-        </div>
+      <Popover.Trigger
+        aria-label={t("Add Reaction")}
+        className="text-content-accent cursor-pointer bg-surface-dimmed rounded-full p-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-1"
+      >
+        <IconMoodPlus size={size - 2} aria-hidden />
       </Popover.Trigger>
 
       <Popover.Portal>
-        <Popover.Content className={dropdownClassName} align="center" sideOffset={5}>
+        <Popover.Content className={dropdownClassName} align="center" sideOffset={5} aria-label={t("Add Reaction")}>
           <ReactionPallete size={size} close={close} onSelected={handleSelected} />
           <Popover.Arrow className="fill-surface-outline scale-150" style={{}} />
         </Popover.Content>
@@ -863,9 +865,14 @@ const emojiData = (t: TFunction): EmojiDataItem[] => [
   { emoji: "🆓", keywords: ["free, gratis", t("free, gratis", { context: "emoji search" })] },
 ];
 
+const EMOJI_COLUMNS = 8;
+
 function ReactionPallete({ size, close, onSelected }: ReactionPalleteProps) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [focusedIndex, setFocusedIndex] = React.useState(0);
+  const searchRef = React.useRef<HTMLInputElement>(null);
+  const emojiRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
 
   const emojis = React.useMemo(() => emojiData(t), [t]);
 
@@ -887,32 +894,87 @@ function ReactionPallete({ size, close, onSelected }: ReactionPalleteProps) {
     });
   }, [searchQuery, emojis]);
 
-  // Create rows of 8 emojis each for display
   const emojiRows = React.useMemo(() => {
     const rows: EmojiDataItem[][] = [];
 
-    for (let i = 0; i < filteredEmojis.length; i += 8) {
-      rows.push(filteredEmojis.slice(i, i + 8));
+    for (let i = 0; i < filteredEmojis.length; i += EMOJI_COLUMNS) {
+      rows.push(filteredEmojis.slice(i, i + EMOJI_COLUMNS));
     }
     return rows;
   }, [filteredEmojis]);
+
+  const tabStopIndex = Math.min(focusedIndex, filteredEmojis.length - 1);
+
+  function focusEmoji(index: number) {
+    emojiRefs.current[index]?.focus({ preventScroll: true });
+  }
+
+  function handleSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.nativeEvent.isComposing || event.altKey || event.ctrlKey || event.metaKey) return;
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (filteredEmojis.length > 0) focusEmoji(0);
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      const firstEmoji = filteredEmojis[0];
+      if (firstEmoji) onSelected(firstEmoji.emoji);
+    }
+  }
+
+  function handleEmojiKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {
+    if (event.nativeEvent.isComposing || event.altKey || event.ctrlKey || event.metaKey) return;
+
+    const rowStart = Math.floor(index / EMOJI_COLUMNS) * EMOJI_COLUMNS;
+    const lastIndex = filteredEmojis.length - 1;
+
+    switch (event.key) {
+      case "ArrowLeft":
+        focusEmoji(Math.max(rowStart, index - 1));
+        break;
+      case "ArrowRight":
+        focusEmoji(Math.min(rowStart + EMOJI_COLUMNS - 1, lastIndex, index + 1));
+        break;
+      case "ArrowUp":
+        if (rowStart === 0) searchRef.current?.focus();
+        else focusEmoji(index - EMOJI_COLUMNS);
+        break;
+      case "ArrowDown":
+        if (rowStart + EMOJI_COLUMNS <= lastIndex) focusEmoji(Math.min(index + EMOJI_COLUMNS, lastIndex));
+        break;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+  }
 
   return (
     <div className="bg-surface p-4 py-3 pb-2 flex flex-col gap-0.5">
       <div className="flex items-start justify-between text-content-dimmed w-full">
         <div className="text-sm mb-2 font-medium">{t("Add Reaction")}</div>
-        <div className="">
-          <IconX size={16} onClick={close} className="cursor-pointer" />
-        </div>
+        <UnstyledButton
+          onClick={close}
+          ariaLabel={t("Close")}
+          className="cursor-pointer rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-1"
+        >
+          <IconX size={16} aria-hidden />
+        </UnstyledButton>
       </div>
 
       {/* Search input */}
       <div className="mb-2">
         <input
+          ref={searchRef}
           type="text"
+          aria-label={t("Search emojis...")}
           placeholder={t("Search emojis...")}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(event) => {
+            setSearchQuery(event.target.value);
+            setFocusedIndex(0);
+          }}
+          onKeyDown={handleSearchKeyDown}
           className="w-full px-2 py-1 text-sm border border-surface-outline rounded bg-surface-dimmed text-content-base placeholder-content-dimmed focus:outline-none focus:border-accent-1"
           autoFocus
         />
@@ -921,21 +983,40 @@ function ReactionPallete({ size, close, onSelected }: ReactionPalleteProps) {
       {/* Emoji grid */}
       <div className="max-h-64 overflow-y-auto">
         {emojiRows.length > 0 ? (
-          emojiRows.map((row, index) => (
-            <div key={index} className="flex gap-2 items-center mb-1">
-              {row.map((item) => (
-                <div
-                  key={item.emoji}
-                  className="hover:scale-125 cursor-pointer"
-                  onClick={() => onSelected(item.emoji)}
-                  data-test-id={`reaction-${item.emoji}-button`}
-                  title={item.keywords[1]}
-                >
-                  <span style={{ fontSize: size - 2 }}>{item.emoji}</span>
-                </div>
-              ))}
-            </div>
-          ))
+          <div role="grid" aria-label={t("Add Reaction")}>
+            {emojiRows.map((row, rowIndex) => (
+              <div role="row" key={rowIndex} className="flex gap-2 items-center mb-1">
+                {row.map((item, columnIndex) => {
+                  const index = rowIndex * EMOJI_COLUMNS + columnIndex;
+                  return (
+                    <div role="gridcell" key={item.emoji}>
+                      <button
+                        ref={(element) => {
+                          emojiRefs.current[index] = element;
+                        }}
+                        type="button"
+                        tabIndex={index === tabStopIndex ? 0 : -1}
+                        className="hover:scale-125 cursor-pointer rounded focus-visible:bg-surface-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-1 focus-visible:outline-offset-[-2px]"
+                        onClick={() => onSelected(item.emoji)}
+                        onKeyDown={(event) => handleEmojiKeyDown(event, index)}
+                        onFocus={(event) => {
+                          setFocusedIndex(index);
+                          event.currentTarget.scrollIntoView({ block: "nearest", inline: "nearest" });
+                        }}
+                        data-test-id={`reaction-${item.emoji}-button`}
+                        title={item.keywords[1]}
+                        aria-label={item.keywords[1]}
+                      >
+                        <span style={{ fontSize: size - 2 }} aria-hidden>
+                          {item.emoji}
+                        </span>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="text-content-dimmed text-sm py-2 text-center">{t("No emojis found")}</div>
         )}

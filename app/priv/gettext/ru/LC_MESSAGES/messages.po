@@ -5623,7 +5623,10 @@ msgid "Add Project"
 msgstr "Добавить проект"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:903
+#: ../turboui/src/Reactions/index.tsx:214
+#: ../turboui/src/Reactions/index.tsx:221
+#: ../turboui/src/Reactions/index.tsx:955
+#: ../turboui/src/Reactions/index.tsx:986
 msgid "Add Reaction"
 msgstr "Добавить реакцию"
 
@@ -7876,7 +7879,7 @@ msgid "Click + or press c to add a task, or drag a task here."
 msgstr "Нажмите + или клавишу c, чтобы добавить задачу, или перетащите задачу сюда."
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:159
+#: ../turboui/src/Reactions/index.tsx:160
 msgid "Click to remove your reaction"
 msgstr "Нажмите, чтобы удалить вашу реакцию"
 
@@ -7897,6 +7900,7 @@ msgstr "Хост клиента"
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:63
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
 #: ../turboui/src/Modal/index.tsx:143
+#: ../turboui/src/Reactions/index.tsx:958
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:93
 #: ../turboui/src/SlideIn/index.tsx:126
 #: ../turboui/src/SlideIn/index.tsx:128
@@ -14557,7 +14561,7 @@ msgid "No due date set."
 msgstr "Срок выполнения не задан."
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:940
+#: ../turboui/src/Reactions/index.tsx:1021
 msgid "No emojis found"
 msgstr "Эмодзи не найдено"
 
@@ -16025,8 +16029,8 @@ msgstr "Пожалуйста, попробуйте ещё раз."
 #: ../turboui/src/CommentSection/CommentInput.tsx:88
 #: ../turboui/src/CommentSection/CommentItem.tsx:226
 #: ../turboui/src/InlineComments/Thread.tsx:57
-#: ../turboui/src/Reactions/index.tsx:58
-#: ../turboui/src/Reactions/index.tsx:204
+#: ../turboui/src/Reactions/index.tsx:59
+#: ../turboui/src/Reactions/index.tsx:205
 #: assets/js/models/people/usePeopleSearchError.ts:7
 #: assets/js/pages/AccountApiTokensPage/index.tsx:61
 #: assets/js/pages/AccountApiTokensPage/index.tsx:84
@@ -16852,12 +16856,12 @@ msgid "Re: timeframe change"
 msgstr "Re: изменение периода"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:204
+#: ../turboui/src/Reactions/index.tsx:205
 msgid "Reaction not added"
 msgstr "Реакция не добавлена"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:58
+#: ../turboui/src/Reactions/index.tsx:59
 msgid "Reaction not removed"
 msgstr "Реакция не удалена"
 
@@ -17143,7 +17147,7 @@ msgid "Remove photo"
 msgstr "Удалить фото"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:170
+#: ../turboui/src/Reactions/index.tsx:171
 msgid "Remove reaction"
 msgstr "Удалить реакцию"
 
@@ -18116,7 +18120,8 @@ msgid "Search documents and files…"
 msgstr "Поиск документов и файлов..."
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:913
+#: ../turboui/src/Reactions/index.tsx:970
+#: ../turboui/src/Reactions/index.tsx:971
 msgid "Search emojis..."
 msgstr "Поиск смайликов..."
 
@@ -24974,901 +24979,901 @@ msgid "Provider"
 msgstr "Почтовый провайдер"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:275
+#: ../turboui/src/Reactions/index.tsx:277
 msgctxt "emoji search"
 msgid "100, perfect, agree, correct, absolutely"
 msgstr "100, идеально, согласие, правильно, абсолютно"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:632
+#: ../turboui/src/Reactions/index.tsx:634
 msgctxt "emoji search"
 msgid "alarm, clock, time, wake up"
 msgstr "будильник, часы, время, проснуться"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:855
+#: ../turboui/src/Reactions/index.tsx:857
 msgctxt "emoji search"
 msgid "alert, siren, warning, emergency"
 msgstr "тревога, сирена, предупреждение, чрезвычайная ситуация"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:362
+#: ../turboui/src/Reactions/index.tsx:364
 msgctxt "emoji search"
 msgid "angel, innocent, halo"
 msgstr "ангел, невинность, нимб"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:428
+#: ../turboui/src/Reactions/index.tsx:430
 msgctxt "emoji search"
 msgid "angry, mad, rage, furious"
 msgstr "злость, гнев, ярость, бешенство"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:429
+#: ../turboui/src/Reactions/index.tsx:431
 msgctxt "emoji search"
 msgid "angry, mad, upset"
 msgstr "злость, гнев, огорчение"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:418
+#: ../turboui/src/Reactions/index.tsx:420
 msgctxt "emoji search"
 msgid "anxious, nervous, sweat, worried"
 msgstr "тревога, нервозность, пот, беспокойство"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:833
+#: ../turboui/src/Reactions/index.tsx:835
 msgctxt "emoji search"
 msgid "art, paint, palette, creative, design"
 msgstr "искусство, краски, палитра, творчество, дизайн"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:660
+#: ../turboui/src/Reactions/index.tsx:662
 msgctxt "emoji search"
 msgid "balloon, party, celebrate"
 msgstr "воздушный шар, вечеринка, праздник"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:743
+#: ../turboui/src/Reactions/index.tsx:745
 msgctxt "emoji search"
 msgid "beers, cheers, drinks, celebrate, toast"
 msgstr "пиво, за здоровье, напитки, праздник, тост"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:627
+#: ../turboui/src/Reactions/index.tsx:629
 msgctxt "emoji search"
 msgid "bell, notification, alert, reminder"
 msgstr "колокольчик, уведомление, оповещение, напоминание"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:826
+#: ../turboui/src/Reactions/index.tsx:828
 msgctxt "emoji search"
 msgid "brain, smart, think, intelligence"
 msgstr "мозг, умный, думать, интеллект"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:583
+#: ../turboui/src/Reactions/index.tsx:585
 msgctxt "emoji search"
 msgid "briefcase, work, business, professional"
 msgstr "портфель, работа, бизнес, профессионал"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:734
+#: ../turboui/src/Reactions/index.tsx:736
 msgctxt "emoji search"
 msgid "burger, hamburger, food"
 msgstr "бургер, гамбургер, еда"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:737
+#: ../turboui/src/Reactions/index.tsx:739
 msgctxt "emoji search"
 msgid "cake, dessert, sweet, birthday"
 msgstr "торт, десерт, сладкое, день рождения"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:636
+#: ../turboui/src/Reactions/index.tsx:638
 msgctxt "emoji search"
 msgid "calendar, date, schedule"
 msgstr "календарь, дата, расписание"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:639
+#: ../turboui/src/Reactions/index.tsx:641
 msgctxt "emoji search"
 msgid "calendar, planning, schedule"
 msgstr "календарь, планирование, расписание"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:851
+#: ../turboui/src/Reactions/index.tsx:853
 msgctxt "emoji search"
 msgid "camera, photo, picture, snapshot"
 msgstr "камера, фото, фотография, снимок"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:750
+#: ../turboui/src/Reactions/index.tsx:752
 msgctxt "emoji search"
 msgid "champagne, celebrate, bottle, party"
 msgstr "шампанское, праздник, бутылка, вечеринка"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:604
+#: ../turboui/src/Reactions/index.tsx:606
 msgctxt "emoji search"
 msgid "chart down, decrease, trending down, decline"
 msgstr "график вниз, уменьшение, нисходящий тренд, спад"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:597
+#: ../turboui/src/Reactions/index.tsx:599
 msgctxt "emoji search"
 msgid "chart up, growth, trending up, increase"
 msgstr "график вверх, рост, восходящий тренд, увеличение"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:590
+#: ../turboui/src/Reactions/index.tsx:592
 msgctxt "emoji search"
 msgid "chart, graph, stats, data, analytics"
 msgstr "диаграмма, график, статистика, данные, аналитика"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:317
+#: ../turboui/src/Reactions/index.tsx:319
 msgctxt "emoji search"
 msgid "check, done, complete, yes, correct"
 msgstr "галочка, готово, завершено, да, правильно"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:757
+#: ../turboui/src/Reactions/index.tsx:759
 msgctxt "emoji search"
 msgid "cheers, toast, glasses, celebrate"
 msgstr "за здоровье, тост, бокалы, праздник"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:303
+#: ../turboui/src/Reactions/index.tsx:305
 msgctxt "emoji search"
 msgid "clap, applause, praise, congratulations, bravo"
 msgstr "хлопать, аплодисменты, похвала, поздравления, браво"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:616
+#: ../turboui/src/Reactions/index.tsx:618
 msgctxt "emoji search"
 msgid "clipboard, checklist, todo, list"
 msgstr "планшет с зажимом, чек-лист, дела, список"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:696
+#: ../turboui/src/Reactions/index.tsx:698
 msgctxt "emoji search"
 msgid "cloud, partly sunny, weather"
 msgstr "облако, переменная облачность, погода"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:793
+#: ../turboui/src/Reactions/index.tsx:795
 msgctxt "emoji search"
 msgid "clover, four leaf clover, luck, lucky, shamrock"
 msgstr "клевер, четырёхлистный клевер, удача, везение, трилистник"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:731
+#: ../turboui/src/Reactions/index.tsx:733
 msgctxt "emoji search"
 msgid "coffee, tea, hot, drink, cafe"
 msgstr "кофе, чай, горячий, напиток, кафе"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:663
+#: ../turboui/src/Reactions/index.tsx:665
 msgctxt "emoji search"
 msgid "confetti, party, celebration"
 msgstr "конфетти, вечеринка, праздник"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:410
+#: ../turboui/src/Reactions/index.tsx:412
 msgctxt "emoji search"
 msgid "confused, uncertain, puzzled"
 msgstr "растерянность, неуверенность, недоумение"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:862
+#: ../turboui/src/Reactions/index.tsx:864
 msgctxt "emoji search"
 msgid "cool, awesome, nice"
 msgstr "круто, потрясающе, здорово"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:357
+#: ../turboui/src/Reactions/index.tsx:359
 msgctxt "emoji search"
 msgid "cool, sunglasses, awesome"
 msgstr "круто, солнцезащитные очки, потрясающе"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:464
+#: ../turboui/src/Reactions/index.tsx:466
 msgctxt "emoji search"
 msgid "crazy, silly, goofy, wacky"
 msgstr "безумный, дурашливый, смешной, чудаковатый"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:654
+#: ../turboui/src/Reactions/index.tsx:656
 msgctxt "emoji search"
 msgid "credit card, payment, card"
 msgstr "кредитная карта, оплата, карта"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:777
+#: ../turboui/src/Reactions/index.tsx:779
 msgctxt "emoji search"
 msgid "crown, king, queen, royalty, best"
 msgstr "корона, король, королева, монарх, лучший"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:401
+#: ../turboui/src/Reactions/index.tsx:403
 msgctxt "emoji search"
 msgid "cry, sad, tear, upset"
 msgstr "плач, грусть, слеза, огорчение"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:402
+#: ../turboui/src/Reactions/index.tsx:404
 msgctxt "emoji search"
 msgid "cry, sob, tears, very sad"
 msgstr "плач, рыдания, слёзы, очень грустно"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:430
+#: ../turboui/src/Reactions/index.tsx:432
 msgctxt "emoji search"
 msgid "curse, swear, mad, angry"
 msgstr "ругань, брань, гнев, злость"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:407
+#: ../turboui/src/Reactions/index.tsx:409
 msgctxt "emoji search"
 msgid "disappointed, sad, upset"
 msgstr "разочарование, грусть, огорчение"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:651
+#: ../turboui/src/Reactions/index.tsx:653
 msgctxt "emoji search"
 msgid "dollar, money, bill, cash"
 msgstr "доллар, деньги, купюра, наличные"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:769
+#: ../turboui/src/Reactions/index.tsx:771
 msgctxt "emoji search"
 msgid "dress, fashion, clothing"
 msgstr "платье, мода, одежда"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:804
+#: ../turboui/src/Reactions/index.tsx:806
 msgctxt "emoji search"
 msgid "exclamation, important, warning, alert"
 msgstr "восклицательный знак, важно, предупреждение, тревога"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:487
+#: ../turboui/src/Reactions/index.tsx:489
 msgctxt "emoji search"
 msgid "expressionless, blank, deadpan"
 msgstr "без выражения, пустой взгляд, невозмутимость"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:492
+#: ../turboui/src/Reactions/index.tsx:494
 msgctxt "emoji search"
 msgid "eye roll, whatever, annoyed"
 msgstr "закатывать глаза, всё равно, раздражение"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:820
+#: ../turboui/src/Reactions/index.tsx:822
 msgctxt "emoji search"
 msgid "eyes, look, watch, see, viewing"
 msgstr "глаза, взгляд, смотреть, видеть, просмотр"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:422
+#: ../turboui/src/Reactions/index.tsx:424
 msgctxt "emoji search"
 msgid "fearful, scared, fear, shock"
 msgstr "страх, испуг, боязнь, шок"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:556
+#: ../turboui/src/Reactions/index.tsx:558
 msgctxt "emoji search"
 msgid "fingers crossed, luck, hope, wish"
 msgstr "скрещённые пальцы, удача, надежда, желание"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:269
+#: ../turboui/src/Reactions/index.tsx:271
 msgctxt "emoji search"
 msgid "fire, hot, lit, awesome, great"
 msgstr "огонь, горячо, зажигательно, потрясающе, отлично"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:674
+#: ../turboui/src/Reactions/index.tsx:676
 msgctxt "emoji search"
 msgid "first, gold, medal, winner, 1st"
 msgstr "первое место, золото, медаль, победитель, первый"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:564
+#: ../turboui/src/Reactions/index.tsx:566
 msgctxt "emoji search"
 msgid "fist, bump, punch, power"
 msgstr "кулак, удар кулаками, удар, сила"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:567
+#: ../turboui/src/Reactions/index.tsx:569
 msgctxt "emoji search"
 msgid "fist, power, solidarity, punch"
 msgstr "кулак, сила, солидарность, удар"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:447
+#: ../turboui/src/Reactions/index.tsx:449
 msgctxt "emoji search"
 msgid "flushed, embarrassed, shocked"
 msgstr "румянец, смущение, шок"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:863
+#: ../turboui/src/Reactions/index.tsx:865
 msgctxt "emoji search"
 msgid "free, gratis"
 msgstr "бесплатно, даром"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:845
+#: ../turboui/src/Reactions/index.tsx:847
 msgctxt "emoji search"
 msgid "game, gaming, controller, play"
 msgstr "игра, видеоигры, геймпад, играть"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:711
+#: ../turboui/src/Reactions/index.tsx:713
 msgctxt "emoji search"
 msgid "gear, settings, config, configure"
 msgstr "шестерёнка, настройки, конфигурация, настроить"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:658
+#: ../turboui/src/Reactions/index.tsx:660
 msgctxt "emoji search"
 msgid "gift, present, box, birthday"
 msgstr "подарок, презент, коробка, день рождения"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:471
+#: ../turboui/src/Reactions/index.tsx:473
 msgctxt "emoji search"
 msgid "giggle, shy, oops, hand over mouth"
 msgstr "хихикать, стесняться, ой, прикрыть рот рукой"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:771
+#: ../turboui/src/Reactions/index.tsx:773
 msgctxt "emoji search"
 msgid "glasses, eyeglasses, nerd"
 msgstr "очки, очки для зрения, ботаник"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:524
+#: ../turboui/src/Reactions/index.tsx:526
 msgctxt "emoji search"
 msgid "grimace, awkward, nervous"
 msgstr "гримаса, неловкость, нервозность"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:343
+#: ../turboui/src/Reactions/index.tsx:345
 msgctxt "emoji search"
 msgid "grin, smile, happy"
 msgstr "широкая улыбка, улыбка, счастье"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:848
+#: ../turboui/src/Reactions/index.tsx:850
 msgctxt "emoji search"
 msgid "guitar, music, rock"
 msgstr "гитара, музыка, рок"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:705
+#: ../turboui/src/Reactions/index.tsx:707
 msgctxt "emoji search"
 msgid "hammer, tool, fix, build"
 msgstr "молоток, инструмент, починить, строить"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:310
+#: ../turboui/src/Reactions/index.tsx:312
 msgctxt "emoji search"
 msgid "hands, celebrate, praise, hooray, yay"
 msgstr "руки, праздновать, хвалить, ура, радость"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:798
+#: ../turboui/src/Reactions/index.tsx:800
 msgctxt "emoji search"
 msgid "handshake, agreement, deal"
 msgstr "рукопожатие, соглашение, сделка"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:542
+#: ../turboui/src/Reactions/index.tsx:544
 msgctxt "emoji search"
 msgid "handshake, deal, agreement, shake"
 msgstr "рукопожатие, сделка, соглашение, пожать руку"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:251
+#: ../turboui/src/Reactions/index.tsx:253
 msgctxt "emoji search"
 msgid "heart, love, like, favorite"
 msgstr "сердце, любовь, нравится, избранное"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:635
+#: ../turboui/src/Reactions/index.tsx:637
 msgctxt "emoji search"
 msgid "hourglass, time, waiting"
 msgstr "песочные часы, время, ожидание"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:466
+#: ../turboui/src/Reactions/index.tsx:468
 msgctxt "emoji search"
 msgid "hug, hugging, embrace"
 msgstr "объятия, обниматься, обнять"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:513
+#: ../turboui/src/Reactions/index.tsx:515
 msgctxt "emoji search"
 msgid "hurt, injured, bandage, pain"
 msgstr "боль, травма, повязка, болит"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:330
+#: ../turboui/src/Reactions/index.tsx:332
 msgctxt "emoji search"
 msgid "idea, light, bulb, think, smart"
 msgstr "идея, свет, лампочка, думать, умный"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:725
+#: ../turboui/src/Reactions/index.tsx:727
 msgctxt "emoji search"
 msgid "key, unlock, access, password"
 msgstr "ключ, разблокировать, доступ, пароль"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:340
+#: ../turboui/src/Reactions/index.tsx:342
 msgctxt "emoji search"
 msgid "laugh, lol, haha, funny, joy"
 msgstr "смех, лол, ха-ха, смешно, радость"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:702
+#: ../turboui/src/Reactions/index.tsx:704
 msgctxt "emoji search"
 msgid "lightning, bolt, fast, power, energy"
 msgstr "молния, разряд, быстро, сила, энергия"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:716
+#: ../turboui/src/Reactions/index.tsx:718
 msgctxt "emoji search"
 msgid "link, chain, connection, url"
 msgstr "ссылка, цепь, связь, URL"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:622
+#: ../turboui/src/Reactions/index.tsx:624
 msgctxt "emoji search"
 msgid "location, pin, map, place"
 msgstr "местоположение, метка, карта, место"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:720
+#: ../turboui/src/Reactions/index.tsx:722
 msgctxt "emoji search"
 msgid "lock, secure, private, locked"
 msgstr "замок, безопасно, приватно, заблокировано"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:351
+#: ../turboui/src/Reactions/index.tsx:353
 msgctxt "emoji search"
 msgid "love, heart eyes, adore, crush"
 msgstr "любовь, глаза-сердечки, обожание, влюблённость"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:355
+#: ../turboui/src/Reactions/index.tsx:357
 msgctxt "emoji search"
 msgid "love, hearts, adore, affection"
 msgstr "любовь, сердца, обожание, нежность"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:562
+#: ../turboui/src/Reactions/index.tsx:564
 msgctxt "emoji search"
 msgid "love, rock, you rock, i love you"
 msgstr "любовь, рок, ты крутой, я тебя люблю"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:683
+#: ../turboui/src/Reactions/index.tsx:685
 msgctxt "emoji search"
 msgid "medal, military, honor, award"
 msgstr "медаль, военный, честь, награда"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:611
+#: ../turboui/src/Reactions/index.tsx:613
 msgctxt "emoji search"
 msgid "memo, note, write, document, pencil"
 msgstr "записка, заметка, писать, документ, карандаш"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:442
+#: ../turboui/src/Reactions/index.tsx:444
 msgctxt "emoji search"
 msgid "mind blown, exploding head, shocked, amazed"
 msgstr "взрыв мозга, взрывающаяся голова, шок, изумление"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:645
+#: ../turboui/src/Reactions/index.tsx:647
 msgctxt "emoji search"
 msgid "money, bag, dollar, cash, rich"
 msgstr "деньги, мешок, доллар, наличные, богатство"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:649
+#: ../turboui/src/Reactions/index.tsx:651
 msgctxt "emoji search"
 msgid "money, flying, spend, loss"
 msgstr "деньги, улетают, траты, потери"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:385
+#: ../turboui/src/Reactions/index.tsx:387
 msgctxt "emoji search"
 msgid "monocle, examine, inspect, curious"
 msgstr "монокль, изучать, осматривать, любопытство"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:296
+#: ../turboui/src/Reactions/index.tsx:298
 msgctxt "emoji search"
 msgid "muscle, strong, strength, power, flex"
 msgstr "мышцы, сильный, сила, мощь, напрячь мышцы"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:847
+#: ../turboui/src/Reactions/index.tsx:849
 msgctxt "emoji search"
 msgid "music, note, song"
 msgstr "музыка, нота, песня"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:484
+#: ../turboui/src/Reactions/index.tsx:486
 msgctxt "emoji search"
 msgid "neutral, meh, blank"
 msgstr "нейтральный, так себе, пустой взгляд"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:861
+#: ../turboui/src/Reactions/index.tsx:863
 msgctxt "emoji search"
 msgid "new, fresh, latest"
 msgstr "новое, свежее, последнее"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:489
+#: ../turboui/src/Reactions/index.tsx:491
 msgctxt "emoji search"
 msgid "no mouth, silence, quiet"
 msgstr "без рта, молчание, тихо"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:320
+#: ../turboui/src/Reactions/index.tsx:322
 msgctxt "emoji search"
 msgid "ok, okay, perfect, good"
 msgstr "ок, ладно, идеально, хорошо"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:569
+#: ../turboui/src/Reactions/index.tsx:571
 msgctxt "emoji search"
 msgid "open hands, jazz hands"
 msgstr "открытые ладони, джазовые руки"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:480
+#: ../turboui/src/Reactions/index.tsx:482
 msgctxt "emoji search"
 msgid "party, celebrate, birthday, hat"
 msgstr "вечеринка, праздник, день рождения, колпак"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:264
+#: ../turboui/src/Reactions/index.tsx:266
 msgctxt "emoji search"
 msgid "party, celebrate, celebration, tada, confetti"
 msgstr "вечеринка, праздновать, праздник, та-дам, конфетти"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:559
+#: ../turboui/src/Reactions/index.tsx:561
 msgctxt "emoji search"
 msgid "peace, victory, v sign"
 msgstr "мир, победа, знак V"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:620
+#: ../turboui/src/Reactions/index.tsx:622
 msgctxt "emoji search"
 msgid "pin, pushpin, important, mark"
 msgstr "кнопка, канцелярская кнопка, важно, отметка"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:733
+#: ../turboui/src/Reactions/index.tsx:735
 msgctxt "emoji search"
 msgid "pizza, food, slice"
 msgstr "пицца, еда, кусочек"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:521
+#: ../turboui/src/Reactions/index.tsx:523
 msgctxt "emoji search"
 msgid "pleading, puppy eyes, beg, please"
 msgstr "мольба, щенячьи глаза, умолять, пожалуйста"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:549
+#: ../turboui/src/Reactions/index.tsx:551
 msgctxt "emoji search"
 msgid "pray, please, thanks, namaste, high five"
 msgstr "молитва, пожалуйста, спасибо, намасте, дай пять"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:809
+#: ../turboui/src/Reactions/index.tsx:811
 msgctxt "emoji search"
 msgid "question, help, what, confused"
 msgstr "вопрос, помощь, что, растерянность"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:690
+#: ../turboui/src/Reactions/index.tsx:692
 msgctxt "emoji search"
 msgid "rainbow, pride, colorful, diversity"
 msgstr "радуга, гордость, разноцветный, разнообразие"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:574
+#: ../turboui/src/Reactions/index.tsx:576
 msgctxt "emoji search"
 msgid "raising hands, celebrate, yay, hooray"
 msgstr "поднятые руки, праздник, радость, ура"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:257
+#: ../turboui/src/Reactions/index.tsx:259
 msgctxt "emoji search"
 msgid "rocket, launch, fast, success, ship"
 msgstr "ракета, запуск, быстро, успех, выпуск"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:348
+#: ../turboui/src/Reactions/index.tsx:350
 msgctxt "emoji search"
 msgid "rolling, laugh, lol, rofl"
 msgstr "кататься от смеха, смех, лол, рофл"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:405
+#: ../turboui/src/Reactions/index.tsx:407
 msgctxt "emoji search"
 msgid "sad, pensive, down, disappointed"
 msgstr "грусть, задумчивость, уныние, разочарование"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:786
+#: ../turboui/src/Reactions/index.tsx:788
 msgctxt "emoji search"
 msgid "salute, respect, yes sir, military"
 msgstr "отдать честь, уважение, так точно, военный"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:426
+#: ../turboui/src/Reactions/index.tsx:428
 msgctxt "emoji search"
 msgid "scream, shocked, omg, afraid"
 msgstr "крик, шок, о боже, страх"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:678
+#: ../turboui/src/Reactions/index.tsx:680
 msgctxt "emoji search"
 msgid "second, silver, medal, 2nd"
 msgstr "второе место, серебро, медаль, второй"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:476
+#: ../turboui/src/Reactions/index.tsx:478
 msgctxt "emoji search"
 msgid "shh, quiet, secret, silence"
 msgstr "тсс, тихо, секрет, молчание"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:770
+#: ../turboui/src/Reactions/index.tsx:772
 msgctxt "emoji search"
 msgid "shirt, t-shirt, clothing"
 msgstr "рубашка, футболка, одежда"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:437
+#: ../turboui/src/Reactions/index.tsx:439
 msgctxt "emoji search"
 msgid "shocked, astonished, gasp"
 msgstr "шок, изумление, ахнуть"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:509
+#: ../turboui/src/Reactions/index.tsx:511
 msgctxt "emoji search"
 msgid "sick, ill, fever, thermometer"
 msgstr "болезнь, недомогание, жар, термометр"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:501
+#: ../turboui/src/Reactions/index.tsx:503
 msgctxt "emoji search"
 msgid "sick, nauseated, ill, gross"
 msgstr "болезнь, тошнота, недомогание, отвращение"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:494
+#: ../turboui/src/Reactions/index.tsx:496
 msgctxt "emoji search"
 msgid "sleep, tired, sleepy, zzz"
 msgstr "сон, усталость, сонливость, храп"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:496
+#: ../turboui/src/Reactions/index.tsx:498
 msgctxt "emoji search"
 msgid "sleepy, tired, exhausted"
 msgstr "сонливость, усталость, изнеможение"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:336
+#: ../turboui/src/Reactions/index.tsx:338
 msgctxt "emoji search"
 msgid "smile, happy, glad, pleased"
 msgstr "улыбка, счастье, радость, довольство"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:342
+#: ../turboui/src/Reactions/index.tsx:344
 msgctxt "emoji search"
 msgid "smile, happy, joy, grin"
 msgstr "улыбка, счастье, радость, широкая улыбка"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:365
+#: ../turboui/src/Reactions/index.tsx:367
 msgctxt "emoji search"
 msgid "smile, slight smile, happy"
 msgstr "улыбка, лёгкая улыбка, счастье"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:282
+#: ../turboui/src/Reactions/index.tsx:284
 msgctxt "emoji search"
 msgid "sparkles, shine, stars, magic, new"
 msgstr "блёстки, сияние, звёзды, магия, новое"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:815
+#: ../turboui/src/Reactions/index.tsx:817
 msgctxt "emoji search"
 msgid "speech, comment, talk, chat, message"
 msgstr "речь, комментарий, разговор, чат, сообщение"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:360
+#: ../turboui/src/Reactions/index.tsx:362
 msgctxt "emoji search"
 msgid "star eyes, wow, excited, amazed"
 msgstr "звёзды в глазах, вау, восторг, изумление"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:685
+#: ../turboui/src/Reactions/index.tsx:687
 msgctxt "emoji search"
 msgid "star, favorite, rating"
 msgstr "звезда, избранное, оценка"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:289
+#: ../turboui/src/Reactions/index.tsx:291
 msgctxt "emoji search"
 msgid "star, success, excellent, favorite"
 msgstr "звезда, успех, отлично, любимое"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:634
+#: ../turboui/src/Reactions/index.tsx:636
 msgctxt "emoji search"
 msgid "stopwatch, timer, time"
 msgstr "секундомер, таймер, время"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:693
+#: ../turboui/src/Reactions/index.tsx:695
 msgctxt "emoji search"
 msgid "sun, sunny, bright, day"
 msgstr "солнце, солнечно, ярко, день"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:772
+#: ../turboui/src/Reactions/index.tsx:774
 msgctxt "emoji search"
 msgid "sunglasses, cool, shades"
 msgstr "солнцезащитные очки, круто, тёмные очки"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:346
+#: ../turboui/src/Reactions/index.tsx:348
 msgctxt "emoji search"
 msgid "sweat, relief, phew, nervous"
 msgstr "пот, облегчение, фух, нервозность"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:325
+#: ../turboui/src/Reactions/index.tsx:327
 msgctxt "emoji search"
 msgid "target, goal, bullseye, accuracy, hit"
 msgstr "мишень, цель, в яблочко, точность, попадание"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:840
+#: ../turboui/src/Reactions/index.tsx:842
 msgctxt "emoji search"
 msgid "theater, drama, masks, performance"
 msgstr "театр, драма, маски, спектакль"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:378
+#: ../turboui/src/Reactions/index.tsx:380
 msgctxt "emoji search"
 msgid "think, thinking, hmm, wonder, consider"
 msgstr "думать, размышление, хм, задуматься, обдумывать"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:680
+#: ../turboui/src/Reactions/index.tsx:682
 msgctxt "emoji search"
 msgid "third, bronze, medal, 3rd"
 msgstr "третье место, бронза, медаль, третий"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:390
+#: ../turboui/src/Reactions/index.tsx:392
 msgctxt "emoji search"
 msgid "thought, thinking, bubble, idea"
 msgstr "мысль, размышление, облачко, идея"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:398
+#: ../turboui/src/Reactions/index.tsx:400
 msgctxt "emoji search"
 msgid "thumbs down, dislike, no, bad, disapprove"
 msgstr "большой палец вниз, не нравится, нет, плохо, неодобрение"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:246
+#: ../turboui/src/Reactions/index.tsx:248
 msgctxt "emoji search"
 msgid "thumbs up, like, yes, approve, good, ok"
 msgstr "большой палец вверх, нравится, да, одобрение, хорошо, ок"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:766
+#: ../turboui/src/Reactions/index.tsx:768
 msgctxt "emoji search"
 msgid "tie, formal, business, professional"
 msgstr "галстук, официальный, деловой, профессионал"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:459
+#: ../turboui/src/Reactions/index.tsx:461
 msgctxt "emoji search"
 msgid "tongue, playful, silly, closed eyes"
 msgstr "язык, игривость, дурачиться, закрытые глаза"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:453
+#: ../turboui/src/Reactions/index.tsx:455
 msgctxt "emoji search"
 msgid "tongue, wink, playful, silly"
 msgstr "язык, подмигивание, игривость, дурачиться"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:669
+#: ../turboui/src/Reactions/index.tsx:671
 msgctxt "emoji search"
 msgid "trophy, win, winner, achievement, award"
 msgstr "кубок, победа, победитель, достижение, награда"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:722
+#: ../turboui/src/Reactions/index.tsx:724
 msgctxt "emoji search"
 msgid "unlock, open, unlocked"
 msgstr "разблокировать, открыть, разблокировано"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:369
+#: ../turboui/src/Reactions/index.tsx:371
 msgctxt "emoji search"
 msgid "upside down, silly, sarcasm"
 msgstr "вверх ногами, дурачиться, сарказм"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:505
+#: ../turboui/src/Reactions/index.tsx:507
 msgctxt "emoji search"
 msgid "vomit, sick, puke, throw up"
 msgstr "рвота, болезнь, тошнота, вырвать"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:859
+#: ../turboui/src/Reactions/index.tsx:861
 msgctxt "emoji search"
 msgid "warning, caution, alert, careful"
 msgstr "предупреждение, осторожность, тревога, внимательно"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:536
+#: ../turboui/src/Reactions/index.tsx:538
 msgctxt "emoji search"
 msgid "wave, hello, hi, bye, goodbye"
 msgstr "махать рукой, здравствуйте, привет, пока, до свидания"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:371
+#: ../turboui/src/Reactions/index.tsx:373
 msgctxt "emoji search"
 msgid "wink, flirt, playful"
 msgstr "подмигивание, флирт, игривость"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:414
+#: ../turboui/src/Reactions/index.tsx:416
 msgctxt "emoji search"
 msgid "worried, concerned, anxious"
 msgstr "беспокойство, озабоченность, тревога"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:435
+#: ../turboui/src/Reactions/index.tsx:437
 msgctxt "emoji search"
 msgid "wow, surprised, amazed, oh"
 msgstr "вау, удивление, изумление, ох"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:706
+#: ../turboui/src/Reactions/index.tsx:708
 msgctxt "emoji search"
 msgid "wrench, tool, fix, repair"
 msgstr "гаечный ключ, инструмент, починка, ремонт"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:495
+#: ../turboui/src/Reactions/index.tsx:497
 msgctxt "emoji search"
 msgid "yawn, tired, bored"
 msgstr "зевать, усталость, скука"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:529
+#: ../turboui/src/Reactions/index.tsx:531
 msgctxt "emoji search"
 msgid "zipper mouth, secret, quiet, sealed"
 msgstr "рот на замке, секрет, тихо, запечатано"
