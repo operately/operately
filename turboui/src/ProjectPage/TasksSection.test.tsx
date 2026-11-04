@@ -60,6 +60,7 @@ it("passes the full task list for status usage when the board is filtered", () =
     {
       id: "hidden-task",
       title: "Hidden task",
+      status: null,
       description: null,
       link: "#",
       milestone: null,
