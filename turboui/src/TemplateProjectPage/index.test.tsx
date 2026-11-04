@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import type { KanbanToolbarContext } from "../TaskBoard/KanbanView/types";
+import type { KanbanBoardProps } from "../TaskBoard/KanbanView/types";
 
 type MockBoardMove = {
   itemId: string;
@@ -38,13 +38,7 @@ jest.mock("../TaskBoard/KanbanView/TaskSlideIn", () => ({
 }));
 
 jest.mock("../TaskBoard/KanbanView", () => ({
-  KanbanBoard: ({
-    toolbarLeading,
-    toolbarActions,
-  }: {
-    toolbarLeading?: React.ReactNode;
-    toolbarActions?: React.ReactNode | ((context: KanbanToolbarContext) => React.ReactNode);
-  }) => {
+  KanbanBoard: ({ toolbarLeading, toolbarActions, tasks, statusUsageTasks }: KanbanBoardProps) => {
     const resolvedToolbarActions =
       typeof toolbarActions === "function"
         ? toolbarActions({
@@ -54,7 +48,11 @@ jest.mock("../TaskBoard/KanbanView", () => ({
         : toolbarActions;
 
     return (
-      <div data-test-id="template-kanban-board">
+      <div
+        data-test-id="template-kanban-board"
+        data-task-ids={tasks.map((task) => task.id).join(",")}
+        data-status-usage-task-ids={statusUsageTasks?.map((task) => task.id).join(",")}
+      >
         {toolbarLeading}
         {resolvedToolbarActions}
         <span>Kanban board</span>
@@ -1476,6 +1474,17 @@ describe("TemplateProjectPage", () => {
     expect(document.querySelector('[data-test-id="template-kanban-board"]')).toBeInTheDocument();
     expect(document.querySelector('[data-test-id="template-task-section-milestone-1"]')).not.toBeInTheDocument();
     expect(document.querySelector('[data-test-id="display-menu-trigger"]')).toBeInTheDocument();
+  });
+
+  it("includes tasks outside the selected milestone when checking status usage", () => {
+    const props = createProps({ onStatusesChange: jest.fn() });
+    props.tasks = props.tasks.map((task) => ({ ...task, milestoneId: null }));
+
+    renderPage(props, "/templates/template-1?tab=tasks&taskDisplay=board&milestone=milestone-1");
+
+    const board = document.querySelector('[data-test-id="template-kanban-board"]');
+    expect(board).toHaveAttribute("data-task-ids", "");
+    expect(board).toHaveAttribute("data-status-usage-task-ids", "task-1");
   });
 
   it("remembers board display mode in localStorage across remounts", async () => {
