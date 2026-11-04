@@ -2233,6 +2233,16 @@ msgid "%{author} removed you from the task %{name}."
 msgstr "%{author} a retiré votre assignation à la tâche %{name}."
 
 #.frontend
+#: assets/js/features/activities/ResourceHubRenamed/index.tsx:23
+msgid "%{author} renamed <collection>%{collectionName}</collection> in the <parent>%{parentName}</parent> space."
+msgstr "%{author} a renommé <collection>%{collectionName}</collection> dans l’espace <parent>%{parentName}</parent>."
+
+#.frontend
+#: assets/js/features/activities/ResourceHubRenamed/index.tsx:26
+msgid "%{author} renamed <collection>%{collectionName}</collection>."
+msgstr "%{author} a renommé <collection>%{collectionName}</collection>."
+
+#.frontend
 #: assets/js/features/activities/GoalNameUpdating/index.tsx:39
 msgid "%{author} renamed <goal>%{goalName}</goal>"
 msgstr "%{author} a renommé l’objectif <goal>%{goalName}</goal>"
@@ -6536,7 +6546,7 @@ msgid "Author"
 msgstr "Auteur"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:221
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:204
 msgid "Authorization Error"
 msgstr "Erreur d’autorisation"
 
@@ -7029,6 +7039,7 @@ msgstr "Cette personne ne peut pas être aussi responsable"
 #: ../turboui/src/ResourceHub/nodeMenus/CopyResource.tsx:50
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:179
 #: ../turboui/src/ResourceHub/nodeMenus/MoveResource.tsx:95
+#: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:57
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:111
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:149
 #: ../turboui/src/SchedulePosting/ScheduleModal.tsx:96
@@ -8600,6 +8611,11 @@ msgid "Could not delete feed item"
 msgstr "Impossible de supprimer l’élément du fil d’activité"
 
 #.frontend
+#: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:55
+msgid "Could not rename Docs & Files. Try again."
+msgstr "Impossible de renommer Documents et fichiers. Réessayez."
+
+#.frontend
 #: ../turboui/src/AccountSettingsPage/index.tsx:42
 #: ../turboui/src/AccountSettingsPage/index.tsx:88
 msgid "Could not save all preferences. Please try again."
@@ -9705,7 +9721,7 @@ msgstr "Document"
 #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:62
 #: assets/js/models/projectTemplates/pageNavigation.ts:19
 #: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
-#: assets/js/pages/ResourceHubPage/page.tsx:32
+#: assets/js/pages/ResourceHubPage/page.tsx:37
 msgid "Docs & Files"
 msgstr "Documents et fichiers"
 
@@ -9761,6 +9777,7 @@ msgstr "Documents"
 #: ../turboui/src/TemplateProjectPage/DocsAndFiles.tsx:135
 #: ../turboui/src/TemplateProjectPage/DocsAndFiles.tsx:145
 #: ../turboui/src/TemplateProjectPage/TemplateMoveResourceModal.tsx:92
+#: assets/js/features/SpaceTools/ResourceHubs/RegularState.tsx:28
 #: assets/js/features/SpaceTools/ResourceHubs/ZeroState.tsx:20
 msgid "Documents & Files"
 msgstr "Documents et fichiers"
@@ -12210,7 +12227,7 @@ msgid "Interval"
 msgstr "Intervalle"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:215
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:202
 msgid "Invalid Client"
 msgstr "Client invalide"
 
@@ -12225,22 +12242,22 @@ msgid "Invalid Link"
 msgstr "Lien invalide"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:196
 msgid "Invalid Redirect URI"
 msgstr "URI de redirection invalide"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:218
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:203
 msgid "Invalid Request"
 msgstr "Requête invalide"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
 msgid "Invalid Resource"
 msgstr "Ressource invalide"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:203
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:198
 msgid "Invalid Scope"
 msgstr "Périmètre d’autorisation invalide"
 
@@ -13631,7 +13648,7 @@ msgid "Missed"
 msgstr "Non atteint"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:206
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:199
 msgid "Missing PKCE Challenge"
 msgstr "Challenge PKCE manquant"
 
@@ -13867,6 +13884,7 @@ msgstr "Score NPS"
 #: ../turboui/src/ProfileEditPage/index.tsx:99
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:46
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:176
+#: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:53
 #: ../turboui/src/SortControl/index.tsx:18
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:71
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
@@ -13881,12 +13899,15 @@ msgstr "Nom"
 msgid "Name can't be blank"
 msgstr "Le nom ne peut pas être vide"
 
+#.elixir
 #.frontend
 #: ../turboui/src/ResourceHub/AddFileWidget.tsx:68
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:25
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:154
+#: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:25
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:39
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
+#: lib/operately_web/api/resource_hubs/rename.ex:37
 msgid "Name is required"
 msgstr "Le nom est requis"
 
@@ -14945,7 +14966,7 @@ msgid "One of the snapshots could not be parsed with the current editor schema."
 msgstr "L’un des instantanés n’a pas pu être interprété avec le schéma actuel de l’éditeur."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:258
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:241
 msgid "One or more redirect URIs are not allowed for this MCP server."
 msgstr "Une ou plusieurs URI de redirection ne sont pas autorisées pour ce serveur MCP."
 
@@ -15026,8 +15047,8 @@ msgid "Only people you add to the space will be able to view it."
 msgstr "Seules les personnes que vous ajoutez à l’espace pourront le consulter."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:212
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:261
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:201
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:244
 msgid "Only public OAuth clients using token_endpoint_auth_method=none are supported."
 msgstr "Seuls les clients OAuth publics utilisant token_endpoint_auth_method=none sont pris en charge."
 
@@ -15047,7 +15068,7 @@ msgid "Only space members can view"
 msgstr "Seuls les membres de l’espace peuvent consulter"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:209
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
 msgid "Only the S256 PKCE challenge method is supported."
 msgstr "Seule la méthode de challenge PKCE S256 est prise en charge."
 
@@ -15191,7 +15212,7 @@ msgid "Operately confirmation code: %{code}"
 msgstr "Code de confirmation Operately : %{code}"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:221
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:204
 msgid "Operately couldn't complete this authorization request."
 msgstr "Operately n’a pas pu traiter cette demande d’autorisation."
 
@@ -17030,6 +17051,7 @@ msgstr "La suppression d’un jalon conserve ses tâches au niveau du projet."
 #.frontend
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:99
 #: ../turboui/src/ResourceHubFolderPage/index.tsx:34
+#: ../turboui/src/ResourceHubPage/index.tsx:40
 #: ../turboui/src/TemplateProjectPage/TemplateResourceMenu.tsx:55
 msgid "Rename"
 msgstr "Renommer"
@@ -17038,6 +17060,11 @@ msgstr "Renommer"
 #: assets/js/pages/CompanyRenamePage/index.tsx:35
 msgid "Rename Company"
 msgstr "Renommer l’entreprise"
+
+#.frontend
+#: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:50
+msgid "Rename Docs & Files"
+msgstr "Renommer Documents et fichiers"
 
 #.frontend
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:173
@@ -17053,6 +17080,13 @@ msgstr "Renommer l’entreprise"
 #: assets/js/features/activities/ProjectRenamed/index.tsx:73
 msgid "Renamed %{oldName} to %{newName}"
 msgstr "A renommé %{oldName} en %{newName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubRenamed/index.tsx:13
+#: assets/js/features/activities/ResourceHubRenamed/index.tsx:15
+#: assets/js/features/activities/ResourceHubRenamed/index.tsx:43
+msgid "Renamed Docs & Files"
+msgstr "Documents et fichiers renommés"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
@@ -19903,7 +19937,7 @@ msgid "The MCP client can no longer access your account."
 msgstr "Le client MCP ne peut plus accéder à votre compte."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:215
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:202
 msgid "The OAuth client is not registered for this Operately MCP server."
 msgstr "Le client OAuth n’est pas enregistré auprès de ce serveur MCP Operately."
 
@@ -19928,17 +19962,17 @@ msgid "The assignee was removed. Previously it was %{old_assignee}"
 msgstr "L’assignation a été retirée. La tâche était auparavant assignée à %{old_assignee}"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:203
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:198
 msgid "The authorization request contains an unsupported scope."
 msgstr "La demande d’autorisation contient un périmètre non pris en charge."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:218
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:203
 msgid "The authorization request is missing required parameters or contains invalid values."
 msgstr "La demande d’autorisation ne contient pas tous les paramètres requis ou contient des valeurs invalides."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
 msgid "The authorization request must target this server's canonical MCP endpoint."
 msgstr "La demande d’autorisation doit cibler le point d’accès MCP canonique de ce serveur."
 
@@ -19978,17 +20012,17 @@ msgid "The check-in has been successfully deleted."
 msgstr "Le point d’avancement a été supprimé."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:235
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:218
 msgid "The client could not be authenticated."
 msgstr "Le client n’a pas pu être authentifié."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:267
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:250
 msgid "The client registration request could not be completed."
 msgstr "La demande d’enregistrement du client n’a pas pu être traitée."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:264
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:247
 msgid "The client registration request is missing required fields or contains invalid values."
 msgstr "La demande d’enregistrement du client ne contient pas tous les champs requis ou contient des valeurs invalides."
 
@@ -20306,12 +20340,12 @@ msgid "The requested billing option is not currently available. Showing the clos
 msgstr "L’option de facturation demandée est actuellement indisponible. Le forfait disponible le plus proche est affiché à la place."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:196
 msgid "The requested redirect URI is not registered for this client."
 msgstr "L’URI de redirection demandée n’est pas enregistrée pour ce client."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:236
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:219
 msgid "The requested resource does not match this MCP server."
 msgstr "La ressource demandée ne correspond pas à ce serveur MCP."
 
@@ -20368,7 +20402,7 @@ msgid "The start date was set to <date/>."
 msgstr "La date de début a été fixée au <date/>."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:237
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:220
 msgid "The supplied authorization grant is invalid, expired, or has already been used."
 msgstr "L’autorisation fournie est invalide, a expiré ou a déjà été utilisée."
 
@@ -20465,17 +20499,17 @@ msgid "The timeframe was changed to %{timeframe}."
 msgstr "La période est désormais %{timeframe}."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:238
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:221
 msgid "The token endpoint only supports authorization_code and refresh_token grants."
 msgstr "Le point d’accès aux jetons ne prend en charge que les autorisations authorization_code et refresh_token."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:240
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:223
 msgid "The token request could not be completed."
 msgstr "La demande de jeton n’a pas pu être traitée."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:239
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:222
 msgid "The token request is missing required parameters or contains invalid values."
 msgstr "La demande de jeton ne contient pas tous les paramètres requis ou contient des valeurs invalides."
 
@@ -20628,7 +20662,7 @@ msgid "This authentication session has expired. Please start again from the CLI.
 msgstr "Cette session d’authentification a expiré. Recommencez depuis l’interface en ligne de commande."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:206
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:199
 msgid "This authorization request must include a PKCE code challenge."
 msgstr "Cette demande d’autorisation doit inclure un challenge de code PKCE."
 
@@ -21759,12 +21793,12 @@ msgid "Unsubscribe me"
 msgstr "Ne plus me notifier"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:212
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:201
 msgid "Unsupported Client Authentication"
 msgstr "Authentification du client non prise en charge"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:209
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
 msgid "Unsupported PKCE Method"
 msgstr "Méthode PKCE non prise en charge"
 

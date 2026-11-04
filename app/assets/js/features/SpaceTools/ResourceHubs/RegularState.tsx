@@ -11,18 +11,24 @@ import {
 } from "turboui";
 import { Title } from "../components";
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
+import { assertPresent } from "@/utils/assertions";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   resourceHub: ResourceHub;
 }
 
 export function RegularState(props: Props) {
+  const { t } = useTranslation();
+  const { name, nodes } = props.resourceHub;
+  assertPresent(nodes, "nodes must be present in resourceHub");
+
   return (
     <div className="flex flex-col h-full">
-      <Title title={props.resourceHub.name!} />
+      <Title title={name === "Documents & Files" ? t("Documents & Files") : name} />
 
       <div className="bg-surface-dimmed rounded mx-2 flex-1">
-        <NodesList nodes={props.resourceHub.nodes!} />
+        <NodesList nodes={nodes} />
       </div>
     </div>
   );

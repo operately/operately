@@ -34,6 +34,7 @@ export {
   useDeleteLink,
   useCreateFolder,
   useRenameFolder,
+  useRenameCollection,
   useDeleteFolder,
   useCopyFolder,
   useMoveResource,

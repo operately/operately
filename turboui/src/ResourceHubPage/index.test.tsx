@@ -2,6 +2,7 @@ import * as React from "react";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("../icons", () => ({
   IconAlignJustified: () => <span>document</span>,
@@ -48,18 +49,38 @@ function ResourceHubPageHarness({
   selectedUploadFile,
   showSearch = false,
   search,
+  canRename = false,
+  parentType = "space",
+  onRename,
 }: {
   initialNodes?: React.ComponentProps<typeof ResourceHubPage>["nodesListProps"]["nodes"];
   openAddFolderOnMount?: boolean;
   selectedUploadFile?: File;
   showSearch?: boolean;
   search?: ResourceHubPage.SearchFn;
+  canRename?: boolean;
+  parentType?: "space" | "project" | "goal" | "template";
+  onRename?: (id: string, name: string) => Promise<void>;
 }) {
   const hasOpenedAddFolderRef = React.useRef(false);
   const hasSelectedUploadFileRef = React.useRef(false);
-  const [resourceHub] = React.useState(() =>
+  const [resourceHub, setResourceHub] = React.useState(() =>
     createMockResourceHub({
+      project:
+        parentType === "project" || parentType === "template"
+          ? {
+              __typename: "project",
+              id: "project-1",
+              name: "Project",
+              status: "active",
+              successStatus: "achieved",
+              spaceId: "space-1",
+              goalId: "goal-1",
+            }
+          : null,
+      goal: parentType === "goal" ? { __typename: "goal", id: "goal-1", name: "Goal", status: "on_track" } : null,
       permissions: createMockPermissions({
+        canRenameHub: canRename,
         canCreateDocument: false,
         canCreateFile: false,
         canCreateLink: false,
@@ -113,6 +134,10 @@ function ResourceHubPageHarness({
         {...sharedProps}
         title={resourceHub.name ?? "Resource Hub"}
         resourceHub={resourceHub}
+        renameCollection={async (id, name) => {
+          await onRename?.(id, name);
+          setResourceHub((current) => ({ ...current, name }));
+        }}
         drafts={{
           nodes: [createMockDraftNode()],
           draftsPath: `/resource-hubs/${resourceHub.id}/drafts`,
@@ -132,6 +157,125 @@ function ResourceHubPageHarness({
 }
 
 describe("ResourceHubPage", () => {
+  function control(id: string): HTMLElement {
+    const element = document.querySelector<HTMLElement>(`[data-test-id="${id}"]`);
+    if (!element) throw new Error(`Missing control: ${id}`);
+    return element;
+  }
+
+  async function openRename() {
+    const user = userEvent.setup();
+    await user.click(control("options-button"));
+    await user.click(control("rename-collection"));
+  }
+
+  test("renames an empty collection with a trimmed name and updates the heading and title", async () => {
+    const onRename = jest.fn().mockResolvedValue(undefined);
+    render(<ResourceHubPageHarness canRename onRename={onRename} />);
+    await openRename();
+    expect(control("new-collection-name")).toHaveValue("Engineering Handbook");
+    fireEvent.change(control("new-collection-name"), { target: { value: "  Team library  " } });
+    fireEvent.click(control("save-collection-name"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(onRename).toHaveBeenCalledTimes(1);
+    expect(onRename).toHaveBeenCalledWith("hub-1", "Team library");
+    expect(screen.getByText("Team library")).toBeInTheDocument();
+    expect(document.title).toContain("Team library");
+    await openRename();
+    expect(control("new-collection-name")).toHaveValue("Team library");
+  });
+
+  test("cancel and unchanged normalized submissions preserve the saved name", async () => {
+    const onRename = jest.fn();
+    render(<ResourceHubPageHarness canRename onRename={onRename} />);
+    await openRename();
+    fireEvent.change(control("new-collection-name"), { target: { value: "Draft" } });
+    fireEvent.click(control("cancel"));
+    await openRename();
+    expect(control("new-collection-name")).toHaveValue("Engineering Handbook");
+    fireEvent.change(control("new-collection-name"), { target: { value: "  Engineering Handbook  " } });
+    fireEvent.click(control("save-collection-name"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(onRename).not.toHaveBeenCalled();
+  });
+
+  test("rejects whitespace and preserves an editable draft after failure", async () => {
+    const onRename = jest.fn().mockRejectedValueOnce(new Error("Offline")).mockResolvedValue(undefined);
+    render(<ResourceHubPageHarness canRename onRename={onRename} />);
+    await openRename();
+    fireEvent.change(control("new-collection-name"), { target: { value: "  " } });
+    fireEvent.click(control("save-collection-name"));
+    await waitFor(() => expect(control("new-collection-name")).toHaveAttribute("aria-invalid", "true"));
+    expect(onRename).not.toHaveBeenCalled();
+    fireEvent.change(control("new-collection-name"), { target: { value: "Draft" } });
+    fireEvent.click(control("save-collection-name"));
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(control("new-collection-name")).toHaveValue("Draft");
+    expect(control("new-collection-name")).toBeEnabled();
+    expect(screen.getByText("Engineering Handbook")).toBeInTheDocument();
+    fireEvent.click(control("save-collection-name"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.getByText("Draft")).toBeInTheDocument();
+  });
+
+  test("cancel during a pending save preserves the draft after failure", async () => {
+    let fail = (_error: Error) => {};
+    const onRename = jest.fn(
+      () =>
+        new Promise<void>((_resolve, reject) => {
+          fail = reject;
+        }),
+    );
+    render(<ResourceHubPageHarness canRename onRename={onRename} />);
+    await openRename();
+    fireEvent.change(control("new-collection-name"), { target: { value: "Draft" } });
+    fireEvent.click(control("save-collection-name"));
+    fireEvent.click(control("cancel"));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(control("new-collection-name")).toHaveValue("Draft");
+    expect(control("save-collection-name")).toBeDisabled();
+    await act(async () => fail(new Error("Offline")));
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(control("new-collection-name")).toHaveValue("Draft");
+    expect(control("new-collection-name")).toBeEnabled();
+    expect(control("cancel")).toBeEnabled();
+    fireEvent.click(control("cancel"));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(onRename).toHaveBeenCalledTimes(1);
+  });
+
+  test("prevents duplicate submissions while saving", async () => {
+    let finish = () => {};
+    const onRename = jest.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        }),
+    );
+    render(<ResourceHubPageHarness canRename onRename={onRename} />);
+    await openRename();
+    fireEvent.change(control("new-collection-name"), { target: { value: "New name" } });
+    fireEvent.click(control("save-collection-name"));
+    fireEvent.click(control("save-collection-name"));
+    expect(control("save-collection-name")).toBeDisabled();
+    expect(onRename).toHaveBeenCalledTimes(1);
+    await act(async () => finish());
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  test.each(["project", "goal", "template"] as const)(
+    "hides renaming for a %s collection despite space context",
+    (parentType) => {
+      render(<ResourceHubPageHarness canRename parentType={parentType} />);
+      expect(document.querySelector('[data-test-id="options-button"]')).not.toBeInTheDocument();
+    },
+  );
+
+  test("hides renaming without the dedicated permission", () => {
+    render(<ResourceHubPageHarness />);
+    expect(document.querySelector('[data-test-id="options-button"]')).not.toBeInTheDocument();
+  });
+
   test("renders navigation, header, drafts, and nodes", () => {
     render(<ResourceHubPageHarness />);
 
