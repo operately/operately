@@ -37,7 +37,7 @@ export function useCopyDocumentListContext(
             id: resource.resourceHubId,
             includePotentialSubscribers: true,
           });
-          assertPresent(resourceHub?.potentialSubscribers, "Copy recipients are unavailable");
+          assertPresent(resourceHub.potentialSubscribers, "Copy recipients are unavailable");
           const subscriberIds = resourceHub.potentialSubscribers.flatMap(({ person }) =>
             person && !compareIds(person.id, me?.id) ? [person.id] : [],
           );
@@ -71,7 +71,6 @@ export function useCopyDocumentListContext(
             includeProject: true,
           });
 
-          assertPresent(res.folder, "Copy destination folder is unavailable");
           return {
             current: { type: "folder", folder: res.folder },
             nodes: sortNodesWithFoldersFirst(res.folder.nodes ?? []),
@@ -86,7 +85,6 @@ export function useCopyDocumentListContext(
             includeProject: true,
           });
 
-          assertPresent(res.resourceHub, "Copy destination resource hub is unavailable");
           return {
             current: { type: "resourceHub", resourceHub: res.resourceHub },
             nodes: sortNodesWithFoldersFirst(res.resourceHub.nodes ?? []),

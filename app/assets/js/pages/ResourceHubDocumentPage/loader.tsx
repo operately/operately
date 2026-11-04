@@ -29,7 +29,6 @@ export async function loader({ params }) {
     Api.notifications.isSubscribedQuery(subscriptionInput),
   ]);
 
-  assertPresent(document, "Document data is unavailable");
   assertPresent(document.resourceHub, "Document resource hub is unavailable");
 
   // Load threads before rendering so the document starts with the correct layout.
