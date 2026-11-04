@@ -81,6 +81,56 @@ test.each([1440, 390])("selection action is visible and clear of the text at %s 
   assert.equal(await composer.locator("blockquote").textContent(), selection.text);
 });
 
+test.each([1440, 390])("selection action scrolls behind the navbar at %s px", async (width) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await visit("scrollable");
+  await selectPassage(false);
+  const action = page.locator('[data-test-id="inline-add-selection"]');
+  await action.waitFor({ state: "visible" });
+  const scrollContainer = page.locator('[data-test-id="document-scroll-container"]');
+  const container = await scrollContainer.boundingBox();
+  const button = await action.boundingBox();
+  assert.ok(container && button);
+
+  await scrollContainer.evaluate(
+    (element, scrollTop) => {
+      element.scrollTop = scrollTop;
+    },
+    button.y + button.height / 2 - container.y,
+  );
+  await page.waitForFunction(() => {
+    const button = document.querySelector('[data-test-id="inline-add-selection"]');
+    const container = document.querySelector('[data-test-id="document-scroll-container"]');
+    if (!button || !container) return false;
+    return button.getBoundingClientRect().top < container.getBoundingClientRect().top;
+  });
+
+  const clipped = await action.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    return {
+      topIsClickable: element.contains(document.elementFromPoint(x, rect.top + 2)),
+      bottomIsClickable: element.contains(document.elementFromPoint(x, rect.bottom - 2)),
+    };
+  });
+  assert.equal(clipped.topIsClickable, false);
+  assert.equal(clipped.bottomIsClickable, true);
+
+  await scrollContainer.evaluate((element) => {
+    element.scrollTop += 500;
+  });
+  await page.waitForFunction(() => {
+    const button = document.querySelector('[data-test-id="inline-add-selection"]');
+    return button && button.getBoundingClientRect().bottom < 0;
+  });
+
+  await scrollContainer.evaluate((element) => {
+    element.scrollTop = 0;
+  });
+  await action.click();
+  await page.locator('[data-test-id="inline-new-thread"]').waitFor();
+});
+
 test("offers Add comment only after releasing a text-selection drag", async () => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await visit();
