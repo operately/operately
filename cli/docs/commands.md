@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 255
+- Endpoints: 256
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -126,6 +126,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `people get_me` | `op people get_me` | `GET` | `/api/external/v1/people/get_me` |
 | `people list` | `op people list` | `GET` | `/api/external/v1/people/list` |
 | `people list_assignments` | `op people list_assignments` | `GET` | `/api/external/v1/people/list_assignments` |
+| `people list_my_tasks` | `op people list_my_tasks` | `GET` | `/api/external/v1/people/list_my_tasks` |
 | `people list_possible_managers` | `op people list_possible_managers` | `GET` | `/api/external/v1/people/list_possible_managers` |
 | `people search` | `op people search` | `GET` | `/api/external/v1/people/search` |
 | `people update` | `op people update` | `POST` | `/api/external/v1/people/update` |

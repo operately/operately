@@ -3940,6 +3940,12 @@ export interface PeopleListAssignmentsResult {
   upcoming: ReviewAssignmentGroup[];
 }
 
+export interface PeopleListMyTasksInput {}
+
+export interface PeopleListMyTasksResult {
+  tasks: Task[];
+}
+
 export interface PeopleListPossibleManagersInput {
   userId?: Id;
   query?: string | null;
@@ -10187,6 +10193,25 @@ export default {
         ...buildApiQueryOptions<PeopleListAssignmentsInput, PeopleListAssignmentsResult>(
           defaultApiClient,
           "/people/list_assignments",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    listMyTasksQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/list_my_tasks"),
+    listMyTasksQueryKey: (input: PeopleListMyTasksInput) =>
+      buildApiQueryKey(defaultApiClient, "/people/list_my_tasks", input),
+    listMyTasksQueryOptions: (input: PeopleListMyTasksInput) =>
+      buildApiQueryOptions<PeopleListMyTasksInput, PeopleListMyTasksResult>(
+        defaultApiClient,
+        "/people/list_my_tasks",
+        input,
+      ),
+    listMyTasksQuery: (input: PeopleListMyTasksInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<PeopleListMyTasksInput, PeopleListMyTasksResult>(
+          defaultApiClient,
+          "/people/list_my_tasks",
           input,
         ),
         staleTime: Infinity,
