@@ -175,6 +175,15 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     end
   end
 
+  @doc """
+  Open, unarchived tasks assigned to `person` in the company.
+
+  Includes tasks on active projects and tasks with no project.
+  """
+  def list_assigned_tasks(%Operately.People.Person{} = person, company_id) when is_binary(company_id) do
+    query_tasks(company_id, person.id, person)
+  end
+
   defp query_tasks(company_id, assignee_id, person) do
     assignments =
       from(t in Task, as: :task)
