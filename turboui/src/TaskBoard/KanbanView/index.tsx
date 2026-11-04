@@ -9,6 +9,7 @@ import type { KanbanBoardProps, KanbanStatus, KanbanState, TaskSlideInContext } 
 import type { TaskBoard } from "../components";
 import { useTaskSlideInSelection } from "../hooks/useTaskSlideInSelection";
 import { compareIds } from "../../utils/ids";
+import classNames from "../../utils/classnames";
 
 export function KanbanBoard(props: KanbanBoardProps) {
   const [archived, setArchived] = useState(false);
@@ -136,8 +137,9 @@ export function KanbanBoard(props: KanbanBoardProps) {
     : "flex flex-col flex-1 bg-surface-base border border-surface-outline rounded-md overflow-hidden";
 
   return (
-    <div className={containerClassName} data-test-id="kanban-board">
+    <div className={classNames(containerClassName, props.fillHeight && "min-h-0")} data-test-id="kanban-board">
       <Kanban
+        fillHeight={props.fillHeight}
         milestone={milestone || null}
         columns={columns}
         draggedItemId={draggedItemId}

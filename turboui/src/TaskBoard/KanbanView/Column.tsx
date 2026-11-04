@@ -15,6 +15,7 @@ import { OPEN_TASK_CREATE_EVENT } from "../hooks/useTaskKeyboardNavigation";
 import { columnColorClass, type ColumnColorMode } from "../columnColors";
 
 interface Props {
+  fillHeight?: boolean;
   colorMode?: ColumnColorMode;
   status: StatusSelector.StatusOption;
   tasks: TaskBoard.Task[];
@@ -41,6 +42,7 @@ interface Props {
 }
 
 export function Column({
+  fillHeight = false,
   colorMode = "soft",
   status,
   tasks,
@@ -119,7 +121,8 @@ export function Column({
     <div
       ref={!disableDnD ? columnRef : null}
       className={classNames(
-        "relative flex flex-col gap-3 min-h-[72vh] flex-shrink-0 p-3 rounded-lg",
+        "relative flex flex-col gap-3 flex-shrink-0 p-3 rounded-lg",
+        !fillHeight && "min-h-[72vh]",
         columnColorClass(status.color, colorMode),
       )}
       style={{ width: columnWidth }}
