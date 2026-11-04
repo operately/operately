@@ -218,6 +218,32 @@ describe("ResourceHubPage", () => {
     expect(screen.getByText("Draft")).toBeInTheDocument();
   });
 
+  test("cancel during a pending save preserves the draft after failure", async () => {
+    let fail = (_error: Error) => {};
+    const onRename = jest.fn(
+      () =>
+        new Promise<void>((_resolve, reject) => {
+          fail = reject;
+        }),
+    );
+    render(<ResourceHubPageHarness canRename onRename={onRename} />);
+    await openRename();
+    fireEvent.change(control("new-collection-name"), { target: { value: "Draft" } });
+    fireEvent.click(control("save-collection-name"));
+    fireEvent.click(control("cancel"));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(control("new-collection-name")).toHaveValue("Draft");
+    expect(control("save-collection-name")).toBeDisabled();
+    await act(async () => fail(new Error("Offline")));
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(control("new-collection-name")).toHaveValue("Draft");
+    expect(control("new-collection-name")).toBeEnabled();
+    expect(control("cancel")).toBeEnabled();
+    fireEvent.click(control("cancel"));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(onRename).toHaveBeenCalledTimes(1);
+  });
+
   test("prevents duplicate submissions while saving", async () => {
     let finish = () => {};
     const onRename = jest.fn(
