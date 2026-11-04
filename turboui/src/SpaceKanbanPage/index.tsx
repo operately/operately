@@ -65,8 +65,9 @@ export function SpaceKanbanPage(props: SpaceKanbanPage.Props) {
   const title = t("{{space}} Tasks", { space: props.space.name });
 
   return (
-    <PageNew title={title} size="fullwidth" testId={createTestId("space-kanban-page", props.space.id)}>
+    <PageNew title={title} size="fullwidth" testId={createTestId("space-kanban-page", props.space.id)} fillHeight>
       <KanbanBoard
+        fillHeight
         renderHeader={(actions) => <SpaceKanbanPageHeader navigation={props.navigation} actions={actions} />}
         tasks={props.tasks}
         statuses={props.statuses}
@@ -100,7 +101,7 @@ interface SpaceKanbanPageHeaderProps {
 function SpaceKanbanPageHeader({ navigation, actions }: SpaceKanbanPageHeaderProps) {
   const { t } = useTranslation();
   return (
-    <header className="mt-4 px-4 border-b border-surface-outline pb-3 flex items-center gap-3">
+    <header className="mt-4 px-4 border-b border-surface-outline pb-3 flex shrink-0 items-center gap-3">
       <IconLayoutKanban size={38} className="rounded-lg bg-blue-50 dark:bg-blue-900 p-1" />
 
       <div className="min-w-0 flex-1">
