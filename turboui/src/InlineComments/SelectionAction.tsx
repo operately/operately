@@ -35,9 +35,14 @@ export function SelectionAction({
     let disposed = false;
     const cleanup = autoUpdate(reference, element, () => {
       void computePosition(reference, element, {
-        strategy: "fixed",
+        strategy: "absolute",
         placement: mobile ? "bottom" : "right",
-        middleware: [offset(mobile ? 8 : 4), ...(mobile ? [flip()] : []), shift({ padding: 8 })],
+        middleware: [
+          offset(mobile ? 8 : 4),
+          ...(mobile ? [flip()] : []),
+          // Constrain horizontally, but let the action scroll vertically with the selection.
+          shift({ padding: 8, mainAxis: mobile, crossAxis: !mobile }),
+        ],
       }).then(({ x, y }) => {
         if (!disposed) Object.assign(element.style, { left: `${x}px`, top: `${y}px`, visibility: "visible" });
       });
@@ -52,7 +57,7 @@ export function SelectionAction({
   return (
     <div
       ref={ref}
-      className="fixed z-40"
+      className="absolute z-40"
       style={{ visibility: "hidden" }}
       onPointerDown={(event) => event.preventDefault()}
     >
