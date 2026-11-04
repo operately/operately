@@ -253,14 +253,17 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     assert body =~ "Beta Company"
   end
 
-  test "includes a localhost warning for localhost redirect URIs", %{conn: conn, client: client} do
+  test "renders consent without a warning for localhost redirect URIs", %{conn: conn, client: client} do
     account = account_fixture()
     company = company_fixture(%{company_name: "Local Company"}, account)
     conn = log_in_account(conn, account, company)
 
     conn = get(conn, "/oauth/authorize", authorize_params(client, "http://localhost:4567/callback"))
 
-    assert html_response(conn, 200) =~ "localhost redirect URI"
+    body = html_response(conn, 200)
+    assert body =~ "Local Company"
+    assert body =~ "View workspace data"
+    refute body =~ ~s(class="warning")
   end
 
   test "approves authorization and exchanges a code for tokens", %{conn: conn, client: client} do

@@ -3291,7 +3291,6 @@
   "This change applies to all your companies. Your existing sessions remain signed in.": "Esta alteração se aplica a todas as suas empresas. Suas sessões existentes continuam conectadas.",
   "This client can view workspace data.": "Este cliente pode visualizar dados do ambiente de trabalho.",
   "This client can view, create, update, delete, and archive workspace content.": "Este cliente pode visualizar, criar, atualizar, excluir e arquivar conteúdo no seu ambiente de trabalho.",
-  "This client uses a localhost redirect URI. Confirm that you trust the local application before approving.": "Este cliente usa uma URI de redirecionamento localhost. Confirme que você confia no aplicativo local antes de aprovar.",
   "This code has expired. Request a new code to continue.": "Este código expirou. Solicite um novo código para continuar.",
   "This comment will notify {{first}} and {{second}}": "Este comentário notificará {{first}} e {{second}}",
   "This comment will notify {{first}}, {{second}}, and 1 other._many": "Este comentário notificará {{first}}, {{second}} e mais {{count}} pessoas.",
