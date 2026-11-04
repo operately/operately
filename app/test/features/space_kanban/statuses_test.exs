@@ -21,7 +21,8 @@ defmodule Operately.Features.SpaceKanban.StatusesTest do
     |> Steps.open_task_slide_in(:task)
     |> Steps.change_task_status(prev_status: qa_label, next_status: "Done")
     |> Steps.close_task_slide_in(:task)
-    |> Steps.delete_status(value: qa_value)
+    |> Steps.delete_empty_status(value: qa_value)
+    |> Steps.visit_kanban_page()
     |> Steps.assert_status_absent(value: qa_value)
   end
 
@@ -46,17 +47,20 @@ defmodule Operately.Features.SpaceKanban.StatusesTest do
 
     ctx
     |> Steps.visit_kanban_page()
-    |> Steps.open_status_delete_modal(solo_value)
+    |> Steps.request_status_deletion(solo_value)
     |> Steps.assert_delete_status_blocked()
   end
 
   feature "delete a status with tasks by selecting a replacement", ctx do
-    primary_status = hd(ctx.status_values)
-    replacement_status = Enum.at(ctx.status_values, 1)
+    primary_status = Enum.at(ctx.status_values, 1)
+    replacement_status = hd(ctx.status_values)
 
     ctx
     |> Steps.visit_kanban_page()
-    |> Steps.open_status_delete_modal(primary_status)
+    |> Steps.open_task_slide_in(:task)
+    |> Steps.change_task_status(prev_status: "Not started", next_status: "In progress")
+    |> Steps.close_task_slide_in(:task)
+    |> Steps.request_status_deletion(primary_status)
     |> Steps.select_deleted_status_replacement(replacement_value: replacement_status)
     |> UI.click(testid: "delete-status-confirm")
     |> Steps.assert_task_in_status(task_key: :task, status_value: replacement_status)
