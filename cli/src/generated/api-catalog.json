@@ -24424,7 +24424,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 255,
+  "endpoint_count": 256,
   "endpoints": [
     {
       "name": "create",
@@ -32269,6 +32269,33 @@
       "method": "GET",
       "namespace": "people",
       "docstring": "Lists assignments for the current user."
+    },
+    {
+      "name": "list_my_tasks",
+      "type": "query",
+      "path": "/api/external/v1/people/list_my_tasks",
+      "handler": "OperatelyWeb.Api.People.ListMyTasks",
+      "outputs": [
+        {
+          "default": null,
+          "name": "tasks",
+          "type": {
+            "item": {
+              "name": "task",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [],
+      "full_name": "people/list_my_tasks",
+      "method": "GET",
+      "namespace": "people",
+      "docstring": "Lists the current person's open assigned tasks."
     },
     {
       "name": "list_possible_managers",
@@ -41567,7 +41594,7 @@
       "docstring": "Updates the status of a task."
     }
   ],
-  "query_count": 76,
+  "query_count": 77,
   "mutation_count": 179,
   "schema_version": 1
 }

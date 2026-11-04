@@ -11,6 +11,8 @@ defmodule Operately.Mcp.ToolsTest do
     "get_me",
     "list_people",
     "get_person",
+    "list_assignments",
+    "list_my_tasks",
     "list_spaces",
     "get_space",
     "list_projects",

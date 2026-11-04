@@ -233,6 +233,7 @@ defmodule OperatelyWeb.Api do
         query(:get_account, OperatelyWeb.Api.People.GetAccount)
         query(:get_me, OperatelyWeb.Api.People.GetMe)
         query(:list_assignments, OperatelyWeb.Api.People.ListAssignments)
+        query(:list_my_tasks, OperatelyWeb.Api.People.ListMyTasks)
         query(:get_assignments_count, OperatelyWeb.Api.People.GetAssignmentsCount)
         query(:list, OperatelyWeb.Api.People.List)
         query(:get, OperatelyWeb.Api.People.Get)
