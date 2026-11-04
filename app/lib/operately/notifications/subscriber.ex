@@ -124,7 +124,7 @@ defmodule Operately.Notifications.Subscriber do
       end)
 
     potential_subs =
-      Enum.into(Operately.ResourceHubs.Parent.potential_subscribers(resource_hub_child.resource_hub), %{}, fn sub ->
+      Enum.into(Operately.ResourceHubs.Parent.preloaded_potential_subscribers(resource_hub_child.resource_hub), %{}, fn sub ->
         {sub.person.id, sub}
       end)
 

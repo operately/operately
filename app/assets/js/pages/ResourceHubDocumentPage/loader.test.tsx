@@ -19,6 +19,8 @@ const document = {
   content: "",
   resourceHubId: "hub1",
   parentFolderId: "folder1",
+  parentFolder: { id: "folder1", name: "Folder" },
+  resourceHub: { id: "hub1" },
   state: "published",
 };
 const response = {
@@ -65,7 +67,7 @@ it("caches document data while refreshing threads on route re-entry", async () =
   await visit();
   renderHook(useLoadedData, { initialProps: undefined, wrapper });
 
-  expect(axios.get).toHaveBeenCalledTimes(6);
+  expect(axios.get).toHaveBeenCalledTimes(4);
   expect(axios.get).not.toHaveBeenCalledWith(expect.stringContaining("/get_company"), expect.anything());
 });
 
@@ -95,22 +97,24 @@ it("guards unavailable cached document data", async () => {
   }
 });
 
-it("rejects a document without a resource hub before requesting its parents", async () => {
-  jest.mocked(axios.get).mockResolvedValue({ data: { ...response, document: { ...document, resourceHubId: null } } });
+it("rejects a document without its included resource hub", async () => {
+  jest.mocked(axios.get).mockResolvedValue({ data: { ...response, document: { ...document, resourceHub: null } } });
 
   await expect(visit()).rejects.toThrow(/resource hub/);
   expect(axios.get).not.toHaveBeenCalledWith(expect.stringContaining("/resource_hubs/"), expect.anything());
 });
 
 it("does not fetch a folder for a document at the hub root", async () => {
-  jest.mocked(axios.get).mockResolvedValue({ data: { ...response, document: { ...document, parentFolderId: null } } });
+  jest
+    .mocked(axios.get)
+    .mockResolvedValue({ data: { ...response, document: { ...document, parentFolderId: null, parentFolder: null } } });
   await visit();
 
   const { result } = renderHook(useLoadedData, { initialProps: undefined, wrapper });
 
   expect(result.current.folder).toBeUndefined();
   expect(result.current.isCurrentUserSubscribed).toBe(false);
-  expect(axios.get).toHaveBeenCalledTimes(4);
+  expect(axios.get).toHaveBeenCalledTimes(3);
 });
 
 it("starts independent queries before the document request finishes", async () => {
@@ -158,18 +162,6 @@ it("refreshes the page's queries while preserving unrelated cached documents", a
   expect(queryClient.getQueryState(unrelatedKey)?.isInvalidated).toBe(false);
 });
 
-it("guards unavailable cached hub data", async () => {
-  const { hubInput } = await visit();
-  queryClient.setQueryData(Api.resource_hubs.getQueryKey(hubInput), { resourceHub: null });
-  const log = jest.spyOn(console, "error").mockImplementation(() => {});
-
-  try {
-    expect(() => renderHook(useLoadedData, { initialProps: undefined, wrapper })).toThrow(/resource hub/);
-  } finally {
-    log.mockRestore();
-  }
-});
-
 it("waits for inline comments before completing the loader", async () => {
   let finishThreads: (value: { data: { threads: { id: string }[] } }) => void = () => {};
   jest.mocked(axios.get).mockImplementation((url) => {
@@ -193,6 +185,7 @@ it("waits for inline comments before completing the loader", async () => {
   expect(finished).not.toHaveBeenCalled();
   finishThreads({ data: { threads: [{ id: "thread1" }] } });
   await pending;
+  expect(axios.get).not.toHaveBeenCalledWith(expect.stringContaining("/resource_hubs/"), expect.anything());
   expect(
     queryClient.getQueryData(
       Api.inline_threads.listQueryKey({

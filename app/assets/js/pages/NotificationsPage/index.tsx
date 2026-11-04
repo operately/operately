@@ -146,12 +146,11 @@ function NotificationItemWithActivity({
   const testId = `notification-item-${activity.action}`;
 
   const goToActivity = useNavigateTo(ActivityHandler.pagePath(paths, activity));
-  const { mutateAsync: mark } = Notifications.useMarkNotificationRead();
 
-  const clickHandler = React.useCallback(async () => {
-    await mark({ id: notification.id });
+  const clickHandler = React.useCallback(() => {
+    onMarkAsRead(notification);
     goToActivity();
-  }, [goToActivity, mark, notification.id]);
+  }, [goToActivity, onMarkAsRead, notification]);
 
   return (
     <NotificationRow
