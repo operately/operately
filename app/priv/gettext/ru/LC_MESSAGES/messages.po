@@ -9950,6 +9950,7 @@ msgstr "Документы"
 #: ../turboui/src/TemplateProjectPage/DocsAndFiles.tsx:135
 #: ../turboui/src/TemplateProjectPage/DocsAndFiles.tsx:145
 #: ../turboui/src/TemplateProjectPage/TemplateMoveResourceModal.tsx:92
+#: assets/js/features/SpaceTools/ResourceHubs/RegularState.tsx:28
 #: assets/js/features/SpaceTools/ResourceHubs/ZeroState.tsx:20
 msgid "Documents & Files"
 msgstr "Документы и файлы"
