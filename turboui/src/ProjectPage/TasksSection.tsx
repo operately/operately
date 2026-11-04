@@ -83,6 +83,7 @@ function LoadedTasksSection({ state }: { state: ProjectPage.State }) {
         onCreateMilestone={state.onMilestoneCreate}
         canManageStatuses={canEdit}
         tasks={tasks}
+        statusUsageTasks={state.tasks}
         statuses={state.statuses}
         kanbanState={state.kanbanState}
         onTaskKanbanChange={state.onTaskKanbanChange}

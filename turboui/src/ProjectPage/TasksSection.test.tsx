@@ -4,6 +4,11 @@ import "@testing-library/jest-dom";
 import { TasksSection } from "./TasksSection";
 import type { ProjectPage } from ".";
 
+let mockFilterMilestone = false;
+beforeEach(() => {
+  mockFilterMilestone = false;
+});
+
 jest.mock("../TaskBoard", () => ({
   TaskBoard: ({ tasks }) => (
     <div data-testid="task-list">
@@ -12,8 +17,14 @@ jest.mock("../TaskBoard", () => ({
       ))}
     </div>
   ),
-  TasksBoardView: () => <div data-testid="task-board" />,
-  useMilestoneFilter: ({ tasks }) => ({ tasks, selectedMilestone: null, onMilestoneFilterChange: jest.fn() }),
+  TasksBoardView: ({ tasks, statusUsageTasks }) => (
+    <div data-testid="task-board" data-visible-count={tasks.length} data-usage-count={statusUsageTasks.length} />
+  ),
+  useMilestoneFilter: ({ tasks }) => ({
+    tasks: mockFilterMilestone ? tasks.filter((task) => task.milestone?.id === "selected") : tasks,
+    selectedMilestone: null,
+    onMilestoneFilterChange: jest.fn(),
+  }),
   useTaskDisplayMode: ({ tasksView }) => [tasksView, jest.fn()],
 }));
 const state = { tasks: [], milestones: [], permissions: {}, tasksView: "list" } as unknown as ProjectPage.State;
@@ -41,4 +52,22 @@ it("shows retry after failure and preserves existing tasks during a background f
     <TasksSection state={{ ...props, tasks: [{ id: "task-1", title: "Existing task" } as ProjectPage.Task] }} />,
   );
   expect(screen.getByText("Existing task")).toBeInTheDocument();
+});
+
+it("passes the full task list for status usage when the board is filtered", () => {
+  mockFilterMilestone = true;
+  const tasks: ProjectPage.Task[] = [
+    {
+      id: "hidden-task",
+      title: "Hidden task",
+      description: null,
+      link: "#",
+      milestone: null,
+      dueDate: null,
+      type: "project",
+    },
+  ];
+  render(<TasksSection state={{ ...state, tasks, tasksView: "board" }} />);
+  expect(screen.getByTestId("task-board")).toHaveAttribute("data-visible-count", "0");
+  expect(screen.getByTestId("task-board")).toHaveAttribute("data-usage-count", "1");
 });
