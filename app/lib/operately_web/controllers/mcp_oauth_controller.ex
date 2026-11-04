@@ -180,7 +180,6 @@ defmodule OperatelyWeb.McpOAuthController do
       request: request,
       company: company,
       hidden_fields: Map.put(hidden_fields(request), "selected_company_id", company.id),
-      localhost_warning: Mcp.localhost_redirect?(request.redirect_uri),
       client_host: client_host(request),
       redirect_host: redirect_host(request.redirect_uri)
     )

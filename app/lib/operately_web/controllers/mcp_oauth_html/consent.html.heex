@@ -131,12 +131,6 @@
       <._logo />
       <p class="description"><%= client_sentence(gettext("<client/> is requesting access to your Operately workspace through MCP."), @request.client.client_name) %></p>
 
-      <%= if @localhost_warning do %>
-        <div class="warning">
-          <%= gettext("This client uses a localhost redirect URI. Confirm that you trust the local application before approving.") %>
-        </div>
-      <% end %>
-
       <%= if "mcp:write" in @request.scopes do %>
         <div class="warning">
           <%= gettext("Write access lets this client create, update, delete, and archive content in your workspace.") %>
