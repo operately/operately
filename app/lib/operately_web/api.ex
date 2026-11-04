@@ -360,6 +360,10 @@ defmodule OperatelyWeb.Api do
 
   defmacro internal_endpoints do
     quote do
+      namespace :resource_hubs do
+        mutation :rename, OperatelyWeb.Api.ResourceHubs.Rename
+      end
+
       query :get_language, OperatelyWeb.Api.Queries.GetLanguage
 
       namespace :inline_threads do

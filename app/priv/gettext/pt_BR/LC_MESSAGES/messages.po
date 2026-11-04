@@ -2239,6 +2239,16 @@ msgid "%{author} removed you from the task %{name}."
 msgstr "%{author} removeu você da tarefa %{name}."
 
 #.frontend
+#: assets/js/features/activities/ResourceHubRenamed/index.tsx:23
+msgid "%{author} renamed <collection>%{collectionName}</collection> in the <parent>%{parentName}</parent> space."
+msgstr "%{author} renomeou <collection>%{collectionName}</collection> no espaço <parent>%{parentName}</parent>."
+
+#.frontend
+#: assets/js/features/activities/ResourceHubRenamed/index.tsx:26
+msgid "%{author} renamed <collection>%{collectionName}</collection>."
+msgstr "%{author} renomeou <collection>%{collectionName}</collection>."
+
+#.frontend
 #: assets/js/features/activities/GoalNameUpdating/index.tsx:39
 msgid "%{author} renamed <goal>%{goalName}</goal>"
 msgstr "%{author} renomeou <goal>%{goalName}</goal>"
@@ -5031,7 +5041,7 @@ msgstr "<icon/>Leitura confirmada por %{fullName}"
 
 #.frontend
 #: ../turboui/src/StatusCustomization/index.tsx:164
-#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:245
+#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:268
 msgid "<icon/>Add status"
 msgstr "<icon/>Adicionar status"
 
@@ -5233,7 +5243,7 @@ msgid "API tokens"
 msgstr "Tokens de API"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:177
+#: ../turboui/src/ProfilePage/index.tsx:179
 msgid "About"
 msgstr "Sobre"
 
@@ -5417,7 +5427,7 @@ msgstr "Trabalho em andamento"
 #.frontend
 #: ../turboui/src/GoalPage/Activity.tsx:9
 #: ../turboui/src/GoalPage/index.tsx:256
-#: ../turboui/src/ProfilePage/index.tsx:176
+#: ../turboui/src/ProfilePage/index.tsx:178
 #: ../turboui/src/ProjectPage/index.tsx:345
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:57
 #: assets/js/pages/SpacePage/page.tsx:108
@@ -5465,7 +5475,7 @@ msgstr "A atividade dos seus espaços, objetivos e projetos aparecerá aqui."
 #: ../turboui/src/GoalPage/Targets.tsx:19
 #: ../turboui/src/ResourceHub/AddFilesButton.tsx:38
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:107
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:263
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:266
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
 #: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:210
@@ -5645,8 +5655,8 @@ msgid "Add column right"
 msgstr "Adicionar coluna à direita"
 
 #.frontend
-#: ../turboui/src/InlineComments/SelectionAction.tsx:61
-#: ../turboui/src/InlineComments/SelectionAction.tsx:68
+#: ../turboui/src/InlineComments/SelectionAction.tsx:66
+#: ../turboui/src/InlineComments/SelectionAction.tsx:73
 msgid "Add comment"
 msgstr "Adicionar comentário"
 
@@ -5727,8 +5737,8 @@ msgid "Add milestones to track key deliverables and due dates"
 msgstr "Adicione marcos para acompanhar entregas importantes e datas de conclusão"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:302
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:306
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:305
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:309
 msgid "Add new item"
 msgstr "Adicionar novo item"
 
@@ -5816,11 +5826,11 @@ msgstr "Adicione metas para acompanhar o progresso quantitativo com números."
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:141
 #: ../turboui/src/MilestonePage/components/ProjectTasksSection.tsx:108
 #: ../turboui/src/MilestonePage/components/TemplateTasksSection.tsx:107
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:290
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:293
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:83
 #: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:249
 #: ../turboui/src/TaskBoard/components/index.tsx:382
-#: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:540
+#: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:544
 msgid "Add task"
 msgstr "Adicionar tarefa"
 
@@ -5836,7 +5846,7 @@ msgid "Add the first KPI"
 msgstr "Adicionar o primeiro KPI"
 
 #.frontend
-#: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:369
+#: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:373
 msgid "Add the first task to define the work."
 msgstr "Adicione a primeira tarefa para definir o trabalho."
 
@@ -6490,12 +6500,12 @@ msgid "Assign task"
 msgstr "Atribuir tarefa"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:157
+#: ../turboui/src/ProfilePage/index.tsx:159
 msgid "Assigned"
 msgstr "Atribuídos"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:213
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:216
 msgid "Assigned On"
 msgstr "Atribuído em"
 
@@ -6505,7 +6515,7 @@ msgid "Assigned goals and projects will appear here."
 msgstr "Os objetivos e projetos atribuídos aparecerão aqui."
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:101
+#: ../turboui/src/ProfilePage/index.tsx:102
 msgid "Assigned tasks will appear here."
 msgstr "As tarefas atribuídas aparecerão aqui."
 
@@ -6581,8 +6591,8 @@ msgstr "Pelo menos 12 caracteres"
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:13
 #: lib/operately_web/api/project_templates/helpers.ex:25
-#: lib/operately_web/api/projects.ex:792
-#: lib/operately_web/api/spaces.ex:363
+#: lib/operately_web/api/projects.ex:793
+#: lib/operately_web/api/spaces.ex:364
 msgid "At least one task status is required"
 msgstr "É necessário pelo menos um status de tarefa"
 
@@ -7144,6 +7154,7 @@ msgstr "Não pode ser a mesma pessoa que o champion"
 #: ../turboui/src/ResourceHub/nodeMenus/CopyResource.tsx:50
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:179
 #: ../turboui/src/ResourceHub/nodeMenus/MoveResource.tsx:95
+#: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:56
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:111
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:149
 #: ../turboui/src/SchedulePosting/ScheduleModal.tsx:96
@@ -7157,7 +7168,7 @@ msgstr "Não pode ser a mesma pessoa que o champion"
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:98
 #: ../turboui/src/StatusCustomization/index.tsx:205
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:135
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:273
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:276
 #: ../turboui/src/TaskBoard/KanbanView/DeleteStatusModal.tsx:92
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:100
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:109
@@ -7301,7 +7312,7 @@ msgstr "Ações da célula"
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:163
 #: ../turboui/src/TemplateProjectPage/People.tsx:37
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:27
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:222
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:225
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:235
 #: assets/js/pages/ProjectAddPage/page.tsx:182
 #: lib/operately/md/goal.ex:130
@@ -8300,7 +8311,7 @@ msgstr "Concluir “%{name}”?"
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:124
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:144
 #: ../turboui/src/MilestonePage/index.tsx:363
-#: ../turboui/src/ProfilePage/index.tsx:172
+#: ../turboui/src/ProfilePage/index.tsx:174
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:276
 #: ../turboui/src/SearchPage/index.tsx:340
 #: ../turboui/src/StatusBadge/index.tsx:111
@@ -8322,7 +8333,7 @@ msgstr "Concluído em"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:97
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:213
 msgid "Completed On"
 msgstr "Concluído em"
 
@@ -8756,13 +8767,18 @@ msgid "Could not delete feed item"
 msgstr "Não foi possível excluir o item do feed"
 
 #.frontend
+#: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:55
+msgid "Could not rename Docs & Files. Try again."
+msgstr "Não foi possível renomear Docs & Arquivos. Tente novamente."
+
+#.frontend
 #: ../turboui/src/AccountSettingsPage/index.tsx:42
 #: ../turboui/src/AccountSettingsPage/index.tsx:88
 msgid "Could not save all preferences. Please try again."
 msgstr "Não foi possível salvar todas as preferências. Tente novamente."
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:74
+#: ../turboui/src/ProfilePage/index.tsx:75
 msgid "Could not save task order. Please try again."
 msgstr "Não foi possível salvar a ordem das tarefas. Tente novamente."
 
@@ -9326,7 +9342,7 @@ msgstr "Desativar conta"
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:67
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:291
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:517
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:336
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:339
 #: ../turboui/src/TaskPage/PageOptions.tsx:28
 #: ../turboui/src/TaskPage/Sidebar.tsx:465
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:81
@@ -9911,7 +9927,7 @@ msgstr "Documento"
 #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:62
 #: assets/js/models/projectTemplates/pageNavigation.ts:19
 #: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
-#: assets/js/pages/ResourceHubPage/page.tsx:32
+#: assets/js/pages/ResourceHubPage/page.tsx:37
 msgid "Docs & Files"
 msgstr "Docs & Arquivos"
 
@@ -9967,7 +9983,6 @@ msgstr "Documentos"
 #: ../turboui/src/TemplateProjectPage/DocsAndFiles.tsx:135
 #: ../turboui/src/TemplateProjectPage/DocsAndFiles.tsx:145
 #: ../turboui/src/TemplateProjectPage/TemplateMoveResourceModal.tsx:92
-#: assets/js/features/SpaceTools/ResourceHubs/ZeroState.tsx:20
 msgid "Documents & Files"
 msgstr "Docs & Arquivos"
 
@@ -10105,7 +10120,7 @@ msgstr "Prazo: <date/>"
 #: ../turboui/src/TaskPage/Sidebar.tsx:74
 #: ../turboui/src/TaskPage/Sidebar.tsx:257
 #: ../turboui/src/TaskPage/Sidebar.tsx:332
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:210
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:213
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
 #: lib/operately/md/goal/timeframe.ex:10
 #: lib/operately/md/project/timeframe.ex:11
@@ -10206,7 +10221,7 @@ msgstr "Versão anterior"
 #: ../turboui/src/Checklist/index.tsx:520
 #: ../turboui/src/CommentSection/CommentItem.tsx:271
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:68
-#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:254
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:256
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
@@ -10216,7 +10231,7 @@ msgstr "Versão anterior"
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
 #: ../turboui/src/SchedulePosting/ScheduleNotice.tsx:33
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:509
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:328
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:331
 #: assets/js/features/activities/GoalDiscussionCreation/index.tsx:62
 #: assets/js/pages/DiscussionPage/page.tsx:201
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:123
@@ -10606,7 +10621,7 @@ msgid "Employee Handbook"
 msgstr "Manual do colaborador"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:258
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:261
 msgid "Empty when all targets/milestones are complete or none are defined."
 msgstr "Fica vazio quando todas as metas/marcos estão concluídos ou nenhum foi definido."
 
@@ -10725,7 +10740,8 @@ msgid "Enter zero or a positive number of days."
 msgstr "Insira zero ou um número positivo de dias."
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:74
+#: ../turboui/src/ProfilePage/index.tsx:75
+#: ../turboui/src/WorkMap/components/TableRow/StatusCell.tsx:38
 #: assets/js/models/comments/useDeleteComment.tsx:34
 #: assets/js/models/comments/useEditComment.tsx:36
 #: assets/js/models/comments/useOptimisticCommentUpdates.ts:124
@@ -10776,11 +10792,12 @@ msgstr "Insira zero ou um número positivo de dias."
 #: assets/js/pages/HomePage/index.tsx:74
 #: assets/js/pages/MilestonePage/index.tsx:74
 #: assets/js/pages/MilestonePage/useComments.tsx:78
-#: assets/js/pages/ProfilePage/index.tsx:77
+#: assets/js/pages/ProfilePage/index.tsx:89
 #: assets/js/pages/ProjectPage/index.tsx:215
 #: assets/js/pages/ProjectPage/index.tsx:296
 #: assets/js/pages/ProjectPage/index.tsx:797
 #: assets/js/pages/ProjectPage/index.tsx:826
+#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:67
 #: assets/js/pages/SpaceKpisPage/page.tsx:102
 #: assets/js/pages/SpacePage/page.tsx:119
 #: assets/js/pages/TaskPage/index.tsx:84
@@ -10791,7 +10808,6 @@ msgstr "Insira zero ou um número positivo de dias."
 #: assets/js/pages/TaskPage/index.tsx:140
 #: assets/js/pages/TaskPage/index.tsx:170
 #: assets/js/pages/TaskPage/index.tsx:382
-#: ../turboui/src/WorkMap/components/TableRow/StatusCell.tsx:27
 msgid "Error"
 msgstr "Erro"
 
@@ -10827,6 +10843,8 @@ msgstr "Esc"
 
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:55
+#: lib/operately_web/api/projects.ex:1278
+#: lib/operately_web/api/spaces.ex:513
 msgid "Every deleted task status in use requires a replacement"
 msgstr "Cada status de tarefa em uso que for excluído precisa de um substituto"
 
@@ -11667,14 +11685,15 @@ msgid "Failed to update task status"
 msgstr "Falha ao atualizar o status da tarefa"
 
 #.frontend
+#: ../turboui/src/WorkMap/components/TableRow/StatusCell.tsx:38
 #: assets/js/pages/TaskPage/index.tsx:93
-#: ../turboui/src/WorkMap/components/TableRow/StatusCell.tsx:27
 msgid "Failed to update task status."
 msgstr "Falha ao atualizar o status da tarefa."
 
 #.frontend
 #: assets/js/models/projects/useTaskStatuses.tsx:67
 #: assets/js/models/projects/useTaskStatuses.tsx:73
+#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:67
 msgid "Failed to update task statuses"
 msgstr "Falha ao atualizar os status das tarefas"
 
@@ -11858,12 +11877,12 @@ msgid "For email sign-in, use your new email and existing password after confirm
 msgstr "Para entrar por e-mail após a confirmação, use seu novo e-mail e sua senha atual. Se você ainda não definiu uma senha, use “Esqueceu sua senha?” ao entrar."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:256
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:259
 msgid "For goals: The first target or checklist item that hasn't been completed yet"
 msgstr "Para objetivos: a primeira meta ou item da checklist que ainda não foi concluído"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:257
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:260
 msgid "For projects: The upcoming milestone (by due date)"
 msgstr "Para projetos: o próximo marco (pela data de conclusão)"
 
@@ -12303,7 +12322,7 @@ msgid "History"
 msgstr "Histórico"
 
 #.frontend
-#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:260
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:262
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:93
 #: assets/js/pages/ResourceHubDocumentPage/Options.tsx:60
 #: assets/js/pages/ResourceHubDocumentVersionComparisonPage/navigation.tsx:18
@@ -12723,7 +12742,7 @@ msgid "Invalid token"
 msgstr "Token inválido"
 
 #.elixir
-#: lib/operately_web/api/spaces.ex:496
+#: lib/operately_web/api/spaces.ex:507
 msgid "Invalid tools"
 msgstr "Ferramentas inválidas"
 
@@ -13490,7 +13509,7 @@ msgstr "Carregando tarefas"
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:129
 #: ../turboui/src/SelectLocalization/index.ts:56
 #: assets/js/pages/GoalPage/index.tsx:452
-#: assets/js/pages/ProfilePage/index.tsx:76
+#: assets/js/pages/ProfilePage/index.tsx:88
 #: assets/js/pages/SpacePage/page.tsx:118
 msgid "Loading..."
 msgstr "Carregando..."
@@ -13893,8 +13912,8 @@ msgstr "Marco não excluído"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:49
-#: lib/operately_web/api/projects.ex:646
-#: lib/operately_web/api/projects.ex:661
+#: lib/operately_web/api/projects.ex:647
+#: lib/operately_web/api/projects.ex:662
 #: lib/operately_web/api/projects/milestones.ex:291
 #: lib/operately_web/api/tasks.ex:685
 msgid "Milestone not found"
@@ -14160,7 +14179,7 @@ msgid "My Account"
 msgstr "Minha conta"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:329
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:332
 msgid "My Role"
 msgstr "Minha função"
 
@@ -14197,11 +14216,12 @@ msgstr "Pontuação NPS"
 #: ../turboui/src/ProfileEditPage/index.tsx:99
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:46
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:176
+#: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:53
 #: ../turboui/src/SortControl/index.tsx:18
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:71
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:120
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:198
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:201
 #: assets/js/pages/SpaceEditPage/index.tsx:51
 msgid "Name"
 msgstr "Nome"
@@ -14226,12 +14246,15 @@ msgstr "O nome não pode ficar em branco"
 #~ msgid "Name is not valid"
 #~ msgstr "O nome não é válido"
 
+#.elixir
 #.frontend
 #: ../turboui/src/ResourceHub/AddFileWidget.tsx:68
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:25
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:154
+#: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:25
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:39
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
+#: lib/operately_web/api/resource_hubs/rename.ex:37
 msgid "Name is required"
 msgstr "O nome é obrigatório"
 
@@ -14427,7 +14450,7 @@ msgstr "Nova URL de convite"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/index.tsx:487
-#: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:297
+#: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:301
 msgid "New milestone"
 msgstr "Novo marco"
 
@@ -14458,7 +14481,7 @@ msgstr "Novo espaço"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/index.tsx:481
-#: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:294
+#: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:298
 msgid "New task"
 msgstr "Nova tarefa"
 
@@ -14489,7 +14512,7 @@ msgstr "Próximo mês"
 
 #.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:49
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:265
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:268
 msgid "Next step"
 msgstr "Próxima etapa"
 
@@ -14581,7 +14604,7 @@ msgid "No activity yet"
 msgstr "Nenhuma atividade ainda"
 
 #.frontend
-#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:187
+#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:203
 msgid "No archived tasks."
 msgstr "Nenhuma tarefa arquivada."
 
@@ -14812,7 +14835,7 @@ msgstr "Nenhum membro listado."
 #: ../turboui/src/TaskBoard/components/index.tsx:371
 #: ../turboui/src/TaskCreationModal/index.tsx:326
 #: ../turboui/src/TaskPage/Sidebar.tsx:377
-#: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:348
+#: ../turboui/src/TemplateProjectPage/TaskBoard.tsx:352
 msgid "No milestone"
 msgstr "Sem marco"
 
@@ -15951,7 +15974,7 @@ msgid "Pause this project?"
 msgstr "Pausar este projeto?"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:168
+#: ../turboui/src/ProfilePage/index.tsx:170
 #: ../turboui/src/SearchPage/index.tsx:344
 #: ../turboui/src/SmallStatusIndicator/constants.ts:22
 #: ../turboui/src/StatusBadge/index.tsx:119
@@ -16619,14 +16642,14 @@ msgstr "Produtos"
 #.frontend
 #: ../turboui/src/AccountPage/index.tsx:49
 #: ../turboui/src/CompanyNavigation/User.tsx:48
-#: assets/js/pages/ProfilePage/index.tsx:45
+#: assets/js/pages/ProfilePage/index.tsx:56
 msgid "Profile"
 msgstr "Perfil"
 
 #.elixir
 #.frontend
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:115
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:204
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:207
 #: lib/operately/md/goal.ex:29
 #: lib/operately/md/goal.ex:98
 #: lib/operately/md/project.ex:319
@@ -16654,7 +16677,7 @@ msgstr "Progredindo conforme o planejado. Sem impedimentos."
 #: ../turboui/src/SearchPage/index.tsx:315
 #: ../turboui/src/TaskPage/MoveModal.tsx:66
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:219
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:222
 #: assets/js/features/activities/ProjectContributorsAddition/index.tsx:87
 #: lib/operately/md/milestone.ex:20
 #: lib/operately/md/task.ex:105
@@ -16760,10 +16783,10 @@ msgid "Project name cannot be empty"
 msgstr "O nome do projeto não pode ficar em branco"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:607
-#: lib/operately_web/api/projects.ex:622
-#: lib/operately_web/api/projects.ex:652
-#: lib/operately_web/api/projects.ex:687
+#: lib/operately_web/api/projects.ex:608
+#: lib/operately_web/api/projects.ex:623
+#: lib/operately_web/api/projects.ex:653
+#: lib/operately_web/api/projects.ex:688
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:282
 #: lib/operately_web/api/tasks.ex:637
@@ -17203,7 +17226,7 @@ msgid "Receive a daily email with your upcoming check-ins, reviews, and other wo
 msgstr "Receba um e-mail diário com seus próximos check-ins, revisões e outros trabalhos que precisam da sua atenção."
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:190
+#: ../turboui/src/ProfilePage/index.tsx:192
 msgid "Recent activity"
 msgstr "Atividade recente"
 
@@ -17477,6 +17500,7 @@ msgstr "Ao remover um marco, suas tarefas ficam no nível do projeto."
 #.frontend
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:99
 #: ../turboui/src/ResourceHubFolderPage/index.tsx:34
+#: ../turboui/src/ResourceHubPage/index.tsx:40
 #: ../turboui/src/TemplateProjectPage/TemplateResourceMenu.tsx:55
 msgid "Rename"
 msgstr "Renomear"
@@ -17485,6 +17509,11 @@ msgstr "Renomear"
 #: assets/js/pages/CompanyRenamePage/index.tsx:35
 msgid "Rename Company"
 msgstr "Renomear empresa"
+
+#.frontend
+#: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:50
+msgid "Rename Docs & Files"
+msgstr "Renomear Docs & Arquivos"
 
 #.frontend
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:173
@@ -17500,6 +17529,13 @@ msgstr "Renomear a empresa"
 #: assets/js/features/activities/ProjectRenamed/index.tsx:73
 msgid "Renamed %{oldName} to %{newName}"
 msgstr "Renomeou %{oldName} para %{newName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubRenamed/index.tsx:13
+#: assets/js/features/activities/ResourceHubRenamed/index.tsx:15
+#: assets/js/features/activities/ResourceHubRenamed/index.tsx:43
+msgid "Renamed Docs & Files"
+msgstr "Docs & Arquivos renomeados"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
@@ -17606,8 +17642,8 @@ msgid "Replacement"
 msgstr "Substituto"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:820
-#: lib/operately_web/api/spaces.ex:397
+#: lib/operately_web/api/projects.ex:831
+#: lib/operately_web/api/spaces.ex:408
 msgid "Replacement statuses must be existing statuses that are not being deleted"
 msgstr "Os status substitutos devem existir e não podem estar sendo excluídos"
 
@@ -18033,7 +18069,7 @@ msgid "Reviewer: Not Assigned"
 msgstr "Reviewer: Não atribuído"
 
 #.frontend
-#: ../turboui/src/ProfilePage/index.tsx:164
+#: ../turboui/src/ProfilePage/index.tsx:166
 msgid "Reviewing"
 msgstr "Em revisão"
 
@@ -18090,7 +18126,7 @@ msgid "Roadmap"
 msgstr "Próximos passos"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:329
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:332
 msgid "Role"
 msgstr "Função"
 
@@ -19099,7 +19135,7 @@ msgstr "Exibir indicador de atualização"
 #~ msgstr "Exibidos apenas nas prévias. Usar o Template cria um histórico vazio."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:255
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:258
 msgid "Shows what needs to happen next for this work to progress."
 msgstr "Mostra o que precisa acontecer a seguir para este trabalho avançar."
 
@@ -19359,7 +19395,7 @@ msgstr "Varredura da fonte"
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:424
 #: ../turboui/src/TaskPage/MoveModal.tsx:67
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:132
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:216
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:219
 #: assets/js/pages/ProjectAddPage/page.tsx:147
 #: lib/operately/md/goal.ex:30
 #: lib/operately/md/milestone.ex:21
@@ -19646,7 +19682,7 @@ msgstr "Estatísticas"
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:110
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:68
 #: ../turboui/src/TaskCreationModal/index.tsx:307
-#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:201
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:204
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:325
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:256
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:283
@@ -20082,10 +20118,10 @@ msgid "Task not deleted"
 msgstr "Tarefa não excluída"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:616
-#: lib/operately_web/api/projects.ex:631
+#: lib/operately_web/api/projects.ex:617
+#: lib/operately_web/api/projects.ex:632
 #: lib/operately_web/api/projects/milestones.ex:303
-#: lib/operately_web/api/spaces.ex:313
+#: lib/operately_web/api/spaces.ex:314
 #: lib/operately_web/api/tasks.ex:658
 #: lib/operately_web/api/tasks.ex:670
 msgid "Task not found"
@@ -20143,11 +20179,11 @@ msgstr "A tarefa foi removida do marco \"%{title}\""
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:87
 #: ../turboui/src/MilestonePage/components/TaskSectionLayout.tsx:34
 #: ../turboui/src/MilestonePage/index.tsx:209
-#: ../turboui/src/ProfilePage/index.tsx:153
+#: ../turboui/src/ProfilePage/index.tsx:155
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:261
 #: ../turboui/src/SearchPage/filterOptions.ts:13
-#: ../turboui/src/SpaceKanbanPage/index.tsx:110
+#: ../turboui/src/SpaceKanbanPage/index.tsx:111
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:69
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:124
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:128
@@ -23369,7 +23405,7 @@ msgid "What kind of document is this?"
 msgstr "Que tipo de documento é este?"
 
 #.frontend
-#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:250
+#: ../turboui/src/TaskBoard/KanbanView/Column.tsx:253
 msgid "What needs to be done?"
 msgstr "O que precisa ser feito?"
 
