@@ -1,6 +1,6 @@
 defmodule Operately.Mcp do
   alias Operately.Billing
-  alias Operately.Mcp.{ClientMetadata, Grant, Resources, Session}
+  alias Operately.Mcp.{Grant, Resources, Session}
   alias Operately.Mcp.Operations.Authorization
   alias Operately.Mcp.Operations.Grant, as: GrantOps
   alias Operately.Mcp.Operations.Session, as: SessionOps
@@ -18,7 +18,6 @@ defmodule Operately.Mcp do
   defdelegate scope_label(scope), to: Resources
   defdelegate scopes_to_string(scopes), to: Resources
   defdelegate canonical_resource_uri, to: Resources
-  defdelegate localhost_redirect?(uri), to: ClientMetadata
 
   def protected_resource_metadata_url(:mcp), do: OperatelyWeb.Endpoint.url() <> "/.well-known/oauth-protected-resource/mcp"
 

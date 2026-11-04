@@ -3291,7 +3291,6 @@
   "This change applies to all your companies. Your existing sessions remain signed in.": "Изменение применяется ко всем вашим компаниям. В текущих сеансах вы останетесь в системе.",
   "This client can view workspace data.": "Этот клиент может просматривать данные о рабочем пространстве.",
   "This client can view, create, update, delete, and archive workspace content.": "Этот клиент может просматривать, создавать, изменять, удалять и архивировать содержимое вашей компании.",
-  "This client uses a localhost redirect URI. Confirm that you trust the local application before approving.": "Этот клиент использует URI перенаправления на localhost. Прежде чем разрешить доступ, убедитесь, что вы доверяете локальному приложению.",
   "This code has expired. Request a new code to continue.": "Срок действия кода истёк. Запросите новый код, чтобы продолжить.",
   "This comment will notify {{first}} and {{second}}": "Уведомление об этом комментарии получат {{first}} и {{second}}",
   "This comment will notify {{first}}, {{second}}, and 1 other._few": "Уведомление об этом комментарии получат {{first}}, {{second}} и ещё {{count}} человека.",

@@ -6480,7 +6480,7 @@ msgid "Author"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:221
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:203
 msgid "Authorization Error"
 msgstr ""
 
@@ -6490,7 +6490,7 @@ msgid "Authorization Header"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:198
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:192
 msgid "Authorize"
 msgstr ""
 
@@ -7636,12 +7636,12 @@ msgstr ""
 #.elixir
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:108
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:147
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:141
 msgid "Client"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:150
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:144
 msgid "Client Host"
 msgstr ""
 
@@ -7902,7 +7902,7 @@ msgstr ""
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:255
 #: lib/operately/md/space.ex:19
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:156
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:150
 msgid "Company"
 msgstr ""
 
@@ -9364,7 +9364,7 @@ msgid "Delivery time"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:197
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:191
 msgid "Deny"
 msgstr ""
 
@@ -12113,7 +12113,7 @@ msgid "Interval"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:215
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:201
 msgid "Invalid Client"
 msgstr ""
 
@@ -12128,22 +12128,22 @@ msgid "Invalid Link"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:195
 msgid "Invalid Redirect URI"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:218
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:202
 msgid "Invalid Request"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:196
 msgid "Invalid Resource"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:203
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
 msgid "Invalid Scope"
 msgstr ""
 
@@ -13499,7 +13499,7 @@ msgid "Missed"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:206
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:198
 msgid "Missing PKCE Challenge"
 msgstr ""
 
@@ -14808,7 +14808,7 @@ msgid "One of the snapshots could not be parsed with the current editor schema."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:258
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:240
 msgid "One or more redirect URIs are not allowed for this MCP server."
 msgstr ""
 
@@ -14889,8 +14889,8 @@ msgid "Only people you add to the space will be able to view it."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:212
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:261
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:243
 msgid "Only public OAuth clients using token_endpoint_auth_method=none are supported."
 msgstr ""
 
@@ -14910,7 +14910,7 @@ msgid "Only space members can view"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:209
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:199
 msgid "Only the S256 PKCE challenge method is supported."
 msgstr ""
 
@@ -15054,7 +15054,7 @@ msgid "Operately confirmation code: %{code}"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:221
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:203
 msgid "Operately couldn't complete this authorization request."
 msgstr ""
 
@@ -15536,8 +15536,8 @@ msgstr ""
 #.elixir
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:16
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:160
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:174
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:154
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:168
 msgid "Permissions"
 msgstr ""
 
@@ -16676,7 +16676,7 @@ msgid "Recorded updates"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:153
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:147
 msgid "Redirect Host"
 msgstr ""
 
@@ -19707,7 +19707,7 @@ msgid "The MCP client can no longer access your account."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:215
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:201
 msgid "The OAuth client is not registered for this Operately MCP server."
 msgstr ""
 
@@ -19732,17 +19732,17 @@ msgid "The assignee was removed. Previously it was %{old_assignee}"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:203
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
 msgid "The authorization request contains an unsupported scope."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:218
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:202
 msgid "The authorization request is missing required parameters or contains invalid values."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:196
 msgid "The authorization request must target this server's canonical MCP endpoint."
 msgstr ""
 
@@ -19782,17 +19782,17 @@ msgid "The check-in has been successfully deleted."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:235
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:217
 msgid "The client could not be authenticated."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:267
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:249
 msgid "The client registration request could not be completed."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:264
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:246
 msgid "The client registration request is missing required fields or contains invalid values."
 msgstr ""
 
@@ -20105,12 +20105,12 @@ msgid "The requested billing option is not currently available. Showing the clos
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:195
 msgid "The requested redirect URI is not registered for this client."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:236
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:218
 msgid "The requested resource does not match this MCP server."
 msgstr ""
 
@@ -20167,7 +20167,7 @@ msgid "The start date was set to <date/>."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:237
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:219
 msgid "The supplied authorization grant is invalid, expired, or has already been used."
 msgstr ""
 
@@ -20264,17 +20264,17 @@ msgid "The timeframe was changed to %{timeframe}."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:238
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:220
 msgid "The token endpoint only supports authorization_code and refresh_token grants."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:240
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:222
 msgid "The token request could not be completed."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:239
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:221
 msgid "The token request is missing required parameters or contains invalid values."
 msgstr ""
 
@@ -20417,7 +20417,7 @@ msgid "This authentication session has expired. Please start again from the CLI.
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:206
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:198
 msgid "This authorization request must include a PKCE code challenge."
 msgstr ""
 
@@ -20433,18 +20433,13 @@ msgid "This change applies to all your companies. Your existing sessions remain 
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:185
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:179
 msgid "This client can view workspace data."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:179
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:173
 msgid "This client can view, create, update, delete, and archive workspace content."
-msgstr ""
-
-#.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:136
-msgid "This client uses a localhost redirect URI. Confirm that you trust the local application before approving."
 msgstr ""
 
 #.frontend
@@ -21543,12 +21538,12 @@ msgid "Unsubscribe me"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:212
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
 msgid "Unsupported Client Authentication"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:209
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:199
 msgid "Unsupported PKCE Method"
 msgstr ""
 
@@ -22224,7 +22219,7 @@ msgstr ""
 #.elixir
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:275
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:178
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:172
 msgid "View and edit"
 msgstr ""
 
@@ -22262,7 +22257,7 @@ msgstr ""
 #.elixir
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:277
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:184
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:178
 msgid "View only"
 msgstr ""
 
@@ -22752,7 +22747,7 @@ msgid "Write a short test message"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:142
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:136
 msgid "Write access lets this client create, update, delete, and archive content in your workspace."
 msgstr ""
 
