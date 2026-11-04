@@ -92,6 +92,7 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
         selectedMilestone={selectedMilestone}
         selectedMilestoneId={selectedMilestoneId}
         boardTasks={boardTasks}
+        allBoardTasks={allBoardTasks}
         onMilestoneFilterChange={onMilestoneFilterChange}
       />
     );
@@ -116,6 +117,7 @@ function BoardView({
   selectedMilestone,
   selectedMilestoneId,
   boardTasks,
+  allBoardTasks,
   onMilestoneFilterChange,
 }: {
   props: TemplateProjectPage.Props;
@@ -126,6 +128,7 @@ function BoardView({
   selectedMilestone: Task["milestone"];
   selectedMilestoneId: string | null;
   boardTasks: Task[];
+  allBoardTasks: Task[];
   onMilestoneFilterChange: (milestoneId: string | null) => void;
 }) {
   const keys = React.useMemo(() => statusKeys(props.statuses), [props.statuses]);
@@ -181,6 +184,7 @@ function BoardView({
       }}
       canManageStatuses={canEdit && Boolean(props.onStatusesChange)}
       tasks={boardTasks}
+      statusUsageTasks={allBoardTasks}
       statuses={props.statuses}
       kanbanState={kanbanState}
       onTaskKanbanChange={props.onTaskKanbanChange}

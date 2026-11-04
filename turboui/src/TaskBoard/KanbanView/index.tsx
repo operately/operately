@@ -173,7 +173,18 @@ export function KanbanBoard(props: KanbanBoardProps) {
         onDeleteStatus={
           canReorderStatuses
             ? (status) => {
-                setDeletingStatus(status);
+                const isLastStatus = orderedStatuses.filter((s) => s.value !== "unknown-status").length <= 1;
+                const tasks = props.statusUsageTasks ?? props.tasks;
+                const isUsed = tasks.some((task) => statusFromTask(task, statusKeys) === status.value);
+
+                if (isLastStatus || isUsed) {
+                  setDeletingStatus(status);
+                } else {
+                  onStatusesChange?.({
+                    nextStatuses: sortStatuses(orderedStatuses.filter((s) => s.id !== status.id)),
+                    deletedStatusReplacements: {},
+                  });
+                }
               }
             : undefined
         }

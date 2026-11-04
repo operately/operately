@@ -265,6 +265,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.validate_status_replacements(inputs.task_statuses, replacements)
+      |> Steps.require_status_replacements(inputs.task_statuses, replacements)
       |> Steps.update_task_statuses(inputs.task_statuses)
       |> Steps.replace_deleted_task_statuses(replacements)
       |> Steps.commit()
@@ -799,6 +800,16 @@ defmodule OperatelyWeb.Api.Projects do
       end
     end
 
+    def require_status_replacements(multi, task_statuses, replacements) do
+      Ecto.Multi.run(multi, :require_status_replacements, fn _repo, %{project: project} ->
+        if Operately.Tasks.Status.replacement_required?(project, task_statuses, replacements) do
+          {:error, :replacement_required}
+        else
+          {:ok, :valid}
+        end
+      end)
+    end
+
     def validate_status_replacements(multi, _task_statuses, []), do: multi
 
     def validate_status_replacements(multi, task_statuses, replacements) do
@@ -1262,6 +1273,9 @@ defmodule OperatelyWeb.Api.Projects do
 
         {:error, :validate_task_statuses, message, _changes} ->
           {:error, :bad_request, message}
+
+        {:error, :require_status_replacements, :replacement_required, _changes} ->
+          {:error, :bad_request, gettext("Every deleted task status in use requires a replacement")}
 
         {:error, :validate_replacements, message, _changes} ->
           {:error, :bad_request, message}
