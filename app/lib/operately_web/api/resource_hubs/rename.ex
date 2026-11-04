@@ -1,5 +1,5 @@
 defmodule OperatelyWeb.Api.ResourceHubs.Rename do
-  @moduledoc "Renames a space-owned Docs & Files collection in the internal web API."
+  @moduledoc "Renames a space-owned Docs & Files collection."
 
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
