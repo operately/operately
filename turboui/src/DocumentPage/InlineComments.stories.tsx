@@ -7,6 +7,8 @@ import type { InlineThread, Person } from "../ApiTypes";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { IconEdit, IconHistory } from "../icons";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { CompanyNavigation } from "../CompanyNavigation";
+import { defaultProps as navigationProps } from "../CompanyNavigation/mockData";
 
 const meta = {
   title: "Pages/DocumentPage/InlineComments",
@@ -271,6 +273,18 @@ function Example({
 }
 
 export const Review: Story = { render: () => <Example /> };
+export const Scrollable: Story = {
+  render: () => (
+    <div className="flex flex-col h-screen">
+      <CompanyNavigation {...navigationProps} />
+      <div className="relative flex-1 min-h-0 overflow-y-auto" data-test-id="document-scroll-container">
+        <div className="min-h-[2000px]">
+          <Example />
+        </div>
+      </div>
+    </div>
+  ),
+};
 export const Empty: Story = { render: () => <Example empty /> };
 export const ReadOnly: Story = { render: () => <Example readOnly /> };
 export const Loading: Story = { render: () => <Example loading empty /> };
