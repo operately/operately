@@ -10569,6 +10569,7 @@ msgstr "Introduce cero o un número positivo de días."
 #: assets/js/pages/TaskPage/index.tsx:140
 #: assets/js/pages/TaskPage/index.tsx:170
 #: assets/js/pages/TaskPage/index.tsx:382
+#: ../turboui/src/WorkMap/components/TableRow/StatusCell.tsx:27
 msgid "Error"
 msgstr "Error"
 
@@ -11368,6 +11369,7 @@ msgstr "No se pudo actualizar el estado de la tarea"
 
 #.frontend
 #: assets/js/pages/TaskPage/index.tsx:93
+#: ../turboui/src/WorkMap/components/TableRow/StatusCell.tsx:27
 msgid "Failed to update task status."
 msgstr "No se pudo actualizar el estado de la tarea."
 

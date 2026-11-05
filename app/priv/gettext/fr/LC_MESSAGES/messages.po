@@ -10569,6 +10569,7 @@ msgstr "Saisissez zéro ou un nombre positif de jours."
 #: assets/js/pages/TaskPage/index.tsx:140
 #: assets/js/pages/TaskPage/index.tsx:170
 #: assets/js/pages/TaskPage/index.tsx:382
+#: ../turboui/src/WorkMap/components/TableRow/StatusCell.tsx:27
 msgid "Error"
 msgstr "Erreur"
 
@@ -11368,6 +11369,7 @@ msgstr "Impossible de modifier le statut de la tâche"
 
 #.frontend
 #: assets/js/pages/TaskPage/index.tsx:93
+#: ../turboui/src/WorkMap/components/TableRow/StatusCell.tsx:27
 msgid "Failed to update task status."
 msgstr "Impossible de modifier le statut de la tâche."
 
