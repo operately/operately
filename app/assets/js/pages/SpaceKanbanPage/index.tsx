@@ -76,10 +76,6 @@ function Page() {
     withTasksEnabledOnly: true,
   });
 
-  const handleMoveTaskSuccess = React.useCallback(async () => {
-    await refreshPageData();
-  }, [refreshPageData]);
-
   const slideInModel = Tasks.useTaskSlideInProps({
     backendTasks,
     paths,
@@ -96,7 +92,6 @@ function Page() {
     onTaskRemindersChange: updateTaskReminders,
     onTaskStatusChange: handleTaskStatusChange,
     onTaskDescriptionChange: updateTaskDescription,
-    onMoveTaskSuccess: handleMoveTaskSuccess,
     projectSearch,
     spaceSearch,
   });

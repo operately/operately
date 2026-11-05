@@ -16,6 +16,11 @@ export { useKanbanState } from "./useKanbanState";
 export { parseKanbanState, type KanbanState } from "./parseKanbanState";
 export { useTaskTimelineItems } from "./useTaskTimelineItems";
 export { useTaskSlideInProps } from "./useTaskSlideInProps";
+export {
+  resolveTaskMoveDestination,
+  taskMoveDestinationPath,
+  type TaskMoveDestination,
+} from "./taskMoveNavigation";
 export { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 export {
   invalidateTaskLifecycleQueries,

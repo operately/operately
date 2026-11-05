@@ -230,18 +230,14 @@ function LoadedPage() {
   const taskSpaceSearch = Spaces.useSpaceSearch({ accessLevel: "edit_access", withTasksEnabledOnly: true });
 
   const handleMoveTaskSuccess = React.useCallback(
-    async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
+    ({ destinationType, destinationId }: Tasks.TaskMoveDestination) => {
       void invalidateProjectPage(project.id);
 
       if (destinationType === "project") {
         void invalidateProjectPage(destinationId);
       }
-
-      if (refresh) {
-        await refresh();
-      }
     },
-    [project.id, refresh],
+    [project.id],
   );
 
   const { kanbanState, handleTaskKanbanChange, handleTaskStatusChange } = Tasks.useKanbanState({

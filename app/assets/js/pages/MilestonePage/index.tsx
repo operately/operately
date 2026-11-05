@@ -165,7 +165,7 @@ function Page() {
   });
 
   const handleMoveTaskSuccess = React.useCallback(
-    async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
+    ({ destinationType, destinationId }: Tasks.TaskMoveDestination) => {
       if (milestone.project?.id) {
         void invalidateProjectPage(milestone.project.id);
       }
@@ -173,10 +173,8 @@ function Page() {
       if (destinationType === "project") {
         void invalidateProjectPage(destinationId);
       }
-
-      await refreshPageData();
     },
-    [milestone.project?.id, refreshPageData],
+    [milestone.project?.id],
   );
 
   const handleTaskMilestoneChange = React.useCallback(

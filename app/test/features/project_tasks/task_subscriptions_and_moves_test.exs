@@ -81,6 +81,32 @@ defmodule Operately.Features.ProjectTasks.TaskSubscriptionsAndMovesTest do
     end
 
     @tag login_as: :contributor
+    feature "move to another project from the project task slide-in", ctx do
+      ctx
+      |> Steps.given_task_exists(name: "Move from project slide-in")
+      |> Steps.given_destination_project_exists()
+      |> Steps.visit_project_page()
+      |> Steps.go_to_tasks_tab()
+      |> Steps.open_task_slide_in("Move from project slide-in")
+      |> Steps.assert_task_slide_in_open("Move from project slide-in")
+      |> Steps.move_task_to_destination_project()
+      |> Steps.assert_redirected_to_destination_project_task()
+      |> Steps.assert_task_belongs_to_destination_project()
+    end
+
+    @tag login_as: :contributor
+    feature "move to a space from the milestone task slide-in", ctx do
+      ctx
+      |> Steps.given_task_exists(name: "Move from milestone slide-in")
+      |> Steps.given_destination_space_exists()
+      |> Steps.visit_milestone_page()
+      |> Steps.open_task_slide_in("Move from milestone slide-in")
+      |> Steps.assert_task_slide_in_open("Move from milestone slide-in")
+      |> Steps.move_task_to_destination_space()
+      |> Steps.assert_redirected_to_destination_space_task()
+    end
+
+    @tag login_as: :contributor
     feature "current project not shown as option", ctx do
       ctx
       |> Steps.assert_contributor_has_edit_access()

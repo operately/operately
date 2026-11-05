@@ -648,6 +648,15 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     UI.assert_page(ctx, task_path)
   end
 
+  step :assert_redirected_to_destination_space_task, ctx do
+    task_path =
+      Paths.space_kanban_path(ctx.company, ctx.destination_space) <> "?taskId=#{Paths.task_id(ctx.task)}"
+
+    ctx
+    |> UI.assert_location(task_path)
+    |> UI.assert_has(testid: "task-slide-in")
+  end
+
   step :assert_redirected_to_destination_project_task, ctx do
     ctx
     |> UI.assert_text(ctx.destination_project.name)
