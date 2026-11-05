@@ -1343,6 +1343,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_resource_hub_folder_created,
       :activity_content_resource_hub_folder_deleted,
       :activity_content_resource_hub_folder_renamed,
+      :activity_content_resource_hub_renamed,
       :activity_content_resource_hub_link_commented,
       :activity_content_resource_hub_link_created,
       :activity_content_resource_hub_link_deleted,
@@ -1399,6 +1400,13 @@ defmodule OperatelyWeb.Api.Types do
     field? :folder, :resource_hub_folder, null: true
     field? :old_name, :string, null: true
     field? :new_name, :string, null: true
+  end
+
+  object :activity_content_resource_hub_renamed, for: Operately.Activities.Content.ResourceHubRenamed do
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field :old_name, :string, null: false
+    field :new_name, :string, null: false
   end
 
   object :activity_content_resource_hub_file_created, for: Operately.Activities.Content.ResourceHubFileCreated do
@@ -1828,6 +1836,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :can_edit_file, :boolean, null: true
     field? :can_edit_link, :boolean, null: true
     field? :can_rename_folder, :boolean, null: true
+    field? :can_rename_hub, :boolean, null: true
     field? :can_view, :boolean, null: true
   end
 
