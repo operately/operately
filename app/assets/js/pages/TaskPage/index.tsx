@@ -197,7 +197,7 @@ function Page() {
     activeOnly: true,
   });
   const spaceSearch = useSpaceSearch({ accessLevel: "edit_access", withTasksEnabledOnly: true });
-  const moveTask = useMoveTaskHandler(task, refreshPageData);
+  const moveTask = useMoveTaskHandler(task);
 
   const subscriptions = useSubscription({
     subscriptionList: task.subscriptionList,
@@ -347,7 +347,7 @@ function usePageField<T>({
   return [state, updateState];
 }
 
-function useMoveTaskHandler(task: Tasks.Task, refreshPageData: () => Promise<void>) {
+function useMoveTaskHandler(task: Tasks.Task) {
   const invalidateProjectPage = useInvalidateProjectPage();
   const navigate = useNavigate();
   const paths = usePaths();
@@ -356,25 +356,19 @@ function useMoveTaskHandler(task: Tasks.Task, refreshPageData: () => Promise<voi
   return useCallback(
     async ({ destinationType, destinationId }: TaskPage.MoveTaskInput) => {
       try {
-        const res = await moveTask.mutateAsync({ taskId: task.id, destinationType, destinationId });
-        const movedTaskId = res.task?.id ?? task.id;
-        const resolvedDestinationType = res.destinationType ?? destinationType;
-        const resolvedDestinationId = res.destinationId ?? destinationId;
+        const request = { taskId: task.id, destinationType, destinationId };
+        const result = await moveTask.mutateAsync(request);
+        const destination = Tasks.resolveTaskMoveDestination(result, request);
 
         if (task.project?.id) {
           void invalidateProjectPage(task.project.id);
         }
 
-        if (resolvedDestinationType !== "space") {
-          void invalidateProjectPage(resolvedDestinationId);
+        if (destination.destinationType === "project") {
+          void invalidateProjectPage(destination.destinationId);
         }
 
-        if (resolvedDestinationType === "space") {
-          navigate(paths.spaceKanbanPath(resolvedDestinationId, { taskId: movedTaskId }));
-        } else {
-          await refreshPageData();
-          navigate(paths.taskPath(movedTaskId));
-        }
+        navigate(Tasks.taskMoveDestinationPath(paths, destination));
 
         return true;
       } catch (error) {
@@ -383,6 +377,6 @@ function useMoveTaskHandler(task: Tasks.Task, refreshPageData: () => Promise<voi
         return false;
       }
     },
-    [moveTask, navigate, paths, task.id, task.project?.id, refreshPageData],
+    [moveTask, navigate, paths, task.id, task.project?.id],
   );
 }

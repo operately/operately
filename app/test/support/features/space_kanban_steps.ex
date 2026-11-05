@@ -348,6 +348,14 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     UI.visit(ctx, Paths.project_path(ctx.company, ctx.destination_project, tab: "tasks"))
   end
 
+  step :assert_redirected_to_destination_project_task, ctx, task_key do
+    task = Map.fetch!(ctx, task_key)
+
+    ctx
+    |> UI.assert_page(Paths.project_task_path(ctx.company, task))
+    |> UI.assert_has(testid: "task-header")
+  end
+
   step :move_task_to_space, ctx, opts do
     space_name = Keyword.fetch!(opts, :space_name)
     destination_space_result = UI.testid(["move-task-space-field-search-result", space_name])
@@ -385,6 +393,16 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     ctx
     |> UI.visit(Paths.space_kanban_path(ctx.company, ctx.destination_space))
     |> UI.assert_has(testid: page_testid(ctx.destination_space))
+  end
+
+  step :assert_redirected_to_destination_space_task, ctx, task_key do
+    task = Map.fetch!(ctx, task_key)
+    path = Paths.space_kanban_path(ctx.company, ctx.destination_space) <> "?taskId=#{Paths.task_id(task)}"
+
+    ctx
+    |> UI.assert_location(path)
+    |> UI.assert_has(testid: page_testid(ctx.destination_space))
+    |> UI.assert_has(testid: "task-slide-in")
   end
 
   step :assert_task_removed, ctx, opts do

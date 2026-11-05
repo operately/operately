@@ -6,6 +6,9 @@ import Api from "@/api";
 import { TASK_ACTIVITY_TYPES } from "@/models/activities/feed";
 import { useTaskSlideInProps } from "./useTaskSlideInProps";
 
+const mockMoveTask = jest.fn();
+const mockNavigate = jest.fn();
+
 jest.mock("@/models/activities/feed", () => ({ TASK_ACTIVITY_TYPES: ["task_name_updating"] }));
 jest.mock("turboui", () => ({ showErrorToast: jest.fn() }));
 jest.mock("@/models/comments/useOptimisticComments", () => ({ useOptimisticComments: () => ({ comments: [] }) }));
@@ -13,13 +16,15 @@ jest.mock("@/models/subscriptions", () => ({ useSubscription: () => ({}) }));
 jest.mock("@/models/people", () => ({}));
 jest.mock("@/routes/paths", () => ({ compareIds: (a: string, b: string) => a === b }));
 jest.mock("@/hooks/useFormattedTimePreferences", () => ({ useFormattedTimePreferences: () => ({}) }));
-jest.mock("./taskLifecycle", () => ({ useMoveTask: () => ({ mutateAsync: jest.fn() }) }));
+jest.mock("react-router", () => ({ useNavigate: () => mockNavigate }));
+jest.mock("./taskLifecycle", () => ({ useMoveTask: () => ({ mutateAsync: mockMoveTask }) }));
 jest.mock("./prepareTaskTimelineItems", () => ({ prepareTaskTimelineItems: () => [] }));
 
 describe("task slide-in field changes", () => {
   let root: Root;
   let client: QueryClient;
   let save: jest.Mock;
+  let onMoveTaskSuccess: jest.Mock;
   let hook: ReturnType<typeof useTaskSlideInProps>;
   const keys = (id: string) => [
     Api.companies.listActivitiesQueryKey({ scopeId: id, scopeType: "task", actions: TASK_ACTIVITY_TYPES }),
@@ -33,11 +38,18 @@ describe("task slide-in field changes", () => {
     client = new QueryClient();
     root = createRoot(document.createElement("div"));
     save = jest.fn().mockResolvedValue(true);
+    onMoveTaskSuccess = jest.fn().mockResolvedValue(undefined);
+    mockMoveTask.mockReset();
+    mockNavigate.mockReset();
     const options = {
       backendTasks: [],
       tasks: [],
       currentUser: null,
-      paths: {},
+      paths: {
+        taskPath: (taskId: string) => `/tasks/${taskId}`,
+        spaceKanbanPath: (spaceId: string, opts: { taskId: string }) =>
+          `/spaces/${spaceId}/kanban?taskId=${opts.taskId}`,
+      },
       commentEntityType: "project_task",
       variant: "project-task",
       canEdit: true,
@@ -48,6 +60,7 @@ describe("task slide-in field changes", () => {
       onTaskRemindersChange: save,
       onTaskStatusChange: save,
       onTaskDescriptionChange: save,
+      onMoveTaskSuccess,
     } as unknown as Parameters<typeof useTaskSlideInProps>[0];
     function Harness() {
       hook = useTaskSlideInProps(options);
@@ -91,4 +104,67 @@ describe("task slide-in field changes", () => {
     });
     keys("changed-task").forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(false));
   });
+
+  it.each([
+    {
+      destinationType: "project",
+      destinationId: "destination-project",
+      expectedPath: "/tasks/moved-task",
+    },
+    {
+      destinationType: "space",
+      destinationId: "destination-space",
+      expectedPath: "/spaces/destination-space/kanban?taskId=moved-task",
+    },
+  ])("navigates to the $destinationType returned by a successful move", async (destination) => {
+    mockMoveTask.mockResolvedValue({
+      task: { id: "moved-task" },
+      destinationType: destination.destinationType,
+      destinationId: destination.destinationId,
+    });
+
+    const moved = await moveSlideInTask(hook);
+
+    expect(moved).toBe(true);
+    expect(onMoveTaskSuccess).toHaveBeenCalledWith({
+      movedTaskId: "moved-task",
+      destinationType: destination.destinationType,
+      destinationId: destination.destinationId,
+    });
+    expect(mockNavigate).toHaveBeenCalledWith(destination.expectedPath);
+  });
+
+  it("stays on the source page when the move is rejected", async () => {
+    mockMoveTask.mockRejectedValue(new Error("Move rejected"));
+
+    const moved = await moveSlideInTask(hook);
+
+    expect(moved).toBe(false);
+    expect(onMoveTaskSuccess).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
 });
+
+async function moveSlideInTask(hook: ReturnType<typeof useTaskSlideInProps>) {
+  const taskPageProps = hook.getTaskPageProps("source-task", {
+    tasks: [
+      {
+        id: "source-task",
+        title: "Source task",
+        description: null,
+        assignees: [],
+        milestone: null,
+        status: null,
+        dueDate: null,
+        reminders: [],
+      },
+    ],
+    statuses: [],
+    richTextHandlers: {},
+  });
+
+  if (!taskPageProps) throw new Error("Expected slide-in props for source task");
+  if (!taskPageProps.onMoveTask) throw new Error("Expected move handler for source task");
+
+  return taskPageProps.onMoveTask({ destinationType: "space", destinationId: "requested-space" });
+}

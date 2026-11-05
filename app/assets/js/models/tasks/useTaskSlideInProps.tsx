@@ -2,6 +2,7 @@ import i18n from "@/i18n";
 import { useSetTaskItemChecked } from "@/models/richContent/taskListLifecycle";
 import { useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
+import { useNavigate } from "react-router";
 
 import { DateField, TaskBoard, TaskPage, showErrorToast } from "turboui";
 import { useOptimisticComments } from "@/models/comments/useOptimisticComments";
@@ -14,6 +15,7 @@ import { type Person as ApiPerson, type Task as BackendTask } from "@/api";
 import { useSubscription } from "@/models/subscriptions";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMoveTask } from "./taskLifecycle";
+import { resolveTaskMoveDestination, taskMoveDestinationPath, type TaskMoveDestination } from "./taskMoveNavigation";
 
 export function useTaskSlideInProps(opts: {
   backendTasks: BackendTask[];
@@ -34,7 +36,7 @@ export function useTaskSlideInProps(opts: {
   onTaskRemindersChange: (taskId: string, reminders: TaskPage.Reminder[]) => Promise<boolean> | boolean;
   onTaskStatusChange: (taskId: string, newStatus: TaskBoard.Status | null) => Promise<boolean> | boolean;
   onTaskDescriptionChange: (taskId: string, content: any) => Promise<boolean>;
-  onMoveTaskSuccess: (result: { movedTaskId: string; destinationType: string; destinationId: string }) => Promise<void>;
+  onMoveTaskSuccess?: (destination: TaskMoveDestination) => void | Promise<void>;
   projectSearch: TaskPage.ContentProps["projectSearch"];
   spaceSearch: TaskPage.ContentProps["spaceSearch"];
 }) {
@@ -43,6 +45,7 @@ export function useTaskSlideInProps(opts: {
   const setTaskItemChecked = useSetTaskItemChecked();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mutateAsync: moveTask } = useMoveTask();
+  const navigate = useNavigate();
 
   const parsedCurrentUser = currentUser ? (People.parsePersonForTurboUi(paths, currentUser) ?? undefined) : undefined;
 
@@ -200,16 +203,12 @@ export function useTaskSlideInProps(opts: {
         },
         onMoveTask: async ({ destinationType, destinationId }) => {
           try {
-            const res = await moveTask({ taskId, destinationType, destinationId });
-            const movedTaskId = res.task?.id ?? taskId;
-            const resolvedDestinationType = res.destinationType ?? destinationType;
-            const resolvedDestinationId = res.destinationId ?? destinationId;
+            const request = { taskId, destinationType, destinationId };
+            const result = await moveTask(request);
+            const destination = resolveTaskMoveDestination(result, request);
 
-            await opts.onMoveTaskSuccess({
-              movedTaskId,
-              destinationType: resolvedDestinationType,
-              destinationId: resolvedDestinationId,
-            });
+            await opts.onMoveTaskSuccess?.(destination);
+            navigate(taskMoveDestinationPath(paths, destination));
 
             return true;
           } catch (error) {
@@ -281,6 +280,7 @@ export function useTaskSlideInProps(opts: {
       comments,
       opts.onMoveTaskSuccess,
       moveTask,
+      navigate,
       subscriptions,
       opts.projectSearch,
       opts.spaceSearch,
