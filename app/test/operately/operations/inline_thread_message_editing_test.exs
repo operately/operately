@@ -1,6 +1,6 @@
 defmodule Operately.Operations.InlineThreadMessageEditingTest do
   use Operately.DataCase
-  alias Operately.Operations.InlineThreadMessageEditing
+  alias Operately.Operations.{InlineThreadMessageEditing, InlineThreadResolving, InlineThreadReopening}
   alias Operately.Support.RichText
 
   setup ctx do
@@ -30,6 +30,20 @@ defmodule Operately.Operations.InlineThreadMessageEditingTest do
   test "invalid edits preserve the message", ctx do
     assert {:error, :invalid_content} = InlineThreadMessageEditing.run(ctx.creator, ctx.thread, ctx.message, %{})
     assert Repo.reload!(ctx.message).content == ctx.message.content
+  end
+
+  test "resolved threads reject edits using the current locked state", ctx do
+    {:ok, resolved} = InlineThreadResolving.run(ctx.creator, ctx.thread)
+    before = document_state(ctx)
+    content = RichText.rich_text("Edited")
+
+    assert {:error, :thread_resolved} = InlineThreadMessageEditing.run(ctx.creator, ctx.thread, ctx.message, content)
+    assert Repo.reload!(ctx.message).content == ctx.message.content
+    assert document_state(ctx) == before
+
+    {:ok, _} = InlineThreadReopening.run(ctx.creator, resolved)
+    assert {:ok, thread} = InlineThreadMessageEditing.run(ctx.creator, resolved, ctx.message, content)
+    assert hd(thread.messages).content == content
   end
 
   defp document_state(ctx) do

@@ -1,6 +1,6 @@
 defmodule Operately.Operations.InlineThreadReplyingTest do
   use Operately.DataCase
-  alias Operately.Operations.{InlineThreadReplying, InlineThreadResolving}
+  alias Operately.Operations.{InlineThreadReplying, InlineThreadResolving, InlineThreadReopening}
   alias Operately.Support.RichText
 
   setup ctx do
@@ -12,13 +12,25 @@ defmodule Operately.Operations.InlineThreadReplyingTest do
     |> Factory.add_inline_thread(:thread, :document, from: 1, to: 6, quote: "Hello")
   end
 
-  test "replies preserve resolution without changing the document", ctx do
+  test "resolved threads reject replies even with a stale thread struct", ctx do
+    {:ok, _} = InlineThreadResolving.run(ctx.creator, ctx.thread)
+    before = document_state(ctx)
+    activity_count = Repo.aggregate(Operately.Activities.Activity, :count)
+
+    assert {:error, :thread_resolved} = InlineThreadReplying.run(ctx.creator, ctx.thread, RichText.rich_text("Reply"))
+    assert length(Repo.preload(ctx.thread, :messages, force: true).messages) == 1
+    assert document_state(ctx) == before
+    assert Repo.aggregate(Operately.Activities.Activity, :count) == activity_count
+  end
+
+  test "reopened threads allow replies without changing the document", ctx do
     {:ok, resolved} = InlineThreadResolving.run(ctx.creator, ctx.thread)
+    {:ok, _} = InlineThreadReopening.run(ctx.creator, resolved)
     before = document_state(ctx)
     activity_count = Repo.aggregate(Operately.Activities.Activity, :count)
 
     assert {:ok, thread} = InlineThreadReplying.run(ctx.creator, resolved, RichText.rich_text("Reply"))
-    assert thread.resolved_at == resolved.resolved_at
+    assert thread.resolved_at == nil
     assert length(thread.messages) == 2
     assert Enum.any?(thread.messages, &(&1.content == RichText.rich_text("Reply")))
     assert document_state(ctx) == before

@@ -26,6 +26,12 @@ defmodule Operately.Operations.InlineThreads.SharedSteps do
     Multi.run(multi, :message, fn repo, _ -> Locking.lock_for_update(repo, message) end)
   end
 
+  def require_open_thread(multi) do
+    Multi.run(multi, :open_thread, fn _, %{thread: locked} ->
+      if locked.resolved_at, do: {:error, :thread_resolved}, else: {:ok, locked}
+    end)
+  end
+
   def validate_content(multi, content) do
     Multi.run(multi, :valid_content, fn _, _ ->
       case content do

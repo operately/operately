@@ -12,6 +12,9 @@ if (process.env.CHROMIUM_EXECUTABLE_PATH) {
 
 module.exports = {
   ...getJestConfig(),
+  // Recycle the test worker between suites before Node reaches its heap limit.
+  maxWorkers: 1,
+  workerIdleMemoryLimit: "512MB",
   testEnvironmentOptions: {
     "jest-playwright": {
       browsers: ["chromium"],

@@ -36,6 +36,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     |> maybe_enqueue_milestone(action, milestone.id)
     |> record_activity(author, milestone, action)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(milestone.project_id)
     |> broadcast_updates(action)
     |> extract_result()
   end

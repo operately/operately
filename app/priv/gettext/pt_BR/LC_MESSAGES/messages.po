@@ -1418,6 +1418,16 @@ msgid "%{author} deleted \"%{fileName}\" from <hub>%{hubName}</hub> in the <pare
 msgstr "%{author} excluiu \"%{fileName}\" de <hub>%{hubName}</hub> no espaço <parent>%{parentName}</parent>"
 
 #.frontend
+#: assets/js/features/activities/KpiDeleted/index.tsx:38
+msgid "%{author} deleted a KPI"
+msgstr "%{author} excluiu um KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiDeleted/index.tsx:42
+msgid "%{author} deleted a KPI in the <space>%{spaceName}</space> space"
+msgstr "%{author} excluiu um KPI no espaço <space>%{spaceName}</space>"
+
+#.frontend
 #: assets/js/features/activities/KpiEntryDeleted/index.tsx:42
 msgid "%{author} deleted a KPI update"
 msgstr "%{author} excluiu uma atualização de KPI"
@@ -1645,6 +1655,11 @@ msgid "%{author} edited <resources/> in the <parent>%{parentName}</parent> space
 msgstr "%{author} editou <resources/> no espaço <parent>%{parentName}</parent>"
 
 #.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:42
+msgid "%{author} edited a KPI"
+msgstr "%{author} editou um KPI"
+
+#.frontend
 #: assets/js/features/activities/KpiAnnotationEdited/index.tsx:41
 msgid "%{author} edited a KPI annotation"
 msgstr "%{author} editou uma anotação de KPI"
@@ -1653,6 +1668,11 @@ msgstr "%{author} editou uma anotação de KPI"
 #: assets/js/features/activities/KpiAnnotationEdited/index.tsx:45
 msgid "%{author} edited a KPI annotation in the <space>%{spaceName}</space> space"
 msgstr "%{author} editou uma anotação de KPI no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:46
+msgid "%{author} edited a KPI in the <space>%{spaceName}</space> space"
+msgstr "%{author} editou um KPI no espaço <space>%{spaceName}</space>"
 
 #.frontend
 #: assets/js/features/activities/KpiEntryEdited/index.tsx:41
@@ -2019,6 +2039,16 @@ msgstr "%{author} reatribuiu %{personName} como %{role} no projeto <project>%{pr
 #: assets/js/features/activities/ProjectContributorEdited/index.tsx:64
 msgid "%{author} reassigned %{personName} as a %{role} on the project"
 msgstr "%{author} reatribuiu %{personName} como %{role} no projeto"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:42
+msgid "%{author} recorded a KPI value"
+msgstr "%{author} registrou um valor de KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:46
+msgid "%{author} recorded a KPI value in the <space>%{spaceName}</space> space"
+msgstr "%{author} registrou um valor de KPI no espaço <space>%{spaceName}</space>"
 
 #.frontend
 #: assets/js/features/activities/CompanyOwnerRemoving/index.tsx:38
@@ -2456,6 +2486,7 @@ msgid "%{author} updated assignees on <tasks/>"
 msgstr "%{author} atualizou os responsáveis em <tasks/>"
 
 #.frontend
+#: ../turboui/src/ActivityTaskList/index.stories.tsx:89
 #: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:62
 msgid "%{author} updated assignees on <tasks/> in <location>%{locationName}</location>"
 msgstr "%{author} atualizou os responsáveis em <tasks/> em <location>%{locationName}</location>"
@@ -2826,7 +2857,7 @@ msgid "%{duration} <status>overdue</status>."
 msgstr "%{duration} <status>em atraso</status>."
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:78
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:77
 msgid "%{first} or %{second}"
 msgstr "%{first} ou %{second}"
 
@@ -3278,7 +3309,7 @@ msgid "(%{location}) %{author} commented on the project retrospective"
 msgstr "(%{location}) %{author} comentou na retrospectiva do projeto"
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:23
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:26
 msgid "(%{location}) %{author} commented on: %{document_name}"
 msgstr "(%{location}) %{author} comentou em: %{document_name}"
 
@@ -4972,7 +5003,7 @@ msgid "<bold>What happens next?</bold> You will join the %{company} company."
 msgstr "<bold>O que acontece a seguir?</bold> Você vai entrar para a empresa %{company}."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:107
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:132
 msgid "<client/> is requesting access to your Operately workspace through MCP."
 msgstr "<client/> está solicitando acesso ao seu ambiente de trabalho no Operately via MCP."
 
@@ -5497,7 +5528,10 @@ msgid "Add Project"
 msgstr "Adicionar projeto"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:903
+#: ../turboui/src/Reactions/index.tsx:214
+#: ../turboui/src/Reactions/index.tsx:221
+#: ../turboui/src/Reactions/index.tsx:955
+#: ../turboui/src/Reactions/index.tsx:986
 msgid "Add Reaction"
 msgstr "Adicionar reação"
 
@@ -5611,7 +5645,8 @@ msgid "Add column right"
 msgstr "Adicionar coluna à direita"
 
 #.frontend
-#: ../turboui/src/InlineComments/SelectionAction.tsx:43
+#: ../turboui/src/InlineComments/SelectionAction.tsx:61
+#: ../turboui/src/InlineComments/SelectionAction.tsx:68
 msgid "Add comment"
 msgstr "Adicionar comentário"
 
@@ -6546,7 +6581,7 @@ msgstr "Pelo menos 12 caracteres"
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:13
 #: lib/operately_web/api/project_templates/helpers.ex:25
-#: lib/operately_web/api/projects.ex:782
+#: lib/operately_web/api/projects.ex:792
 #: lib/operately_web/api/spaces.ex:363
 msgid "At least one task status is required"
 msgstr "É necessário pelo menos um status de tarefa"
@@ -6616,7 +6651,7 @@ msgid "Author"
 msgstr "Autor"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:202
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:203
 msgid "Authorization Error"
 msgstr "Erro de autorização"
 
@@ -6626,12 +6661,12 @@ msgid "Authorization Header"
 msgstr "Cabeçalho de autorização"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:154
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:192
 msgid "Authorize"
 msgstr "Autorizar"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:177
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:179
 msgid "Authorize MCP Client"
 msgstr "Autorizar cliente MCP"
 
@@ -6936,7 +6971,7 @@ msgstr "O conteúdo é obrigatório"
 
 #.frontend
 #: ../turboui/src/RichEditor/components/BoldButton.tsx:13
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:59
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:58
 msgid "Bold"
 msgstr "Negrito"
 
@@ -6966,7 +7001,7 @@ msgid "Bullet List"
 msgstr "Lista com marcadores"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:78
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:77
 msgid "Bulleted list"
 msgstr "Lista com marcadores"
 
@@ -7071,7 +7106,7 @@ msgstr "Não pode ser a mesma pessoa que o champion"
 #: ../turboui/src/Checklist/index.tsx:330
 #: ../turboui/src/Checklist/index.tsx:379
 #: ../turboui/src/CommentSection/CommentInput.tsx:241
-#: ../turboui/src/CommentSection/CommentItem.tsx:387
+#: ../turboui/src/CommentSection/CommentItem.tsx:400
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:37
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:46
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
@@ -7612,7 +7647,7 @@ msgid "Choose ZIP"
 msgstr "Selecionar ZIP"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:163
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:165
 msgid "Choose a Company"
 msgstr "Escolha uma empresa"
 
@@ -7669,7 +7704,7 @@ msgstr "Escolha um plano que permita mais membros."
 #~ msgstr "Escolha uma conversa para este trecho."
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:110
+#: lib/operately/comments/create_milestone_comment_operation.ex:111
 msgid "Choose a valid open task resolution"
 msgstr "Escolha uma resolução válida para as tarefas abertas"
 
@@ -7719,7 +7754,7 @@ msgid "Choose someone else"
 msgstr "Escolher outra pessoa"
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:92
+#: lib/operately/comments/create_milestone_comment_operation.ex:93
 msgid "Choose what happens to the open tasks before completing the milestone"
 msgstr "Escolha o que acontece com as tarefas abertas antes de concluir o marco"
 
@@ -7820,19 +7855,19 @@ msgid "Click + or press c to add a task, or drag a task here."
 msgstr "Clique em + ou pressione c para adicionar uma tarefa, ou arraste uma tarefa para cá."
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:159
+#: ../turboui/src/Reactions/index.tsx:160
 msgid "Click to remove your reaction"
 msgstr "Clique para remover sua reação"
 
 #.elixir
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:108
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:122
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:141
 msgid "Client"
 msgstr "Cliente"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:125
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:144
 msgid "Client Host"
 msgstr "Host do cliente"
 
@@ -7840,9 +7875,9 @@ msgstr "Host do cliente"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:197
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:63
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:68
 #: ../turboui/src/Modal/index.tsx:143
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:94
+#: ../turboui/src/Reactions/index.tsx:958
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:93
 #: ../turboui/src/SlideIn/index.tsx:126
 #: ../turboui/src/SlideIn/index.tsx:128
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:134
@@ -7930,7 +7965,7 @@ msgid "Code Block"
 msgstr "Bloco de código"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:81
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:80
 msgid "Code block"
 msgstr "Bloco de código"
 
@@ -7945,6 +7980,7 @@ msgid "Codes are valid for up to 5 minutes."
 msgstr "Os códigos são válidos por até 5 minutos."
 
 #.frontend
+#: ../turboui/src/ActivityTaskList/index.tsx:50
 #: ../turboui/src/PageDescription/index.tsx:136
 #: ../turboui/src/PeopleOrgChartPage/index.tsx:90
 msgid "Collapse"
@@ -8009,12 +8045,17 @@ msgid "Comment by %{author} on %{date}"
 msgstr "Comentário de %{author} em %{date}"
 
 #.frontend
+#: ../turboui/src/InlineComments/useInlineComments.tsx:88
+msgid "Comment no longer available"
+msgstr "Comentário não está mais disponível"
+
+#.frontend
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:70
 msgid "Comment not added"
 msgstr "Comentário não adicionado"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:215
+#: ../turboui/src/CommentSection/CommentItem.tsx:226
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:93
 msgid "Comment not deleted"
 msgstr "Comentário não excluído"
@@ -8023,16 +8064,16 @@ msgstr "Comentário não excluído"
 #: ../turboui/src/CommentSection/CommentInput.tsx:71
 #: ../turboui/src/CommentSection/CommentInput.tsx:88
 #: ../turboui/src/CommentSection/CommentInput.tsx:94
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:90
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:99
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:91
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:100
 msgid "Comment not posted"
 msgstr "Comentário não publicado"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:361
-#: ../turboui/src/InlineComments/Thread.tsx:52
+#: ../turboui/src/CommentSection/CommentItem.tsx:374
+#: ../turboui/src/InlineComments/Thread.tsx:57
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:84
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:109
 msgid "Comment not updated"
 msgstr "Comentário não atualizado"
 
@@ -8069,7 +8110,7 @@ msgid "Comments and task updates will appear here"
 msgstr "Comentários e atualizações de tarefas aparecerão aqui"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:108
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:138
 msgid "Comments could not be loaded."
 msgstr "Não foi possível carregar os comentários."
 
@@ -8088,7 +8129,7 @@ msgstr "As empresas precisam atender a todos os critérios de atividade para apa
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:255
 #: lib/operately/md/space.ex:19
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:131
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:150
 msgid "Company"
 msgstr "Empresa"
 
@@ -8644,7 +8685,7 @@ msgid "Copy failed"
 msgstr "Não foi possível copiar"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:249
+#: ../turboui/src/CommentSection/CommentItem.tsx:260
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:42
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InviteLinkPanel.tsx:49
 msgid "Copy link"
@@ -8991,7 +9032,7 @@ msgid "Create your project"
 msgstr "Crie seu projeto"
 
 #.elixir
-#: lib/operately/mcp/resources.ex:11
+#: lib/operately/mcp/resources.ex:37
 msgid "Create, update, delete, and archive workspace content"
 msgstr "Criar, atualizar, excluir e arquivar conteúdo do ambiente de trabalho"
 
@@ -9270,7 +9311,7 @@ msgstr "Desativar conta"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:398
 #: ../turboui/src/AccountApiTokensPage/index.tsx:524
 #: ../turboui/src/Checklist/index.tsx:530
-#: ../turboui/src/CommentSection/CommentItem.tsx:268
+#: ../turboui/src/CommentSection/CommentItem.tsx:281
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:77
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:113
 #: ../turboui/src/GoalPage/Sidebar.tsx:406
@@ -9475,6 +9516,11 @@ msgid "Delete “%{name}”?"
 msgstr "Excluir “%{name}”?"
 
 #.frontend
+#: assets/js/features/activities/KpiDeleted/index.tsx:67
+msgid "Deleted KPI: %{kpiName}"
+msgstr "KPI excluído: %{kpiName}"
+
+#.frontend
 #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
 msgid "Deleted a document"
 msgstr "Excluiu um documento"
@@ -9595,7 +9641,7 @@ msgid "Delivery time"
 msgstr "Horário de envio"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:153
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:191
 msgid "Deny"
 msgstr "Negar"
 
@@ -10158,8 +10204,9 @@ msgstr "Versão anterior"
 
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:520
-#: ../turboui/src/CommentSection/CommentItem.tsx:259
+#: ../turboui/src/CommentSection/CommentItem.tsx:271
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:68
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:254
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
@@ -10324,7 +10371,7 @@ msgid "Edit update — %{name}"
 msgstr "Editar atualização — %{name}"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:342
+#: ../turboui/src/CommentSection/CommentItem.tsx:355
 msgid "Edit your comment..."
 msgstr "Edite seu comentário..."
 
@@ -10332,6 +10379,11 @@ msgstr "Edite seu comentário..."
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:559
 msgid "Edited"
 msgstr "Editado"
+
+#.frontend
+#: assets/js/features/activities/KpiEdited/index.tsx:71
+msgid "Edited KPI: %{kpiName}"
+msgstr "KPI editado: %{kpiName}"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
@@ -10725,10 +10777,10 @@ msgstr "Insira zero ou um número positivo de dias."
 #: assets/js/pages/MilestonePage/index.tsx:74
 #: assets/js/pages/MilestonePage/useComments.tsx:78
 #: assets/js/pages/ProfilePage/index.tsx:77
-#: assets/js/pages/ProjectPage/index.tsx:212
-#: assets/js/pages/ProjectPage/index.tsx:293
-#: assets/js/pages/ProjectPage/index.tsx:794
-#: assets/js/pages/ProjectPage/index.tsx:823
+#: assets/js/pages/ProjectPage/index.tsx:215
+#: assets/js/pages/ProjectPage/index.tsx:296
+#: assets/js/pages/ProjectPage/index.tsx:797
+#: assets/js/pages/ProjectPage/index.tsx:826
 #: assets/js/pages/SpaceKpisPage/page.tsx:102
 #: assets/js/pages/SpacePage/page.tsx:119
 #: assets/js/pages/TaskPage/index.tsx:84
@@ -11221,7 +11273,7 @@ msgid "Failed to change plan"
 msgstr "Não foi possível alterar o plano"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:228
+#: ../turboui/src/CommentSection/CommentItem.tsx:239
 msgid "Failed to copy comment link to clipboard"
 msgstr "Não foi possível copiar o link do comentário para a área de transferência"
 
@@ -11231,7 +11283,7 @@ msgid "Failed to create account"
 msgstr "Não foi possível criar a conta"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:794
+#: assets/js/pages/ProjectPage/index.tsx:797
 msgid "Failed to create milestone"
 msgstr "Falha ao criar o marco"
 
@@ -11284,7 +11336,7 @@ msgid "Failed to delete company"
 msgstr "Não foi possível excluir a empresa"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:293
+#: assets/js/pages/ProjectPage/index.tsx:296
 msgid "Failed to delete project"
 msgstr "Falha ao excluir o projeto"
 
@@ -11498,7 +11550,7 @@ msgid "Failed to update due date."
 msgstr "Falha ao atualizar a data de conclusão."
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:823
+#: assets/js/pages/ProjectPage/index.tsx:826
 msgid "Failed to update milestone"
 msgstr "Falha ao atualizar o marco"
 
@@ -11625,7 +11677,7 @@ msgid "Failed to update task statuses"
 msgstr "Falha ao atualizar os status das tarefas"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:212
+#: assets/js/pages/ProjectPage/index.tsx:215
 msgid "Failed to update tasks view"
 msgstr "Falha ao atualizar a visualização das tarefas"
 
@@ -11834,7 +11886,7 @@ msgid "Forgot password?"
 msgstr "Esqueceu sua senha?"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:100
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:99
 msgid "Format text as you type using these shortcuts."
 msgstr "Formate o texto enquanto digita usando estes atalhos."
 
@@ -12190,10 +12242,10 @@ msgstr "Tem acesso total ao projeto e pode realizar qualquer ação, incluindo e
 
 #.frontend
 #: ../turboui/src/RichEditor/components/HeadingButtons.tsx:22
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:68
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:69
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:70
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:71
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:72
 msgid "Heading %{level}"
 msgstr "Título %{level}"
 
@@ -12234,7 +12286,7 @@ msgid "Hide previous check-in"
 msgstr "Ocultar check-in anterior"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:62
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:61
 msgid "Highlight"
 msgstr "Destaque"
 
@@ -12249,6 +12301,7 @@ msgid "History"
 msgstr "Histórico"
 
 #.frontend
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:260
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:93
 #: assets/js/pages/ResourceHubDocumentPage/Options.tsx:60
 #: assets/js/pages/ResourceHubDocumentVersionComparisonPage/navigation.tsx:18
@@ -12424,7 +12477,9 @@ msgid "Information"
 msgstr "Informações"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:59
+#: ../turboui/src/DocumentPage/index.tsx:135
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:70
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:76
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:16
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:23
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:43
@@ -12458,7 +12513,7 @@ msgid "Interval"
 msgstr "Intervalo"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:201
 msgid "Invalid Client"
 msgstr "Cliente inválido"
 
@@ -12473,22 +12528,22 @@ msgid "Invalid Link"
 msgstr "Link inválido"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:194
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:195
 msgid "Invalid Redirect URI"
 msgstr "URI de redirecionamento inválida"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:201
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:202
 msgid "Invalid Request"
 msgstr "Solicitação inválida"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:195
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:196
 msgid "Invalid Resource"
 msgstr "Recurso inválido"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:196
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
 msgid "Invalid Scope"
 msgstr "Escopo inválido"
 
@@ -12503,7 +12558,7 @@ msgid "Invalid activation code"
 msgstr "Código de ativação inválido"
 
 #.elixir
-#: lib/operately_web/api/companies/list_activities.ex:174
+#: lib/operately_web/api/companies/list_activities.ex:167
 msgid "Invalid activity cursor"
 msgstr "Cursor de atividade inválido"
 
@@ -12610,8 +12665,8 @@ msgid "Invalid profile update"
 msgstr "Atualização de perfil inválida"
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:746
-#: lib/operately_web/api/tasks.ex:752
+#: lib/operately_web/api/tasks.ex:757
+#: lib/operately_web/api/tasks.ex:763
 msgid "Invalid reminders"
 msgstr "Lembretes inválidos"
 
@@ -12635,7 +12690,7 @@ msgstr "Parâmetros de mensagem do site inválidos"
 #.elixir
 #: lib/operately/operations/kanban_state_updating.ex:57
 #: lib/operately/operations/kanban_state_updating.ex:69
-#: lib/operately_web/api/tasks.ex:1117
+#: lib/operately_web/api/tasks.ex:1128
 msgid "Invalid status"
 msgstr "Status inválido"
 
@@ -12814,6 +12869,11 @@ msgid "It is scheduled for %{due_date}."
 msgstr "Está agendado para %{due_date}."
 
 #.frontend
+#: ../turboui/src/InlineComments/useInlineComments.tsx:88
+msgid "It was likely deleted."
+msgstr "Ele provavelmente foi excluído."
+
+#.frontend
 #: ../turboui/src/OngoingDraftActions/index.tsx:59
 msgid "It will be posted on <date/> at <time/>."
 msgstr "Será publicado em <date/> às <time/>."
@@ -12825,7 +12885,7 @@ msgstr "Ele está disponível novamente para criar projetos."
 
 #.frontend
 #: ../turboui/src/RichEditor/components/ItalicButton.tsx:13
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:60
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:59
 msgid "Italic"
 msgstr "Itálico"
 
@@ -12920,6 +12980,8 @@ msgstr "Template de KPI"
 
 #.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:56
+#: assets/js/features/activities/KpiDeleted/index.tsx:51
+#: assets/js/features/activities/KpiEdited/index.tsx:55
 msgid "KPI: %{kpiName}"
 msgstr "KPI: %{kpiName}"
 
@@ -12935,6 +12997,7 @@ msgstr "KPI: %{title}"
 
 #.frontend
 #: assets/js/features/activities/KpiEntryDeleted/index.tsx:58
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:59
 msgid "KPI: %{value}"
 msgstr "KPI: %{value}"
 
@@ -13221,7 +13284,7 @@ msgid "Limited"
 msgstr "Limitado"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:63
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:62
 #: ../turboui/src/SearchPage/index.tsx:313
 #: assets/js/pages/ResourceHubEditLinkPage/navigation.tsx:22
 msgid "Link"
@@ -13360,7 +13423,7 @@ msgid "Loading check-ins"
 msgstr "Carregando check-ins"
 
 #.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:103
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:133
 msgid "Loading comments..."
 msgstr "Carregando comentários..."
 
@@ -13684,7 +13747,7 @@ msgstr "Marcar tarefa como concluída"
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:19
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:22
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:23
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:91
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:90
 #: ../turboui/src/RichEditor/components/Toolbar.tsx:170
 #: ../turboui/src/RichEditor/components/Toolbar.tsx:171
 #: ../turboui/src/RichEditor/components/Toolbar.tsx:179
@@ -13799,8 +13862,8 @@ msgstr "Marco não é %{name}"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:55
-#: lib/operately_web/api/tasks.ex:901
-#: lib/operately_web/api/tasks.ex:921
+#: lib/operately_web/api/tasks.ex:912
+#: lib/operately_web/api/tasks.ex:932
 msgid "Milestone must belong to the same project as the task"
 msgstr "O marco deve pertencer ao mesmo projeto que a tarefa"
 
@@ -13828,10 +13891,10 @@ msgstr "Marco não excluído"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:49
-#: lib/operately_web/api/projects.ex:636
-#: lib/operately_web/api/projects.ex:651
-#: lib/operately_web/api/projects/milestones.ex:285
-#: lib/operately_web/api/tasks.ex:674
+#: lib/operately_web/api/projects.ex:646
+#: lib/operately_web/api/projects.ex:661
+#: lib/operately_web/api/projects/milestones.ex:291
+#: lib/operately_web/api/tasks.ex:685
 msgid "Milestone not found"
 msgstr "Marco não encontrado"
 
@@ -13891,7 +13954,7 @@ msgid "Missed"
 msgstr "Não alcançado"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:198
 msgid "Missing PKCE Challenge"
 msgstr "Desafio PKCE ausente"
 
@@ -14225,14 +14288,14 @@ msgstr "Precisa de ajuda? <guides>Guias de configuração</guides>"
 #: assets/js/pages/InviteTeamPage/index.tsx:75
 #: assets/js/pages/InviteTeamPage/index.tsx:88
 #: assets/js/pages/InviteTeamPage/index.tsx:99
-#: assets/js/pages/ProjectPage/index.tsx:98
-#: assets/js/pages/ProjectPage/index.tsx:108
-#: assets/js/pages/ProjectPage/index.tsx:124
-#: assets/js/pages/ProjectPage/index.tsx:130
-#: assets/js/pages/ProjectPage/index.tsx:136
-#: assets/js/pages/ProjectPage/index.tsx:671
-#: assets/js/pages/ProjectPage/index.tsx:677
-#: assets/js/pages/ProjectPage/index.tsx:683
+#: assets/js/pages/ProjectPage/index.tsx:101
+#: assets/js/pages/ProjectPage/index.tsx:111
+#: assets/js/pages/ProjectPage/index.tsx:127
+#: assets/js/pages/ProjectPage/index.tsx:133
+#: assets/js/pages/ProjectPage/index.tsx:139
+#: assets/js/pages/ProjectPage/index.tsx:674
+#: assets/js/pages/ProjectPage/index.tsx:680
+#: assets/js/pages/ProjectPage/index.tsx:686
 msgid "Network Error"
 msgstr "Erro de rede"
 
@@ -14676,7 +14739,7 @@ msgid "No due date set."
 msgstr "Sem data de conclusão."
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:940
+#: ../turboui/src/Reactions/index.tsx:1021
 msgid "No emojis found"
 msgstr "Nenhum emoji encontrado"
 
@@ -14711,6 +14774,11 @@ msgstr "Nenhum objetivo para mostrar."
 #: ../turboui/src/CompanyImportPage/index.tsx:288
 msgid "No imports yet. Upload a package above to create the first one."
 msgstr "Nenhuma importação ainda. Envie um pacote acima para criar a primeira."
+
+#.frontend
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:83
+msgid "No inline comments yet."
+msgstr "Ainda não há comentários no texto."
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:464
@@ -15191,7 +15259,7 @@ msgid "Numbered List"
 msgstr "Lista numerada"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:79
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:78
 msgid "Numbered list"
 msgstr "Lista numerada"
 
@@ -15248,7 +15316,7 @@ msgid "One of the snapshots could not be parsed with the current editor schema."
 msgstr "Não foi possível processar um dos conteúdos com o formato atual do editor."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:239
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:240
 msgid "One or more redirect URIs are not allowed for this MCP server."
 msgstr "Uma ou mais URIs de redirecionamento não são permitidas neste servidor MCP."
 
@@ -15339,8 +15407,8 @@ msgid "Only people you add to the space will be able to view it."
 msgstr "Somente as pessoas que você adicionar ao espaço poderão visualizá-lo."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:199
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:242
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:243
 msgid "Only public OAuth clients using token_endpoint_auth_method=none are supported."
 msgstr "Somente clientes OAuth públicos que usam token_endpoint_auth_method=none são compatíveis."
 
@@ -15360,7 +15428,7 @@ msgid "Only space members can view"
 msgstr "Somente membros do espaço podem visualizar"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:198
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:199
 msgid "Only the S256 PKCE challenge method is supported."
 msgstr "Somente o método de desafio PKCE S256 é compatível."
 
@@ -15504,7 +15572,7 @@ msgid "Operately confirmation code: %{code}"
 msgstr "Código de confirmação do Operately: %{code}"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:202
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:203
 msgid "Operately couldn't complete this authorization request."
 msgstr "O Operately não conseguiu concluir esta solicitação de autorização."
 
@@ -15551,7 +15619,7 @@ msgstr "Opcional. Deixe em branco para exibir até que seja desativada ou exclu�
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:255
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:113
-#: ../turboui/src/CommentSection/CommentItem.tsx:239
+#: ../turboui/src/CommentSection/CommentItem.tsx:250
 msgid "Options"
 msgstr "Opções"
 
@@ -16027,7 +16095,8 @@ msgstr "Detalhamento das permissões"
 #.elixir
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:16
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:134
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:154
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:168
 msgid "Permissions"
 msgstr "Permissões"
 
@@ -16190,10 +16259,10 @@ msgstr "Tente novamente"
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:88
-#: ../turboui/src/CommentSection/CommentItem.tsx:215
-#: ../turboui/src/InlineComments/Thread.tsx:52
-#: ../turboui/src/Reactions/index.tsx:58
-#: ../turboui/src/Reactions/index.tsx:204
+#: ../turboui/src/CommentSection/CommentItem.tsx:226
+#: ../turboui/src/InlineComments/Thread.tsx:57
+#: ../turboui/src/Reactions/index.tsx:59
+#: ../turboui/src/Reactions/index.tsx:205
 #: assets/js/models/people/usePeopleSearchError.ts:7
 #: assets/js/pages/AccountApiTokensPage/index.tsx:61
 #: assets/js/pages/AccountApiTokensPage/index.tsx:84
@@ -16683,21 +16752,21 @@ msgstr "Nome do projeto"
 
 #.frontend
 #: assets/js/pages/MilestonePage/index.tsx:65
-#: assets/js/pages/ProjectPage/index.tsx:91
+#: assets/js/pages/ProjectPage/index.tsx:94
 #: assets/js/pages/TaskPage/index.tsx:65
 msgid "Project name cannot be empty"
 msgstr "O nome do projeto não pode ficar em branco"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:597
-#: lib/operately_web/api/projects.ex:612
-#: lib/operately_web/api/projects.ex:642
-#: lib/operately_web/api/projects.ex:677
+#: lib/operately_web/api/projects.ex:607
+#: lib/operately_web/api/projects.ex:622
+#: lib/operately_web/api/projects.ex:652
+#: lib/operately_web/api/projects.ex:687
 #: lib/operately_web/api/projects/discussions.ex:205
-#: lib/operately_web/api/projects/milestones.ex:276
-#: lib/operately_web/api/tasks.ex:626
-#: lib/operately_web/api/tasks.ex:665
-#: lib/operately_web/api/tasks.ex:680
+#: lib/operately_web/api/projects/milestones.ex:282
+#: lib/operately_web/api/tasks.ex:637
+#: lib/operately_web/api/tasks.ex:676
+#: lib/operately_web/api/tasks.ex:691
 msgid "Project not found"
 msgstr "Projeto não encontrado"
 
@@ -16914,7 +16983,7 @@ msgstr "Resultados da busca rápida"
 
 #.frontend
 #: ../turboui/src/RichEditor/components/BlockquoteButton.tsx:13
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:80
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:79
 msgid "Quote"
 msgstr "Citação"
 
@@ -17035,12 +17104,12 @@ msgid "Re: timeframe change"
 msgstr "Re: alteração de período"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:204
+#: ../turboui/src/Reactions/index.tsx:205
 msgid "Reaction not added"
 msgstr "Reação não adicionada"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:58
+#: ../turboui/src/Reactions/index.tsx:59
 msgid "Reaction not removed"
 msgstr "Reação não removida"
 
@@ -17182,6 +17251,16 @@ msgid "Record update"
 msgstr "Registrar atualização"
 
 #.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:90
+msgid "Recorded %{value} for %{kpiName}"
+msgstr "Registrou %{value} para %{kpiName}"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:89
+msgid "Recorded KPI value: %{value}"
+msgstr "Valor de KPI registrado: %{value}"
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:423
 msgid "Recorded by"
 msgstr "Registrado por"
@@ -17192,7 +17271,7 @@ msgid "Recorded updates"
 msgstr "Atualizações registradas"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:128
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:147
 msgid "Redirect Host"
 msgstr "Host de redirecionamento"
 
@@ -17326,7 +17405,7 @@ msgid "Remove photo"
 msgstr "Remover foto"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:170
+#: ../turboui/src/Reactions/index.tsx:171
 msgid "Remove reaction"
 msgstr "Remover reação"
 
@@ -17446,7 +17525,7 @@ msgid "Renews"
 msgstr "Renova em"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:240
+#: ../turboui/src/InlineComments/Thread.tsx:256
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:155
 #: ../turboui/src/MilestonePage/index.tsx:376
 msgid "Reopen"
@@ -17525,7 +17604,7 @@ msgid "Replacement"
 msgstr "Substituto"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:810
+#: lib/operately_web/api/projects.ex:820
 #: lib/operately_web/api/spaces.ex:397
 msgid "Replacement statuses must be existing statuses that are not being deleted"
 msgstr "Os status substitutos devem existir e não podem estar sendo excluídos"
@@ -17589,12 +17668,13 @@ msgid "Reset your password"
 msgstr "Redefina sua senha"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:240
+#: ../turboui/src/InlineComments/Thread.tsx:256
 msgid "Resolve"
 msgstr "Resolver"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:101
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:93
+#: ../turboui/src/InlineComments/Thread.tsx:107
 msgid "Resolved"
 msgstr "Resolvido"
 
@@ -17771,7 +17851,7 @@ msgstr "Notas da retrospectiva:"
 #: ../turboui/src/ContentListState/index.tsx:33
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:146
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:110
+#: ../turboui/src/InlineComments/CommentsPanel.tsx:140
 msgid "Retry"
 msgstr "Tentar novamente"
 
@@ -17787,25 +17867,25 @@ msgstr "Exibindo uma visão hierárquica de todos os objetivos e projetos da sua
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:88
-#: assets/js/pages/ProjectPage/index.tsx:124
+#: assets/js/pages/ProjectPage/index.tsx:127
 msgid "Reverted the access levels to their previous values."
 msgstr "Os níveis de acesso voltaram aos valores anteriores."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:116
-#: assets/js/pages/ProjectPage/index.tsx:677
+#: assets/js/pages/ProjectPage/index.tsx:680
 msgid "Reverted the champion to its previous value."
 msgstr "O champion voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:81
-#: assets/js/pages/ProjectPage/index.tsx:98
+#: assets/js/pages/ProjectPage/index.tsx:101
 msgid "Reverted the description to its previous value."
 msgstr "A descrição voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:110
-#: assets/js/pages/ProjectPage/index.tsx:130
+#: assets/js/pages/ProjectPage/index.tsx:133
 msgid "Reverted the due date to its previous value."
 msgstr "A data de conclusão voltou ao valor anterior."
 
@@ -17816,26 +17896,26 @@ msgstr "O nome do objetivo voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:128
-#: assets/js/pages/ProjectPage/index.tsx:108
+#: assets/js/pages/ProjectPage/index.tsx:111
 msgid "Reverted the parent goal to its previous value."
 msgstr "O objetivo superior voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/MilestonePage/index.tsx:64
-#: assets/js/pages/ProjectPage/index.tsx:90
+#: assets/js/pages/ProjectPage/index.tsx:93
 #: assets/js/pages/TaskPage/index.tsx:64
 msgid "Reverted the project name to its previous value."
 msgstr "O nome do projeto voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:122
-#: assets/js/pages/ProjectPage/index.tsx:683
+#: assets/js/pages/ProjectPage/index.tsx:686
 msgid "Reverted the reviewer to its previous value."
 msgstr "O reviewer voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:98
-#: assets/js/pages/ProjectPage/index.tsx:671
+#: assets/js/pages/ProjectPage/index.tsx:674
 msgid "Reverted the space to its previous value."
 msgstr "O espaço voltou ao valor anterior."
 
@@ -17845,7 +17925,7 @@ msgid "Reverted the start date to its previous value."
 msgstr "A data de início voltou ao valor anterior."
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:136
+#: assets/js/pages/ProjectPage/index.tsx:139
 msgid "Reverted the started date to its previous value."
 msgstr "A data de início voltou ao valor anterior."
 
@@ -18123,7 +18203,7 @@ msgstr "Salvar"
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:155
 #: ../turboui/src/AccountSettingsPage/index.tsx:89
-#: ../turboui/src/CommentSection/CommentItem.tsx:384
+#: ../turboui/src/CommentSection/CommentItem.tsx:397
 #: ../turboui/src/DocumentEditPage/index.tsx:83
 #: ../turboui/src/ProfileEditPage/index.tsx:142
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:443
@@ -18318,7 +18398,8 @@ msgid "Search documents and files…"
 msgstr "Buscar documentos e arquivos…"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:913
+#: ../turboui/src/Reactions/index.tsx:970
+#: ../turboui/src/Reactions/index.tsx:971
 msgid "Search emojis..."
 msgstr "Buscar emojis..."
 
@@ -18485,7 +18566,7 @@ msgid "Select a Space"
 msgstr "Selecione um espaço"
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:105
+#: lib/operately/comments/create_milestone_comment_operation.ex:106
 msgid "Select a closed task status"
 msgstr "Selecione um status de tarefa concluída"
 
@@ -18955,6 +19036,13 @@ msgid "Short ID"
 msgstr "ID curto"
 
 #.frontend
+#: ../turboui/src/ActivityTaskList/index.tsx:50
+msgid "Show %{count} more task"
+msgid_plural "Show %{count} more tasks"
+msgstr[0] "Mostrar mais %{count} tarefa"
+msgstr[1] "Mostrar mais %{count} tarefas"
+
+#.frontend
 #: ../turboui/src/TaskBoard/components/TaskList.tsx:211
 msgid "Show 1 completed task"
 msgid_plural "Show %{count} completed tasks"
@@ -19183,7 +19271,7 @@ msgid "Some dates are before the project start date."
 msgstr "Algumas datas são anteriores à data de início do projeto."
 
 #.elixir
-#: lib/operately_web/api/projects/milestones.ex:347
+#: lib/operately_web/api/projects/milestones.ex:353
 msgid "Some milestone IDs do not belong to this project"
 msgstr "Alguns IDs de marcos não pertencem a este projeto"
 
@@ -19353,7 +19441,7 @@ msgid "Space members will have full access."
 msgstr "Os membros do espaço terão acesso total."
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:635
+#: lib/operately_web/api/tasks.ex:646
 msgid "Space not found"
 msgstr "Espaço não encontrado"
 
@@ -19682,7 +19770,7 @@ msgid "Storage used"
 msgstr "Armazenamento usado"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:61
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:60
 #: ../turboui/src/RichEditor/components/StrikeButton.tsx:13
 msgid "Strikethrough"
 msgstr "Tachado"
@@ -19765,7 +19853,7 @@ msgid "Subscription ended"
 msgstr "Assinatura encerrada"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:226
+#: ../turboui/src/CommentSection/CommentItem.tsx:237
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:48
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:213
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:328
@@ -19821,8 +19909,8 @@ msgid "TASKS"
 msgstr "TAREFAS"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableButton.tsx:17
-#: ../turboui/src/RichEditor/components/TableButton.tsx:19
+#: ../turboui/src/RichEditor/components/TableButton.tsx:25
+#: ../turboui/src/RichEditor/components/TableButton.tsx:27
 #: ../turboui/src/RichEditor/extensions/Table.ts:49
 #: ../turboui/src/WorkMap/components/WorkMapNavigation.tsx:33
 msgid "Table"
@@ -19992,12 +20080,12 @@ msgid "Task not deleted"
 msgstr "Tarefa não excluída"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:606
-#: lib/operately_web/api/projects.ex:621
-#: lib/operately_web/api/projects/milestones.ex:297
+#: lib/operately_web/api/projects.ex:616
+#: lib/operately_web/api/projects.ex:631
+#: lib/operately_web/api/projects/milestones.ex:303
 #: lib/operately_web/api/spaces.ex:313
-#: lib/operately_web/api/tasks.ex:647
-#: lib/operately_web/api/tasks.ex:659
+#: lib/operately_web/api/tasks.ex:658
+#: lib/operately_web/api/tasks.ex:670
 msgid "Task not found"
 msgstr "Tarefa não encontrada"
 
@@ -20301,7 +20389,7 @@ msgid "The MCP client can no longer access your account."
 msgstr "O cliente MCP não pode mais acessar sua conta."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:201
 msgid "The OAuth client is not registered for this Operately MCP server."
 msgstr "O cliente OAuth não está registrado neste servidor MCP do Operately."
 
@@ -20326,17 +20414,17 @@ msgid "The assignee was removed. Previously it was %{old_assignee}"
 msgstr "O responsável foi removido. Antes, era %{old_assignee}"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:196
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
 msgid "The authorization request contains an unsupported scope."
 msgstr "A solicitação de autorização contém um escopo incompatível."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:201
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:202
 msgid "The authorization request is missing required parameters or contains invalid values."
 msgstr "A solicitação de autorização não contém parâmetros obrigatórios ou contém valores inválidos."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:195
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:196
 msgid "The authorization request must target this server's canonical MCP endpoint."
 msgstr "A solicitação de autorização deve apontar para o endpoint MCP canônico deste servidor."
 
@@ -20376,17 +20464,17 @@ msgid "The check-in has been successfully deleted."
 msgstr "O check-in foi excluído com sucesso."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:216
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:217
 msgid "The client could not be authenticated."
 msgstr "Não foi possível autenticar o cliente."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:248
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:249
 msgid "The client registration request could not be completed."
 msgstr "Não foi possível concluir a solicitação de registro do cliente."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:245
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:246
 msgid "The client registration request is missing required fields or contains invalid values."
 msgstr "A solicitação de registro do cliente não contém campos obrigatórios ou contém valores inválidos."
 
@@ -20396,7 +20484,7 @@ msgid "The comment is still on this page. Try again."
 msgstr "O comentário ainda está nesta página. Tente novamente."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:226
+#: ../turboui/src/CommentSection/CommentItem.tsx:237
 msgid "The comment link has been copied to your clipboard"
 msgstr "O link do comentário foi copiado para a área de transferência"
 
@@ -20714,12 +20802,12 @@ msgid "The requested billing option is not currently available. Showing the clos
 msgstr "A opção de faturamento solicitada não está disponível no momento. Estamos exibindo o plano disponível mais próximo."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:194
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:195
 msgid "The requested redirect URI is not registered for this client."
 msgstr "A URI de redirecionamento solicitada não está registrada para este cliente."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:217
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:218
 msgid "The requested resource does not match this MCP server."
 msgstr "O recurso solicitado não corresponde a este servidor MCP."
 
@@ -20776,7 +20864,7 @@ msgid "The start date was set to <date/>."
 msgstr "A data de início foi definida para <date/>."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:218
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:219
 msgid "The supplied authorization grant is invalid, expired, or has already been used."
 msgstr "A concessão de autorização fornecida é inválida, expirou ou já foi usada."
 
@@ -20878,17 +20966,17 @@ msgid "The timeframe was changed to %{timeframe}."
 msgstr "O período foi alterado para %{timeframe}."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:219
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:220
 msgid "The token endpoint only supports authorization_code and refresh_token grants."
 msgstr "O endpoint de token aceita apenas concessões authorization_code e refresh_token."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:221
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:222
 msgid "The token request could not be completed."
 msgstr "Não foi possível concluir a solicitação de token."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:220
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:221
 msgid "The token request is missing required parameters or contains invalid values."
 msgstr "A solicitação de token não contém parâmetros obrigatórios ou contém valores inválidos."
 
@@ -21046,7 +21134,7 @@ msgid "This authentication session has expired. Please start again from the CLI.
 msgstr "Esta sessão de autenticação expirou. Comece novamente pela CLI."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:198
 msgid "This authorization request must include a PKCE code challenge."
 msgstr "Esta solicitação de autorização deve incluir um desafio de código PKCE."
 
@@ -21062,9 +21150,19 @@ msgid "This change applies to all your companies. Your existing sessions remain 
 msgstr "Esta alteração se aplica a todas as suas empresas. Suas sessões existentes continuam conectadas."
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:111
-msgid "This client uses a localhost redirect URI. Confirm that you trust the local application before approving."
-msgstr "Este cliente usa uma URI de redirecionamento localhost. Confirme que você confia no aplicativo local antes de aprovar."
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:179
+msgid "This client can view workspace data."
+msgstr "Este cliente pode visualizar dados do ambiente de trabalho."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:173
+msgid "This client can view, create, update, delete, and archive workspace content."
+msgstr "Este cliente pode visualizar, criar, atualizar, excluir e arquivar conteúdo no seu ambiente de trabalho."
+
+#~ #.elixir
+#~ #: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:136
+#~ msgid "This client uses a localhost redirect URI. Confirm that you trust the local application before approving."
+#~ msgstr "Este cliente usa uma URI de redirecionamento localhost. Confirme que você confia no aplicativo local antes de aprovar."
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:40
@@ -21072,10 +21170,10 @@ msgstr "Este cliente usa uma URI de redirecionamento localhost. Confirme que voc
 msgid "This code has expired. Request a new code to continue."
 msgstr "Este código expirou. Solicite um novo código para continuar."
 
-#.frontend
-#: ../turboui/src/InlineComments/CommentsPanel.tsx:114
-msgid "This comment thread is no longer available."
-msgstr "Esta conversa de comentários não está mais disponível."
+#~ #.frontend
+#~ #: ../turboui/src/InlineComments/CommentsPanel.tsx:150
+#~ msgid "This comment thread is no longer available."
+#~ msgstr "Esta conversa de comentários não está mais disponível."
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:315
@@ -21404,7 +21502,7 @@ msgid "This package was exported from Operately %{manifestVersion}, but this ins
 msgstr "Este pacote foi exportado do Operately %{manifestVersion}, mas esta instância está na versão %{currentVersion}. A falha na importação pode estar relacionada às diferenças de versão."
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:103
+#: ../turboui/src/InlineComments/Thread.tsx:109
 msgid "This passage is no longer available."
 msgstr "Este trecho não está mais disponível."
 
@@ -21696,7 +21794,7 @@ msgstr "Dica: Inscreva-se se também quiser receber notificações."
 #~ msgstr "Cargo"
 
 #.elixir
-#: lib/operately_web/api/projects/milestones.ex:364
+#: lib/operately_web/api/projects/milestones.ex:370
 msgid "Title cannot be empty"
 msgstr "O título não pode ficar vazio"
 
@@ -22074,7 +22172,7 @@ msgid "Undo"
 msgstr "Desfazer"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:228
+#: ../turboui/src/CommentSection/CommentItem.tsx:239
 msgid "Unexpected error"
 msgstr "Erro inesperado"
 
@@ -22205,12 +22303,12 @@ msgid "Unsubscribe me"
 msgstr "Cancelar minha inscrição"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:199
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
 msgid "Unsupported Client Authentication"
 msgstr "Autenticação de cliente incompatível"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_controller.ex:198
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:199
 msgid "Unsupported PKCE Method"
 msgstr "Método PKCE incompatível"
 
@@ -22292,7 +22390,7 @@ msgid "Update badge setting saved"
 msgstr "Configuração do indicador de atualização salva"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:638
+#: assets/js/pages/ProjectPage/index.tsx:641
 #: assets/js/pages/TaskPage/index.tsx:329
 msgid "Update failed"
 msgstr "Falha na atualização"
@@ -22928,8 +23026,10 @@ msgstr "Somente leitura"
 msgid "View all"
 msgstr "Ver todos"
 
+#.elixir
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:275
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:172
 msgid "View and edit"
 msgstr "Visualizar e editar"
 
@@ -22964,8 +23064,10 @@ msgstr "Ver marco"
 msgid "View on board"
 msgstr "Ver no quadro"
 
+#.elixir
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:277
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:178
 msgid "View only"
 msgstr "Somente leitura"
 
@@ -23012,7 +23114,7 @@ msgid "View update"
 msgstr "Ver atualização"
 
 #.elixir
-#: lib/operately/mcp/resources.ex:10
+#: lib/operately/mcp/resources.ex:36
 msgid "View workspace data"
 msgstr "Visualizar dados do ambiente de trabalho"
 
@@ -23465,7 +23567,7 @@ msgid "Write a short test message"
 msgstr "Escreva uma mensagem curta de teste"
 
 #.elixir
-#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:117
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:136
 msgid "Write access lets this client create, update, delete, and archive content in your workspace."
 msgstr "O acesso de escrita permite que este cliente crie, atualize, exclua e arquive conteúdo no seu ambiente de trabalho."
 
@@ -23942,10 +24044,10 @@ msgstr "Seu e-mail atual continua ativo até você confirmar este código."
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:71
 #: ../turboui/src/CommentSection/CommentInput.tsx:94
-#: ../turboui/src/CommentSection/CommentItem.tsx:361
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:90
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:99
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
+#: ../turboui/src/CommentSection/CommentItem.tsx:374
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:91
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:100
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:109
 msgid "Your draft has been kept for retry."
 msgstr "Seu rascunho foi mantido para você tentar novamente."
 
@@ -24338,7 +24440,7 @@ msgid "commented on the discussion \"%{title}\""
 msgstr "comentou na discussão \"%{title}\""
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:47
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:52
 msgid "commented on the document \"%{document_name}\""
 msgstr "comentou no documento \"%{document_name}\""
 
@@ -25351,901 +25453,901 @@ msgid "Provider"
 msgstr "Provedor"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:275
+#: ../turboui/src/Reactions/index.tsx:277
 msgctxt "emoji search"
 msgid "100, perfect, agree, correct, absolutely"
 msgstr "100, perfeito, concordar, correto, absolutamente"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:632
+#: ../turboui/src/Reactions/index.tsx:634
 msgctxt "emoji search"
 msgid "alarm, clock, time, wake up"
 msgstr "alarme, relógio, hora, acordar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:855
+#: ../turboui/src/Reactions/index.tsx:857
 msgctxt "emoji search"
 msgid "alert, siren, warning, emergency"
 msgstr "alerta, sirene, aviso, emergência"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:362
+#: ../turboui/src/Reactions/index.tsx:364
 msgctxt "emoji search"
 msgid "angel, innocent, halo"
 msgstr "anjo, inocente, auréola"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:428
+#: ../turboui/src/Reactions/index.tsx:430
 msgctxt "emoji search"
 msgid "angry, mad, rage, furious"
 msgstr "bravo, irritado, raiva, furioso"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:429
+#: ../turboui/src/Reactions/index.tsx:431
 msgctxt "emoji search"
 msgid "angry, mad, upset"
 msgstr "bravo, irritado, chateado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:418
+#: ../turboui/src/Reactions/index.tsx:420
 msgctxt "emoji search"
 msgid "anxious, nervous, sweat, worried"
 msgstr "ansioso, nervoso, suor, preocupado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:833
+#: ../turboui/src/Reactions/index.tsx:835
 msgctxt "emoji search"
 msgid "art, paint, palette, creative, design"
 msgstr "arte, pintar, paleta, criativo, design"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:660
+#: ../turboui/src/Reactions/index.tsx:662
 msgctxt "emoji search"
 msgid "balloon, party, celebrate"
 msgstr "balão, festa, comemorar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:743
+#: ../turboui/src/Reactions/index.tsx:745
 msgctxt "emoji search"
 msgid "beers, cheers, drinks, celebrate, toast"
 msgstr "cervejas, saúde, bebidas, comemorar, brinde"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:627
+#: ../turboui/src/Reactions/index.tsx:629
 msgctxt "emoji search"
 msgid "bell, notification, alert, reminder"
 msgstr "sino, notificação, alerta, lembrete"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:826
+#: ../turboui/src/Reactions/index.tsx:828
 msgctxt "emoji search"
 msgid "brain, smart, think, intelligence"
 msgstr "cérebro, inteligente, pensar, inteligência"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:583
+#: ../turboui/src/Reactions/index.tsx:585
 msgctxt "emoji search"
 msgid "briefcase, work, business, professional"
 msgstr "maleta, trabalho, negócios, profissional"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:734
+#: ../turboui/src/Reactions/index.tsx:736
 msgctxt "emoji search"
 msgid "burger, hamburger, food"
 msgstr "hambúrguer, comida"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:737
+#: ../turboui/src/Reactions/index.tsx:739
 msgctxt "emoji search"
 msgid "cake, dessert, sweet, birthday"
 msgstr "bolo, sobremesa, doce, aniversário"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:636
+#: ../turboui/src/Reactions/index.tsx:638
 msgctxt "emoji search"
 msgid "calendar, date, schedule"
 msgstr "calendário, data, agenda"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:639
+#: ../turboui/src/Reactions/index.tsx:641
 msgctxt "emoji search"
 msgid "calendar, planning, schedule"
 msgstr "calendário, planejamento, agenda"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:851
+#: ../turboui/src/Reactions/index.tsx:853
 msgctxt "emoji search"
 msgid "camera, photo, picture, snapshot"
 msgstr "câmera, foto, imagem, fotografia"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:750
+#: ../turboui/src/Reactions/index.tsx:752
 msgctxt "emoji search"
 msgid "champagne, celebrate, bottle, party"
 msgstr "champanhe, comemorar, garrafa, festa"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:604
+#: ../turboui/src/Reactions/index.tsx:606
 msgctxt "emoji search"
 msgid "chart down, decrease, trending down, decline"
 msgstr "gráfico em queda, diminuição, tendência de queda, declínio"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:597
+#: ../turboui/src/Reactions/index.tsx:599
 msgctxt "emoji search"
 msgid "chart up, growth, trending up, increase"
 msgstr "gráfico em alta, crescimento, tendência de alta, aumento"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:590
+#: ../turboui/src/Reactions/index.tsx:592
 msgctxt "emoji search"
 msgid "chart, graph, stats, data, analytics"
 msgstr "gráfico, estatísticas, dados, análise"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:317
+#: ../turboui/src/Reactions/index.tsx:319
 msgctxt "emoji search"
 msgid "check, done, complete, yes, correct"
 msgstr "verificado, feito, concluído, sim, correto"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:757
+#: ../turboui/src/Reactions/index.tsx:759
 msgctxt "emoji search"
 msgid "cheers, toast, glasses, celebrate"
 msgstr "saúde, brinde, taças, comemorar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:303
+#: ../turboui/src/Reactions/index.tsx:305
 msgctxt "emoji search"
 msgid "clap, applause, praise, congratulations, bravo"
 msgstr "palmas, aplausos, elogio, parabéns, bravo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:616
+#: ../turboui/src/Reactions/index.tsx:618
 msgctxt "emoji search"
 msgid "clipboard, checklist, todo, list"
 msgstr "prancheta, checklist, tarefas, lista"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:696
+#: ../turboui/src/Reactions/index.tsx:698
 msgctxt "emoji search"
 msgid "cloud, partly sunny, weather"
 msgstr "nuvem, parcialmente ensolarado, clima"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:793
+#: ../turboui/src/Reactions/index.tsx:795
 msgctxt "emoji search"
 msgid "clover, four leaf clover, luck, lucky, shamrock"
 msgstr "trevo, trevo de quatro folhas, sorte, sortudo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:731
+#: ../turboui/src/Reactions/index.tsx:733
 msgctxt "emoji search"
 msgid "coffee, tea, hot, drink, cafe"
 msgstr "café, chá, quente, bebida, cafeteria"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:663
+#: ../turboui/src/Reactions/index.tsx:665
 msgctxt "emoji search"
 msgid "confetti, party, celebration"
 msgstr "confete, festa, comemoração"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:410
+#: ../turboui/src/Reactions/index.tsx:412
 msgctxt "emoji search"
 msgid "confused, uncertain, puzzled"
 msgstr "confuso, incerto, intrigado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:862
+#: ../turboui/src/Reactions/index.tsx:864
 msgctxt "emoji search"
 msgid "cool, awesome, nice"
 msgstr "legal, incrível, bacana"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:357
+#: ../turboui/src/Reactions/index.tsx:359
 msgctxt "emoji search"
 msgid "cool, sunglasses, awesome"
 msgstr "legal, óculos de sol, incrível"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:464
+#: ../turboui/src/Reactions/index.tsx:466
 msgctxt "emoji search"
 msgid "crazy, silly, goofy, wacky"
 msgstr "louco, bobo, pateta, maluco"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:654
+#: ../turboui/src/Reactions/index.tsx:656
 msgctxt "emoji search"
 msgid "credit card, payment, card"
 msgstr "cartão de crédito, pagamento, cartão"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:777
+#: ../turboui/src/Reactions/index.tsx:779
 msgctxt "emoji search"
 msgid "crown, king, queen, royalty, best"
 msgstr "coroa, rei, rainha, realeza, melhor"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:401
+#: ../turboui/src/Reactions/index.tsx:403
 msgctxt "emoji search"
 msgid "cry, sad, tear, upset"
 msgstr "chorar, triste, lágrima, chateado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:402
+#: ../turboui/src/Reactions/index.tsx:404
 msgctxt "emoji search"
 msgid "cry, sob, tears, very sad"
 msgstr "chorar, soluçar, lágrimas, muito triste"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:430
+#: ../turboui/src/Reactions/index.tsx:432
 msgctxt "emoji search"
 msgid "curse, swear, mad, angry"
 msgstr "xingar, palavrão, irritado, bravo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:407
+#: ../turboui/src/Reactions/index.tsx:409
 msgctxt "emoji search"
 msgid "disappointed, sad, upset"
 msgstr "decepcionado, triste, chateado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:651
+#: ../turboui/src/Reactions/index.tsx:653
 msgctxt "emoji search"
 msgid "dollar, money, bill, cash"
 msgstr "dólar, dinheiro, nota, grana"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:769
+#: ../turboui/src/Reactions/index.tsx:771
 msgctxt "emoji search"
 msgid "dress, fashion, clothing"
 msgstr "vestido, moda, roupa"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:804
+#: ../turboui/src/Reactions/index.tsx:806
 msgctxt "emoji search"
 msgid "exclamation, important, warning, alert"
 msgstr "exclamação, importante, aviso, alerta"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:487
+#: ../turboui/src/Reactions/index.tsx:489
 msgctxt "emoji search"
 msgid "expressionless, blank, deadpan"
 msgstr "sem expressão, inexpressivo, impassível"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:492
+#: ../turboui/src/Reactions/index.tsx:494
 msgctxt "emoji search"
 msgid "eye roll, whatever, annoyed"
 msgstr "revirar os olhos, tanto faz, irritado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:820
+#: ../turboui/src/Reactions/index.tsx:822
 msgctxt "emoji search"
 msgid "eyes, look, watch, see, viewing"
 msgstr "olhos, olhar, observar, ver, visualizando"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:422
+#: ../turboui/src/Reactions/index.tsx:424
 msgctxt "emoji search"
 msgid "fearful, scared, fear, shock"
 msgstr "medroso, assustado, medo, choque"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:556
+#: ../turboui/src/Reactions/index.tsx:558
 msgctxt "emoji search"
 msgid "fingers crossed, luck, hope, wish"
 msgstr "dedos cruzados, sorte, esperança, desejo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:269
+#: ../turboui/src/Reactions/index.tsx:271
 msgctxt "emoji search"
 msgid "fire, hot, lit, awesome, great"
 msgstr "fogo, quente, incrível, ótimo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:674
+#: ../turboui/src/Reactions/index.tsx:676
 msgctxt "emoji search"
 msgid "first, gold, medal, winner, 1st"
 msgstr "primeiro, ouro, medalha, vencedor, 1º"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:564
+#: ../turboui/src/Reactions/index.tsx:566
 msgctxt "emoji search"
 msgid "fist, bump, punch, power"
 msgstr "punho, toque, soco, poder"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:567
+#: ../turboui/src/Reactions/index.tsx:569
 msgctxt "emoji search"
 msgid "fist, power, solidarity, punch"
 msgstr "punho, poder, solidariedade, soco"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:447
+#: ../turboui/src/Reactions/index.tsx:449
 msgctxt "emoji search"
 msgid "flushed, embarrassed, shocked"
 msgstr "corado, envergonhado, chocado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:863
+#: ../turboui/src/Reactions/index.tsx:865
 msgctxt "emoji search"
 msgid "free, gratis"
 msgstr "grátis, gratuito"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:845
+#: ../turboui/src/Reactions/index.tsx:847
 msgctxt "emoji search"
 msgid "game, gaming, controller, play"
 msgstr "jogo, jogar, controle, brincar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:711
+#: ../turboui/src/Reactions/index.tsx:713
 msgctxt "emoji search"
 msgid "gear, settings, config, configure"
 msgstr "engrenagem, ajustes, configuração, configurar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:658
+#: ../turboui/src/Reactions/index.tsx:660
 msgctxt "emoji search"
 msgid "gift, present, box, birthday"
 msgstr "presente, caixa, aniversário"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:471
+#: ../turboui/src/Reactions/index.tsx:473
 msgctxt "emoji search"
 msgid "giggle, shy, oops, hand over mouth"
 msgstr "risadinha, tímido, opa, mão na boca"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:771
+#: ../turboui/src/Reactions/index.tsx:773
 msgctxt "emoji search"
 msgid "glasses, eyeglasses, nerd"
 msgstr "óculos, nerd"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:524
+#: ../turboui/src/Reactions/index.tsx:526
 msgctxt "emoji search"
 msgid "grimace, awkward, nervous"
 msgstr "careta, constrangido, nervoso"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:343
+#: ../turboui/src/Reactions/index.tsx:345
 msgctxt "emoji search"
 msgid "grin, smile, happy"
 msgstr "sorrir, sorriso, feliz"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:848
+#: ../turboui/src/Reactions/index.tsx:850
 msgctxt "emoji search"
 msgid "guitar, music, rock"
 msgstr "guitarra, música, rock"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:705
+#: ../turboui/src/Reactions/index.tsx:707
 msgctxt "emoji search"
 msgid "hammer, tool, fix, build"
 msgstr "martelo, ferramenta, consertar, construir"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:310
+#: ../turboui/src/Reactions/index.tsx:312
 msgctxt "emoji search"
 msgid "hands, celebrate, praise, hooray, yay"
 msgstr "mãos, comemorar, elogiar, viva, oba"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:798
+#: ../turboui/src/Reactions/index.tsx:800
 msgctxt "emoji search"
 msgid "handshake, agreement, deal"
 msgstr "aperto de mão, acordo, negócio"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:542
+#: ../turboui/src/Reactions/index.tsx:544
 msgctxt "emoji search"
 msgid "handshake, deal, agreement, shake"
 msgstr "aperto de mão, negócio, acordo, cumprimentar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:251
+#: ../turboui/src/Reactions/index.tsx:253
 msgctxt "emoji search"
 msgid "heart, love, like, favorite"
 msgstr "coração, amor, gostar, favorito"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:635
+#: ../turboui/src/Reactions/index.tsx:637
 msgctxt "emoji search"
 msgid "hourglass, time, waiting"
 msgstr "ampulheta, tempo, espera"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:466
+#: ../turboui/src/Reactions/index.tsx:468
 msgctxt "emoji search"
 msgid "hug, hugging, embrace"
 msgstr "abraço, abraçar, acolher"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:513
+#: ../turboui/src/Reactions/index.tsx:515
 msgctxt "emoji search"
 msgid "hurt, injured, bandage, pain"
 msgstr "machucado, ferido, curativo, dor"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:330
+#: ../turboui/src/Reactions/index.tsx:332
 msgctxt "emoji search"
 msgid "idea, light, bulb, think, smart"
 msgstr "ideia, luz, lâmpada, pensar, inteligente"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:725
+#: ../turboui/src/Reactions/index.tsx:727
 msgctxt "emoji search"
 msgid "key, unlock, access, password"
 msgstr "chave, desbloquear, acesso, senha"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:340
+#: ../turboui/src/Reactions/index.tsx:342
 msgctxt "emoji search"
 msgid "laugh, lol, haha, funny, joy"
 msgstr "rir, risada, hahaha, engraçado, alegria"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:702
+#: ../turboui/src/Reactions/index.tsx:704
 msgctxt "emoji search"
 msgid "lightning, bolt, fast, power, energy"
 msgstr "raio, relâmpago, rápido, poder, energia"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:716
+#: ../turboui/src/Reactions/index.tsx:718
 msgctxt "emoji search"
 msgid "link, chain, connection, url"
 msgstr "link, corrente, conexão, url"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:622
+#: ../turboui/src/Reactions/index.tsx:624
 msgctxt "emoji search"
 msgid "location, pin, map, place"
 msgstr "localização, alfinete, mapa, lugar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:720
+#: ../turboui/src/Reactions/index.tsx:722
 msgctxt "emoji search"
 msgid "lock, secure, private, locked"
 msgstr "cadeado, seguro, privado, bloqueado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:351
+#: ../turboui/src/Reactions/index.tsx:353
 msgctxt "emoji search"
 msgid "love, heart eyes, adore, crush"
 msgstr "amor, olhos de coração, adorar, paixão"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:355
+#: ../turboui/src/Reactions/index.tsx:357
 msgctxt "emoji search"
 msgid "love, hearts, adore, affection"
 msgstr "amor, corações, adorar, carinho"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:562
+#: ../turboui/src/Reactions/index.tsx:564
 msgctxt "emoji search"
 msgid "love, rock, you rock, i love you"
 msgstr "amor, rock, você arrasa, eu te amo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:683
+#: ../turboui/src/Reactions/index.tsx:685
 msgctxt "emoji search"
 msgid "medal, military, honor, award"
 msgstr "medalha, militar, honra, prêmio"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:611
+#: ../turboui/src/Reactions/index.tsx:613
 msgctxt "emoji search"
 msgid "memo, note, write, document, pencil"
 msgstr "anotação, nota, escrever, documento, lápis"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:442
+#: ../turboui/src/Reactions/index.tsx:444
 msgctxt "emoji search"
 msgid "mind blown, exploding head, shocked, amazed"
 msgstr "mente explodindo, cabeça explodindo, chocado, admirado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:645
+#: ../turboui/src/Reactions/index.tsx:647
 msgctxt "emoji search"
 msgid "money, bag, dollar, cash, rich"
 msgstr "dinheiro, saco, dólar, grana, rico"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:649
+#: ../turboui/src/Reactions/index.tsx:651
 msgctxt "emoji search"
 msgid "money, flying, spend, loss"
 msgstr "dinheiro, voando, gastar, perda"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:385
+#: ../turboui/src/Reactions/index.tsx:387
 msgctxt "emoji search"
 msgid "monocle, examine, inspect, curious"
 msgstr "monóculo, examinar, inspecionar, curioso"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:296
+#: ../turboui/src/Reactions/index.tsx:298
 msgctxt "emoji search"
 msgid "muscle, strong, strength, power, flex"
 msgstr "músculo, forte, força, poder, flexionar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:847
+#: ../turboui/src/Reactions/index.tsx:849
 msgctxt "emoji search"
 msgid "music, note, song"
 msgstr "música, nota, canção"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:484
+#: ../turboui/src/Reactions/index.tsx:486
 msgctxt "emoji search"
 msgid "neutral, meh, blank"
 msgstr "neutro, indiferente, sem expressão"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:861
+#: ../turboui/src/Reactions/index.tsx:863
 msgctxt "emoji search"
 msgid "new, fresh, latest"
 msgstr "novo, recente, mais recente"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:489
+#: ../turboui/src/Reactions/index.tsx:491
 msgctxt "emoji search"
 msgid "no mouth, silence, quiet"
 msgstr "sem boca, silêncio, quieto"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:320
+#: ../turboui/src/Reactions/index.tsx:322
 msgctxt "emoji search"
 msgid "ok, okay, perfect, good"
 msgstr "ok, certo, perfeito, bom"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:569
+#: ../turboui/src/Reactions/index.tsx:571
 msgctxt "emoji search"
 msgid "open hands, jazz hands"
 msgstr "mãos abertas, mãos de jazz"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:480
+#: ../turboui/src/Reactions/index.tsx:482
 msgctxt "emoji search"
 msgid "party, celebrate, birthday, hat"
 msgstr "festa, comemorar, aniversário, chapéu"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:264
+#: ../turboui/src/Reactions/index.tsx:266
 msgctxt "emoji search"
 msgid "party, celebrate, celebration, tada, confetti"
 msgstr "festa, comemorar, comemoração, celebração, confete"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:559
+#: ../turboui/src/Reactions/index.tsx:561
 msgctxt "emoji search"
 msgid "peace, victory, v sign"
 msgstr "paz, vitória, sinal de v"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:620
+#: ../turboui/src/Reactions/index.tsx:622
 msgctxt "emoji search"
 msgid "pin, pushpin, important, mark"
 msgstr "alfinete, tachinha, importante, marcar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:733
+#: ../turboui/src/Reactions/index.tsx:735
 msgctxt "emoji search"
 msgid "pizza, food, slice"
 msgstr "pizza, comida, fatia"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:521
+#: ../turboui/src/Reactions/index.tsx:523
 msgctxt "emoji search"
 msgid "pleading, puppy eyes, beg, please"
 msgstr "suplicante, olhos de cachorrinho, implorar, por favor"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:549
+#: ../turboui/src/Reactions/index.tsx:551
 msgctxt "emoji search"
 msgid "pray, please, thanks, namaste, high five"
 msgstr "rezar, por favor, obrigado, namastê, toca aqui"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:809
+#: ../turboui/src/Reactions/index.tsx:811
 msgctxt "emoji search"
 msgid "question, help, what, confused"
 msgstr "pergunta, ajuda, o quê, confuso"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:690
+#: ../turboui/src/Reactions/index.tsx:692
 msgctxt "emoji search"
 msgid "rainbow, pride, colorful, diversity"
 msgstr "arco-íris, orgulho, colorido, diversidade"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:574
+#: ../turboui/src/Reactions/index.tsx:576
 msgctxt "emoji search"
 msgid "raising hands, celebrate, yay, hooray"
 msgstr "mãos levantadas, comemorar, oba, viva"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:257
+#: ../turboui/src/Reactions/index.tsx:259
 msgctxt "emoji search"
 msgid "rocket, launch, fast, success, ship"
 msgstr "foguete, lançamento, rápido, sucesso, lançar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:348
+#: ../turboui/src/Reactions/index.tsx:350
 msgctxt "emoji search"
 msgid "rolling, laugh, lol, rofl"
 msgstr "rolando, rir, risada, gargalhada"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:405
+#: ../turboui/src/Reactions/index.tsx:407
 msgctxt "emoji search"
 msgid "sad, pensive, down, disappointed"
 msgstr "triste, pensativo, desanimado, decepcionado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:786
+#: ../turboui/src/Reactions/index.tsx:788
 msgctxt "emoji search"
 msgid "salute, respect, yes sir, military"
 msgstr "saudação, respeito, sim senhor, militar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:426
+#: ../turboui/src/Reactions/index.tsx:428
 msgctxt "emoji search"
 msgid "scream, shocked, omg, afraid"
 msgstr "grito, chocado, meu deus, medo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:678
+#: ../turboui/src/Reactions/index.tsx:680
 msgctxt "emoji search"
 msgid "second, silver, medal, 2nd"
 msgstr "segundo, prata, medalha, 2º"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:476
+#: ../turboui/src/Reactions/index.tsx:478
 msgctxt "emoji search"
 msgid "shh, quiet, secret, silence"
 msgstr "psiu, quieto, segredo, silêncio"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:770
+#: ../turboui/src/Reactions/index.tsx:772
 msgctxt "emoji search"
 msgid "shirt, t-shirt, clothing"
 msgstr "camisa, camiseta, roupa"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:437
+#: ../turboui/src/Reactions/index.tsx:439
 msgctxt "emoji search"
 msgid "shocked, astonished, gasp"
 msgstr "chocado, espantado, surpresa"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:509
+#: ../turboui/src/Reactions/index.tsx:511
 msgctxt "emoji search"
 msgid "sick, ill, fever, thermometer"
 msgstr "doente, enfermo, febre, termômetro"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:501
+#: ../turboui/src/Reactions/index.tsx:503
 msgctxt "emoji search"
 msgid "sick, nauseated, ill, gross"
 msgstr "doente, enjoado, mal-estar, nojo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:494
+#: ../turboui/src/Reactions/index.tsx:496
 msgctxt "emoji search"
 msgid "sleep, tired, sleepy, zzz"
 msgstr "dormir, cansado, sonolento, zzz"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:496
+#: ../turboui/src/Reactions/index.tsx:498
 msgctxt "emoji search"
 msgid "sleepy, tired, exhausted"
 msgstr "sonolento, cansado, exausto"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:336
+#: ../turboui/src/Reactions/index.tsx:338
 msgctxt "emoji search"
 msgid "smile, happy, glad, pleased"
 msgstr "sorriso, feliz, contente, satisfeito"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:342
+#: ../turboui/src/Reactions/index.tsx:344
 msgctxt "emoji search"
 msgid "smile, happy, joy, grin"
 msgstr "sorriso, feliz, alegria, sorrir"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:365
+#: ../turboui/src/Reactions/index.tsx:367
 msgctxt "emoji search"
 msgid "smile, slight smile, happy"
 msgstr "sorriso, sorriso leve, feliz"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:282
+#: ../turboui/src/Reactions/index.tsx:284
 msgctxt "emoji search"
 msgid "sparkles, shine, stars, magic, new"
 msgstr "brilhos, brilhar, estrelas, magia, novo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:815
+#: ../turboui/src/Reactions/index.tsx:817
 msgctxt "emoji search"
 msgid "speech, comment, talk, chat, message"
 msgstr "fala, comentário, conversar, chat, mensagem"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:360
+#: ../turboui/src/Reactions/index.tsx:362
 msgctxt "emoji search"
 msgid "star eyes, wow, excited, amazed"
 msgstr "olhos de estrela, uau, animado, admirado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:685
+#: ../turboui/src/Reactions/index.tsx:687
 msgctxt "emoji search"
 msgid "star, favorite, rating"
 msgstr "estrela, favorito, avaliação"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:289
+#: ../turboui/src/Reactions/index.tsx:291
 msgctxt "emoji search"
 msgid "star, success, excellent, favorite"
 msgstr "estrela, sucesso, excelente, favorito"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:634
+#: ../turboui/src/Reactions/index.tsx:636
 msgctxt "emoji search"
 msgid "stopwatch, timer, time"
 msgstr "cronômetro, temporizador, tempo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:693
+#: ../turboui/src/Reactions/index.tsx:695
 msgctxt "emoji search"
 msgid "sun, sunny, bright, day"
 msgstr "sol, ensolarado, brilhante, dia"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:772
+#: ../turboui/src/Reactions/index.tsx:774
 msgctxt "emoji search"
 msgid "sunglasses, cool, shades"
 msgstr "óculos de sol, legal"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:346
+#: ../turboui/src/Reactions/index.tsx:348
 msgctxt "emoji search"
 msgid "sweat, relief, phew, nervous"
 msgstr "suor, alívio, ufa, nervoso"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:325
+#: ../turboui/src/Reactions/index.tsx:327
 msgctxt "emoji search"
 msgid "target, goal, bullseye, accuracy, hit"
 msgstr "alvo, objetivo, meta, precisão, acerto"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:840
+#: ../turboui/src/Reactions/index.tsx:842
 msgctxt "emoji search"
 msgid "theater, drama, masks, performance"
 msgstr "teatro, drama, máscaras, apresentação"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:378
+#: ../turboui/src/Reactions/index.tsx:380
 msgctxt "emoji search"
 msgid "think, thinking, hmm, wonder, consider"
 msgstr "pensar, pensando, hmm, dúvida, considerar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:680
+#: ../turboui/src/Reactions/index.tsx:682
 msgctxt "emoji search"
 msgid "third, bronze, medal, 3rd"
 msgstr "terceiro, bronze, medalha, 3º"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:390
+#: ../turboui/src/Reactions/index.tsx:392
 msgctxt "emoji search"
 msgid "thought, thinking, bubble, idea"
 msgstr "pensamento, pensando, balão, ideia"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:398
+#: ../turboui/src/Reactions/index.tsx:400
 msgctxt "emoji search"
 msgid "thumbs down, dislike, no, bad, disapprove"
 msgstr "negativo, não gostei, não, ruim, reprovar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:246
+#: ../turboui/src/Reactions/index.tsx:248
 msgctxt "emoji search"
 msgid "thumbs up, like, yes, approve, good, ok"
 msgstr "positivo, gostei, sim, aprovar, bom, ok"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:766
+#: ../turboui/src/Reactions/index.tsx:768
 msgctxt "emoji search"
 msgid "tie, formal, business, professional"
 msgstr "gravata, formal, negócios, profissional"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:459
+#: ../turboui/src/Reactions/index.tsx:461
 msgctxt "emoji search"
 msgid "tongue, playful, silly, closed eyes"
 msgstr "língua, brincalhão, bobo, olhos fechados"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:453
+#: ../turboui/src/Reactions/index.tsx:455
 msgctxt "emoji search"
 msgid "tongue, wink, playful, silly"
 msgstr "língua, piscadela, brincalhão, bobo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:669
+#: ../turboui/src/Reactions/index.tsx:671
 msgctxt "emoji search"
 msgid "trophy, win, winner, achievement, award"
 msgstr "troféu, ganhar, vencedor, conquista, prêmio"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:722
+#: ../turboui/src/Reactions/index.tsx:724
 msgctxt "emoji search"
 msgid "unlock, open, unlocked"
 msgstr "desbloquear, abrir, desbloqueado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:369
+#: ../turboui/src/Reactions/index.tsx:371
 msgctxt "emoji search"
 msgid "upside down, silly, sarcasm"
 msgstr "de cabeça para baixo, bobo, sarcasmo"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:505
+#: ../turboui/src/Reactions/index.tsx:507
 msgctxt "emoji search"
 msgid "vomit, sick, puke, throw up"
 msgstr "vomitar, doente, vômito, passar mal"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:859
+#: ../turboui/src/Reactions/index.tsx:861
 msgctxt "emoji search"
 msgid "warning, caution, alert, careful"
 msgstr "aviso, cuidado, alerta, atenção"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:536
+#: ../turboui/src/Reactions/index.tsx:538
 msgctxt "emoji search"
 msgid "wave, hello, hi, bye, goodbye"
 msgstr "acenar, olá, oi, tchau, adeus"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:371
+#: ../turboui/src/Reactions/index.tsx:373
 msgctxt "emoji search"
 msgid "wink, flirt, playful"
 msgstr "piscadela, flertar, brincalhão"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:414
+#: ../turboui/src/Reactions/index.tsx:416
 msgctxt "emoji search"
 msgid "worried, concerned, anxious"
 msgstr "preocupado, apreensivo, ansioso"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:435
+#: ../turboui/src/Reactions/index.tsx:437
 msgctxt "emoji search"
 msgid "wow, surprised, amazed, oh"
 msgstr "uau, surpreso, admirado, oh"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:706
+#: ../turboui/src/Reactions/index.tsx:708
 msgctxt "emoji search"
 msgid "wrench, tool, fix, repair"
 msgstr "chave inglesa, ferramenta, consertar, reparar"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:495
+#: ../turboui/src/Reactions/index.tsx:497
 msgctxt "emoji search"
 msgid "yawn, tired, bored"
 msgstr "bocejo, cansado, entediado"
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:529
+#: ../turboui/src/Reactions/index.tsx:531
 msgctxt "emoji search"
 msgid "zipper mouth, secret, quiet, sealed"
 msgstr "boca com zíper, segredo, quieto, fechado"
@@ -26293,7 +26395,7 @@ msgid "is not"
 msgstr "não é"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:140
+#: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:139
 msgctxt "keyboard key"
 msgid "Space"
 msgstr "Espaço"

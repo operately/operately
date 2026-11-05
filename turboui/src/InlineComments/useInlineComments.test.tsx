@@ -6,6 +6,9 @@ import type { InlineThread } from "../ApiTypes";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { useInlineComments } from "./useInlineComments";
 import type { DocumentInlineCommentsProps } from "./types";
+import { showInfoToast } from "../Toasts";
+
+jest.mock("../Toasts", () => ({ showInfoToast: jest.fn(), showErrorToast: jest.fn() }));
 
 jest.mock("./SelectionAction", () => ({
   SelectionAction: ({ onAdd }) => (
@@ -24,6 +27,7 @@ jest.mock("./FloatingComments", () => ({
   ),
 }));
 beforeEach(() => {
+  jest.clearAllMocks();
   jest.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
     callback(0);
     return 1;
@@ -40,7 +44,12 @@ jest.mock("../CommentSection", () => ({
       if (initiallyActive) setActive(true);
     }, [initiallyActive]);
 
-    if (!active) return <button onClick={() => setActive(true)}>Write a reply</button>;
+    if (!active)
+      return (
+        <button data-test-id="inline-reply-button" onClick={() => setActive(true)}>
+          Write a reply
+        </button>
+      );
     return (
       <div>
         <textarea aria-label="Comment draft" value={text} onChange={(e) => setText(e.target.value)} />
@@ -114,21 +123,177 @@ function Harness({ value }: { value?: DocumentInlineCommentsProps }) {
     </MemoryRouter>
   );
 }
-function select() {
+function select(to = 5) {
   const range = document.createRange();
   const text = screen.getByTestId("document-content").firstChild;
   if (!text) throw new Error("Missing document text");
   range.setStart(text, 0);
-  range.setEnd(text, 5);
+  range.setEnd(text, to);
   window.getSelection()?.removeAllRanges();
   window.getSelection()?.addRange(range);
-  act(() => review.editorOptions?.onSelectionChange?.({ from: 1, to: 6, quote: "Hello" }));
+  act(() => review.editorOptions?.onSelectionChange?.({ from: 1, to: to + 1, quote: range.toString() }));
 }
 function click(testId: string) {
   const element = document.querySelector<HTMLElement>(`[data-test-id="${testId}"]`);
   if (!element) throw new Error(`Missing ${testId}`);
   fireEvent.click(element);
 }
+
+it("notifies once and clears a missing thread without leaving an inline status or panel", () => {
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: jest.fn(() => ({ matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() })),
+  });
+  const value = props({ activeThreadId: "deleted", threads: [] });
+  const { rerender } = render(<Harness value={value} />);
+
+  expect(showInfoToast).toHaveBeenCalledWith("Comment no longer available", "It was likely deleted.");
+  expect(value.onSelectThread).toHaveBeenCalledWith(null);
+  expect(screen.queryByRole("status")).toBeNull();
+  expect(document.querySelector('[data-test-id="inline-comments-panel"]')).toBeNull();
+
+  rerender(<Harness value={{ ...value }} />);
+  expect(showInfoToast).toHaveBeenCalledTimes(1);
+
+  rerender(<Harness value={{ ...value, activeThreadId: null }} />);
+  rerender(<Harness value={value} />);
+  expect(showInfoToast).toHaveBeenCalledTimes(2);
+  delete (window as Partial<Window>).matchMedia;
+});
+
+it.each(["loading", "error", "pending"] as const)(
+  "waits until %s clears before reporting a missing thread",
+  (state) => {
+    const value = props({ activeThreadId: "deleted", threads: [] });
+    const { rerender } = render(<Harness value={{ ...value, [state]: true }} />);
+    expect(showInfoToast).not.toHaveBeenCalled();
+    expect(value.onSelectThread).not.toHaveBeenCalled();
+
+    rerender(<Harness value={value} />);
+    expect(showInfoToast).toHaveBeenCalledTimes(1);
+  },
+);
+
+it("does not report an available resolved thread as missing", () => {
+  render(
+    <Harness value={props({ activeThreadId: thread.id, threads: [{ ...thread, resolvedAt: thread.insertedAt }] })} />,
+  );
+  expect(showInfoToast).not.toHaveBeenCalled();
+});
+
+it.each(["content", "outside"])(
+  "waits for pointer release on %s before offering the final selection",
+  async (releaseOn) => {
+    const value = props();
+    render(<Harness value={value} />);
+    const content = screen.getByTestId("document-content");
+    select();
+    expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeVisible();
+
+    fireEvent(content, new MouseEvent("pointerdown", { bubbles: true, button: 0 }));
+    expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeNull();
+    select(11);
+    expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeNull();
+
+    fireEvent.pointerUp(releaseOn === "content" ? content : document.body);
+    click("inline-add-selection");
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    await waitFor(() =>
+      expect(value.onCreate).toHaveBeenCalledWith(
+        { sourceVersion: 1, from: 1, to: 12, quote: "Hello world" },
+        expect.anything(),
+      ),
+    );
+  },
+);
+
+it.each(["pointer", "keyboard"])("preserves a completed %s selection across window blur and focus", async (method) => {
+  const value = props();
+  render(<Harness value={value} />);
+  if (method === "pointer") {
+    fireEvent(screen.getByTestId("document-content"), new MouseEvent("pointerdown", { bubbles: true, button: 0 }));
+  }
+  select();
+  act(() => {
+    if (method === "pointer") fireEvent.pointerUp(document.body);
+    fireEvent.blur(window);
+    fireEvent.focus(window);
+  });
+
+  expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeVisible();
+  click("inline-add-selection");
+  fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(value.onCreate).toHaveBeenCalledWith(
+      { sourceVersion: 1, from: 1, to: 6, quote: "Hello" },
+      expect.anything(),
+    ),
+  );
+});
+
+it.each(["pointercancel", "blur"])(
+  "clears interrupted pointer selection on %s without blocking keyboard selection",
+  (event) => {
+    render(<Harness value={props()} />);
+    fireEvent(screen.getByTestId("document-content"), new MouseEvent("pointerdown", { bubbles: true, button: 0 }));
+    select();
+    fireEvent(window, new Event(event));
+    expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeNull();
+
+    select(11);
+    expect(document.querySelector('[data-test-id="inline-add-selection"]')).toBeVisible();
+  },
+);
+
+it("opens all threads in a desktop panel, including resolved and unattached threads", () => {
+  const value = props({
+    canComment: false,
+    threads: [
+      thread,
+      { ...thread, id: "resolved", resolvedAt: "2026-10-30T12:00:00Z" },
+      {
+        ...thread,
+        id: "unattached",
+        anchor: { ...thread.anchor, status: "unattached", currentFrom: null, currentTo: null },
+      },
+    ],
+  });
+  render(<Harness value={value} />);
+  expect(document.querySelector('[data-test-id="inline-thread-resolved"]')).toBeNull();
+  act(() => review.openAllComments?.());
+  const panel = document.querySelector('[data-test-id="inline-comments-panel"]');
+  expect(panel).toBeVisible();
+  expect(panel?.querySelectorAll("[data-resolved]")).toHaveLength(3);
+  expect(panel?.querySelector('[data-test-id="inline-thread-resolved"]')).toBeVisible();
+  expect(panel?.querySelector('[data-test-id="inline-unattached"]')).toBeVisible();
+  expect(screen.queryByRole("textbox")).toBeNull();
+  click("slide-in-close-button");
+  expect(document.querySelector('[data-test-id="inline-comments-panel"]')).toBeNull();
+  expect(document.querySelector('[data-test-id="inline-thread-resolved"]')).toBeNull();
+});
+
+it.each([false, true])("only allows replies while the thread is open (all-comments panel: %s)", (showAll) => {
+  const value = props({ activeThreadId: thread.id });
+  const { rerender } = render(<Harness value={value} />);
+  if (showAll) act(() => review.openAllComments?.());
+  click("inline-reply-button");
+  expect(screen.getByRole("textbox")).toBeVisible();
+
+  rerender(<Harness value={{ ...value, threads: [{ ...thread, resolvedAt: thread.insertedAt }] }} />);
+  expect(screen.queryByRole("textbox")).toBeNull();
+  expect(document.querySelector('[data-test-id="inline-reply-button"]')).toBeNull();
+  expect(document.querySelector('[data-test-id="inline-resolve-one"]')).toBeInTheDocument();
+  expect(value.onReply).not.toHaveBeenCalled();
+
+  rerender(<Harness value={value} />);
+  expect(document.querySelector('[data-test-id="inline-reply-button"]')).toBeVisible();
+});
+
+it("shows an empty state in the all-comments panel", () => {
+  render(<Harness value={props({ threads: [] })} />);
+  act(() => review.openAllComments?.());
+  expect(document.querySelector('[data-test-id="inline-comments-empty"]')).toBeVisible();
+});
 
 it("captures the selection and preserves the draft through version conflicts", async () => {
   const onCreate = jest.fn(async () => "conflict" as const);
@@ -313,6 +478,6 @@ it("keeps a newly posted thread selected without activating its reply input", as
   expect(document.querySelector('[data-test-id="inline-thread-one"]')).toBeVisible();
   expect(document.querySelector('[data-test-id="inline-select-one"]')).toBeNull();
   expect(screen.queryByRole("textbox")).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Write a reply" }));
+  click("inline-reply-button");
   expect(screen.getByRole("textbox")).toBeVisible();
 });

@@ -22,7 +22,6 @@ export function MarkdownHelp() {
             title={t("Markdown shortcuts")}
             aria-label={t("Markdown shortcuts")}
             testId="toolbar-button-markdown-shortcuts"
-            tabIndex={0}
             onMouseDown={(event) => event.preventDefault()}
           >
             <IconKeyboard size={20} className="shrink-0" />

@@ -17,15 +17,18 @@ export function Thread({
   props,
   active,
   initiallyActiveReply,
+  expanded = false,
   onSelect,
 }: {
   thread: InlineThread;
   props: DocumentInlineCommentsProps;
   active: boolean;
   initiallyActiveReply: boolean;
+  expanded?: boolean;
   onSelect: () => void;
 }) {
   const { t } = useTranslation();
+  const showMessages = active || expanded;
   const cardRef = useThreadDismissal(active, props.onSelectThread);
   const [pending, setPending] = React.useState(false);
   const busy = React.useRef(false);
@@ -75,20 +78,21 @@ export function Thread({
   return (
     <section
       ref={cardRef}
-      className={`group/thread relative rounded-xl text-sm bg-surface-base ${active ? "shadow-lg border border-stroke-base p-4" : ""}`}
+      className={`group/thread relative rounded-xl text-sm bg-surface-base ${showMessages ? "shadow-lg border border-stroke-base p-4" : ""}`}
       data-test-id={`inline-thread-${thread.id}`}
       data-resolved={Boolean(thread.resolvedAt)}
     >
-      {!active && <ThreadPreview thread={thread} props={props} firstMessage={firstMessage} onSelect={onSelect} />}
+      {!showMessages && <ThreadPreview thread={thread} props={props} firstMessage={firstMessage} onSelect={onSelect} />}
 
       {props.canComment && (
         <div className="absolute top-4 right-4 flex items-center opacity-0 pointer-events-none group-hover/thread:opacity-100 group-hover/thread:pointer-events-auto group-focus-within/thread:opacity-100 group-focus-within/thread:pointer-events-auto [&:has([data-state=open])]:opacity-100 [&:has([data-state=open])]:pointer-events-auto [@media(hover:none)]:opacity-100 [@media(hover:none)]:pointer-events-auto">
           <ResolveButton thread={thread} disabled={pending || props.pending} onResolve={resolve} />
-          {!active && firstMessage && (
+          {!showMessages && firstMessage && (
             <CommentMenu
               comment={firstMessage}
               appearance="inline"
               canEdit={props.canComment && !props.pending && compareIds(props.currentUser.id, firstMessage.author.id)}
+              editDisabled={Boolean(thread.resolvedAt)}
               onEdit={() => {
                 setEditingFirstMessage(true);
                 onSelect();
@@ -99,14 +103,14 @@ export function Thread({
         </div>
       )}
 
-      <div className={`text-xs text-content-dimmed flex flex-wrap gap-2 ${active ? "" : "px-4 pb-2"}`}>
+      <div className={`text-xs text-content-dimmed flex flex-wrap gap-2 ${showMessages ? "" : "px-4 pb-2"}`}>
         {thread.resolvedAt && <span>{t("Resolved")}</span>}
         {!attachedRange(thread, props.documentVersion) && (
           <span data-test-id="inline-unattached">{t("This passage is no longer available.")}</span>
         )}
       </div>
 
-      {active && (
+      {showMessages && (
         <ThreadMessages
           thread={thread}
           props={props}
@@ -213,6 +217,7 @@ function ThreadMessages({
             form={form}
             currentUserId={props.currentUser.id}
             canComment={props.canComment}
+            editDisabled={Boolean(thread.resolvedAt)}
             commentParentType="inline_thread"
             richTextHandlers={richTextHandlers}
             formattedTimePreferences={props.formattedTimePreferences}
@@ -221,7 +226,7 @@ function ThreadMessages({
           />
         );
       })}
-      {props.canComment && (
+      {props.canComment && !thread.resolvedAt && (
         <CommentInput
           compact
           hideToolbar

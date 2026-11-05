@@ -160,6 +160,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -191,6 +192,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_kanban(inputs.status, inputs.kanban_state)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
@@ -233,6 +235,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -262,9 +265,11 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.validate_status_replacements(inputs.task_statuses, replacements)
+      |> Steps.require_status_replacements(inputs.task_statuses, replacements)
       |> Steps.update_task_statuses(inputs.task_statuses)
       |> Steps.replace_deleted_task_statuses(replacements)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -302,6 +307,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -343,6 +349,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -380,6 +387,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -419,6 +427,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{milestone: OperatelyWeb.Api.Serializer.serialize(changes.milestone)}
@@ -475,6 +484,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{milestone: OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)}
       end)
@@ -508,6 +518,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.delete_reactions()
       |> Steps.delete_project()
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{project: OperatelyWeb.Api.Serializer.serialize(changes.deleted_project)}
       end)
@@ -787,6 +798,16 @@ defmodule OperatelyWeb.Api.Projects do
             Operately.Projects.Project.changeset(project, %{task_statuses: task_statuses})
           end)
       end
+    end
+
+    def require_status_replacements(multi, task_statuses, replacements) do
+      Ecto.Multi.run(multi, :require_status_replacements, fn _repo, %{project: project} ->
+        if Operately.Tasks.Status.replacement_required?(project, task_statuses, replacements) do
+          {:error, :replacement_required}
+        else
+          {:ok, :valid}
+        end
+      end)
     end
 
     def validate_status_replacements(multi, _task_statuses, []), do: multi
@@ -1174,6 +1195,15 @@ defmodule OperatelyWeb.Api.Projects do
       Operately.Repo.transaction(multi)
     end
 
+    def broadcast_project_update(result) do
+      OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(result, fn changes ->
+        case changes[:project] do
+          %Operately.Projects.Project{id: id} -> id
+          _ -> nil
+        end
+      end)
+    end
+
     def broadcast_review_count_update(result) do
       case result do
         {:ok, changes} ->
@@ -1243,6 +1273,9 @@ defmodule OperatelyWeb.Api.Projects do
 
         {:error, :validate_task_statuses, message, _changes} ->
           {:error, :bad_request, message}
+
+        {:error, :require_status_replacements, :replacement_required, _changes} ->
+          {:error, :bad_request, gettext("Every deleted task status in use requires a replacement")}
 
         {:error, :validate_replacements, message, _changes} ->
           {:error, :bad_request, message}

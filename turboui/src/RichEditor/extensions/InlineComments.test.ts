@@ -163,7 +163,7 @@ test("overlapping highlights and active state stay out of document serialization
   const json = editor.getJSON();
   const html = editor.getHTML();
   editor.commands.setActiveInlineThread("b");
-  expect(editor.view.dom.querySelector('[data-inline-thread="b"]')?.className).toContain("bg-surface-highlight");
+  expect(editor.view.dom.querySelector('[data-inline-thread="b"]')?.className).toContain("bg-yellow-200");
   expect(editor.getJSON()).toEqual(json);
   expect(editor.getHTML()).toBe(html);
   expect(html).not.toContain("inline-thread");

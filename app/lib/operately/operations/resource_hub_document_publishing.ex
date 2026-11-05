@@ -12,11 +12,18 @@ defmodule Operately.Operations.ResourceHubDocumentPublishing do
   def run(author, document, attrs) do
     Multi.new()
     |> Multi.run(:locked_document, fn repo, _changes -> Locking.lock_for_update(repo, document) end)
+    |> Multi.run(:draft, fn _repo, %{locked_document: locked} ->
+      if locked.state == :draft, do: {:ok, :allowed}, else: {:error, :forbidden}
+    end)
     |> Multi.merge(fn %{locked_document: locked} ->
       publish_multi(author, document, locked, attrs)
     end)
     |> Repo.transaction()
-    |> Repo.extract_result(:result)
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(document.resource_hub.project_id)
+    |> case do
+      {:ok, %{result: result}} -> {:ok, result}
+      {:error, _step, reason, _changes} -> {:error, reason}
+    end
   end
 
   defp publish_multi(author, original_document, locked, attrs) do
@@ -35,8 +42,10 @@ defmodule Operately.Operations.ResourceHubDocumentPublishing do
   end
 
   defp update_document(multi, document, attrs) do
+    next_version = (Repo.aggregate(Ecto.assoc(document, :versions), :max, :version_number) || 0) + 1
+
     updates =
-      %{state: :published}
+      %{state: :published, current_version: next_version}
       |> maybe_put(:name, attrs[:name])
       |> maybe_put(:content, attrs[:content])
 
@@ -47,7 +56,7 @@ defmodule Operately.Operations.ResourceHubDocumentPublishing do
     Multi.insert(multi, :version, fn changes ->
       DocumentVersion.changeset(%{
         document_id: changes.document.id,
-        version_number: 1,
+        version_number: changes.document.current_version,
         title: changes.document.name,
         content: changes.document.content,
         editor_id: author.id,

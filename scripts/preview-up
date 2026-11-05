@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
+# Run `preview up` on the preview host and write its meta JSON to --output.
+# The host prints that JSON on stdout. SSH and deploy logs can appear before
+# it. Callers read .url, so the output file has to be that object alone.
+set -euo pipefail
 
+output=""
+pr=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --output) output=$2; shift 2 ;;
@@ -8,8 +14,76 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-echo '167.233.193.239 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICQ9842+U39QsoF2mRDfQf4oQeH6vlfhqWSZ7dvApISG' >> ~/.ssh/known_hosts
+if [ -z "$output" ] || [ -z "$pr" ]; then
+  echo "usage: preview-up --pr N --output FILE" >&2
+  exit 1
+fi
 
-out="$(ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o ServerAliveInterval=30 app@167.233.193.239 "/home/app/.local/bin/preview up --pr $pr")"
-echo "$out"
-echo "$out" > "$output"
+if ! [[ "$pr" =~ ^[0-9]+$ ]]; then
+  echo "pr must be a positive integer" >&2
+  exit 1
+fi
+
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+known_hosts=~/.ssh/known_hosts
+host_key='167.233.193.239 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICQ9842+U39QsoF2mRDfQf4oQeH6vlfhqWSZ7dvApISG'
+touch "$known_hosts"
+grep -qxF "$host_key" "$known_hosts" || printf '%s\n' "$host_key" >> "$known_hosts"
+chmod 600 "$known_hosts"
+
+ssh_err=$(mktemp)
+trap 'rm -f "$ssh_err"' EXIT
+
+if ! out="$(ssh \
+  -i ~/.ssh/id_ed25519 \
+  -o IdentitiesOnly=yes \
+  -o ServerAliveInterval=30 \
+  -o StrictHostKeyChecking=yes \
+  -o LogLevel=ERROR \
+  -o UserKnownHostsFile="$known_hosts" \
+  app@167.233.193.239 \
+  "/home/app/.local/bin/preview up --pr ${pr}" \
+  2>"$ssh_err")"; then
+  cat "$ssh_err" >&2
+  printf '%s\n' "$out" >&2
+  echo "preview up failed for pr ${pr}" >&2
+  exit 1
+fi
+
+if [ -s "$ssh_err" ]; then
+  cat "$ssh_err" >&2
+fi
+
+# Keep the last JSON object. `preview up` ends with meta.json, after any
+# deploy logs that shared stdout.
+json=$(printf '%s\n' "$out" | awk '
+  /^\{$/ {
+    collecting = 1
+    buf = $0
+    next
+  }
+  /^\{.*\}$/ && !collecting {
+    last = $0
+    next
+  }
+  collecting {
+    buf = buf ORS $0
+    if ($0 == "}") {
+      last = buf
+      collecting = 0
+      buf = ""
+    }
+  }
+  END {
+    if (last == "") exit 1
+    print last
+  }
+') || {
+  printf '%s\n' "$out" >&2
+  echo "preview up did not return JSON for pr ${pr}" >&2
+  exit 1
+}
+
+printf '%s\n' "$json" | tee "$output" >/dev/null
+printf '%s\n' "$json"

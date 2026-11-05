@@ -6,6 +6,7 @@ import type { ActivityContentTaskNameUpdating } from "@/api";
 import i18n, { applyLanguage } from "@/i18n";
 import Handler from ".";
 import { usePaths } from "@/routes/paths";
+import { MemoryRouter } from "react-router";
 
 jest.mock("turboui", () => ({
   ...jest.requireActual("turboui"),
@@ -84,7 +85,11 @@ for (const inProject of [true, false]) {
 
     async function render(item: Activity) {
       await act(async () => {
-        root.render(<Title item={item} />);
+        root.render(
+          <MemoryRouter>
+            <Title item={item} />
+          </MemoryRouter>,
+        );
       });
     }
 
@@ -107,8 +112,52 @@ for (const inProject of [true, false]) {
       await render(aggregated);
       expect(taskLinks()).toEqual([taskPath("first"), taskPath("second")]);
 
+      const extended = aggregateConsecutiveFeedActivities([
+        first,
+        second,
+        activity("third", inProject),
+        activity("fourth", inProject),
+        activity("fifth", inProject),
+      ])[0];
+      if (!extended) throw new Error("Expected an extended aggregate");
+      await render(extended);
+      expect(taskLinks()).toEqual([taskPath("first"), taskPath("second"), taskPath("third")]);
+      expect(container.querySelector("button")?.textContent).toBe("Show 2 more tasks");
+
+      await render(aggregated);
+      expect(taskLinks()).toEqual([taskPath("first"), taskPath("second")]);
+      expect(container.querySelector("button")).toBeNull();
+
       await render(first);
       expect(taskLinks()).toEqual([taskPath("first")]);
+    });
+
+    it("counts distinct renderable tasks in chronological order", async () => {
+      const first = activity("first", inProject);
+      first.insertedAt = "2026-09-09T11:59:00Z";
+      const duplicate = activity("duplicate", inProject);
+      const duplicateContent = duplicate.content as ActivityContentTaskNameUpdating;
+      duplicateContent.task = (first.content as ActivityContentTaskNameUpdating).task;
+      const missingLocation = activity("missing-location", false);
+      (missingLocation.content as ActivityContentTaskNameUpdating).space.id = "";
+      const items = [
+        activity("second", inProject),
+        first,
+        duplicate,
+        activity("missing-task", inProject, false),
+        missingLocation,
+        activity("third", inProject),
+        activity("fourth", inProject),
+      ];
+      // Use real aggregation for the valid batch; missing resources can occur in an existing aggregate.
+      const aggregated = aggregateConsecutiveFeedActivities(items.filter((item) => item !== missingLocation))[0];
+      if (!aggregated) throw new Error("Expected an aggregated activity");
+      aggregated.aggregatedActivities?.push(missingLocation);
+      await render(aggregated);
+      expect(taskLinks()).toEqual([taskPath("first"), taskPath("second"), taskPath("third")]);
+      expect(container.querySelector("button")?.textContent).toBe("Show 1 more task");
+      await act(async () => container.querySelector("button")?.click());
+      expect(taskLinks()).toEqual([taskPath("first"), taskPath("second"), taskPath("third"), taskPath("fourth")]);
     });
 
     it("keeps rendering when the linked task disappears and returns", async () => {
@@ -146,7 +195,13 @@ describe("catalog presentation", () => {
     const container = document.createElement("div");
     const root = createRoot(container);
     try {
-      await act(async () => root.render(<Title item={item} page={page} />));
+      await act(async () =>
+        root.render(
+          <MemoryRouter>
+            <Title item={item} page={page} />
+          </MemoryRouter>,
+        ),
+      );
       return container.innerHTML;
     } finally {
       await act(async () => root.unmount());
@@ -173,6 +228,19 @@ describe("catalog presentation", () => {
     expect(Handler.NotificationTitle({ activity: item })).toBe(
       'A tarefa "Old name" foi renomeada para "Research & development"',
     );
+  });
+
+  test("translates the remaining-task count with singular and plural forms", async () => {
+    await applyLanguage("pt-BR");
+    for (const count of [4, 5]) {
+      const item = aggregateConsecutiveFeedActivities(
+        Array.from({ length: count }, (_, index) => activity(`task-${index}`, true)),
+      )[0];
+      if (!item) throw new Error("Expected an aggregate");
+      const markup = await renderTitle(item, "project");
+      expect(markup).toContain(count === 4 ? "Mostrar mais 1 tarefa" : "Mostrar mais 2 tarefas");
+      expect(markup).toContain('aria-expanded="false"');
+    }
   });
 
   test("translates complete sentences at render time without modifying stored payloads", async () => {

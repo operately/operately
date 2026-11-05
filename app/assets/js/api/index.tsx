@@ -520,6 +520,20 @@ export interface ActivityContentKpiCreated {
   kpiName: string;
 }
 
+export interface ActivityContentKpiDeleted {
+  __typename: "activity_content_kpi_deleted";
+  space: Space | null;
+  kpiName: string;
+}
+
+export interface ActivityContentKpiEdited {
+  __typename: "activity_content_kpi_edited";
+  space: Space | null;
+  kpi: Kpi | null;
+  oldName: string;
+  newName: string;
+}
+
 export interface ActivityContentKpiEntryCommented {
   __typename: "activity_content_kpi_entry_commented";
   space: Space;
@@ -545,6 +559,14 @@ export interface ActivityContentKpiEntryEdited {
   newValue: number;
   oldPeriod: string;
   newPeriod: string;
+}
+
+export interface ActivityContentKpiEntryLogged {
+  __typename: "activity_content_kpi_entry_logged";
+  space: Space | null;
+  kpi: Kpi | null;
+  value: number;
+  period: string;
 }
 
 export interface ActivityContentMessageArchiving {
@@ -2963,6 +2985,9 @@ export type ActivityContent =
   | ActivityContentDiscussionEditing
   | ActivityContentDiscussionPosting
   | ActivityContentKpiCreated
+  | ActivityContentKpiDeleted
+  | ActivityContentKpiEdited
+  | ActivityContentKpiEntryLogged
   | ActivityContentKpiEntryCommented
   | ActivityContentKpiEntryEdited
   | ActivityContentKpiEntryDeleted
@@ -3254,8 +3279,8 @@ export type RichTextResourceType =
   | "kpi"
   | "project_check_in"
   | "project_retrospective"
-  | "goal_discussion"
   | "project_discussion"
+  | "goal_discussion"
   | "goal_check_in"
   | "space_discussion"
   | "comment"
@@ -3913,6 +3938,12 @@ export interface PeopleListAssignmentsResult {
   dueSoon: ReviewAssignmentGroup[];
   needsReview: ReviewAssignmentGroup[];
   upcoming: ReviewAssignmentGroup[];
+}
+
+export interface PeopleListMyTasksInput {}
+
+export interface PeopleListMyTasksResult {
+  tasks: Task[];
 }
 
 export interface PeopleListPossibleManagersInput {
@@ -10162,6 +10193,25 @@ export default {
         ...buildApiQueryOptions<PeopleListAssignmentsInput, PeopleListAssignmentsResult>(
           defaultApiClient,
           "/people/list_assignments",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    listMyTasksQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/list_my_tasks"),
+    listMyTasksQueryKey: (input: PeopleListMyTasksInput) =>
+      buildApiQueryKey(defaultApiClient, "/people/list_my_tasks", input),
+    listMyTasksQueryOptions: (input: PeopleListMyTasksInput) =>
+      buildApiQueryOptions<PeopleListMyTasksInput, PeopleListMyTasksResult>(
+        defaultApiClient,
+        "/people/list_my_tasks",
+        input,
+      ),
+    listMyTasksQuery: (input: PeopleListMyTasksInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<PeopleListMyTasksInput, PeopleListMyTasksResult>(
+          defaultApiClient,
+          "/people/list_my_tasks",
           input,
         ),
         staleTime: Infinity,

@@ -424,6 +424,20 @@ export interface ActivityContentKpiCreated {
   kpiName: string;
 }
 
+export interface ActivityContentKpiDeleted {
+  __typename: "activity_content_kpi_deleted";
+  space: Space | null;
+  kpiName: string;
+}
+
+export interface ActivityContentKpiEdited {
+  __typename: "activity_content_kpi_edited";
+  space: Space | null;
+  kpi: Kpi | null;
+  oldName: string;
+  newName: string;
+}
+
 export interface ActivityContentKpiEntryCommented {
   __typename: "activity_content_kpi_entry_commented";
   space: Space;
@@ -449,6 +463,14 @@ export interface ActivityContentKpiEntryEdited {
   newValue: number;
   oldPeriod: string;
   newPeriod: string;
+}
+
+export interface ActivityContentKpiEntryLogged {
+  __typename: "activity_content_kpi_entry_logged";
+  space: Space | null;
+  kpi: Kpi | null;
+  value: number;
+  period: string;
 }
 
 export interface ActivityContentMessageArchiving {
@@ -2867,6 +2889,9 @@ export type ActivityContent =
   | ActivityContentDiscussionEditing
   | ActivityContentDiscussionPosting
   | ActivityContentKpiCreated
+  | ActivityContentKpiDeleted
+  | ActivityContentKpiEdited
+  | ActivityContentKpiEntryLogged
   | ActivityContentKpiEntryCommented
   | ActivityContentKpiEntryEdited
   | ActivityContentKpiEntryDeleted
@@ -3158,8 +3183,8 @@ export type RichTextResourceType =
   | "kpi"
   | "project_check_in"
   | "project_retrospective"
-  | "goal_discussion"
   | "project_discussion"
+  | "goal_discussion"
   | "goal_check_in"
   | "space_discussion"
   | "comment"

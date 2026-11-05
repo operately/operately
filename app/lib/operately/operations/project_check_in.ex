@@ -35,6 +35,7 @@ defmodule Operately.Operations.ProjectCheckIn do
       |> maybe_enqueue_oban_job(attrs)
       |> IndexUpdates.enqueue(:search_project_check_in, "project_check_in", fn changes -> changes.check_in.id end)
       |> Repo.transaction()
+      |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(project.id)
       |> Repo.extract_result(:check_in)
       |> case do
         {:ok, check_in} ->

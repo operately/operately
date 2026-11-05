@@ -43,6 +43,32 @@ describe("PageOptions", () => {
     jest.clearAllMocks();
   });
 
+  it.each([true, false])("keeps icon actions accessible outside the menu (big screen: %s)", (bigScreen) => {
+    mockUseWindowSizeBiggerOrEqualTo.mockReturnValue(bigScreen);
+    const onClick = jest.fn();
+    const { getByRole, container } = renderPageOptions([
+      { type: "link", icon: IconStub, label: "Edit", link: "/edit", keepOutsideOnBigScreen: true, testId: "edit" },
+      {
+        type: "action",
+        icon: IconStub,
+        label: "Comments",
+        onClick,
+        keepOutside: true,
+        iconOnly: true,
+        testId: "comments",
+      },
+      { type: "action", icon: IconStub, label: "Delete", onClick: jest.fn(), testId: "delete" },
+    ]);
+
+    const button = getByRole("button", { name: "Comments" });
+    expect(button.querySelector(".sr-only")).toHaveTextContent("Comments");
+    fireEvent.click(button);
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(
+      Array.from(container.querySelectorAll("a, button")).map((element) => element.getAttribute("data-test-id")),
+    ).toEqual(bigScreen ? ["edit", "comments", "options-button"] : ["comments", "options-button"]);
+  });
+
   it("renders nothing when options is undefined", () => {
     const { container } = renderPageOptions(undefined);
 

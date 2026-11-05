@@ -59,11 +59,15 @@ defmodule OperatelyWeb.Api.InlineThreads.ReplyTest do
       assert {403, _} = mutation(ctx.conn, [:inline_threads, :reply], inputs(ctx))
     end
 
-    test "commenters can reply to resolved threads without reopening them", ctx do
+    test "commenters must reopen resolved threads before replying", ctx do
       assert {200, _} = mutation(ctx.conn, [:inline_threads, :resolve], %{thread_id: ctx.thread.id})
       ctx = Support.as_member(ctx, Operately.Access.Binding.comment_access())
+      assert {400, _} = mutation(ctx.conn, [:inline_threads, :reply], inputs(ctx))
+      assert Repo.aggregate(Operately.Updates.Comment, :count) == 1
+
+      assert {200, _} = mutation(ctx.conn, [:inline_threads, :reopen], %{thread_id: ctx.thread.id})
       assert {200, %{thread: thread}} = mutation(ctx.conn, [:inline_threads, :reply], inputs(ctx))
-      assert thread.resolved_at != nil
+      assert thread.resolved_at == nil
       assert length(thread.messages) == 2
       assert Enum.any?(thread.messages, &(&1.author.id == Paths.person_id(ctx.member)))
     end

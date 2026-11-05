@@ -286,7 +286,7 @@ export const Default: Story = {
     );
 
     return (
-      <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
+      <div className="relative h-screen bg-surface-base">
         <SpaceKanbanPage
           canEdit={false}
           space={space}
@@ -492,7 +492,7 @@ export const WithStatusManagement: Story = {
     );
 
     return (
-      <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
+      <div className="relative h-screen bg-surface-base">
         <SpaceKanbanPage
           space={space}
           navigation={[{ to: "/spaces/demo-space", label: "Demo Space" }]}

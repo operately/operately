@@ -1,22 +1,13 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import Api, { type Company, type ResourceHubDocument } from "@/api";
+import Api, { type ResourceHubDocument } from "@/api";
 import { queryClient, useLoadedQuery } from "@/api/queryClient";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
-import { fetchCompany } from "@/models/companies/companyLayoutQueries";
-import { hasFeature } from "@/models/companies/hasFeature";
 
 export { useInlineThreadMutations, invalidateInlineThreadQueries } from "./inlineThreadLifecycle";
 
-function documentInlineThreadsEnabled(company: Company, document: ResourceHubDocument) {
-  return document.state === "published" && hasFeature(company, "document_inline_comments");
-}
-
 export async function prefetchDocumentInlineThreads(document: ResourceHubDocument) {
-  const company = await fetchCompany();
-
-  if (!documentInlineThreadsEnabled(company, document)) return;
+  if (document.state !== "published") return;
 
   // Keep failures in the query cache so the comments panel can offer a retry.
   await queryClient
@@ -28,11 +19,10 @@ export async function prefetchDocumentInlineThreads(document: ResourceHubDocumen
 }
 
 export function useDocumentInlineThreads(document: ResourceHubDocument) {
-  const { company } = useCompanyLoaderData();
   const me = useMe();
   const client = useQueryClient();
 
-  const enabled = Boolean(documentInlineThreadsEnabled(company, document) && me);
+  const enabled = Boolean(document.state === "published" && me);
 
   const input = { resourceType: "resource_hub_document" as const, resourceId: document.id };
   const query = useLoadedQuery({ ...Api.inline_threads.listQueryOptions(input), enabled, throwOnError: false });

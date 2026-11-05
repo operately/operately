@@ -525,6 +525,43 @@ defmodule OperatelyWeb.Api.SpacesTest do
       |> Factory.add_space(:space, company_permissions: Binding.view_access())
     end
 
+    test "deletes an unused status without a replacement", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      [removed | remaining] = ctx.space.task_statuses
+
+      assert {200, _} =
+               mutation(ctx.conn, [:spaces, :update_task_statuses], %{
+                 space_id: Paths.space_id(ctx.space),
+                 task_statuses: Enum.map(remaining, &(&1 |> Map.from_struct() |> Map.update!(:color, fn color -> to_string(color) end)))
+               })
+
+      refute Enum.any?(Repo.reload!(ctx.space).task_statuses, &(&1.id == removed.id))
+    end
+
+    for archived <- [false, true] do
+      @archived archived
+      test "requires a replacement for an occupied status (archived=#{@archived})", ctx do
+        ctx = Factory.log_in_person(ctx, :creator)
+        [removed | remaining] = ctx.space.task_statuses
+        task_status = Map.from_struct(removed)
+        ctx = Factory.create_space_task(ctx, :task, :space, task_status: task_status)
+
+        if @archived do
+          ctx.task |> Ecto.Changeset.change(archived_at: ~N[2026-01-01 00:00:00]) |> Repo.update!()
+        end
+
+        assert {400, _response} =
+                 mutation(ctx.conn, [:spaces, :update_task_statuses], %{
+                   space_id: Paths.space_id(ctx.space),
+                   task_statuses: Enum.map(remaining, &(&1 |> Map.from_struct() |> Map.update!(:color, fn color -> to_string(color) end))),
+                   deleted_status_replacements: []
+                 })
+
+        assert Repo.reload!(ctx.space).task_statuses == ctx.space.task_statuses
+        assert Repo.reload!(ctx.task).task_status == ctx.task.task_status
+      end
+    end
+
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:spaces, :update_task_statuses], %{})
     end

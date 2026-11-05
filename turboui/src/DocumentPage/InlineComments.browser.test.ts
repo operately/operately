@@ -26,7 +26,7 @@ async function waitForMobileDialog() {
   return dialog;
 }
 
-async function selectPassage() {
+async function selectPassage(openComposer = true) {
   await page
     .locator('.ProseMirror[contenteditable="false"]')
     .first()
@@ -43,8 +43,210 @@ async function selectPassage() {
       selection?.removeAllRanges();
       selection?.addRange(range);
     });
-  await page.locator('[data-test-id="inline-add-selection"]').click();
+  if (openComposer) await page.locator('[data-test-id="inline-add-selection"]').click();
 }
+
+test.each([1440, 390])("selection action is visible and clear of the text at %s px", async (width) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await visit();
+  const paper = page.locator('[data-test-id="document-page"]');
+  const before = await paper.boundingBox();
+  await selectPassage(false);
+  const action = page.locator('[data-test-id="inline-add-selection"]');
+  await action.waitFor({ state: "visible" });
+  const button = await action.boundingBox();
+  const selection = await page.evaluate(() => {
+    const range = window.getSelection()?.getRangeAt(0);
+    if (!range) throw new Error("Missing selection");
+    const rect = range.getBoundingClientRect();
+    const firstLine = range.getClientRects()[0] ?? rect;
+    return { bottom: rect.bottom, lineCenter: firstLine.top + firstLine.height / 2, text: range.toString() };
+  });
+  assert.ok(button && button.height >= (width >= 1280 ? 32 : 36));
+  assert.ok(button.width < 180);
+  assert.ok((await action.textContent())?.trim());
+  assert.deepEqual(await paper.boundingBox(), before);
+  assert.ok(await action.getAttribute("aria-label"));
+  if (width >= 1280) {
+    const content = await page.locator('.ProseMirror[contenteditable="false"]').first().boundingBox();
+    assert.ok(content && before && button.x >= content.x + content.width);
+    assert.ok(Math.abs(button.y + button.height / 2 - selection.lineCenter) <= 1);
+    assert.ok(button.x + button.width <= width);
+  } else {
+    assert.ok(button.y >= selection.bottom);
+  }
+  await action.click();
+  const composer = page.locator('[data-test-id="inline-new-thread"]');
+  await composer.waitFor();
+  assert.equal(await composer.locator("blockquote").textContent(), selection.text);
+});
+
+test.each([1440, 390])("selection action scrolls behind the navbar at %s px", async (width) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await visit("scrollable");
+  await selectPassage(false);
+  const action = page.locator('[data-test-id="inline-add-selection"]');
+  await action.waitFor({ state: "visible" });
+  const scrollContainer = page.locator('[data-test-id="document-scroll-container"]');
+  const container = await scrollContainer.boundingBox();
+  const button = await action.boundingBox();
+  assert.ok(container && button);
+
+  await scrollContainer.evaluate(
+    (element, scrollTop) => {
+      element.scrollTop = scrollTop;
+    },
+    button.y + button.height / 2 - container.y,
+  );
+  await page.waitForFunction(() => {
+    const button = document.querySelector('[data-test-id="inline-add-selection"]');
+    const container = document.querySelector('[data-test-id="document-scroll-container"]');
+    if (!button || !container) return false;
+    return button.getBoundingClientRect().top < container.getBoundingClientRect().top;
+  });
+
+  const clipped = await action.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    return {
+      topIsClickable: element.contains(document.elementFromPoint(x, rect.top + 2)),
+      bottomIsClickable: element.contains(document.elementFromPoint(x, rect.bottom - 2)),
+    };
+  });
+  assert.equal(clipped.topIsClickable, false);
+  assert.equal(clipped.bottomIsClickable, true);
+
+  await scrollContainer.evaluate((element) => {
+    element.scrollTop += 500;
+  });
+  await page.waitForFunction(() => {
+    const button = document.querySelector('[data-test-id="inline-add-selection"]');
+    return button && button.getBoundingClientRect().bottom < 0;
+  });
+
+  await scrollContainer.evaluate((element) => {
+    element.scrollTop = 0;
+  });
+  await action.click();
+  await page.locator('[data-test-id="inline-new-thread"]').waitFor();
+});
+
+test("offers Add comment only after releasing a text-selection drag", async () => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await visit();
+  const paragraph = page.locator('.ProseMirror[contenteditable="false"] p').first();
+  await paragraph.scrollIntoViewIfNeeded();
+  const points = await paragraph.evaluate((element) => {
+    const text = document.createTreeWalker(element, NodeFilter.SHOW_TEXT).nextNode();
+    if (!text) throw new Error("Missing passage text");
+    const pointAt = (offset: number) => {
+      const range = document.createRange();
+      range.setStart(text, offset);
+      range.setEnd(text, offset + 1);
+      const rect = range.getBoundingClientRect();
+      return { x: rect.left + 1, y: rect.top + rect.height / 2 };
+    };
+    return { start: pointAt(0), middle: pointAt(3), end: pointAt(6) };
+  });
+  const action = page.locator('[data-test-id="inline-add-selection"]');
+  await page.mouse.move(points.start.x, points.start.y);
+  await page.mouse.down();
+  for (const point of [points.middle, points.end]) {
+    await page.mouse.move(point.x, point.y, { steps: 5 });
+    await page.waitForFunction(() => Boolean(window.getSelection()?.toString()));
+    // Allow selection notifications and the floating action's measurement to settle.
+    await page.evaluate(
+      () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))),
+    );
+    assert.equal(await action.count(), 0);
+  }
+  const selectedText = await page.evaluate(() => window.getSelection()?.toString());
+  await page.mouse.up();
+  await action.waitFor({ state: "visible" });
+  assert.equal(await page.evaluate(() => window.getSelection()?.toString()), selectedText);
+  await action.click();
+  await page.locator('[data-test-id="inline-new-thread"]').waitFor();
+});
+
+test.each([1440, 390])("header comments button opens all threads at %s px", async (width) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await visit();
+  const toggle = page.locator('[data-test-id="inline-comments-toggle"]');
+  const menu = page.locator('[data-test-id="options-button"]');
+  const toggleBox = await toggle.boundingBox();
+  const menuBox = await menu.boundingBox();
+  assert.ok(toggleBox && menuBox && toggleBox.x + toggleBox.width <= menuBox.x);
+  if (width >= 1024) {
+    const editBox = await page.locator('[data-test-id="edit-document-link"]').boundingBox();
+    assert.ok(editBox && editBox.x + editBox.width <= toggleBox.x);
+  }
+  assert.equal(await page.locator('[data-test-id="inline-thread-resolved"]').count(), 0);
+  await toggle.click();
+  const dialog = await waitForMobileDialog();
+  assert.equal(await dialog.locator("[data-resolved]").count(), 4);
+  assert.equal(await dialog.locator('div[data-test-id^="comment-"][id]').count(), 4);
+  assert.equal(await dialog.locator('[data-test-id="inline-unattached"]').count(), 1);
+  const resolvedGroup = dialog.locator('[data-test-id="inline-comments-resolved"]');
+  await resolvedGroup.locator('[data-test-id="inline-thread-resolved"]').waitFor();
+  const resolved = dialog.locator('[data-test-id="inline-thread-resolved"]');
+  assert.equal(await resolved.locator('[data-test-id="add-comment"], [contenteditable="true"]').count(), 0);
+  await resolved.hover();
+  await resolved.locator('[data-test-id="inline-resolve-resolved"]').click();
+  await dialog.locator('[data-test-id="inline-thread-resolved"][data-resolved="false"]').waitFor();
+  await resolved.locator('[data-test-id="add-comment"]').waitFor();
+  assert.equal(await resolvedGroup.count(), 0);
+  await dialog.locator('[data-test-id="slide-in-close-button"]').focus();
+  await page.keyboard.press("Escape");
+  await dialog.waitFor({ state: "detached" });
+  assert.equal(await toggle.evaluate((element) => element === document.activeElement), true);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+});
+
+test.each([1440, 390])("resolved thread messages cannot be edited at %s px", async (width) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await visit("own-comment");
+  await page.locator('[data-test-id="inline-comments-toggle"]').click();
+  const dialog = await waitForMobileDialog();
+  const thread = dialog.locator('[data-test-id="inline-thread-checklist"]');
+  const message = thread.locator('div[data-test-id^="comment-"][id]');
+  await message.hover();
+  await message.locator('[data-test-id="comment-options"]').click();
+  await page.locator('[data-test-id="edit-comment"]').click();
+  await message.locator('[data-test-id="edit-comment-form"]').waitFor();
+  await thread.hover();
+  await thread.locator('[data-test-id="inline-resolve-checklist"]').click();
+  await dialog.locator('[data-test-id="inline-thread-checklist"][data-resolved="true"]').waitFor();
+  assert.equal(await message.locator('[data-test-id="edit-comment-form"]').count(), 0);
+  await message.hover();
+  await message.locator('[data-test-id="comment-options"]').click();
+  assert.equal(await page.locator('[data-test-id="edit-comment"]').count(), 0);
+  await page.locator('[data-test-id="delete-comment"]').waitFor();
+  await page.keyboard.press("Escape");
+  await thread.hover();
+  await thread.locator('[data-test-id="inline-resolve-checklist"]').click();
+  await dialog.locator('[data-test-id="inline-thread-checklist"][data-resolved="false"]').waitFor();
+  await message.hover();
+  await message.locator('[data-test-id="comment-options"]').click();
+  await page.locator('[data-test-id="edit-comment"]').waitFor();
+});
+
+test("all-comments panel supports empty documents and read-only viewers", async () => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await visit("empty");
+  await page.locator('[data-test-id="inline-comments-toggle"]').click();
+  const dialog = await waitForMobileDialog();
+  await dialog.locator('[data-test-id="inline-comments-empty"]').waitFor();
+  await visit("read-only");
+  await page.locator('[data-test-id="inline-comments-toggle"]').click();
+  await waitForMobileDialog();
+  assert.equal(await dialog.locator("[data-resolved]").count(), 4);
+  assert.equal(
+    await dialog
+      .locator('[contenteditable="true"], [data-test-id^="inline-resolve-"], [data-test-id="add-comment"]')
+      .count(),
+    0,
+  );
+});
 
 test("select, post, reply, resolve, and reopen using the actual editor", async () => {
   await page.setViewportSize({ width: 1440, height: 1000 });

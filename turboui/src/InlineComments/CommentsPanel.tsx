@@ -14,6 +14,7 @@ interface CommentsPanelProps {
   onSelectThread: (id: string) => void;
   composer: FloatingComment | null;
   mobile: boolean;
+  showAll: boolean;
   open: boolean;
   onClose: () => void;
   contentRef: React.RefObject<HTMLDivElement>;
@@ -26,33 +27,30 @@ export function CommentsPanel({
   onSelectThread,
   composer,
   mobile,
+  showAll,
   open,
   onClose,
   contentRef,
 }: CommentsPanelProps) {
   const { t } = useTranslation();
-  const missing = Boolean(
-    props.activeThreadId &&
-    !props.loading &&
-    !props.error &&
-    !props.threads.some((thread) => thread.id === props.activeThreadId),
-  );
-  const status = props.loading || props.error || missing ? <CommentStatus props={props} missing={missing} /> : null;
-  const items: FloatingComment[] = threads.map((thread) => ({
+  const status = props.loading || props.error ? <CommentStatus props={props} /> : null;
+  const items = threads.map((thread) => ({
     id: thread.id,
+    resolved: Boolean(thread.resolvedAt),
     from: attachedRange(thread, props.documentVersion)?.from,
     content: (
       <Thread
         thread={thread}
         props={props}
         active={thread.id === props.activeThreadId}
+        expanded={showAll}
         initiallyActiveReply={thread.id === replyThreadId}
         onSelect={() => onSelectThread(thread.id)}
       />
     ),
   }));
 
-  if (mobile) {
+  if (mobile || showAll) {
     const previews =
       !open && (items.length > 0 || status) ? (
         <div className="p-4 space-y-4" data-test-id="inline-comments-previews">
@@ -75,11 +73,35 @@ export function CommentsPanel({
           testId="inline-comments-mobile"
         >
           <div className="p-4 pt-12 space-y-4" data-test-id="inline-comments-panel">
+            {showAll && <h2 className="text-lg font-bold">{t("Inline comments")}</h2>}
             {status}
             {composer?.content}
-            {items.map((item) => (
-              <React.Fragment key={item.id}>{item.content}</React.Fragment>
-            ))}
+            {showAll ? (
+              <>
+                {!status && items.length === 0 && (
+                  <p className="text-sm text-content-dimmed" data-test-id="inline-comments-empty">
+                    {t("No inline comments yet.")}
+                  </p>
+                )}
+                {items
+                  .filter((item) => !item.resolved)
+                  .map((item) => (
+                    <React.Fragment key={item.id}>{item.content}</React.Fragment>
+                  ))}
+                {items.some((item) => item.resolved) && (
+                  <section className="space-y-4" data-test-id="inline-comments-resolved">
+                    <h3 className="font-semibold text-content-dimmed">{t("Resolved")}</h3>
+                    {items
+                      .filter((item) => item.resolved)
+                      .map((item) => (
+                        <React.Fragment key={item.id}>{item.content}</React.Fragment>
+                      ))}
+                  </section>
+                )}
+              </>
+            ) : (
+              items.map((item) => <React.Fragment key={item.id}>{item.content}</React.Fragment>)
+            )}
           </div>
         </SlideIn>
       </>
@@ -87,13 +109,14 @@ export function CommentsPanel({
   }
 
   const hasFloatingComments = items.length > 0 || Boolean(composer);
-  if (composer) items.push(composer);
-  if (status) items.push({ id: "status", content: status });
+  const floatingItems: FloatingComment[] = [...items];
+  if (composer) floatingItems.push(composer);
+  if (status) floatingItems.push({ id: "status", content: status });
 
   return (
     <div>
       {hasFloatingComments ? (
-        <FloatingComments items={items} contentRef={contentRef} />
+        <FloatingComments items={floatingItems} contentRef={contentRef} />
       ) : (
         status && <div className="px-4 pb-4 sm:px-12 lg:px-28">{status}</div>
       )}
@@ -101,7 +124,7 @@ export function CommentsPanel({
   );
 }
 
-function CommentStatus({ props, missing }: { props: DocumentInlineCommentsProps; missing: boolean }) {
+function CommentStatus({ props }: { props: DocumentInlineCommentsProps }) {
   const { t } = useTranslation();
   return (
     <>
@@ -118,7 +141,6 @@ function CommentStatus({ props, missing }: { props: DocumentInlineCommentsProps;
           </SecondaryButton>
         </div>
       )}
-      {missing && <p role="status">{t("This comment thread is no longer available.")}</p>}
     </>
   );
 }

@@ -418,6 +418,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "documents", document_id(document)])
   end
 
+  def document_path(company = %Company{}, document, %Comment{entity_type: :inline_thread} = comment) do
+    document_path(company, document) <> "?inlineThread=" <> Operately.ShortUuid.encode!(comment.entity_id) <> "#" <> comment_id(comment)
+  end
+
   def document_path(company = %Company{}, document, comment = %Comment{}) do
     document_with_comment = document_id(document) <> "#" <> comment_id(comment)
 

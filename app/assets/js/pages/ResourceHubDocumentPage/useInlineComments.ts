@@ -40,6 +40,7 @@ export function useDocumentInlineComments(document: ResourceHubDocument): Docume
     if (currentPage.current?.location !== location || currentPage.current.documentId !== document.id) return;
 
     const search = new URLSearchParams(location.search);
+    if (search.get("inlineThread") === id) return;
 
     if (id) search.set("inlineThread", id);
     else search.delete("inlineThread");

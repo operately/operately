@@ -42,8 +42,8 @@ defmodule Operately.Comments.InlineThreadNotificationsTest do
     assert Enum.sort(InlineThreadNotifications.recipients(reply)) == Enum.sort([ctx.creator.id, ctx.subscriber.id])
 
     {:ok, resolved} = InlineThreadResolving.run(ctx.creator, ctx.thread)
-    {:ok, replied} = InlineThreadReplying.run(ctx.subscriber, resolved, RichText.rich_text("Reply while resolved"))
-    assert replied.resolved_at == resolved.resolved_at
+    {:ok, reopened} = InlineThreadReopening.run(ctx.creator, resolved)
+    {:ok, _} = InlineThreadReplying.run(ctx.subscriber, reopened, RichText.rich_text("Reply after reopening"))
     assert Enum.sort(InlineThreadNotifications.recipients(activity(ctx.thread, ctx.subscriber.id))) == Enum.sort([ctx.creator.id, ctx.member.id])
   end
 
@@ -94,16 +94,12 @@ defmodule Operately.Comments.InlineThreadNotificationsTest do
     assert Repo.aggregate(Oban.Job, :count) == jobs
   end
 
-  test "activities identify the thread and emails use the standard document comment path", ctx do
+  test "activities identify the thread", ctx do
     ctx = thread(ctx, mentions([ctx.member]))
     raw = activity(ctx.thread)
     activity = raw |> Operately.Activities.cast_content() |> Operately.Activities.Preloader.preload()
     serialized = OperatelyWeb.Api.Serializer.serialize(activity.content, level: :essential)
     assert serialized.inline_thread_id == Operately.ShortUuid.encode!(ctx.thread.id)
-    [message] = ctx.thread.messages
-    expected = OperatelyWeb.Paths.document_path(ctx.company, ctx.document) <> "#" <> OperatelyWeb.Paths.comment_id(message)
-    assert OperatelyWeb.Paths.document_path(ctx.company, ctx.document, message) == expected
-    assert OperatelyEmail.Emails.ResourceHubDocumentCommentedEmail.buffered_item(ctx.member, raw).item_url == OperatelyWeb.Paths.to_url(expected)
   end
 
   for parent_type <- [:project, :goal] do

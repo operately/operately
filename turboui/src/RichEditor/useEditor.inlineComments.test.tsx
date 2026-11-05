@@ -100,7 +100,7 @@ it.each([true, false])("exposes working inline comment commands (initially enabl
   });
   expect(inlineCommentsKey.getState(editor.state)?.ranges).toEqual([{ id: "a", from: 1, to: 6 }]);
   expect(inlineCommentsKey.getState(editor.state)?.activeThreadId).toBe("a");
-  expect(editor.view.dom.querySelector('[data-inline-thread="a"]')?.className).toContain("bg-surface-highlight");
+  expect(editor.view.dom.querySelector('[data-inline-thread="a"]')?.className).toContain("bg-yellow-200");
 
   act(() => {
     expect(

@@ -1,10 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type { JSONContent } from "@tiptap/core";
 import { DocumentPage, type DocumentInlineCommentsProps } from ".";
 import type { InlineThread, Person } from "../ApiTypes";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
+import { IconEdit, IconHistory } from "../icons";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { CompanyNavigation } from "../CompanyNavigation";
+import { defaultProps as navigationProps } from "../CompanyNavigation/mockData";
 
 const meta = {
   title: "Pages/DocumentPage/InlineComments",
@@ -111,6 +115,7 @@ function Example({
   ownComment = false,
   inlineCommentsEnabled = true,
 }) {
+  const { t } = useTranslation();
   const [threads, setThreads] = React.useState(() =>
     empty
       ? []
@@ -244,6 +249,18 @@ function Example({
         mentionedPersonLookup={handlers.mentionedPersonLookup}
         taskList={{ canEdit: false }}
         inlineComments={inlineCommentsEnabled ? inlineComments : undefined}
+        options={[
+          {
+            type: "link",
+            icon: IconEdit,
+            label: t("Edit"),
+            link: "#edit",
+            keepOutsideOnBigScreen: true,
+            testId: "edit-document-link",
+            hidden: readOnly,
+          },
+          { type: "link", icon: IconHistory, label: t("History of changes"), link: "#history" },
+        ]}
         hideDraftActions
         hideReactions
         hideComments
@@ -256,6 +273,18 @@ function Example({
 }
 
 export const Review: Story = { render: () => <Example /> };
+export const Scrollable: Story = {
+  render: () => (
+    <div className="flex flex-col h-screen">
+      <CompanyNavigation {...navigationProps} />
+      <div className="relative flex-1 min-h-0 overflow-y-auto" data-test-id="document-scroll-container">
+        <div className="min-h-[2000px]">
+          <Example />
+        </div>
+      </div>
+    </div>
+  ),
+};
 export const Empty: Story = { render: () => <Example empty /> };
 export const ReadOnly: Story = { render: () => <Example readOnly /> };
 export const Loading: Story = { render: () => <Example loading empty /> };
