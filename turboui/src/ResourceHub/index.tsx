@@ -33,6 +33,7 @@ export { ResourceHubSearchInput, ResourceHubSearchMessage } from "./Search";
 export { useResourceHubSearch, type ResourceHubSearchState } from "./useResourceHubSearch";
 export { findNameAndExtension, sortNodesWithFoldersFirst } from "./utils";
 export { getNodeName } from "./selectors";
+export { DEFAULT_RESOURCE_HUB_NAME, getResourceHubDisplayName } from "./displayName";
 export type { AddFileProps } from "./useAddFile";
 export { useAddFile } from "./useAddFile";
 export type { SortableResourceHubNode } from "./utils";
