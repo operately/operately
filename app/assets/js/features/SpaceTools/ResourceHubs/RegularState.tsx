@@ -7,6 +7,7 @@ import {
   NodeIcon,
   ResourceHubSortBy,
   getNodeName,
+  getResourceHubDisplayName,
   sortNodesWithFoldersFirst,
 } from "turboui";
 import { Title } from "../components";
@@ -25,7 +26,7 @@ export function RegularState(props: Props) {
 
   return (
     <div className="flex flex-col h-full">
-      <Title title={name === "Documents & Files" ? t("Documents & Files") : name} />
+      <Title title={getResourceHubDisplayName(name, t)} />
 
       <div className="bg-surface-dimmed rounded mx-2 flex-1">
         <NodesList nodes={nodes} />

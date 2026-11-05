@@ -4,7 +4,12 @@ import { Page } from "../Page";
 import { IconEdit } from "../icons";
 import { RenameCollectionModal } from "./RenameCollectionModal";
 
-import { ContinueEditingDrafts, type ResourceHub, type ResourceHubNode } from "../ResourceHub";
+import {
+  ContinueEditingDrafts,
+  getResourceHubDisplayName,
+  type ResourceHub,
+  type ResourceHubNode,
+} from "../ResourceHub";
 
 import { SharedListPage, type SharedListPageProps } from "./SharedListPage";
 import type { ResourceHubSearchFn, ResourceHubSearchProps } from "./types";
@@ -45,13 +50,13 @@ export function ResourceHubPage(props: ResourceHubPage.Props) {
   ];
   return (
     <SharedListPage
-      title={props.title === "Documents & Files" ? t("Documents & Files") : props.title}
+      title={typeof props.title === "string" ? getResourceHubDisplayName(props.title, t) : props.title}
       navigation={props.navigation}
       newFileModals={props.newFileModals}
       addFileWidgetProps={props.addFileWidgetProps}
       nodesListProps={props.nodesListProps}
       addFolderModalProps={props.addFolderModalProps}
-      heading={props.resourceHub.name === "Documents & Files" ? t("Documents & Files") : props.resourceHub.name}
+      heading={getResourceHubDisplayName(props.resourceHub.name, t)}
       permissions={props.resourceHub.permissions}
       options={options}
       search={props.search}

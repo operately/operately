@@ -9950,14 +9950,11 @@ msgstr "Документы"
 
 #.frontend
 #: ../turboui/src/DocsAndFiles/PageDocsAndFiles.tsx:112
-#: ../turboui/src/ResourceHubPage/index.tsx:48
-#: ../turboui/src/ResourceHubPage/index.tsx:54
+#: ../turboui/src/ResourceHub/displayName.ts:6
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:61
 #: ../turboui/src/TemplateProjectPage/DocsAndFiles.tsx:135
 #: ../turboui/src/TemplateProjectPage/DocsAndFiles.tsx:145
 #: ../turboui/src/TemplateProjectPage/TemplateMoveResourceModal.tsx:92
-#: assets/js/features/SpaceTools/ResourceHubs/RegularState.tsx:28
-#: assets/js/features/SpaceTools/ResourceHubs/ZeroState.tsx:20
 msgid "Documents & Files"
 msgstr "Документы и файлы"
 
@@ -17246,7 +17243,7 @@ msgstr "При удалении вехи её задачи остаются в �
 #.frontend
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:99
 #: ../turboui/src/ResourceHubFolderPage/index.tsx:34
-#: ../turboui/src/ResourceHubPage/index.tsx:40
+#: ../turboui/src/ResourceHubPage/index.tsx:45
 #: ../turboui/src/TemplateProjectPage/TemplateResourceMenu.tsx:55
 msgid "Rename"
 msgstr "Переименовать"
