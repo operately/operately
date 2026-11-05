@@ -5,7 +5,7 @@ import { WorkMap } from "turboui";
 import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
 import { accessLevelAsNumber } from "../goals";
 import { parseContextualDate } from "../contextualDates";
-import { parseTaskStatusForTurboUi } from "../tasks";
+import { parseTaskStatusForTurboUi, parseTaskStatusesForTurboUi } from "../tasks";
 import { parseSpaceForTurboUI } from "../spaces";
 
 /**
@@ -24,6 +24,7 @@ function convertToWorkMapItem(paths: Paths, item: WorkMapItem): WorkMap.Item {
     space: item.space ? parseSpaceForTurboUI(paths, item.space) : null,
     spacePath: item.spacePath,
     taskStatus: parseTaskStatusForTurboUi(item.taskStatus),
+    taskStatuses: parseTaskStatusesForTurboUi(item.taskStatuses),
     timeframe: convertTimeframe(item.timeframe),
     milestones: (item.milestones || []).map((milestone) => ({
       id: milestone.id,

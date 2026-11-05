@@ -2843,6 +2843,8 @@ export interface WorkMapItem {
   state: WorkMapItemState;
   status: WorkMapItemStatus;
   taskStatus: TaskStatus | null;
+  taskStatuses?: TaskStatus[] | null;
+  canEditTask?: boolean | null;
   progress: number | null;
   space: Space | null;
   spacePath: string | null;

@@ -171,6 +171,8 @@ export namespace WorkMap {
     name: string;
     status: ItemStatus;
     taskStatus: StatusSelector.StatusOption | null;
+    taskStatuses?: StatusSelector.StatusOption[];
+    canEditTask?: boolean | null;
     progress: number | null;
     project: { id: string; name: string } | null;
     projectPath: string | null;
@@ -195,6 +197,7 @@ export namespace WorkMap {
   }
 
   export type WorkMapType = "company" | "personal";
+  export type TaskStatusChangeFn = (task: Item, status: StatusSelector.StatusOption) => Promise<void>;
   export type Filter = "all" | "goals" | "projects" | "completed" | "paused";
   export type View = "table" | "timeline";
   export type EmptyStateVariant = "standard" | "first-project";

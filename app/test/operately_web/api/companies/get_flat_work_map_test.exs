@@ -305,5 +305,46 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMapTest do
 
       assert open_task.owner.id == Paths.person_id(ctx.assignee)
     end
+
+    test "includes each task's scope statuses and the viewer's edit permission", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{include_tasks: true, contributor_id: Paths.person_id(ctx.assignee)})
+
+      project_task = Enum.find(res.work_map, &(&1.id == Paths.task_id(ctx.open_task)))
+      space_task = Enum.find(res.work_map, &(&1.id == Paths.task_id(ctx.space_task)))
+
+      assert project_task.task_statuses == Serializer.serialize(ctx.project.task_statuses)
+      assert space_task.task_statuses == Serializer.serialize(ctx.space.task_statuses)
+      assert project_task.can_edit_task
+      assert space_task.can_edit_task
+    end
+
+    test "view-only viewers cannot edit tasks on another person's profile", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:viewer)
+        |> Factory.log_in_person(:viewer)
+
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{include_tasks: true, contributor_id: Paths.person_id(ctx.assignee)})
+      task = Enum.find(res.work_map, &(&1.id == Paths.task_id(ctx.open_task)))
+
+      assert task
+      refute task.can_edit_task
+    end
+
+    test "company read-only mode disables task editing", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      %{company_id: ctx.company.id, access_state: :read_only}
+      |> Operately.Billing.CompanyBillingAccount.changeset()
+      |> Operately.Repo.insert!()
+
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{include_tasks: true, contributor_id: Paths.person_id(ctx.assignee)})
+      tasks = Enum.filter(res.work_map, &(&1.type == "task"))
+
+      assert length(tasks) == 2
+      assert Enum.all?(tasks, &(&1.can_edit_task == false))
+    end
   end
 end

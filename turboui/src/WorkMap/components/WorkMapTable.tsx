@@ -18,6 +18,7 @@ import { useSortableList } from "../../utils/PragmaticDragAndDrop";
 
 interface Props {
   items: WorkMap.Item[];
+  onTaskStatusChange?: WorkMap.TaskStatusChangeFn;
   onReorder?: (itemId: string, newIndex: number) => void;
   reorderingDisabled?: boolean;
   addingEnabled?: boolean;
@@ -40,6 +41,7 @@ interface Props {
 
 export function WorkMapTable({
   items,
+  onTaskStatusChange,
   onReorder,
   reorderingDisabled = false,
   tab,
@@ -141,6 +143,7 @@ export function WorkMapTable({
                 key={item.id}
                 reorder={onReorder && item.type === "task" ? { index: idx, disabled: reorderingDisabled } : undefined}
                 item={item}
+                onTaskStatusChange={onTaskStatusChange}
                 level={0}
                 isLast={idx === items.length - 1}
                 tab={tab}
