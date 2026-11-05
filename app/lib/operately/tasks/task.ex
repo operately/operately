@@ -45,7 +45,7 @@ defmodule Operately.Tasks.Task do
     has_many :assignees, Operately.Tasks.Assignee
     has_many :assigned_people, through: [:assignees, :person]
 
-    has_many :comments, Operately.Updates.Comment, where: [entity_type: :project_task], foreign_key: :entity_id
+    has_many :comments, Operately.Updates.Comment, where: [entity_type: {:in, [:project_task, :space_task]}], foreign_key: :entity_id
 
     field :name, :string
     field :priority, :string
@@ -227,7 +227,7 @@ defmodule Operately.Tasks.Task do
 
     counts =
       from(c in Operately.Updates.Comment,
-        where: c.entity_id in ^task_ids and c.entity_type == :project_task,
+        where: c.entity_id in ^task_ids and c.entity_type in [:project_task, :space_task],
         group_by: c.entity_id,
         select: {c.entity_id, count(c.id)}
       )

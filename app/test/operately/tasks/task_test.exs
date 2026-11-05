@@ -75,4 +75,19 @@ defmodule Operately.Tasks.TaskTest do
     assert {:ok, task} = Task.get(modified_requester, id: ctx.project_task.id)
     assert task.request_info.requester.full_name == ctx.project_editor.full_name
   end
+
+  test "loads project and space task comments in the association and aggregate count", ctx do
+    ctx =
+      ctx
+      |> Factory.preload(:project_task, :project)
+      |> Factory.add_comment(:project_comment, :project_task)
+
+    space_comment = Operately.CommentsFixtures.comment_fixture(ctx.creator, %{entity_id: ctx.project_task.id, entity_type: :space_task})
+    task = Operately.Repo.preload(ctx.project_task, :comments, force: true)
+
+    assert Enum.map(task.comments, & &1.id) |> Enum.sort() == Enum.sort([ctx.project_comment.id, space_comment.id])
+
+    [task] = Task.load_comments_count([task])
+    assert task.comments_count == 2
+  end
 end
