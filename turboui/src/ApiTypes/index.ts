@@ -981,6 +981,14 @@ export interface ActivityContentResourceHubLinkEdited {
   previousUrl?: string | null;
 }
 
+export interface ActivityContentResourceHubRenamed {
+  __typename: "activity_content_resource_hub_renamed";
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  oldName: string;
+  newName: string;
+}
+
 export interface ActivityContentSpaceAdded {
   __typename: "activity_content_space_added";
   companyId?: string | null;
@@ -2496,6 +2504,7 @@ export interface ResourceHubPermissions {
   canEditFile?: boolean | null;
   canEditLink?: boolean | null;
   canRenameFolder?: boolean | null;
+  canRenameHub?: boolean | null;
   canView?: boolean | null;
 }
 
@@ -2961,6 +2970,7 @@ export type ActivityContent =
   | ActivityContentResourceHubFolderCreated
   | ActivityContentResourceHubFolderDeleted
   | ActivityContentResourceHubFolderRenamed
+  | ActivityContentResourceHubRenamed
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
   | ActivityContentResourceHubLinkDeleted
@@ -3182,9 +3192,9 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
   | "project_retrospective"
+  | "kpi"
   | "project_discussion"
   | "goal_discussion"
   | "goal_check_in"

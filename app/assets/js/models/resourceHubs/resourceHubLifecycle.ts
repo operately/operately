@@ -1,4 +1,4 @@
-import Api from "@/api";
+import Api, { type ResourceHubsGetResult } from "@/api";
 import { compareIds } from "@/routes/paths";
 import { invalidateSpaceSummaryQueries } from "@/models/spaces/spaceSummaryQueries";
 import { type QueryClient, type UseMutationOptions, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -13,6 +13,7 @@ interface ResourceHubScope {
 interface ResourceHubMutationInput {
   // Deleted details stay stale until navigation; requesting them now would return a 404.
   deleted?: boolean;
+  renamedCollection?: boolean;
   resourceHubId?: string | null;
   documentId?: string | null;
   fileId?: string | null;
@@ -58,6 +59,21 @@ export async function invalidateResourceHubQueries(
   };
   const nodesPrefix = Api.resource_hubs.listNodesQueryKeyPrefix();
 
+  // Resource detail queries embed the collection in their navigation data.
+  const invalidateCollectionDetails = (prefix: readonly unknown[], resultField: string) => {
+    if (!input.renamedCollection || !hubId) return Promise.resolve();
+    return client.invalidateQueries({
+      queryKey: prefix,
+      refetchType,
+      predicate: (query) => {
+        const data = query.state.data as
+          Record<string, { resourceHubId?: string; resourceHub?: { id: string } }> | undefined;
+        const resource = data?.[resultField];
+        return compareIds(resource?.resourceHubId ?? resource?.resourceHub?.id, hubId);
+      },
+    });
+  };
+
   await Promise.all([
     invalidate(Api.resource_hubs.getQueryKeyPrefix(), "id", [hubId]),
     invalidate(Api.resource_hubs.listDraftsQueryKeyPrefix(), "resourceHubId", [hubId]),
@@ -78,13 +94,17 @@ export async function invalidateResourceHubQueries(
     invalidate(Api.inline_threads.listQueryKeyPrefix(), "resourceId", [documentId], true),
     invalidate(Api.files.getQueryKeyPrefix(), "id", [fileId], true),
     invalidate(Api.links.getQueryKeyPrefix(), "id", [linkId], true),
+    invalidateCollectionDetails(Api.resource_hubs.getFolderQueryKeyPrefix(), "folder"),
+    invalidateCollectionDetails(Api.documents.getQueryKeyPrefix(), "document"),
+    invalidateCollectionDetails(Api.files.getQueryKeyPrefix(), "file"),
+    invalidateCollectionDetails(Api.links.getQueryKeyPrefix(), "link"),
   ]);
 }
 
 function useResourceHubMutation<TData, TError, TVariables extends ResourceHubMutationInput>(
   options: UseMutationOptions<TData, TError, TVariables>,
   scope: ResourceHubScope = {},
-  deleted = false,
+  effect: { deleted?: boolean; renamedCollection?: boolean } = {},
 ) {
   const client = useQueryClient();
 
@@ -95,8 +115,24 @@ function useResourceHubMutation<TData, TError, TVariables extends ResourceHubMut
     onSuccess: async (data, input, context) => {
       if (data === false || (data && typeof data === "object" && "success" in data && data.success === false)) return;
 
+      if (effect.renamedCollection && "newName" in input && typeof input.newName === "string") {
+        const name = input.newName.trim();
+        const prefix = Api.resource_hubs.getQueryKeyPrefix();
+        const hubId = input.resourceHubId ?? context?.resourceHubId;
+        client.setQueriesData<ResourceHubsGetResult>(
+          {
+            queryKey: prefix,
+            predicate: (query) => {
+              const queryInput = query.queryKey[prefix.length] as { id?: string } | undefined;
+              return compareIds(queryInput?.id, hubId);
+            },
+          },
+          (current) => (current ? { ...current, resourceHub: { ...current.resourceHub, name } } : current),
+        );
+      }
+
       await Promise.all([
-        invalidateResourceHubQueries(client, { ...input, deleted }, context),
+        invalidateResourceHubQueries(client, { ...input, ...effect }, context),
         context?.spaceId ? invalidateSpaceSummaryQueries(client, [context.spaceId]) : undefined,
       ]).catch((error) => {
         console.error("Failed to refresh resource hub queries", error);
@@ -118,7 +154,7 @@ export function usePublishDocument(scope: ResourceHubScope = {}) {
 }
 
 export function useDeleteDocument(scope: ResourceHubScope = {}) {
-  return useResourceHubMutation(Api.documents.deleteMutationOptions(), scope, true);
+  return useResourceHubMutation(Api.documents.deleteMutationOptions(), scope, { deleted: true });
 }
 
 export function useCreateFiles(scope: ResourceHubScope = {}) {
@@ -130,7 +166,7 @@ export function useUpdateFile(scope: ResourceHubScope = {}) {
 }
 
 export function useDeleteFile(scope: ResourceHubScope = {}) {
-  return useResourceHubMutation(Api.files.deleteMutationOptions(), scope, true);
+  return useResourceHubMutation(Api.files.deleteMutationOptions(), scope, { deleted: true });
 }
 
 export function useCreateLink(scope: ResourceHubScope = {}) {
@@ -142,7 +178,7 @@ export function useUpdateLink(scope: ResourceHubScope = {}) {
 }
 
 export function useDeleteLink(scope: ResourceHubScope = {}) {
-  return useResourceHubMutation(Api.links.deleteMutationOptions(), scope, true);
+  return useResourceHubMutation(Api.links.deleteMutationOptions(), scope, { deleted: true });
 }
 
 export function useCreateFolder(scope: ResourceHubScope = {}) {
@@ -151,6 +187,10 @@ export function useCreateFolder(scope: ResourceHubScope = {}) {
 
 export function useRenameFolder(scope: ResourceHubScope = {}) {
   return useResourceHubMutation(Api.resource_hubs.renameFolderMutationOptions(), scope);
+}
+
+export function useRenameCollection(scope: ResourceHubScope = {}) {
+  return useResourceHubMutation(Api.resource_hubs.renameMutationOptions(), scope, { renamedCollection: true });
 }
 
 export function useDeleteFolder(scope: ResourceHubScope = {}) {

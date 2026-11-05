@@ -177,6 +177,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Reactions.Delete,
       Mutations.Wrappers.Documents.RenameFolder,
       Mutations.ResourceHubs.RenameFolder,
+      Mutations.ResourceHubs.Rename,
       Mutations.Companies.RestoreMember,
       Mutations.Spaces.AddMembers,
       Mutations.Spaces.Create,

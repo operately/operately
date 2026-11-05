@@ -96,6 +96,8 @@ defmodule Operately.ResourceHubs.ResourceHub do
 
   def set_permissions(resource_hub = %__MODULE__{}, company_read_only \\ false) do
     perms = Operately.ResourceHubs.Permissions.calculate(resource_hub.request_info.access_level, company_read_only: company_read_only)
+    space_owned? = not is_nil(resource_hub.space_id) and is_nil(resource_hub.project_id) and is_nil(resource_hub.goal_id)
+    perms = %{perms | can_rename_hub: perms.can_rename_hub and space_owned?}
     Map.put(resource_hub, :permissions, perms)
   end
 end

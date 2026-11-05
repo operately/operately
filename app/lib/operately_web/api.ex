@@ -301,6 +301,7 @@ defmodule OperatelyWeb.Api do
         mutation(:create_folder, OperatelyWeb.Api.ResourceHubs.CreateFolder)
         mutation(:delete_folder, OperatelyWeb.Api.ResourceHubs.DeleteFolder)
         mutation(:rename_folder, OperatelyWeb.Api.ResourceHubs.RenameFolder)
+        mutation(:rename, OperatelyWeb.Api.ResourceHubs.Rename)
       end
 
       namespace(:documents, catalog: :omit) do

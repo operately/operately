@@ -158,6 +158,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "resource_hub_folder_created",
     "resource_hub_folder_deleted",
     "resource_hub_folder_renamed",
+    "resource_hub_renamed",
     "resource_hub_link_created",
     "resource_hub_link_deleted",
     "resource_hub_link_edited",

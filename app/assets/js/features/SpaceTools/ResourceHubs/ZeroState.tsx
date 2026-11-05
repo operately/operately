@@ -4,20 +4,20 @@ import React from "react";
 import classNames from "classnames";
 import { GhostButton } from "turboui";
 
-export function ZeroState() {
+export function ZeroState({ name }: { name: string }) {
   return (
     <div>
       <Examples />
-      <ExplanationAndButton />
+      <ExplanationAndButton name={name} />
     </div>
   );
 }
 
-function ExplanationAndButton() {
+function ExplanationAndButton({ name }: { name: string }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col justify-center items-center group">
-      <div className="text-base font-bold">{t("Documents & Files")}</div>
+      <div className="text-base font-bold">{name === "Documents & Files" ? t("Documents & Files") : name}</div>
 
       <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
         {t("A place to share rich text documents, images, videos, and other files")}
