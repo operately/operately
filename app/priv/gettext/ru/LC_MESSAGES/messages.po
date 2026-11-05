@@ -10746,6 +10746,7 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/pages/TaskPage/index.tsx:140
 #: assets/js/pages/TaskPage/index.tsx:170
 #: assets/js/pages/TaskPage/index.tsx:382
+#: ../turboui/src/WorkMap/components/TableRow/StatusCell.tsx:27
 msgid "Error"
 msgstr "Ошибка"
 
@@ -11547,6 +11548,7 @@ msgstr "Не удалось обновить статус задачи"
 
 #.frontend
 #: assets/js/pages/TaskPage/index.tsx:93
+#: ../turboui/src/WorkMap/components/TableRow/StatusCell.tsx:27
 msgid "Failed to update task status."
 msgstr "Не удалось обновить статус задачи."
 

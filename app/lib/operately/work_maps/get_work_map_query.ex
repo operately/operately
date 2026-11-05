@@ -27,6 +27,8 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     - contributor_id (optional): The ID of a contributor
     - include_assignees (optional): A boolean indicating whether to include assignees in the result. Defaults to false
     - include_reviewer (optional): A boolean indicating whether to include reviewer details in the result. Defaults to false
+    - include_tasks (optional): Include assigned tasks in the flat work map. Defaults to false
+    - include_task_statuses (optional): Populate available statuses for included tasks. Defaults to false
     - only_completed (optional): A boolean indicating whether to return only completed items. Defaults to false
   """
   def execute(person, args) do
@@ -161,10 +163,10 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
       match?(%Operately.People.Person{}, person) ->
         assignee_id = contributor_id || person.id
-        query_tasks(company_id, assignee_id, person)
+        query_tasks(person, assignee_id, args)
 
       match?(:system, person) and not is_nil(contributor_id) ->
-        query_tasks(company_id, contributor_id, person)
+        query_tasks(person, contributor_id, args)
 
       match?(:system, person) ->
         []
@@ -181,16 +183,16 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   Includes tasks on active projects and tasks with no project.
   """
   def list_assigned_tasks(%Operately.People.Person{} = person, company_id) when is_binary(company_id) do
-    query_tasks(company_id, person.id, person)
+    query_tasks(person, person.id, %{company_id: company_id})
   end
 
-  defp query_tasks(company_id, assignee_id, person) do
+  defp query_tasks(person, assignee_id, args) do
     assignments =
       from(t in Task, as: :task)
       |> join(:inner, [task: t], a in assoc(t, :assignees), as: :assignee)
       |> join(:left, [task: t], p in assoc(t, :project), as: :project)
       |> where([assignee: a], a.person_id == ^assignee_id)
-      |> Task.scope_company(company_id)
+      |> Task.scope_company(args.company_id)
       |> where([project: p], is_nil(p.id) or p.status == "active")
       |> where([task: t], is_nil(t.closed_at) and is_nil(t.archived_at))
       |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
@@ -202,7 +204,8 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
       opts: [
         ids: Map.keys(assignments),
         preload: [:project, :space, :company, :assigned_people],
-        auth_preload: [:project_space]
+        auth_preload: [:project_space],
+        after_load: if(Map.get(args, :include_task_statuses, false), do: [&Task.preload_available_statuses/1], else: [])
       ]
     )
     |> Enum.map(fn task -> %{task | assigned_at: Map.fetch!(assignments, task.id)} end)

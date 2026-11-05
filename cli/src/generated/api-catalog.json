@@ -4015,6 +4015,31 @@
           },
           {
             "default": null,
+            "name": "task_statuses",
+            "type": {
+              "item": {
+                "name": "task_status",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "can_edit_task",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "progress",
             "type": {
               "name": "float",
