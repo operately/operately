@@ -45,13 +45,13 @@ export function ResourceHubPage(props: ResourceHubPage.Props) {
   ];
   return (
     <SharedListPage
-      title={props.title}
+      title={props.title === "Documents & Files" ? t("Documents & Files") : props.title}
       navigation={props.navigation}
       newFileModals={props.newFileModals}
       addFileWidgetProps={props.addFileWidgetProps}
       nodesListProps={props.nodesListProps}
       addFolderModalProps={props.addFolderModalProps}
-      heading={props.resourceHub.name ?? ""}
+      heading={props.resourceHub.name === "Documents & Files" ? t("Documents & Files") : props.resourceHub.name}
       permissions={props.resourceHub.permissions}
       options={options}
       search={props.search}

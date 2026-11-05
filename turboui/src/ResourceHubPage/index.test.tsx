@@ -33,6 +33,7 @@ jest.mock("../RichEditor", () => ({
 }));
 
 import { ResourceHubPage } from "./index";
+import { i18n, setupTestCatalog } from "../../test/i18n";
 import {
   createMockDocumentNode,
   createMockDraftNode,
@@ -43,7 +44,10 @@ import {
   useMockSharedListPageProps,
 } from "./mockData";
 
+setupTestCatalog();
+
 function ResourceHubPageHarness({
+  initialName = "Engineering Handbook",
   initialNodes = [],
   openAddFolderOnMount = false,
   selectedUploadFile,
@@ -53,6 +57,7 @@ function ResourceHubPageHarness({
   parentType = "space",
   onRename,
 }: {
+  initialName?: string;
   initialNodes?: React.ComponentProps<typeof ResourceHubPage>["nodesListProps"]["nodes"];
   openAddFolderOnMount?: boolean;
   selectedUploadFile?: File;
@@ -66,6 +71,7 @@ function ResourceHubPageHarness({
   const hasSelectedUploadFileRef = React.useRef(false);
   const [resourceHub, setResourceHub] = React.useState(() =>
     createMockResourceHub({
+      name: initialName,
       project:
         parentType === "project" || parentType === "template"
           ? {
@@ -168,6 +174,27 @@ describe("ResourceHubPage", () => {
     await user.click(control("options-button"));
     await user.click(control("rename-collection"));
   }
+
+  test("translates the default heading and browser title when the language changes", async () => {
+    render(<ResourceHubPageHarness initialName="Documents & Files" />);
+    expect(screen.getByText("Documents & Files")).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("pt-BR");
+    });
+
+    expect(screen.getByText("Docs & Arquivos")).toBeInTheDocument();
+    expect(document.title).toContain("Docs & Arquivos");
+    expect(screen.queryByText("Documents & Files")).not.toBeInTheDocument();
+  });
+
+  test("preserves custom collection names that match translation keys", async () => {
+    await i18n.changeLanguage("pt-BR");
+    render(<ResourceHubPageHarness initialName="Save" />);
+
+    expect(screen.getByText("Save")).toBeInTheDocument();
+    expect(document.title).toContain("Save");
+  });
 
   test("renames an empty collection with a trimmed name and updates the heading and title", async () => {
     const onRename = jest.fn().mockResolvedValue(undefined);
