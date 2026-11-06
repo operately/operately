@@ -795,6 +795,13 @@ export interface ActivityContentProjectTimelineEdited {
   updatedMilestones?: ActivityMilestone[] | null;
 }
 
+export interface ActivityContentResourceHubDeleted {
+  __typename: "activity_content_resource_hub_deleted";
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  name: string;
+}
+
 export interface ActivityContentResourceHubDocumentCommented {
   __typename: "activity_content_resource_hub_document_commented";
   goal?: Goal | null;
@@ -2979,6 +2986,7 @@ export type ActivityContent =
   | ActivityContentResourceHubFolderCreated
   | ActivityContentResourceHubFolderDeleted
   | ActivityContentResourceHubFolderRenamed
+  | ActivityContentResourceHubDeleted
   | ActivityContentResourceHubRenamed
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
@@ -3201,8 +3209,8 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "project_check_in"
   | "kpi"
+  | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"

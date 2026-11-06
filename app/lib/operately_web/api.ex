@@ -286,10 +286,16 @@ defmodule OperatelyWeb.Api do
         mutation(:delete, OperatelyWeb.Api.Reactions.Delete)
       end
 
-      # Legacy Docs & Files routes stay on the external API for CLI <= 1.6.0 backward
-      # compatibility but are omitted from the catalog. The documents namespace
-      # is the supported CLI-facing surface for new clients.
+      # Shared resource hub management and content endpoints.
+      # The CLI catalog exposes the documents aliases instead of this namespace.
       namespace(:resource_hubs, catalog: :omit) do
+        query(:list, OperatelyWeb.Api.ResourceHubs.List)
+
+        mutation(:rename, OperatelyWeb.Api.ResourceHubs.Rename)
+        mutation(:create, OperatelyWeb.Api.ResourceHubs.Create)
+        mutation(:delete, OperatelyWeb.Api.ResourceHubs.Delete)
+
+        # Content endpoints used by the web app and retained externally for CLI <= 1.6.0.
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
         query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
         query(:list_drafts, OperatelyWeb.Api.ResourceHubs.ListDrafts)
@@ -301,7 +307,6 @@ defmodule OperatelyWeb.Api do
         mutation(:create_folder, OperatelyWeb.Api.ResourceHubs.CreateFolder)
         mutation(:delete_folder, OperatelyWeb.Api.ResourceHubs.DeleteFolder)
         mutation(:rename_folder, OperatelyWeb.Api.ResourceHubs.RenameFolder)
-        mutation(:rename, OperatelyWeb.Api.ResourceHubs.Rename)
       end
 
       namespace(:documents, catalog: :omit) do
@@ -362,7 +367,7 @@ defmodule OperatelyWeb.Api do
   defmacro internal_endpoints do
     quote do
       namespace :resource_hubs do
-        query(:list, OperatelyWeb.Api.ResourceHubs.List)
+        mutation :reorder, OperatelyWeb.Api.ResourceHubs.Reorder
       end
 
       query :get_language, OperatelyWeb.Api.Queries.GetLanguage
@@ -535,6 +540,9 @@ defmodule OperatelyWeb.Api do
       @doc "Browse and manage Docs & Files"
       namespace(:documents) do
         query(:list_hubs, OperatelyWeb.Api.ResourceHubs.List)
+        mutation(:create_hub, OperatelyWeb.Api.ResourceHubs.Create)
+        mutation(:rename_hub, OperatelyWeb.Api.ResourceHubs.Rename)
+        mutation(:delete_hub, OperatelyWeb.Api.ResourceHubs.Delete)
         query(:list_contents, OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents)
         query(:list_drafts, OperatelyWeb.Api.ResourceHubs.ListDrafts)
         query(:search, OperatelyWeb.Api.Wrappers.DocsAndFiles.Search)

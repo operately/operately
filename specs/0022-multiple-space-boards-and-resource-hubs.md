@@ -14,18 +14,18 @@ Related issue: [#5587 — Support multiple kanban boards per space](https://gith
 
 ## Scope and Experience
 
-- Add, rename, reorder, archive, restore, and choose a default board or hub through Space Tools. Show each active instance as a separate named card.
+- Add, rename, and reorder boards or hubs through Space Tools. Board defaults can be changed; hub defaults are fixed. Show each instance as a separate named card. Boards support archive/restore; hubs support deletion only when empty.
 - Retain category toggles and their current semantics. Disabling a category preserves its instances and content.
 - Instances inherit space access. Managing instances requires the existing permission to configure space tools; content operations retain their existing permission requirements.
-- Archived instances remain readable through direct links and an archived-tools list, but reject content mutations until restored. Archiving does not delete content or complete tasks.
-- Exclude permanent deletion, independent instance permissions, multiple project/goal hubs, and changes to project/milestone board ownership.
+- Archived boards remain readable through direct links and an archived-tools list, but reject content mutations until restored. Archiving does not delete content or complete tasks.
+- Exclude deletion of nonempty hubs, permanent board deletion, independent instance permissions, multiple project/goal hubs, and changes to project/milestone board ownership.
 
 ## Data Model
 
 - Add `TaskBoard`: `space_id`, `name`, `task_statuses`, `tasks_kanban_state`, `position`, and `archived_at`.
 - Add `tasks.board_id` for space tasks. Retain `space_id` for access and existing integrations; enforce that the board belongs to that space. Project tasks have no space board.
-- Extend space-owned resource hubs with `position` and `archived_at`; preserve existing hub and content IDs.
-- Store `default_task_board_id` and `default_resource_hub_id` on the space. Defaults must reference active instances in that space. Creation, default replacement, and archive validation are transactional.
+- Extend space-owned resource hubs with `position`; preserve existing hub and content IDs.
+- Store `default_task_board_id` and `default_resource_hub_id` on the space. Defaults must reference existing hubs or active boards in that space. Creation, board-default changes, and deletion/archive validation are transactional. Hub defaults are initialized once and preserved.
 - Backfill one board per space, preserving existing tasks, status IDs, and ordering. Backfill the existing hub as default; if multiple already exist, preserve the current oldest-hub selection with an ID tie-breaker. New spaces receive one default of each type.
 - Board records become authoritative. Preserve legacy space status/order fields in API responses as projections of the default board, rather than maintaining two writable copies.
 
@@ -43,9 +43,9 @@ Implement selection and authorization in shared API/domain code. MCP remains a t
 | Legacy hub content listing/search | Preserve default-hub behavior; do not silently expand to all hubs. |
 | Missing/unavailable default | Return a stable machine-readable error with accessible choices and retry guidance; do not guess. |
 
-- Expose lightweight instance discovery with ID, name, type, position, archive state, and default designation. Avoid requiring agents to load tool contents to discover destinations.
+- Expose lightweight instance discovery with ID, name, type, position, default designation, and archive state for boards. Avoid requiring agents to load tool contents to discover destinations.
 - Add explicit instance selectors to existing API/MCP operations and generated CLI flags, including create, list/search, and move/copy destinations where applicable. Preserve old inputs, routes, command names, and response fields; expose the resolved instance in results.
-- Document default selection in schemas, help, and examples. Require an explicit replacement before archiving a default; adding, restoring, or reordering instances never changes the default.
+- Document default selection in schemas, help, and examples. Require an explicit replacement before archiving a default board. Reject changes to or deletion of the default hub. Adding or reordering instances never changes an existing default.
 - Preserve old space-board URLs: task-specific links resolve the task's actual board; links without a task resolve the default. Hub URLs retain their IDs.
 - Moving a task updates both boards' ordering atomically. Preserve a valid destination status or require an explicit mapping when statuses differ; never leave a task with a status unavailable on its destination board.
 
@@ -64,10 +64,15 @@ Implemented `documents/list_hubs`, MCP `list_resource_hubs`, persisted defaults,
 
 ### PR 2 — Resource hub management in Space Tools
 
-- Add hub ordering/archive state and API operations for creation, renaming, ordering, archiving/restoring, and default selection; expose management through MCP and CLI.
-- Extend Space Tools configuration with instance controls and archived hubs. Reuse the existing hub cards and creation/rename operations.
-- Apply archive rules to content access, writes, and discovery; retain content, search access checks, and direct links.
-- Verify lifecycle permissions, default replacement, category toggles, and the complete two-hub UI flow.
+Split into three independently reviewable PRs:
+
+1. **Data foundation:** add/backfill `position` using migration-local schemas; preserve ordering and defaults through export/import, including older packages. No archive state.
+2. **Management API:** create, rename, and delete through actual `resource_hubs` endpoints, external `documents/*` routes, MCP, and generated CLI commands. Reordering is internal-only for Space Tools. Require space edit permission and respect company read-only mode. Lock the space and hubs transactionally. Reordering requires every hub exactly once. New hubs append without changing the default; space creation initializes the default.
+3. **Space Tools UI:** immediately saved hub controls, separate from category Save/Cancel. Include deletion confirmation for non-default hubs; hide deletion for the default. Keep management available when the category is disabled. Use TurboUI controls and generated TanStack queries/mutations.
+
+Deletion rejects live content, including drafts by any author and empty folders. Deleted content and deleted folder trees do not block removal; clean up their remaining records with the hub. The default hub cannot be deleted, including when it is the last hub. The default hub cannot be changed. Return `default_resource_hub_deletion_forbidden` for default deletion attempts. Return `resource_hub_not_empty` with removal guidance. No archive/restore endpoints, filters, or read-only state.
+
+Verify permissions, company isolation, empty/nonempty deletion, concurrent content creation, ordering, fixed default preservation, import compatibility, and disabled categories. Include one complete two-hub UI flow and one lifecycle workflow each for CLI and MCP.
 
 ### PR 3 — Board schema preparation
 

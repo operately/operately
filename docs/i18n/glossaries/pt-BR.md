@@ -28,5 +28,6 @@ Use the listed forms consistently. Lowercase terms may be capitalized at the sta
 | review | Review navigation or review work | revisão | Capitalize when required by the sentence or label. |
 | due date | Planned completion date; not the actual completion timestamp | data de conclusão | Use this term consistently for due-date copy. |
 | Docs & Files | Documents and files tool name | Docs & Arquivos | Preserve the named tool’s capitalization and ampersand. |
+| Resource Hub / Resource Hubs | Named container of documents, files, links, and folders | Central de recursos / Centrais de recursos | User-facing product term. Use for hub management; preserve user-authored hub names. |
 | Comments & Activity | Comments and activity section name | Comentários & Atividade | Preserve the section’s capitalization and ampersand. |
 | template | Reusable project template | Template | Preserve the approved capital T in labels. |

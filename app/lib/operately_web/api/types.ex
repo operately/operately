@@ -1343,6 +1343,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_resource_hub_folder_created,
       :activity_content_resource_hub_folder_deleted,
       :activity_content_resource_hub_folder_renamed,
+      :activity_content_resource_hub_deleted,
       :activity_content_resource_hub_renamed,
       :activity_content_resource_hub_link_commented,
       :activity_content_resource_hub_link_created,
@@ -1400,6 +1401,12 @@ defmodule OperatelyWeb.Api.Types do
     field? :folder, :resource_hub_folder, null: true
     field? :old_name, :string, null: true
     field? :new_name, :string, null: true
+  end
+
+  object :activity_content_resource_hub_deleted, for: Operately.Activities.Content.ResourceHubDeleted do
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field :name, :string, null: false
   end
 
   object :activity_content_resource_hub_renamed, for: Operately.Activities.Content.ResourceHubRenamed do

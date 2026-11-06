@@ -3,6 +3,9 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
 
   def __spec_modules__ do
     [
+      Mutations.Documents.CreateHub,
+      Mutations.Documents.DeleteHub,
+      Mutations.Documents.RenameHub,
       Mutations.Companies.CreateAdmins,
       Mutations.Companies.CreateMember,
       Mutations.CreateAvatarBlob,
@@ -22,6 +25,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Wrappers.Documents.UpdateDocument,
       Mutations.Wrappers.Documents.UpdateFile,
       Mutations.Wrappers.Documents.UpdateLink,
+      Mutations.ResourceHubs.Create,
+      Mutations.ResourceHubs.Delete,
       Mutations.ResourceHubs.CopyFolder,
       Mutations.Documents.Create,
       Mutations.Files.Create,

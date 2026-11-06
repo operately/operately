@@ -162,9 +162,10 @@ Keep goal health, task workflow, completion, and publication states distinct. Tr
 
 | English | Meaning/context | Deutsch | Capitalization and usage |
 | --- | --- | --- | --- |
-| Docs & Files / Documents & Files | Named content tool | Dokumente & Dateien | Same name for both English variants. Do not expose the internal **Resource Hub** name. |
+| Docs & Files / Documents & Files | Named content tool | Dokumente & Dateien | Same name for both English variants. |
+| Resource Hub / Resource Hubs | Named container of documents, files, links, and folders | Ressourcen-Hub / Ressourcen-Hubs | User-facing product term. Use for hub management; preserve user-authored hub names. |
 | document / doc | Rich-text document | Dokument | **das Dokument / die Dokumente**, distinct from an uploaded **Datei**. Related item types: **Ordner**, **Link**, **Anhang**. |
-| resource / item (content collection) | Generic entry in Docs & Files | Inhalt / Eintrag | Prefer the specific item type when known; avoid a literal translation of internal Resource Hub terminology. |
+| resource / item (content collection) | Generic entry in Docs & Files | Inhalt / Eintrag | Prefer the specific item type when known; use the Resource Hub glossary entry when referring to the container. |
 | key resource / support material | Important supporting project/goal content | Wichtige Unterlage / Begleitmaterial | A resource can also be a link; do not imply it is always an uploaded file. |
 | draft / drafts | Unpublished content | Entwurf / Entwürfe | **der Entwurf / die Entwürfe**. |
 | save as draft / discard draft | Retain / remove unpublished content | Als Entwurf speichern / Entwurf verwerfen | Discard is distinct from canceling a dialog. |
