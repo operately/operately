@@ -143,7 +143,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
         left_join: space in assoc(h, :space), as: :space,
         preload: [nodes: ^nodes_q],
         where: h.space_id == ^space_id,
-        order_by: [asc: h.position, asc: h.id]
+        order_by: [asc: h.position, asc: h.inserted_at, asc: h.id]
       )
       |> Filters.filter_by_view_access(me.id, named_binding: :space)
       |> Repo.all()

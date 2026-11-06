@@ -8,7 +8,7 @@ defmodule Operately.ResourceHubs do
   alias Operately.ResourceHubs.{ResourceHub, Folder, Node, Document, DocumentVersion, File, Link, Summary}
 
   def list_summaries(me, %Group{} = space) do
-    ResourceHub.list(me, space_id: space.id, opts: [order_by: [asc: :position, asc: :id]])
+    ResourceHub.list(me, space_id: space.id, opts: [order_by: [asc: :position, asc: :inserted_at, asc: :id]])
     |> Enum.map(&Summary.build(&1, space.default_resource_hub_id))
   end
 

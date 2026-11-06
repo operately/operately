@@ -116,8 +116,19 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListTest do
       assert length(response.hubs) == 2
     end
 
-    test "uses IDs to order hubs with identical names", ctx do
-      ctx.other |> Ecto.Changeset.change(name: ctx.hub.name) |> Repo.update!()
+    test "uses creation dates before IDs when positions are tied", ctx do
+      [newer, older] = Enum.sort_by([ctx.hub, ctx.other], & &1.id)
+      newer |> Ecto.Changeset.change(inserted_at: ~N[2021-01-01 00:00:00]) |> Repo.update!()
+      older |> Ecto.Changeset.change(inserted_at: ~N[2020-01-01 00:00:00]) |> Repo.update!()
+
+      assert {200, response} = list_hubs(ctx)
+      assert Enum.map(response.hubs, & &1.id) == Enum.map([older, newer], &Paths.resource_hub_id(&1.id))
+    end
+
+    test "uses IDs when positions and creation dates are tied", ctx do
+      for hub <- [ctx.hub, ctx.other] do
+        hub |> Ecto.Changeset.change(inserted_at: ~N[2020-01-01 00:00:00]) |> Repo.update!()
+      end
 
       assert {200, response} = list_hubs(ctx)
       expected = Enum.sort([ctx.hub.id, ctx.other.id]) |> Enum.map(&Paths.resource_hub_id/1)
