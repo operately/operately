@@ -530,6 +530,7 @@ defmodule OperatelyWeb.Api do
 
       @doc "Browse and manage Docs & Files"
       namespace(:documents) do
+        query(:list_hubs, OperatelyWeb.Api.ResourceHubs.List)
         query(:list_contents, OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents)
         query(:list_drafts, OperatelyWeb.Api.ResourceHubs.ListDrafts)
         query(:search, OperatelyWeb.Api.Wrappers.DocsAndFiles.Search)

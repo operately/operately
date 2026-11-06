@@ -3385,6 +3385,7 @@
   "This removes the item from the company feed. The underlying project, goal, task, or document will not be deleted.": "Isso remove o item do feed da empresa. O projeto, objetivo, tarefa ou documento relacionado não será excluído.",
   "This replaces the current title and content with the selected version. Later versions will stay in the history.": "Isso substitui o título e o conteúdo atuais pela versão selecionada. As versões posteriores permanecerão no histórico.",
   "This request is no longer active. Review your current email or request a new code.": "Esta solicitação não está mais ativa. Confira seu e-mail atual ou solicite um novo código.",
+  "This space has no available default resource hub. Retry with resource_hub_id from the available hubs.": "Este espaço não tem um repositório de recursos padrão disponível. Tente novamente com o resource_hub_id de um dos repositórios disponíveis.",
   "This space is visible only to members of the {{spaceName}} space.": "Este espaço é visível apenas para membros do espaço {{spaceName}}.",
   "This space is visible to anyone on the internet who has the link.": "Este espaço é visível para qualquer pessoa na internet que tenha o link.",
   "This starts a background job that adds missing entries and refreshes newer canonical records.": "Isso inicia uma tarefa em segundo plano que adiciona entradas ausentes e atualiza registros de origem mais recentes.",

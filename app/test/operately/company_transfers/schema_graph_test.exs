@@ -283,28 +283,16 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert Enum.find_index(sorted, &(&1 == "c")) < Enum.find_index(sorted, &(&1 == "d"))
     end
 
-    test "sorts real schema with companies before people" do
+    test "includes every table once when the real schema contains default hub cycles" do
       graph = Graph.build_dependency_graph()
 
+      assert "resource_hubs" in graph["groups"]
+      assert "groups" in graph["resource_hubs"]
       assert {:ok, sorted} = TopologicalSort.sort(graph)
 
-      if "companies" in sorted and "people" in sorted do
-        companies_idx = Enum.find_index(sorted, &(&1 == "companies"))
-        people_idx = Enum.find_index(sorted, &(&1 == "people"))
-        assert companies_idx < people_idx
-      end
-    end
-
-    test "sorts real schema with people before projects" do
-      graph = Graph.build_dependency_graph()
-
-      assert {:ok, sorted} = TopologicalSort.sort(graph)
-
-      if "people" in sorted and "projects" in sorted do
-        people_idx = Enum.find_index(sorted, &(&1 == "people"))
-        projects_idx = Enum.find_index(sorted, &(&1 == "projects"))
-        assert people_idx < projects_idx
-      end
+      # Cyclic export graphs have no strict dependency order; import defers nullable FKs.
+      expected_tables = Enum.uniq(Map.keys(graph) ++ List.flatten(Map.values(graph)))
+      assert Enum.sort(sorted) == Enum.sort(expected_tables)
     end
   end
 

@@ -5,7 +5,12 @@ defmodule Operately.ResourceHubs do
   alias Operately.Goals.Goal
   alias Operately.Groups.Group
   alias Operately.Projects.Project
-  alias Operately.ResourceHubs.{ResourceHub, Folder, Node, Document, DocumentVersion, File, Link}
+  alias Operately.ResourceHubs.{ResourceHub, Folder, Node, Document, DocumentVersion, File, Link, Summary}
+
+  def list_summaries(me, %Group{} = space) do
+    ResourceHub.list(me, space_id: space.id, opts: [order_by: [asc: :name, asc: :id]])
+    |> Enum.map(&Summary.build(&1, space.default_resource_hub_id))
+  end
 
   def list_resource_hubs(%Group{} = space) do
     from(r in ResourceHub, where: r.space_id == ^space.id)

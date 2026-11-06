@@ -37,29 +37,27 @@ defmodule OperatelyWeb.Mcp.Helpers do
   def decode_optional_id(nil), do: {:ok, nil}
   def decode_optional_id(id), do: decode_id(id)
 
-  def decode_hub_scope(%{"space_id" => _space_id, "project_id" => _project_id}), do: {:error, :invalid_arguments}
-  def decode_hub_scope(%{"space_id" => _space_id, "goal_id" => _goal_id}), do: {:error, :invalid_arguments}
-  def decode_hub_scope(%{"project_id" => _project_id, "goal_id" => _goal_id}), do: {:error, :invalid_arguments}
+  def decode_hub_scope(arguments) do
+    keys = [:resource_hub_id, :space_id, :project_id, :goal_id, :folder_id]
 
-  def decode_hub_scope(%{"space_id" => space_id}) do
-    with {:ok, space_id} <- decode_id(space_id) do
-      {:ok, %{space_id: space_id}}
+    Enum.reduce_while(keys, {:ok, %{}}, fn key, {:ok, inputs} ->
+      case decode_optional_id(arguments[Atom.to_string(key)]) do
+        {:ok, nil} -> {:cont, {:ok, inputs}}
+        {:ok, id} -> {:cont, {:ok, Map.put(inputs, key, id)}}
+        error -> {:halt, error}
+      end
+    end)
+    |> validate_hub_scope()
+  end
+
+  defp validate_hub_scope({:ok, inputs}) do
+    case OperatelyWeb.Api.Wrappers.DocsAndFiles.HubScope.validate_selectors(inputs) do
+      :ok -> {:ok, inputs}
+      {:error, :bad_request} -> {:error, :invalid_arguments}
     end
   end
 
-  def decode_hub_scope(%{"project_id" => project_id}) do
-    with {:ok, project_id} <- decode_id(project_id) do
-      {:ok, %{project_id: project_id}}
-    end
-  end
-
-  def decode_hub_scope(%{"goal_id" => goal_id}) do
-    with {:ok, goal_id} <- decode_id(goal_id) do
-      {:ok, %{goal_id: goal_id}}
-    end
-  end
-
-  def decode_hub_scope(_arguments), do: {:error, :invalid_arguments}
+  defp validate_hub_scope(error), do: error
 
   def decode_id_list(nil), do: {:ok, []}
 

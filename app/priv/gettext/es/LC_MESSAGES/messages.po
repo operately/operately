@@ -21104,6 +21104,11 @@ msgstr "Esto reemplaza el título y el contenido actuales por la versión selecc
 msgid "This request is no longer active. Review your current email or request a new code."
 msgstr "Esta solicitud ya no está activa. Revisa tu correo electrónico actual o solicita un nuevo código."
 
+#.elixir
+#: lib/operately_web/api/wrappers/docs_and_files/hub_scope.ex:96
+msgid "This space has no available default resource hub. Retry with resource_hub_id from the available hubs."
+msgstr "Este espacio no tiene un centro de recursos predeterminado disponible. Inténtalo de nuevo con el resource_hub_id de uno de los centros disponibles."
+
 #.frontend
 #: ../turboui/src/PrivacyIndicator/index.tsx:76
 msgid "This space is visible only to members of the %{spaceName} space."

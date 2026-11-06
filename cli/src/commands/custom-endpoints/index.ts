@@ -26,6 +26,14 @@ const CUSTOM_ENDPOINTS: CatalogEndpoint[] = [
     handler: "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFile",
     inputs: [
       {
+        name: "resource_hub_id",
+        type: { kind: "named", name: "id" },
+        optional: true,
+        nullable: true,
+        has_default: false,
+        default: null,
+      },
+      {
         name: "space_id",
         type: { kind: "named", name: "id" },
         optional: true,
@@ -99,11 +107,13 @@ const CUSTOM_ENDPOINTS: CatalogEndpoint[] = [
       },
     ],
     outputs: [],
-    docstring: "Uploads one local file into Docs & Files.",
+    docstring:
+      "Uploads one local file into Docs & Files. Use resource_hub_id or folder_id for an explicit destination; space_id alone selects the space's default resource hub.",
     execution_mode: "custom",
     example_mode: "cli",
     cli_examples: [
       "operately documents create_file --space-id sp_123 --file ./report.png",
+      "operately documents create_file --resource-hub-id hub_123 --file ./report.png",
       "operately documents create_file --space-id sp_123 --file ./report.png --name Q2-report --description-file ./notes.md",
     ],
   },
