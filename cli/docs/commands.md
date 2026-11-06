@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 257
+- Endpoints: 260
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -36,10 +36,12 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `documents copy_folder` | `op documents copy_folder` | `POST` | `/api/external/v1/documents/copy_folder` |
 | `documents create_document` | `op documents create_document` | `POST` | `/api/external/v1/documents/create_document` |
 | `documents create_folder` | `op documents create_folder` | `POST` | `/api/external/v1/documents/create_folder` |
+| `documents create_hub` | `op documents create_hub` | `POST` | `/api/external/v1/documents/create_hub` |
 | `documents create_link` | `op documents create_link` | `POST` | `/api/external/v1/documents/create_link` |
 | `documents delete_document` | `op documents delete_document` | `POST` | `/api/external/v1/documents/delete_document` |
 | `documents delete_file` | `op documents delete_file` | `POST` | `/api/external/v1/documents/delete_file` |
 | `documents delete_folder` | `op documents delete_folder` | `POST` | `/api/external/v1/documents/delete_folder` |
+| `documents delete_hub` | `op documents delete_hub` | `POST` | `/api/external/v1/documents/delete_hub` |
 | `documents delete_link` | `op documents delete_link` | `POST` | `/api/external/v1/documents/delete_link` |
 | `documents get_document` | `op documents get_document` | `GET` | `/api/external/v1/documents/get_document` |
 | `documents get_document_version` | `op documents get_document_version` | `GET` | `/api/external/v1/documents/get_document_version` |
@@ -52,6 +54,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `documents list_hubs` | `op documents list_hubs` | `GET` | `/api/external/v1/documents/list_hubs` |
 | `documents publish_document` | `op documents publish_document` | `POST` | `/api/external/v1/documents/publish_document` |
 | `documents rename_folder` | `op documents rename_folder` | `POST` | `/api/external/v1/documents/rename_folder` |
+| `documents rename_hub` | `op documents rename_hub` | `POST` | `/api/external/v1/documents/rename_hub` |
 | `documents restore_document_version` | `op documents restore_document_version` | `POST` | `/api/external/v1/documents/restore_document_version` |
 | `documents search` | `op documents search` | `GET` | `/api/external/v1/documents/search` |
 | `documents update_document` | `op documents update_document` | `POST` | `/api/external/v1/documents/update_document` |

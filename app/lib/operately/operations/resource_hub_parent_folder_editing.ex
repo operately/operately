@@ -1,6 +1,7 @@
 defmodule Operately.Operations.ResourceHubParentFolderEditing do
   alias Ecto.Multi
   alias Operately.Repo
+  alias Operately.Repo.Locking
   alias Operately.Activities
   alias Operately.ResourceHubs.{FolderCycle, Node, Parent}
 
@@ -9,6 +10,8 @@ defmodule Operately.Operations.ResourceHubParentFolderEditing do
 
     try do
       Multi.new()
+      # Serialize moves with hub deletion before changing which nodes are at the root.
+      |> Multi.run(:hub, fn repo, _ -> Locking.lock_for_update(repo, resource.resource_hub) end)
       |> Multi.update(:node, changeset)
       |> Activities.insert_sync(author.id, :resource_hub_parent_folder_edited, fn _changes ->
         %{
@@ -34,6 +37,8 @@ defmodule Operately.Operations.ResourceHubParentFolderEditing do
   end
 
   defp handle_transaction_result({:ok, result}, _changeset), do: {:ok, result}
+
+  defp handle_transaction_result({:error, :hub, :not_found, _changes}, _changeset), do: {:error, :not_found}
 
   defp handle_transaction_result({:error, :node, %Postgrex.Error{} = error, _changes}, changeset) do
     if FolderCycle.postgres_cycle_error?(error) do

@@ -6,6 +6,9 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListTest do
   test "is exposed for external discovery and internal configuration" do
     assert Map.has_key?(OperatelyWeb.Api.External.__queries__(), "documents/list_hubs")
     assert Map.has_key?(OperatelyWeb.Api.Internal.__queries__(), "resource_hubs/list")
+    refute Map.has_key?(OperatelyWeb.Api.Internal.__mutations__(), "resource_hubs/set_default")
+    refute Map.has_key?(OperatelyWeb.Api.External.__mutations__(), "resource_hubs/set_default")
+    refute Map.has_key?(OperatelyWeb.Api.External.__mutations__(), "documents/set_default_hub")
   end
 
   describe "permissions" do
@@ -73,7 +76,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListTest do
       assert {200, response} = list_hubs(ctx)
 
       assert Enum.sort_by(response.hubs, & &1.name) == [
-               %{__typename: "resource_hub_summary", id: Paths.resource_hub_id(ctx.other.id), name: ctx.other.name, is_default: false, position: 0},
+               %{__typename: "resource_hub_summary", id: Paths.resource_hub_id(ctx.other.id), name: ctx.other.name, is_default: false, position: 1},
                %{__typename: "resource_hub_summary", id: Paths.resource_hub_id(ctx.hub.id), name: ctx.hub.name, is_default: true, position: 0}
              ]
     end
@@ -118,8 +121,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListTest do
 
     test "uses creation dates before IDs when positions are tied", ctx do
       [newer, older] = Enum.sort_by([ctx.hub, ctx.other], & &1.id)
-      newer |> Ecto.Changeset.change(inserted_at: ~N[2021-01-01 00:00:00]) |> Repo.update!()
-      older |> Ecto.Changeset.change(inserted_at: ~N[2020-01-01 00:00:00]) |> Repo.update!()
+      newer |> Ecto.Changeset.change(position: 0, inserted_at: ~N[2021-01-01 00:00:00]) |> Repo.update!()
+      older |> Ecto.Changeset.change(position: 0, inserted_at: ~N[2020-01-01 00:00:00]) |> Repo.update!()
 
       assert {200, response} = list_hubs(ctx)
       assert Enum.map(response.hubs, & &1.id) == Enum.map([older, newer], &Paths.resource_hub_id(&1.id))
@@ -127,7 +130,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListTest do
 
     test "uses IDs when positions and creation dates are tied", ctx do
       for hub <- [ctx.hub, ctx.other] do
-        hub |> Ecto.Changeset.change(inserted_at: ~N[2020-01-01 00:00:00]) |> Repo.update!()
+        hub |> Ecto.Changeset.change(position: 0, inserted_at: ~N[2020-01-01 00:00:00]) |> Repo.update!()
       end
 
       assert {200, response} = list_hubs(ctx)

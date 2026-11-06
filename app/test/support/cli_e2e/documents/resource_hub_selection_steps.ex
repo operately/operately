@@ -67,6 +67,55 @@ defmodule Operately.Support.CliE2E.Documents.ResourceHubSelectionSteps do
     Map.put(ctx, :selected_hub_id, selected["id"])
   end
 
+  step :create_collection, ctx do
+    created = command!(ctx, ["create_hub", "--space-id", ctx.engineering.id, "--name", "Lifecycle"])
+    Map.put(ctx, :collection_id, created["hub"]["id"])
+  end
+
+  step :rename_collection, ctx do
+    command!(ctx, ["rename_hub", "--resource-hub-id", ctx.collection_id, "--new-name", "Reference"])
+    listed = command!(ctx, ["list_hubs", "--space-id", ctx.engineering.id])
+    assert Enum.map(listed["hubs"], & &1["id"]) == [Paths.resource_hub_id(ctx.resource_hub.id), Paths.resource_hub_id(ctx.other_hub.id), ctx.collection_id]
+    assert Enum.find(listed["hubs"], &(&1["id"] == ctx.collection_id))["name"] == "Reference"
+    ctx
+  end
+
+  step :add_folder_to_collection, ctx do
+    folder = command!(ctx, ["create_folder", "--resource-hub-id", ctx.collection_id, "--name", "Keep me"])
+    Map.put(ctx, :collection_folder_id, folder["folder"]["id"])
+  end
+
+  step :assert_default_collection_cannot_be_deleted, ctx do
+    rejected = run_cli(ctx, ["documents", "delete_hub", "--resource-hub-id", Paths.resource_hub_id(ctx.resource_hub.id)])
+    assert rejected.exit_code == 4
+    assert rejected.output =~ "default_resource_hub_deletion_forbidden"
+    ctx
+  end
+
+  step :assert_nonempty_collection_cannot_be_deleted, ctx do
+    rejected = run_cli(ctx, ["documents", "delete_hub", "--resource-hub-id", ctx.collection_id])
+    assert rejected.exit_code == 4
+    assert rejected.output =~ "resource_hub_not_empty"
+    ctx
+  end
+
+  step :delete_collection_folder, ctx do
+    command!(ctx, ["delete_folder", "--folder-id", ctx.collection_folder_id])
+    ctx
+  end
+
+  step :delete_collection, ctx do
+    assert command!(ctx, ["delete_hub", "--resource-hub-id", ctx.collection_id])["success"]
+    ctx
+  end
+
+  step :assert_collection_deleted_and_default_preserved, ctx do
+    remaining = command!(ctx, ["list_hubs", "--space-id", ctx.engineering.id])
+    assert Enum.map(remaining["hubs"], & &1["id"]) == [Paths.resource_hub_id(ctx.resource_hub.id), Paths.resource_hub_id(ctx.other_hub.id)]
+    assert Enum.find(remaining["hubs"], & &1["is_default"])["id"] == Paths.resource_hub_id(ctx.resource_hub.id)
+    ctx
+  end
+
   defp command!(ctx, args) do
     result = run_cli(ctx, ["documents" | args])
     assert result.exit_code == 0, result.output

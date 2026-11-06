@@ -161,7 +161,8 @@ Translate system statuses according to their meaning; keep user-authored statuse
 
 | English | Meaning/context | Русский | Capitalization and usage |
 | --- | --- | --- | --- |
-| Docs & Files / Documents & Files | Named content tool | Документы и файлы | Same name for both variants. Never expose the internal Resource Hub name. |
+| Docs & Files / Documents & Files | Named content tool | Документы и файлы | Same name for both variants. |
+| Resource Hub / Resource Hubs | Named container of documents, files, links, and folders | Центр ресурсов / Центры ресурсов | User-facing product term. Use for hub management; preserve user-authored hub names. |
 | document / doc | Rich-text document | Документ | Distinct from an uploaded **файл**, a **папка**, a **ссылка**, or a comment **вложение**. |
 | resource / item | Generic content entry | Материал / Элемент | Prefer the specific type when known. Resources here are not personnel or computing capacity. |
 | key resource / support material | Supporting project/goal content | Важный материал / Вспомогательный материал | Can be a link as well as a document or file. |
