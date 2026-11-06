@@ -3,6 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.ResourceHub d
     %{
       id: OperatelyWeb.Paths.resource_hub_id(resource_hub),
       name: resource_hub.name,
+      position: resource_hub.position,
       description: Jason.encode!(resource_hub.description),
       space: OperatelyWeb.Api.Serializer.serialize(resource_hub.space),
       project: OperatelyWeb.Api.Serializer.serialize(resource_hub.project),

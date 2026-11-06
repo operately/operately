@@ -1807,6 +1807,7 @@ defmodule OperatelyWeb.Api.Types do
   object :resource_hub_summary, for: Operately.ResourceHubs.Summary do
     field :id, :id
     field :name, :string
+    field :position, :integer, null: false
     field :is_default, :boolean
   end
 
@@ -1820,6 +1821,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :nodes, list_of(:resource_hub_node), null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :permissions, :resource_hub_permissions, null: true
+    field? :position, :integer, null: true
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
   end

@@ -361,6 +361,10 @@ defmodule OperatelyWeb.Api do
 
   defmacro internal_endpoints do
     quote do
+      namespace :resource_hubs do
+        query(:list, OperatelyWeb.Api.ResourceHubs.List)
+      end
+
       query :get_language, OperatelyWeb.Api.Queries.GetLanguage
 
       namespace :inline_threads do

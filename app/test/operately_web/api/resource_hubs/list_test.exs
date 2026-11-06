@@ -3,9 +3,9 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListTest do
 
   alias Operately.Access.Binding
 
-  test "is exposed only through the external API" do
+  test "is exposed for external discovery and internal configuration" do
     assert Map.has_key?(OperatelyWeb.Api.External.__queries__(), "documents/list_hubs")
-    refute Map.has_key?(OperatelyWeb.Api.Internal.__queries__(), "documents/list_hubs")
+    assert Map.has_key?(OperatelyWeb.Api.Internal.__queries__(), "resource_hubs/list")
   end
 
   describe "permissions" do
@@ -72,10 +72,17 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListTest do
 
       assert {200, response} = list_hubs(ctx)
 
-      assert response.hubs == [
-               %{__typename: "resource_hub_summary", id: Paths.resource_hub_id(ctx.other.id), name: ctx.other.name, is_default: false},
-               %{__typename: "resource_hub_summary", id: Paths.resource_hub_id(ctx.hub.id), name: ctx.hub.name, is_default: true}
+      assert Enum.sort_by(response.hubs, & &1.name) == [
+               %{__typename: "resource_hub_summary", id: Paths.resource_hub_id(ctx.other.id), name: ctx.other.name, is_default: false, position: 0},
+               %{__typename: "resource_hub_summary", id: Paths.resource_hub_id(ctx.hub.id), name: ctx.hub.name, is_default: true, position: 0}
              ]
+    end
+
+    test "honors saved positions", ctx do
+      ctx.other |> Ecto.Changeset.change(position: 4) |> Repo.update!()
+      ctx.hub |> Ecto.Changeset.change(position: 7) |> Repo.update!()
+      assert {200, response} = list_hubs(ctx)
+      assert Enum.map(response.hubs, & &1.position) == [4, 7]
     end
 
     test "identifies the persisted default rather than the oldest hub", ctx do

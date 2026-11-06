@@ -418,8 +418,8 @@
         "goal",
         "milestone",
         "document",
-        "kpi",
         "project_check_in",
+        "kpi",
         "project_retrospective",
         "project_discussion",
         "goal_discussion",
@@ -11425,6 +11425,17 @@
             "name": "permissions",
             "type": {
               "name": "resource_hub_permissions",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "position",
+            "type": {
+              "name": "integer",
               "kind": "named"
             },
             "optional": true,
@@ -24540,6 +24551,17 @@
           },
           {
             "default": null,
+            "name": "position",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "is_default",
             "type": {
               "name": "boolean",
@@ -27911,7 +27933,7 @@
       "full_name": "documents/list_hubs",
       "method": "GET",
       "namespace": "documents",
-      "docstring": "Lists accessible resource hubs in a space, including its default hub."
+      "docstring": "Lists accessible resource hubs in saved order, including their positions and the default designation."
     },
     {
       "name": "publish_document",

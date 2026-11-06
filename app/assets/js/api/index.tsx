@@ -2462,6 +2462,7 @@ export interface ResourceHub {
   nodes?: ResourceHubNode[] | null;
   potentialSubscribers?: Subscriber[] | null;
   permissions?: ResourceHubPermissions | null;
+  position?: number | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -2608,6 +2609,7 @@ export interface ResourceHubSummary {
   __typename: "resource_hub_summary";
   id: Id;
   name: string;
+  position: number;
   isDefault: boolean;
 }
 
@@ -3295,8 +3297,8 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
+  | "kpi"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"
@@ -4263,6 +4265,14 @@ export interface ResourceHubsGetFolderInput {
 
 export interface ResourceHubsGetFolderResult {
   folder: ResourceHubFolder;
+}
+
+export interface ResourceHubsListInput {
+  spaceId: Id;
+}
+
+export interface ResourceHubsListResult {
+  hubs: ResourceHubSummary[];
 }
 
 export interface ResourceHubsListDraftsInput {
@@ -9665,6 +9675,24 @@ export default {
         ...buildApiQueryOptions<ResourceHubsGetFolderInput, ResourceHubsGetFolderResult>(
           defaultApiClient,
           "/resource_hubs/get_folder",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/resource_hubs/list"),
+    listQueryKey: (input: ResourceHubsListInput) => buildApiQueryKey(defaultApiClient, "/resource_hubs/list", input),
+    listQueryOptions: (input: ResourceHubsListInput) =>
+      buildApiQueryOptions<ResourceHubsListInput, ResourceHubsListResult>(
+        defaultApiClient,
+        "/resource_hubs/list",
+        input,
+      ),
+    listQuery: (input: ResourceHubsListInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<ResourceHubsListInput, ResourceHubsListResult>(
+          defaultApiClient,
+          "/resource_hubs/list",
           input,
         ),
         staleTime: Infinity,
