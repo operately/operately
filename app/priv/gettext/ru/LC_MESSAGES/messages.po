@@ -1417,6 +1417,11 @@ msgid "%{author} deleted \"%{fileName}\" from <hub>%{hubName}</hub> in the <pare
 msgstr "%{author}: из <hub>%{hubName}</hub> пространства <parent>%{parentName}</parent> удалён файл «%{fileName}»"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubDeleted/index.tsx:21
+msgid "%{author} deleted <collection>%{collectionName}</collection>."
+msgstr "%{author}: <collection>%{collectionName}</collection> — удалено."
+
+#.frontend
 #: assets/js/features/activities/KpiDeleted/index.tsx:38
 msgid "%{author} deleted a KPI"
 msgstr "%{author}: удалён KPI"
@@ -9538,6 +9543,13 @@ msgid "Deleted KPI: %{kpiName}"
 msgstr "Удалён KPI: %{kpiName}"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubDeleted/index.tsx:11
+#: assets/js/features/activities/ResourceHubDeleted/index.tsx:13
+#: assets/js/features/activities/ResourceHubDeleted/index.tsx:32
+msgid "Deleted Resource Hub"
+msgstr "Центр ресурсов удалён"
+
+#.frontend
 #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
 msgid "Deleted a document"
 msgstr "Документ удалён"
@@ -10742,7 +10754,7 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:261
 #: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:286
 #: assets/js/models/tasks/useTaskArchiveChange.ts:25
-#: assets/js/models/tasks/useTaskSlideInProps.tsx:217
+#: assets/js/models/tasks/useTaskSlideInProps.tsx:216
 #: assets/js/pages/AccountNotificationSettingsPage/index.tsx:73
 #: assets/js/pages/CompanyAdminPage/page.tsx:27
 #: assets/js/pages/HomePage/index.tsx:74
@@ -10750,9 +10762,9 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/pages/MilestonePage/useComments.tsx:78
 #: assets/js/pages/ProfilePage/index.tsx:89
 #: assets/js/pages/ProjectPage/index.tsx:215
-#: assets/js/pages/ProjectPage/index.tsx:296
-#: assets/js/pages/ProjectPage/index.tsx:797
-#: assets/js/pages/ProjectPage/index.tsx:826
+#: assets/js/pages/ProjectPage/index.tsx:292
+#: assets/js/pages/ProjectPage/index.tsx:793
+#: assets/js/pages/ProjectPage/index.tsx:822
 #: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:67
 #: assets/js/pages/SpaceKpisPage/page.tsx:102
 #: assets/js/pages/SpacePage/page.tsx:119
@@ -10763,7 +10775,7 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/pages/TaskPage/index.tsx:132
 #: assets/js/pages/TaskPage/index.tsx:140
 #: assets/js/pages/TaskPage/index.tsx:170
-#: assets/js/pages/TaskPage/index.tsx:382
+#: assets/js/pages/TaskPage/index.tsx:376
 msgid "Error"
 msgstr "Ошибка"
 
@@ -11183,7 +11195,7 @@ msgid "Failed to create account"
 msgstr "Не удалось создать учётную запись"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:797
+#: assets/js/pages/ProjectPage/index.tsx:793
 msgid "Failed to create milestone"
 msgstr "Не удалось создать веху"
 
@@ -11236,7 +11248,7 @@ msgid "Failed to delete company"
 msgstr "Не удалось удалить компанию"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:296
+#: assets/js/pages/ProjectPage/index.tsx:292
 msgid "Failed to delete project"
 msgstr "Не удалось удалить проект"
 
@@ -11295,8 +11307,8 @@ msgid "Failed to move task"
 msgstr "Не удалось переместить задачу"
 
 #.frontend
-#: assets/js/models/tasks/useTaskSlideInProps.tsx:217
-#: assets/js/pages/TaskPage/index.tsx:382
+#: assets/js/models/tasks/useTaskSlideInProps.tsx:216
+#: assets/js/pages/TaskPage/index.tsx:376
 msgid "Failed to move task."
 msgstr "Не удалось переместить задачу."
 
@@ -11450,7 +11462,7 @@ msgid "Failed to update due date."
 msgstr "Не удалось обновить срок выполнения."
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:826
+#: assets/js/pages/ProjectPage/index.tsx:822
 msgid "Failed to update milestone"
 msgstr "Не удалось обновить веху"
 
@@ -11465,14 +11477,14 @@ msgid "Failed to update milestone due date."
 msgstr "Не удалось обновить срок выполнения вехи."
 
 #.frontend
-#: assets/js/pages/MilestonePage/index.tsx:518
+#: assets/js/pages/MilestonePage/index.tsx:516
 msgid "Failed to update milestone name."
 msgstr "Не удалось обновить название вехи."
 
 #.frontend
 #: assets/js/models/milestones/useMilestoneCompletion.ts:33
 #: assets/js/models/milestones/useMilestoneCompletion.ts:73
-#: assets/js/pages/MilestonePage/index.tsx:424
+#: assets/js/pages/MilestonePage/index.tsx:422
 msgid "Failed to update milestone status."
 msgstr "Не удалось обновить статус вехи."
 
@@ -12362,6 +12374,11 @@ msgstr "Неактивно"
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:119
 msgid "Include"
 msgstr "Включить"
+
+#.elixir
+#: lib/operately_web/api/resource_hubs/reorder.ex:28
+msgid "Include every Resource Hub exactly once when reordering."
+msgstr "При изменении порядка укажите каждый центр ресурсов ровно один раз."
 
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:123
@@ -13757,7 +13774,7 @@ msgid "Milestone name"
 msgstr "Название вехи"
 
 #.frontend
-#: assets/js/pages/MilestonePage/index.tsx:519
+#: assets/js/pages/MilestonePage/index.tsx:517
 msgid "Milestone name cannot be empty"
 msgstr "Название вехи не может быть пустым"
 
@@ -14095,6 +14112,7 @@ msgstr "Имя не может быть пустым"
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:25
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:39
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
+#: lib/operately_web/api/resource_hubs/create.ex:27
 #: lib/operately_web/api/resource_hubs/rename.ex:37
 msgid "Name is required"
 msgstr "Имя требуется"
@@ -14154,9 +14172,9 @@ msgstr "Нужна помощь? <guides>Руководства по настр�
 #: assets/js/pages/ProjectPage/index.tsx:127
 #: assets/js/pages/ProjectPage/index.tsx:133
 #: assets/js/pages/ProjectPage/index.tsx:139
-#: assets/js/pages/ProjectPage/index.tsx:674
-#: assets/js/pages/ProjectPage/index.tsx:680
-#: assets/js/pages/ProjectPage/index.tsx:686
+#: assets/js/pages/ProjectPage/index.tsx:670
+#: assets/js/pages/ProjectPage/index.tsx:676
+#: assets/js/pages/ProjectPage/index.tsx:682
 msgid "Network Error"
 msgstr "Ошибка сети"
 
@@ -15178,6 +15196,11 @@ msgstr "Только назначенные люди имеют доступ"
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:106
 msgid "Only company admins can see and share this link. You can also <button>generate a new link</button>."
 msgstr "Только администраторы компании могут видеть эту ссылку и делиться ею. Вы также можете <button>создать новую ссылку</button>."
+
+#.elixir
+#: lib/operately_web/api/resource_hubs/delete.ex:27
+msgid "Only empty Resource Hubs can be deleted. Remove all documents, drafts, files, links, and folders first."
+msgstr "Удалить можно только пустые центры ресурсов. Сначала удалите все документы, черновики, файлы, ссылки и папки."
 
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:83
@@ -17273,12 +17296,19 @@ msgstr "Переименовать компанию"
 msgid "Renamed %{oldName} to %{newName}"
 msgstr "Название изменено: «%{oldName}» → «%{newName}»"
 
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubRenamed/index.tsx:13
+#~ #: assets/js/features/activities/ResourceHubRenamed/index.tsx:15
+#~ #: assets/js/features/activities/ResourceHubRenamed/index.tsx:43
+#~ msgid "Renamed Docs & Files"
+#~ msgstr "Документы и файлы переименованы"
+
 #.frontend
 #: assets/js/features/activities/ResourceHubRenamed/index.tsx:13
 #: assets/js/features/activities/ResourceHubRenamed/index.tsx:15
 #: assets/js/features/activities/ResourceHubRenamed/index.tsx:43
-msgid "Renamed Docs & Files"
-msgstr "Документы и файлы переименованы"
+msgid "Renamed Resource Hub"
+msgstr "Центр ресурсов переименован"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
@@ -17634,7 +17664,7 @@ msgstr "Уровни доступа вернулись к своим прежн�
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:116
-#: assets/js/pages/ProjectPage/index.tsx:680
+#: assets/js/pages/ProjectPage/index.tsx:676
 msgid "Reverted the champion to its previous value."
 msgstr "Восстановлено прежнее назначение ответственного."
 
@@ -17670,13 +17700,13 @@ msgstr "Восстановлено прежнее название проект�
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:122
-#: assets/js/pages/ProjectPage/index.tsx:686
+#: assets/js/pages/ProjectPage/index.tsx:682
 msgid "Reverted the reviewer to its previous value."
 msgstr "Восстановлено прежнее назначение куратора."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:98
-#: assets/js/pages/ProjectPage/index.tsx:674
+#: assets/js/pages/ProjectPage/index.tsx:670
 msgid "Reverted the space to its previous value."
 msgstr "Восстановлено прежнее пространство."
 
@@ -20105,7 +20135,7 @@ msgid "The \"%{title}\" milestone due date was updated"
 msgstr "Срок выполнения вехи «%{title}» обновлён"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:94
+#: lib/operately_web/mcp/executor.ex:95
 msgid "The %{name} tool is not implemented yet."
 msgstr "Инструмент %{name} пока не реализован."
 
@@ -20271,6 +20301,11 @@ msgstr "Текущая подписка действует до: %{date}."
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:165
 msgid "The current subscription will end at the close of the current billing period."
 msgstr "Текущая подписка закончится в конце текущего расчётного периода."
+
+#.elixir
+#: lib/operately_web/api/resource_hubs/delete.ex:28
+msgid "The default Resource Hub cannot be deleted."
+msgstr "Центр ресурсов по умолчанию нельзя удалить."
 
 #.elixir
 #: lib/operately_email/templates/goal_description_changed.html.eex:11
@@ -20567,7 +20602,7 @@ msgid "The requested resource was not found"
 msgstr "Запрошенный ресурс не найден"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:101
+#: lib/operately_web/mcp/executor.ex:102
 msgid "The requested resource was not found or is not accessible."
 msgstr "Запрошенный ресурс не был найден или недоступен."
 
@@ -20724,12 +20759,12 @@ msgid "The token request is missing required parameters or contains invalid valu
 msgstr "В запросе токена отсутствуют требуемые параметры или содержатся недействительные значения."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:112
+#: lib/operately_web/mcp/executor.ex:113
 msgid "The tool could not complete the request with the provided data."
 msgstr "Инструмент не смог выполнить запрос с предоставленными данными."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:122
+#: lib/operately_web/mcp/executor.ex:132
 msgid "The tool could not complete the request."
 msgstr "Инструмент не смог выполнить запрос."
 
@@ -21325,7 +21360,7 @@ msgid "This request is no longer active. Review your current email or request a 
 msgstr "Этот запрос больше не активен. Просмотрите свою текущую электронную почту или запросите новый код."
 
 #.elixir
-#: lib/operately_web/api/wrappers/docs_and_files/hub_scope.ex:96
+#: lib/operately_web/api/wrappers/docs_and_files/hub_scope.ex:92
 msgid "This space has no available default resource hub. Retry with resource_hub_id from the available hubs."
 msgstr "В этом пространстве нет доступного хранилища материалов по умолчанию. Повторите попытку, указав resource_hub_id одного из доступных хранилищ."
 
@@ -22098,7 +22133,7 @@ msgid "Update badge setting saved"
 msgstr "Настройка уведомления о новой версии сохранена"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:641
+#: assets/js/pages/ProjectPage/index.tsx:637
 #: assets/js/pages/TaskPage/index.tsx:329
 msgid "Update failed"
 msgstr "Не удалось обновить"
@@ -23401,7 +23436,7 @@ msgid "You cannot delete the general space"
 msgstr "Вы не можете удалить общее пространство"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:108
+#: lib/operately_web/mcp/executor.ex:109
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr "У вас нет прав на эту операцию или компания доступна только для чтения."
 

@@ -37,6 +37,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
       {:error, :resource, _} -> {:error, :not_found}
       {:error, :parent_folder, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
+      {:error, :operation, %{error: :not_found}} -> {:error, :not_found}
       {:error, :operation, %{error: %Ecto.Changeset{} = changeset}} ->
         {:error, :bad_request, changeset_error_message(changeset)}
 

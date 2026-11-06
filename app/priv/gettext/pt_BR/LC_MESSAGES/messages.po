@@ -1418,6 +1418,11 @@ msgid "%{author} deleted \"%{fileName}\" from <hub>%{hubName}</hub> in the <pare
 msgstr "%{author} excluiu \"%{fileName}\" de <hub>%{hubName}</hub> no espaço <parent>%{parentName}</parent>"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubDeleted/index.tsx:21
+msgid "%{author} deleted <collection>%{collectionName}</collection>."
+msgstr "%{author} excluiu <collection>%{collectionName}</collection>."
+
+#.frontend
 #: assets/js/features/activities/KpiDeleted/index.tsx:38
 msgid "%{author} deleted a KPI"
 msgstr "%{author} excluiu um KPI"
@@ -9537,6 +9542,13 @@ msgid "Deleted KPI: %{kpiName}"
 msgstr "KPI excluído: %{kpiName}"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubDeleted/index.tsx:11
+#: assets/js/features/activities/ResourceHubDeleted/index.tsx:13
+#: assets/js/features/activities/ResourceHubDeleted/index.tsx:32
+msgid "Deleted Resource Hub"
+msgstr "Central de recursos excluída"
+
+#.frontend
 #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
 msgid "Deleted a document"
 msgstr "Excluiu um documento"
@@ -10787,7 +10799,7 @@ msgstr "Insira zero ou um número positivo de dias."
 #: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:261
 #: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:286
 #: assets/js/models/tasks/useTaskArchiveChange.ts:25
-#: assets/js/models/tasks/useTaskSlideInProps.tsx:217
+#: assets/js/models/tasks/useTaskSlideInProps.tsx:216
 #: assets/js/pages/AccountNotificationSettingsPage/index.tsx:73
 #: assets/js/pages/CompanyAdminPage/page.tsx:27
 #: assets/js/pages/HomePage/index.tsx:74
@@ -10795,9 +10807,9 @@ msgstr "Insira zero ou um número positivo de dias."
 #: assets/js/pages/MilestonePage/useComments.tsx:78
 #: assets/js/pages/ProfilePage/index.tsx:89
 #: assets/js/pages/ProjectPage/index.tsx:215
-#: assets/js/pages/ProjectPage/index.tsx:296
-#: assets/js/pages/ProjectPage/index.tsx:797
-#: assets/js/pages/ProjectPage/index.tsx:826
+#: assets/js/pages/ProjectPage/index.tsx:292
+#: assets/js/pages/ProjectPage/index.tsx:793
+#: assets/js/pages/ProjectPage/index.tsx:822
 #: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:67
 #: assets/js/pages/SpaceKpisPage/page.tsx:102
 #: assets/js/pages/SpacePage/page.tsx:119
@@ -10808,7 +10820,7 @@ msgstr "Insira zero ou um número positivo de dias."
 #: assets/js/pages/TaskPage/index.tsx:132
 #: assets/js/pages/TaskPage/index.tsx:140
 #: assets/js/pages/TaskPage/index.tsx:170
-#: assets/js/pages/TaskPage/index.tsx:382
+#: assets/js/pages/TaskPage/index.tsx:376
 msgid "Error"
 msgstr "Erro"
 
@@ -11303,7 +11315,7 @@ msgid "Failed to create account"
 msgstr "Não foi possível criar a conta"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:797
+#: assets/js/pages/ProjectPage/index.tsx:793
 msgid "Failed to create milestone"
 msgstr "Falha ao criar o marco"
 
@@ -11356,7 +11368,7 @@ msgid "Failed to delete company"
 msgstr "Não foi possível excluir a empresa"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:296
+#: assets/js/pages/ProjectPage/index.tsx:292
 msgid "Failed to delete project"
 msgstr "Falha ao excluir o projeto"
 
@@ -11415,8 +11427,8 @@ msgid "Failed to move task"
 msgstr "Falha ao mover a tarefa"
 
 #.frontend
-#: assets/js/models/tasks/useTaskSlideInProps.tsx:217
-#: assets/js/pages/TaskPage/index.tsx:382
+#: assets/js/models/tasks/useTaskSlideInProps.tsx:216
+#: assets/js/pages/TaskPage/index.tsx:376
 msgid "Failed to move task."
 msgstr "Falha ao mover a tarefa."
 
@@ -11570,7 +11582,7 @@ msgid "Failed to update due date."
 msgstr "Falha ao atualizar a data de conclusão."
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:826
+#: assets/js/pages/ProjectPage/index.tsx:822
 msgid "Failed to update milestone"
 msgstr "Falha ao atualizar o marco"
 
@@ -11585,14 +11597,14 @@ msgid "Failed to update milestone due date."
 msgstr "Falha ao atualizar a data de conclusão do marco."
 
 #.frontend
-#: assets/js/pages/MilestonePage/index.tsx:518
+#: assets/js/pages/MilestonePage/index.tsx:516
 msgid "Failed to update milestone name."
 msgstr "Falha ao atualizar o nome do marco."
 
 #.frontend
 #: assets/js/models/milestones/useMilestoneCompletion.ts:33
 #: assets/js/models/milestones/useMilestoneCompletion.ts:73
-#: assets/js/pages/MilestonePage/index.tsx:424
+#: assets/js/pages/MilestonePage/index.tsx:422
 msgid "Failed to update milestone status."
 msgstr "Falha ao atualizar o status do marco."
 
@@ -12482,6 +12494,11 @@ msgstr "Inativo"
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:119
 msgid "Include"
 msgstr "Incluir"
+
+#.elixir
+#: lib/operately_web/api/resource_hubs/reorder.ex:28
+msgid "Include every Resource Hub exactly once when reordering."
+msgstr "Inclua cada central de recursos exatamente uma vez ao reordenar."
 
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:123
@@ -13897,7 +13914,7 @@ msgid "Milestone name"
 msgstr "Nome do marco"
 
 #.frontend
-#: assets/js/pages/MilestonePage/index.tsx:519
+#: assets/js/pages/MilestonePage/index.tsx:517
 msgid "Milestone name cannot be empty"
 msgstr "O nome do marco não pode ficar em branco"
 
@@ -14255,6 +14272,7 @@ msgstr "O nome não pode ficar em branco"
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:25
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:39
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
+#: lib/operately_web/api/resource_hubs/create.ex:27
 #: lib/operately_web/api/resource_hubs/rename.ex:37
 msgid "Name is required"
 msgstr "O nome é obrigatório"
@@ -14319,9 +14337,9 @@ msgstr "Precisa de ajuda? <guides>Guias de configuração</guides>"
 #: assets/js/pages/ProjectPage/index.tsx:127
 #: assets/js/pages/ProjectPage/index.tsx:133
 #: assets/js/pages/ProjectPage/index.tsx:139
-#: assets/js/pages/ProjectPage/index.tsx:674
-#: assets/js/pages/ProjectPage/index.tsx:680
-#: assets/js/pages/ProjectPage/index.tsx:686
+#: assets/js/pages/ProjectPage/index.tsx:670
+#: assets/js/pages/ProjectPage/index.tsx:676
+#: assets/js/pages/ProjectPage/index.tsx:682
 msgid "Network Error"
 msgstr "Erro de rede"
 
@@ -15366,6 +15384,11 @@ msgstr "Somente as pessoas atribuídas têm acesso"
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:106
 msgid "Only company admins can see and share this link. You can also <button>generate a new link</button>."
 msgstr "Somente administradores da empresa podem ver e compartilhar este link. Você também pode <button>gerar um novo link</button>."
+
+#.elixir
+#: lib/operately_web/api/resource_hubs/delete.ex:27
+msgid "Only empty Resource Hubs can be deleted. Remove all documents, drafts, files, links, and folders first."
+msgstr "Somente centrais de recursos vazias podem ser excluídas. Exclua primeiro todos os documentos, rascunhos, arquivos, links e pastas."
 
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:83
@@ -17531,12 +17554,19 @@ msgstr "Renomear a empresa"
 msgid "Renamed %{oldName} to %{newName}"
 msgstr "Renomeou %{oldName} para %{newName}"
 
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubRenamed/index.tsx:13
+#~ #: assets/js/features/activities/ResourceHubRenamed/index.tsx:15
+#~ #: assets/js/features/activities/ResourceHubRenamed/index.tsx:43
+#~ msgid "Renamed Docs & Files"
+#~ msgstr "Docs & Arquivos renomeados"
+
 #.frontend
 #: assets/js/features/activities/ResourceHubRenamed/index.tsx:13
 #: assets/js/features/activities/ResourceHubRenamed/index.tsx:15
 #: assets/js/features/activities/ResourceHubRenamed/index.tsx:43
-msgid "Renamed Docs & Files"
-msgstr "Docs & Arquivos renomeados"
+msgid "Renamed Resource Hub"
+msgstr "Central de recursos renomeada"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
@@ -17912,7 +17942,7 @@ msgstr "Os níveis de acesso voltaram aos valores anteriores."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:116
-#: assets/js/pages/ProjectPage/index.tsx:680
+#: assets/js/pages/ProjectPage/index.tsx:676
 msgid "Reverted the champion to its previous value."
 msgstr "O champion voltou ao valor anterior."
 
@@ -17948,13 +17978,13 @@ msgstr "O nome do projeto voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:122
-#: assets/js/pages/ProjectPage/index.tsx:686
+#: assets/js/pages/ProjectPage/index.tsx:682
 msgid "Reverted the reviewer to its previous value."
 msgstr "O reviewer voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:98
-#: assets/js/pages/ProjectPage/index.tsx:674
+#: assets/js/pages/ProjectPage/index.tsx:670
 msgid "Reverted the space to its previous value."
 msgstr "O espaço voltou ao valor anterior."
 
@@ -20392,7 +20422,7 @@ msgid "The \"%{title}\" milestone due date was updated"
 msgstr "A data de conclusão do marco \"%{title}\" foi atualizada"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:94
+#: lib/operately_web/mcp/executor.ex:95
 msgid "The %{name} tool is not implemented yet."
 msgstr "A ferramenta %{name} ainda não foi implementada."
 
@@ -20557,6 +20587,11 @@ msgstr "A assinatura atual permanece ativa até: %{date}."
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:165
 msgid "The current subscription will end at the close of the current billing period."
 msgstr "A assinatura atual será encerrada ao final do ciclo de faturamento vigente."
+
+#.elixir
+#: lib/operately_web/api/resource_hubs/delete.ex:28
+msgid "The default Resource Hub cannot be deleted."
+msgstr "A central de recursos padrão não pode ser excluída."
 
 #.elixir
 #: lib/operately_email/templates/goal_description_changed.html.eex:11
@@ -20858,7 +20893,7 @@ msgid "The requested resource was not found"
 msgstr "O recurso solicitado não foi encontrado"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:101
+#: lib/operately_web/mcp/executor.ex:102
 msgid "The requested resource was not found or is not accessible."
 msgstr "O recurso solicitado não foi encontrado ou não está acessível."
 
@@ -21020,12 +21055,12 @@ msgid "The token request is missing required parameters or contains invalid valu
 msgstr "A solicitação de token não contém parâmetros obrigatórios ou contém valores inválidos."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:112
+#: lib/operately_web/mcp/executor.ex:113
 msgid "The tool could not complete the request with the provided data."
 msgstr "A ferramenta não conseguiu concluir a solicitação com os dados fornecidos."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:122
+#: lib/operately_web/mcp/executor.ex:132
 msgid "The tool could not complete the request."
 msgstr "A ferramenta não conseguiu concluir a solicitação."
 
@@ -21638,7 +21673,7 @@ msgid "This request is no longer active. Review your current email or request a 
 msgstr "Esta solicitação não está mais ativa. Confira seu e-mail atual ou solicite um novo código."
 
 #.elixir
-#: lib/operately_web/api/wrappers/docs_and_files/hub_scope.ex:96
+#: lib/operately_web/api/wrappers/docs_and_files/hub_scope.ex:92
 msgid "This space has no available default resource hub. Retry with resource_hub_id from the available hubs."
 msgstr "Este espaço não tem um repositório de recursos padrão disponível. Tente novamente com o resource_hub_id de um dos repositórios disponíveis."
 
@@ -22434,7 +22469,7 @@ msgid "Update badge setting saved"
 msgstr "Configuração do indicador de atualização salva"
 
 #.frontend
-#: assets/js/pages/ProjectPage/index.tsx:641
+#: assets/js/pages/ProjectPage/index.tsx:637
 #: assets/js/pages/TaskPage/index.tsx:329
 msgid "Update failed"
 msgstr "Falha na atualização"
@@ -23756,7 +23791,7 @@ msgid "You cannot delete the general space"
 msgstr "Você não pode excluir o espaço geral"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:108
+#: lib/operately_web/mcp/executor.ex:109
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr "Você não tem permissão para realizar esta operação ou a empresa está no modo somente leitura."
 

@@ -418,8 +418,8 @@
         "goal",
         "milestone",
         "document",
-        "project_check_in",
         "kpi",
+        "project_check_in",
         "project_retrospective",
         "project_discussion",
         "goal_discussion",
@@ -808,6 +808,10 @@
         },
         {
           "name": "activity_content_resource_hub_folder_renamed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_deleted",
           "kind": "named"
         },
         {
@@ -24572,6 +24576,54 @@
             "has_default": false
           }
         ]
+      },
+      "activity_content_resource_hub_deleted": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
       }
     }
   },
@@ -24593,7 +24645,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 257,
+  "endpoint_count": 260,
   "endpoints": [
     {
       "name": "create",
@@ -26710,6 +26762,53 @@
       "docstring": "Creates a new folder in a Docs & Files hub.\n\nSelect a hub with resource_hub_id, or derive it from folder_id where supported.\nA space_id alone selects its default resource hub. Supplied parent selectors\nmust match the selected hub. Results include the resolved resource_hub_id."
     },
     {
+      "name": "create_hub",
+      "type": "mutation",
+      "path": "/api/external/v1/documents/create_hub",
+      "handler": "OperatelyWeb.Api.ResourceHubs.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "hub",
+          "type": {
+            "name": "resource_hub_summary",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "documents/create_hub",
+      "method": "POST",
+      "namespace": "documents",
+      "docstring": "Creates a space-owned Resource Hub at the end of the list. Preserves the space's default Resource Hub. Requires space edit access."
+    },
+    {
       "name": "create_link",
       "type": "mutation",
       "path": "/api/external/v1/documents/create_link",
@@ -26976,6 +27075,42 @@
       "method": "POST",
       "namespace": "documents",
       "docstring": "Deletes a folder."
+    },
+    {
+      "name": "delete_hub",
+      "type": "mutation",
+      "path": "/api/external/v1/documents/delete_hub",
+      "handler": "OperatelyWeb.Api.ResourceHubs.Delete",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "documents/delete_hub",
+      "method": "POST",
+      "namespace": "documents",
+      "docstring": "Deletes an empty space-owned Resource Hub. Documents, drafts, files, links, and folders must be removed first. The default Resource Hub cannot be deleted. Requires space edit access."
     },
     {
       "name": "delete_link",
@@ -28064,6 +28199,53 @@
       "method": "POST",
       "namespace": "documents",
       "docstring": "Renames a folder."
+    },
+    {
+      "name": "rename_hub",
+      "type": "mutation",
+      "path": "/api/external/v1/documents/rename_hub",
+      "handler": "OperatelyWeb.Api.ResourceHubs.Rename",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "new_name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "documents/rename_hub",
+      "method": "POST",
+      "namespace": "documents",
+      "docstring": "Renames a space-owned Resource Hub."
     },
     {
       "name": "restore_document_version",
@@ -41913,6 +42095,6 @@
     }
   ],
   "query_count": 78,
-  "mutation_count": 179,
+  "mutation_count": 182,
   "schema_version": 1
 }

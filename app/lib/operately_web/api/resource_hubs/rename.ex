@@ -1,5 +1,5 @@
 defmodule OperatelyWeb.Api.ResourceHubs.Rename do
-  @moduledoc "Renames a space-owned Docs & Files collection."
+  @moduledoc "Renames a space-owned Resource Hub."
 
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.Rename do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:hub, fn ctx -> ResourceHub.get(ctx.me, id: inputs.resource_hub_id, opts: [preload: [:space]]) end)
+    |> run(:hub, fn ctx -> ResourceHub.get(ctx.me, id: inputs.resource_hub_id) end)
     |> run(:parent, fn ctx -> check_parent(ctx.hub) end)
     |> run(:permissions, fn ctx -> Permissions.check(ctx.hub.request_info.access_level, :can_rename_hub, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubRenaming.run(ctx.me, ctx.hub, inputs.new_name) end)

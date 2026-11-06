@@ -371,6 +371,8 @@ operately documents create_file --space-id s1 --file ./report.pdf
 
 Use `operately documents list_hubs --space-id s1` to discover hub IDs and the default. Pass `--resource-hub-id` to select a hub explicitly; `--space-id` alone uses the space's default resource hub. Creation and listing also accept `--folder-id` alone. Any supplied hub, folder, and parent must agree. Use `--project-id` or `--goal-id` to select that project's or goal's hub. Responses include the resolved `resource_hub_id`; an unavailable default returns candidate hubs and retry guidance.
 
+Manage Resource Hubs in a space with `documents create_hub`, `rename_hub`, and `delete_hub` (space edit access required). `list_hubs` returns hubs in saved order. Only empty hubs can be deleted; remove documents, drafts, files, links, and folders first. The default hub is fixed and cannot be changed or deleted. Creating a hub preserves the existing default.
+
 Many create and update commands have additional required fields. Use `--help` on the specific command before scripting it.
 
 ## Exit Codes
