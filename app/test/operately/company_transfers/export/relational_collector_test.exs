@@ -13,6 +13,7 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
     ctx =
       ctx
       |> Factory.add_space(:space)
+      |> Factory.fetch_default_resource_hub(:hub, :space)
       |> Factory.add_project(:project, :space)
       |> Factory.add_company_member(:member)
 
@@ -56,8 +57,11 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
     assert collected.rows_count == total_row_count(collected)
     assert collected.non_empty_tables_count == non_empty_table_count(collected)
 
-    assert table_index(collected, "companies") < table_index(collected, "people")
-    assert table_index(collected, "companies") < table_index(collected, "projects")
+    space = find_row(tables, "groups", ctx.space.id)
+    hub = find_row(tables, "resource_hubs", ctx.hub.id)
+    assert space["default_resource_hub_id"] == hub["id"]
+    assert hub["space_id"] == space["id"]
+
     assert table_index(collected, "accounts") < table_index(collected, "people")
     assert table_index(collected, "subscription_lists") < table_index(collected, "subscriptions")
   end
