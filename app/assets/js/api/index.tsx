@@ -891,6 +891,13 @@ export interface ActivityContentProjectTimelineEdited {
   updatedMilestones?: ActivityMilestone[] | null;
 }
 
+export interface ActivityContentResourceHubDeleted {
+  __typename: "activity_content_resource_hub_deleted";
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  name: string;
+}
+
 export interface ActivityContentResourceHubDocumentCommented {
   __typename: "activity_content_resource_hub_document_commented";
   goal?: Goal | null;
@@ -3075,6 +3082,7 @@ export type ActivityContent =
   | ActivityContentResourceHubFolderCreated
   | ActivityContentResourceHubFolderDeleted
   | ActivityContentResourceHubFolderRenamed
+  | ActivityContentResourceHubDeleted
   | ActivityContentResourceHubRenamed
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
@@ -3297,8 +3305,8 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "project_check_in"
   | "kpi"
+  | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"
@@ -6606,6 +6614,15 @@ export interface ResourceHubsCopyFolderResult {
   folderId: Id;
 }
 
+export interface ResourceHubsCreateInput {
+  spaceId: Id;
+  name: string;
+}
+
+export interface ResourceHubsCreateResult {
+  hub: ResourceHubSummary;
+}
+
 export interface ResourceHubsCreateFolderInput {
   resourceHubId: Id;
   folderId?: Id | null;
@@ -6614,6 +6631,14 @@ export interface ResourceHubsCreateFolderInput {
 
 export interface ResourceHubsCreateFolderResult {
   folder: ResourceHubFolder;
+}
+
+export interface ResourceHubsDeleteInput {
+  resourceHubId: Id;
+}
+
+export interface ResourceHubsDeleteResult {
+  success: boolean;
 }
 
 export interface ResourceHubsDeleteFolderInput {
@@ -6639,6 +6664,15 @@ export interface ResourceHubsRenameFolderInput {
 }
 
 export interface ResourceHubsRenameFolderResult {
+  success: boolean;
+}
+
+export interface ResourceHubsReorderInput {
+  spaceId: Id;
+  resourceHubIds: Id[];
+}
+
+export interface ResourceHubsReorderResult {
   success: boolean;
 }
 
@@ -7293,8 +7327,16 @@ class ApiNamespaceResourceHubs {
     return this.client.post("/resource_hubs/copy_folder", input);
   }
 
+  async create(input: ResourceHubsCreateInput): Promise<ResourceHubsCreateResult> {
+    return this.client.post("/resource_hubs/create", input);
+  }
+
   async createFolder(input: ResourceHubsCreateFolderInput): Promise<ResourceHubsCreateFolderResult> {
     return this.client.post("/resource_hubs/create_folder", input);
+  }
+
+  async delete(input: ResourceHubsDeleteInput): Promise<ResourceHubsDeleteResult> {
+    return this.client.post("/resource_hubs/delete", input);
   }
 
   async deleteFolder(input: ResourceHubsDeleteFolderInput): Promise<ResourceHubsDeleteFolderResult> {
@@ -7307,6 +7349,10 @@ class ApiNamespaceResourceHubs {
 
   async renameFolder(input: ResourceHubsRenameFolderInput): Promise<ResourceHubsRenameFolderResult> {
     return this.client.post("/resource_hubs/rename_folder", input);
+  }
+
+  async reorder(input: ResourceHubsReorderInput): Promise<ResourceHubsReorderResult> {
+    return this.client.post("/resource_hubs/reorder", input);
   }
 
   async updateParentFolder(input: ResourceHubsUpdateParentFolderInput): Promise<ResourceHubsUpdateParentFolderResult> {
@@ -9779,6 +9825,16 @@ export default {
           defaultApiClient.apiNamespaceResourceHubs.updateParentFolder(input),
       }),
 
+    reorder: (input: ResourceHubsReorderInput) => defaultApiClient.apiNamespaceResourceHubs.reorder(input),
+    useReorder: () =>
+      useMutation<ResourceHubsReorderInput, ResourceHubsReorderResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.reorder(input),
+      ),
+    reorderMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsReorderInput) => defaultApiClient.apiNamespaceResourceHubs.reorder(input),
+      }),
+
     renameFolder: (input: ResourceHubsRenameFolderInput) =>
       defaultApiClient.apiNamespaceResourceHubs.renameFolder(input),
     useRenameFolder: () =>
@@ -9811,6 +9867,26 @@ export default {
       mutationOptions({
         mutationFn: (input: ResourceHubsCreateFolderInput) =>
           defaultApiClient.apiNamespaceResourceHubs.createFolder(input),
+      }),
+
+    delete: (input: ResourceHubsDeleteInput) => defaultApiClient.apiNamespaceResourceHubs.delete(input),
+    useDelete: () =>
+      useMutation<ResourceHubsDeleteInput, ResourceHubsDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.delete(input),
+      ),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsDeleteInput) => defaultApiClient.apiNamespaceResourceHubs.delete(input),
+      }),
+
+    create: (input: ResourceHubsCreateInput) => defaultApiClient.apiNamespaceResourceHubs.create(input),
+    useCreate: () =>
+      useMutation<ResourceHubsCreateInput, ResourceHubsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.create(input),
+      ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsCreateInput) => defaultApiClient.apiNamespaceResourceHubs.create(input),
       }),
 
     rename: (input: ResourceHubsRenameInput) => defaultApiClient.apiNamespaceResourceHubs.rename(input),

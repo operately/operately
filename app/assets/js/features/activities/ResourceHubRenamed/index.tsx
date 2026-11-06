@@ -10,9 +10,9 @@ import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubRenamed: ActivityHandler = {
-  pageHtmlTitle: () => i18n.t("Renamed Docs & Files"),
+  pageHtmlTitle: () => i18n.t("Renamed Resource Hub"),
   pagePath: (paths, activity) => resourceHubPathOrParent(paths, content(activity)),
-  PageTitle: () => <>{i18n.t("Renamed Docs & Files")}</>,
+  PageTitle: () => <>{i18n.t("Renamed Resource Hub")}</>,
   PageContent: ({ activity }) => <NameChange activity={activity} />,
   PageOptions: () => null,
 
@@ -40,7 +40,7 @@ const ResourceHubRenamed: ActivityHandler = {
   feedItemAlignment: () => "items-center",
   commentCount: () => 0,
   hasComments: () => false,
-  NotificationTitle: () => i18n.t("Renamed Docs & Files"),
+  NotificationTitle: () => i18n.t("Renamed Resource Hub"),
   NotificationLocation: () => null,
 };
 

@@ -66,6 +66,57 @@ defmodule Operately.Support.McpE2E.Tools.ResourceHubSelectionSteps do
     Map.put(ctx, :selected_hub_id, selected["id"])
   end
 
+  step :create_collection, ctx do
+    created = successful_call!(ctx, "create_resource_hub", %{"space_id" => Paths.space_id(ctx.space), "name" => "Lifecycle"})
+    Map.put(ctx, :collection_id, created["hub"]["id"])
+  end
+
+  step :rename_collection, ctx do
+    successful_call!(ctx, "rename_resource_hub", %{"resource_hub_id" => ctx.collection_id, "new_name" => "Reference"})
+    listed = successful_call!(ctx, "list_resource_hubs", %{"space_id" => Paths.space_id(ctx.space)})
+    assert Enum.map(listed["hubs"], & &1["id"]) == [Paths.resource_hub_id(ctx.default_hub.id), Paths.resource_hub_id(ctx.other_hub.id), ctx.collection_id]
+    assert Enum.find(listed["hubs"], &(&1["id"] == ctx.collection_id))["name"] == "Reference"
+    ctx
+  end
+
+  step :add_folder_to_collection, ctx do
+    folder = successful_call!(ctx, "create_folder", %{"resource_hub_id" => ctx.collection_id, "name" => "Keep me"})
+    Map.put(ctx, :collection_folder_id, folder["folder"]["id"])
+  end
+
+  step :assert_default_collection_cannot_be_deleted, ctx do
+    conn = call_tool(ctx.access_token, ctx.session_id, "delete_resource_hub", %{"resource_hub_id" => Paths.resource_hub_id(ctx.default_hub.id)})
+    result = json_body(conn)["result"]
+    assert result["isError"]
+    assert result["structuredContent"]["details"]["code"] == "default_resource_hub_deletion_forbidden"
+    ctx
+  end
+
+  step :assert_nonempty_collection_cannot_be_deleted, ctx do
+    conn = call_tool(ctx.access_token, ctx.session_id, "delete_resource_hub", %{"resource_hub_id" => ctx.collection_id})
+    result = json_body(conn)["result"]
+    assert result["isError"]
+    assert result["structuredContent"]["details"]["code"] == "resource_hub_not_empty"
+    ctx
+  end
+
+  step :delete_collection_folder, ctx do
+    successful_call!(ctx, "delete_folder", %{"folder_id" => ctx.collection_folder_id})
+    ctx
+  end
+
+  step :delete_collection, ctx do
+    assert successful_call!(ctx, "delete_resource_hub", %{"resource_hub_id" => ctx.collection_id})["success"]
+    ctx
+  end
+
+  step :assert_collection_deleted_and_default_preserved, ctx do
+    remaining = successful_call!(ctx, "list_resource_hubs", %{"space_id" => Paths.space_id(ctx.space)})
+    assert Enum.map(remaining["hubs"], & &1["id"]) == [Paths.resource_hub_id(ctx.default_hub.id), Paths.resource_hub_id(ctx.other_hub.id)]
+    assert Enum.find(remaining["hubs"], & &1["is_default"])["id"] == Paths.resource_hub_id(ctx.default_hub.id)
+    ctx
+  end
+
   defp successful_call!(ctx, name, arguments) do
     conn = call_tool(ctx.access_token, ctx.session_id, name, arguments)
     assert conn.status == 200

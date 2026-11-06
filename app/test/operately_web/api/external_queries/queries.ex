@@ -60,6 +60,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Goals.ListContributors,
       Queries.People.ListPossibleManagers,
       Queries.ResourceHubs.List,
+      Queries.Documents.ListHubs,
       Queries.Wrappers.Documents.ListContents,
       Queries.Wrappers.Documents.ListDrafts,
       Queries.Wrappers.Documents.ListDocumentVersions,

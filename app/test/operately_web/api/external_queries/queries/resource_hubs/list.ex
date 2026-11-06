@@ -3,7 +3,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ResourceHubs.List do
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  def query_name, do: "documents/list_hubs"
+  def query_name, do: "resource_hubs/list"
   def setup(ctx), do: ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.fetch_default_resource_hub(:hub, :space)
   def inputs(ctx), do: %{space_id: Paths.space_id(ctx.space)}
 
