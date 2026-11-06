@@ -228,10 +228,15 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
       assert message.author == Serializer.serialize(ctx.creator)
     end
 
-    test "list resource hubs", ctx do
+    test "list resource hubs in position and creation order", ctx do
+      [newer, older] = Enum.sort_by([ctx.hub1, ctx.hub2], & &1.id)
+      newer |> Ecto.Changeset.change(position: 2, inserted_at: ~N[2021-01-01 00:00:00]) |> Repo.update!()
+      older |> Ecto.Changeset.change(position: 2, inserted_at: ~N[2020-01-01 00:00:00]) |> Repo.update!()
       assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
 
-      assert length(res.tools.resource_hubs) == 3
+      default = Repo.get!(Operately.ResourceHubs.ResourceHub, ctx.space.default_resource_hub_id)
+      expected = Enum.map([default, older, newer], &Paths.resource_hub_id/1)
+      assert Enum.map(res.tools.resource_hubs, & &1.id) == expected
 
       hub1 = Enum.find(res.tools.resource_hubs, &(&1.id == Paths.resource_hub_id(ctx.hub1)))
       assert length(hub1.nodes) == 2

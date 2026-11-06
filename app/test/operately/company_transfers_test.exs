@@ -153,8 +153,19 @@ defmodule Operately.CompanyTransfersTest do
       |> Factory.add_project(:project, :space)
       |> Factory.add_company_member(:member)
       |> Factory.add_resource_hub(:chosen_hub, :space, :creator, name: "Chosen hub")
+      |> Factory.add_resource_hub(:tied_hub1, :space, :creator, name: "Tied hub 1")
+      |> Factory.add_resource_hub(:tied_hub2, :space, :creator, name: "Tied hub 2")
 
     ctx.space |> Ecto.Changeset.change(default_resource_hub_id: ctx.chosen_hub.id) |> Repo.update!()
+
+    ctx.chosen_hub |> Ecto.Changeset.change(position: 8) |> Repo.update!()
+    original_hub = Repo.get!(Operately.ResourceHubs.ResourceHub, ctx.space.default_resource_hub_id)
+
+    for hub <- [original_hub, ctx.tied_hub1, ctx.tied_hub2] do
+      hub |> Ecto.Changeset.change(position: 3, inserted_at: ~N[2020-01-01 00:00:00]) |> Repo.update!()
+    end
+
+    source_hubs = Repo.all(from h in Operately.ResourceHubs.ResourceHub, where: h.space_id == ^ctx.space.id, order_by: [h.position, h.inserted_at, h.id])
 
     short_id = 2_000_000 + System.unique_integer([:positive])
 
@@ -203,6 +214,11 @@ defmodule Operately.CompanyTransfersTest do
     assert imported_hub.space_id == imported_space.id
     assert imported_hub.name == "Chosen hub"
     refute imported_hub.id == ctx.chosen_hub.id
+    assert imported_hub.position == 8
+    imported_hubs = Repo.all(from h in Operately.ResourceHubs.ResourceHub, where: h.space_id == ^imported_space.id, order_by: [h.position, h.inserted_at, h.id])
+    assert Enum.map(imported_hubs, & &1.name) == Enum.map(source_hubs, & &1.name)
+    assert Enum.map(imported_hubs, & &1.position) == [3, 4, 5, 8]
+    assert Enum.map(imported_hubs, & &1.inserted_at) == Enum.map(source_hubs, & &1.inserted_at)
 
     assert run.status == :completed
     assert run.started_at != nil

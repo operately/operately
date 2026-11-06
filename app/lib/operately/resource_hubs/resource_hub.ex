@@ -17,6 +17,7 @@ defmodule Operately.ResourceHubs.ResourceHub do
     has_many :nodes, Operately.ResourceHubs.Node, foreign_key: :resource_hub_id
 
     field :name, :string
+    field :position, :integer, default: 0
     field :description, :map
 
     # populated by after load hooks

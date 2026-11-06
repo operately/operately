@@ -1,5 +1,5 @@
 defmodule OperatelyWeb.Api.ResourceHubs.List do
-  @moduledoc "Lists accessible resource hubs in a space, including its default hub."
+  @moduledoc "Lists accessible resource hubs in saved order, including their positions and the default designation."
 
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
