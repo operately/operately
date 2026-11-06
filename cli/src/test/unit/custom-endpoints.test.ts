@@ -4,6 +4,7 @@ import type { Stats } from "node:fs";
 import { executeCustomEndpointCommand, validateCustomEndpointImplementations } from "../../commands/custom-endpoints";
 import { createRegistry } from "../../commands/registry";
 import { UsageError } from "../../core/parser";
+import { readHubScopeInputs } from "../../commands/custom-endpoints/documents/helpers";
 import { fixtureCatalog } from "./fixture-catalog";
 
 const ONE_BY_ONE_PNG = Buffer.from(
@@ -193,13 +194,23 @@ describe("people/update_picture", () => {
   });
 });
 
+it("preserves explicit hub and folder upload selectors", () => {
+  for (const inputs of [
+    { resource_hub_id: "hub-2" },
+    { folder_id: "folder-2" },
+    { space_id: "space-1", resource_hub_id: "hub-2", folder_id: "folder-2" },
+  ]) {
+    assert.deepEqual(readHubScopeInputs(inputs), inputs);
+  }
+});
+
 describe("documents/create_file", () => {
   it("requires a hub scope", async () => {
     await assert.rejects(
       executeCustomEndpointCommand(buildInput("documents/create_file", { file: "./report.pdf" }), {}),
       (error: unknown) => {
         assert.ok(error instanceof UsageError);
-        assert.equal(error.message, "One of --space-id, --project-id, or --goal-id is required.");
+        assert.equal(error.message, "One of --space-id, --project-id, --goal-id, --resource-hub-id, or --folder-id is required.");
         return true;
       },
     );

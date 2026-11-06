@@ -35,6 +35,7 @@ defmodule Operately.Mcp.ToolsTest do
     "list_task_statuses",
     "get_space_discussion",
     "search",
+    "list_resource_hubs",
     "search_full_text",
     "list_docs_and_files",
     "get_document",

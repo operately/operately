@@ -24502,6 +24502,54 @@
             "has_default": false
           }
         ]
+      },
+      "resource_hub_summary": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "is_default",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
       }
     }
   },
@@ -24523,7 +24571,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 256,
+  "endpoint_count": 257,
   "endpoints": [
     {
       "name": "create",
@@ -26385,6 +26433,17 @@
       "outputs": [
         {
           "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
           "name": "document",
           "type": {
             "name": "document",
@@ -26396,6 +26455,17 @@
         }
       ],
       "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "space_id",
@@ -26513,7 +26583,7 @@
       "full_name": "documents/create_document",
       "method": "POST",
       "namespace": "documents",
-      "docstring": "Creates a new document in a Docs & Files hub."
+      "docstring": "Creates a new document in a Docs & Files hub.\n\nSelect a hub with resource_hub_id, or derive it from folder_id where supported.\nA space_id alone selects its default resource hub. Supplied parent selectors\nmust match the selected hub. Results include the resolved resource_hub_id."
     },
     {
       "name": "create_folder",
@@ -26521,6 +26591,17 @@
       "path": "/api/external/v1/documents/create_folder",
       "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFolder",
       "outputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "folder",
@@ -26534,6 +26615,17 @@
         }
       ],
       "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "space_id",
@@ -26593,7 +26685,7 @@
       "full_name": "documents/create_folder",
       "method": "POST",
       "namespace": "documents",
-      "docstring": "Creates a new folder in a Docs & Files hub."
+      "docstring": "Creates a new folder in a Docs & Files hub.\n\nSelect a hub with resource_hub_id, or derive it from folder_id where supported.\nA space_id alone selects its default resource hub. Supplied parent selectors\nmust match the selected hub. Results include the resolved resource_hub_id."
     },
     {
       "name": "create_link",
@@ -26601,6 +26693,17 @@
       "path": "/api/external/v1/documents/create_link",
       "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateLink",
       "outputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "link",
@@ -26614,6 +26717,17 @@
         }
       ],
       "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "space_id",
@@ -26731,7 +26845,7 @@
       "full_name": "documents/create_link",
       "method": "POST",
       "namespace": "documents",
-      "docstring": "Creates a new link in a Docs & Files hub."
+      "docstring": "Creates a new link in a Docs & Files hub.\n\nSelect a hub with resource_hub_id, or derive it from folder_id where supported.\nA space_id alone selects its default resource hub. Supplied parent selectors\nmust match the selected hub. Results include the resolved resource_hub_id."
     },
     {
       "name": "delete_document",
@@ -27560,6 +27674,17 @@
       "outputs": [
         {
           "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
           "name": "nodes",
           "type": {
             "item": {
@@ -27588,6 +27713,17 @@
         }
       ],
       "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "space_id",
@@ -27658,7 +27794,7 @@
       "full_name": "documents/list_contents",
       "method": "GET",
       "namespace": "documents",
-      "docstring": "Lists contents in a Docs & Files hub or folder."
+      "docstring": "Lists contents in a Docs & Files hub or folder.\n\nSelect a hub with resource_hub_id, or derive it from folder_id where supported.\nA space_id alone selects its default resource hub. Supplied parent selectors\nmust match the selected hub. Results include the resolved resource_hub_id."
     },
     {
       "name": "list_document_versions",
@@ -27737,6 +27873,45 @@
       "method": "GET",
       "namespace": "documents",
       "docstring": "Lists the requester's drafts across all live folders in a resource hub."
+    },
+    {
+      "name": "list_hubs",
+      "type": "query",
+      "path": "/api/external/v1/documents/list_hubs",
+      "handler": "OperatelyWeb.Api.ResourceHubs.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "hubs",
+          "type": {
+            "item": {
+              "name": "resource_hub_summary",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "documents/list_hubs",
+      "method": "GET",
+      "namespace": "documents",
+      "docstring": "Lists accessible resource hubs in a space, including its default hub."
     },
     {
       "name": "publish_document",
@@ -27945,6 +28120,17 @@
       "outputs": [
         {
           "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
           "name": "nodes",
           "type": {
             "item": {
@@ -27959,6 +28145,17 @@
         }
       ],
       "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "space_id",
@@ -28007,7 +28204,7 @@
       "full_name": "documents/search",
       "method": "GET",
       "namespace": "documents",
-      "docstring": "Searches Docs & Files by its Space, Project, or Goal scope."
+      "docstring": "Searches Docs & Files by its Space, Project, or Goal scope.\n\nSelect a hub with resource_hub_id, or derive it from folder_id where supported.\nA space_id alone selects its default resource hub. Supplied parent selectors\nmust match the selected hub. Results include the resolved resource_hub_id."
     },
     {
       "name": "update_document",
@@ -41693,7 +41890,7 @@
       "docstring": "Updates the status of a task."
     }
   ],
-  "query_count": 77,
+  "query_count": 78,
   "mutation_count": 179,
   "schema_version": 1
 }

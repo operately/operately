@@ -10,7 +10,8 @@ defmodule Operately.CompanyTransfers.Import.PackageOrderTest do
         table("project_check_ins"),
         table("projects"),
         table("companies"),
-        table("groups")
+        table("groups"),
+        table("resource_hubs")
       ])
 
     schema =
@@ -22,7 +23,12 @@ defmodule Operately.CompanyTransfers.Import.PackageOrderTest do
           ],
           "groups" => [
             column("id", "uuid", false),
-            column("company_id", "uuid", false)
+            column("company_id", "uuid", false),
+            column("default_resource_hub_id", "uuid", true)
+          ],
+          "resource_hubs" => [
+            column("id", "uuid", false),
+            column("space_id", "uuid", true)
           ],
           "projects" => [
             column("id", "uuid", false),
@@ -35,7 +41,8 @@ defmodule Operately.CompanyTransfers.Import.PackageOrderTest do
         },
         %{
           "companies" => [fk("company_space_id", "groups")],
-          "groups" => [fk("company_id", "companies")],
+          "groups" => [fk("company_id", "companies"), fk("default_resource_hub_id", "resource_hubs")],
+          "resource_hubs" => [fk("space_id", "groups")],
           "projects" => [fk("last_check_in_id", "project_check_ins")],
           "project_check_ins" => [fk("project_id", "projects")]
         }
@@ -47,7 +54,8 @@ defmodule Operately.CompanyTransfers.Import.PackageOrderTest do
              "companies",
              "groups",
              "projects",
-             "project_check_ins"
+             "project_check_ins",
+             "resource_hubs"
            ]
   end
 

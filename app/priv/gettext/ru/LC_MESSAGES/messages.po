@@ -21324,6 +21324,11 @@ msgstr "Это заменяет текущее название и контен�
 msgid "This request is no longer active. Review your current email or request a new code."
 msgstr "Этот запрос больше не активен. Просмотрите свою текущую электронную почту или запросите новый код."
 
+#.elixir
+#: lib/operately_web/api/wrappers/docs_and_files/hub_scope.ex:96
+msgid "This space has no available default resource hub. Retry with resource_hub_id from the available hubs."
+msgstr "В этом пространстве нет доступного хранилища материалов по умолчанию. Повторите попытку, указав resource_hub_id одного из доступных хранилищ."
+
 #.frontend
 #: ../turboui/src/PrivacyIndicator/index.tsx:76
 msgid "This space is visible only to members of the %{spaceName} space."

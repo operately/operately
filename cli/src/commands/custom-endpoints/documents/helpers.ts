@@ -6,29 +6,19 @@ export const EMPTY_RICH_TEXT = JSON.stringify({
 });
 
 export function readHubScopeInputs(endpointInputs: Record<string, unknown>): Record<string, string> {
-  const spaceId = readOptionalString(endpointInputs.space_id, "space_id");
-  const projectId = readOptionalString(endpointInputs.project_id, "project_id");
-  const goalId = readOptionalString(endpointInputs.goal_id, "goal_id");
+  const inputs: Record<string, string> = {};
+  for (const key of ["space_id", "project_id", "goal_id", "resource_hub_id", "folder_id"]) {
+    const value = readOptionalString(endpointInputs[key], key);
+    if (value) inputs[key] = value;
+  }
 
-  const parentIds = [spaceId, projectId, goalId].filter((id): id is string => id !== null);
-
-  if (parentIds.length > 1) {
+  if ([inputs.space_id, inputs.project_id, inputs.goal_id].filter(Boolean).length > 1) {
     throw new UsageError("Provide exactly one of --space-id, --project-id, or --goal-id.");
   }
-
-  if (parentIds.length === 0) {
-    throw new UsageError("One of --space-id, --project-id, or --goal-id is required.");
+  if (Object.keys(inputs).length === 0) {
+    throw new UsageError("One of --space-id, --project-id, --goal-id, --resource-hub-id, or --folder-id is required.");
   }
-
-  if (spaceId) {
-    return { space_id: spaceId };
-  }
-
-  if (projectId) {
-    return { project_id: projectId };
-  }
-
-  return { goal_id: goalId! };
+  return inputs;
 }
 
 function readOptionalString(value: unknown, fieldName: string): string | null {

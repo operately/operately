@@ -2508,6 +2508,13 @@ export interface ResourceHubPermissions {
   canView?: boolean | null;
 }
 
+export interface ResourceHubSummary {
+  __typename: "resource_hub_summary";
+  id: Id;
+  name: string;
+  isDefault: boolean;
+}
+
 export interface ResourceHubUploadedFile {
   blobId?: string | null;
   previewBlobId?: string | null;
@@ -3192,9 +3199,9 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
+  | "kpi"
   | "project_check_in"
   | "project_retrospective"
-  | "kpi"
   | "project_discussion"
   | "goal_discussion"
   | "goal_check_in"

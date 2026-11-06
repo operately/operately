@@ -152,6 +152,9 @@ defmodule Operately.CompanyTransfersTest do
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
       |> Factory.add_company_member(:member)
+      |> Factory.add_resource_hub(:chosen_hub, :space, :creator, name: "Chosen hub")
+
+    ctx.space |> Ecto.Changeset.change(default_resource_hub_id: ctx.chosen_hub.id) |> Repo.update!()
 
     short_id = 2_000_000 + System.unique_integer([:positive])
 
@@ -194,6 +197,12 @@ defmodule Operately.CompanyTransfersTest do
     run = CompanyTransfers.get_import_run!(run.id)
     imported_company = Repo.get!(Company, run.company_id)
     imported_people = Repo.all(from p in Person, where: p.company_id == ^imported_company.id)
+
+    imported_space = Repo.get_by!(Operately.Groups.Group, company_id: imported_company.id, name: ctx.space.name)
+    imported_hub = Repo.get!(Operately.ResourceHubs.ResourceHub, imported_space.default_resource_hub_id)
+    assert imported_hub.space_id == imported_space.id
+    assert imported_hub.name == "Chosen hub"
+    refute imported_hub.id == ctx.chosen_hub.id
 
     assert run.status == :completed
     assert run.started_at != nil

@@ -48,6 +48,7 @@ defmodule OperatelyWeb.Mcp.Executor do
       {:error, :not_found, _message} -> {:ok, not_found_result()}
       {:error, :forbidden} -> {:ok, forbidden_result()}
       {:error, :bad_request} -> {:ok, bad_request_result()}
+      {:error, :bad_request, message, details} -> {:ok, detailed_bad_request_result(message, details)}
       {:error, :bad_request, message} when is_binary(message) -> {:ok, bad_request_result(message)}
       {:error, :internal_server_error} -> {:ok, internal_error_result()}
       {:error, _reason} -> {:ok, internal_error_result()}
@@ -113,6 +114,15 @@ defmodule OperatelyWeb.Mcp.Executor do
     %{
       "isError" => true,
       "content" => [text_content(message)]
+    }
+  end
+
+  defp detailed_bad_request_result(message, details) do
+    payload = stringify_keys(%{error: "Bad request", message: message, details: details})
+    %{
+      "isError" => true,
+      "structuredContent" => payload,
+      "content" => [text_content(encode_json!(payload))]
     }
   end
 

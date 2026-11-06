@@ -3299,6 +3299,7 @@
   "This removes the item from the company feed. The underlying project, goal, task, or document will not be deleted.": "Esto elimina el elemento del historial de actividad de la empresa. El proyecto, objetivo, tarea o documento original no se eliminará.",
   "This replaces the current title and content with the selected version. Later versions will stay in the history.": "Esto reemplaza el título y el contenido actuales por la versión seleccionada. Las versiones posteriores seguirán en el historial.",
   "This request is no longer active. Review your current email or request a new code.": "Esta solicitud ya no está activa. Revisa tu correo electrónico actual o solicita un nuevo código.",
+  "This space has no available default resource hub. Retry with resource_hub_id from the available hubs.": "Este espacio no tiene un centro de recursos predeterminado disponible. Inténtalo de nuevo con el resource_hub_id de uno de los centros disponibles.",
   "This space is visible only to members of the {{spaceName}} space.": "Este espacio es visible sólo para los miembros del espacio {{spaceName}}.",
   "This space is visible to anyone on the internet who has the link.": "Este espacio es visible para cualquier persona en Internet que tenga el enlace.",
   "This starts a background job that adds missing entries and refreshes newer canonical records.": "Esto inicia una tarea en segundo plano que añade entradas faltantes y actualiza los registros de origen más recientes.",
