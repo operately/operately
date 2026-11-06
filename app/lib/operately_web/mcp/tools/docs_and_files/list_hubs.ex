@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.ListHubs do
     Definition.new!(
       name: "list_resource_hubs",
       title: "List Resource Hubs",
-      description: "Lists accessible resource hubs in a space with IDs, names, and the default designation. Use a returned ID as resource_hub_id to select a hub explicitly.",
+      description: "Lists accessible resource hubs in a space in saved order with IDs, names, positions, and the default designation. Use a returned ID as resource_hub_id to select a hub explicitly.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,
