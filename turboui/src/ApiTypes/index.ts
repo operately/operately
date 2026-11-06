@@ -2366,6 +2366,7 @@ export interface ResourceHub {
   nodes?: ResourceHubNode[] | null;
   potentialSubscribers?: Subscriber[] | null;
   permissions?: ResourceHubPermissions | null;
+  position?: number | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -2512,6 +2513,7 @@ export interface ResourceHubSummary {
   __typename: "resource_hub_summary";
   id: Id;
   name: string;
+  position: number;
   isDefault: boolean;
 }
 
@@ -3199,8 +3201,8 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
+  | "kpi"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"

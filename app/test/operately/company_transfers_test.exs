@@ -156,6 +156,10 @@ defmodule Operately.CompanyTransfersTest do
 
     ctx.space |> Ecto.Changeset.change(default_resource_hub_id: ctx.chosen_hub.id) |> Repo.update!()
 
+    ctx.chosen_hub |> Ecto.Changeset.change(position: 8) |> Repo.update!()
+    original_hub = Repo.get!(Operately.ResourceHubs.ResourceHub, ctx.space.default_resource_hub_id)
+    original_hub |> Ecto.Changeset.change(position: 3) |> Repo.update!()
+
     short_id = 2_000_000 + System.unique_integer([:positive])
 
     assert {:ok, export_run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
@@ -203,6 +207,9 @@ defmodule Operately.CompanyTransfersTest do
     assert imported_hub.space_id == imported_space.id
     assert imported_hub.name == "Chosen hub"
     refute imported_hub.id == ctx.chosen_hub.id
+    assert imported_hub.position == 8
+    imported_original = Repo.get_by!(Operately.ResourceHubs.ResourceHub, space_id: imported_space.id, name: original_hub.name)
+    assert imported_original.position == 3
 
     assert run.status == :completed
     assert run.started_at != nil
