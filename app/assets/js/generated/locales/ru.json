@@ -3385,6 +3385,7 @@
   "This removes the item from the company feed. The underlying project, goal, task, or document will not be deleted.": "Это удаляет элемент из ленты компании. Основной проект, цель, задача или документ не будут удалены.",
   "This replaces the current title and content with the selected version. Later versions will stay in the history.": "Это заменяет текущее название и контент выбранной версией. Более поздние версии останутся в истории.",
   "This request is no longer active. Review your current email or request a new code.": "Этот запрос больше не активен. Просмотрите свою текущую электронную почту или запросите новый код.",
+  "This space has no available default resource hub. Retry with resource_hub_id from the available hubs.": "В этом пространстве нет доступного хранилища материалов по умолчанию. Повторите попытку, указав resource_hub_id одного из доступных хранилищ.",
   "This space is visible only to members of the {{spaceName}} space.": "Это пространство видно только участникам пространства «{{spaceName}}».",
   "This space is visible to anyone on the internet who has the link.": "Это пространство видно всем в интернете, у кого есть ссылка.",
   "This starts a background job that adds missing entries and refreshes newer canonical records.": "Это запустит фоновую задачу, которая добавит недостающие записи и обновит канонические записи, для которых есть более новые версии.",

@@ -1,6 +1,10 @@
 defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.Search do
   @moduledoc """
   Searches Docs & Files by its Space, Project, or Goal scope.
+
+  Select a hub with resource_hub_id, or derive it from folder_id where supported.
+  A space_id alone selects its default resource hub. Supplied parent selectors
+  must match the selected hub. Results include the resolved resource_hub_id.
   """
 
   use TurboConnect.Query
@@ -10,6 +14,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.Search do
   alias OperatelyWeb.Api.Wrappers.DocsAndFiles.HubScope
 
   inputs do
+    field? :resource_hub_id, :id, null: true
     field? :space_id, :id, null: true
     field? :project_id, :id, null: true
     field? :goal_id, :id, null: true
@@ -17,6 +22,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.Search do
   end
 
   outputs do
+    field :resource_hub_id, :id, null: false
     field :nodes, list_of(:resource_hub_node), null: false
   end
 
@@ -24,9 +30,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.Search do
     with {:ok, me} <- find_me(conn),
          {:ok, internal_inputs} <- HubScope.to_resource_hub_inputs(me, inputs) do
       ResourceHubSearch.call(conn, internal_inputs)
-    else
-      {:error, :bad_request} -> {:error, :bad_request}
-      {:error, :not_found} -> {:error, :not_found}
+      |> HubScope.with_resolved_hub(internal_inputs.resource_hub_id)
     end
   end
 end

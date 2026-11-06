@@ -1804,6 +1804,12 @@ defmodule OperatelyWeb.Api.Types do
     field? :url, :string, null: true
   end
 
+  object :resource_hub_summary, for: Operately.ResourceHubs.Summary do
+    field :id, :id
+    field :name, :string
+    field :is_default, :boolean
+  end
+
   object :resource_hub, for: Operately.ResourceHubs.ResourceHub do
     field :id, :string, null: false
     field :name, :string, null: false

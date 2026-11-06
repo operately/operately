@@ -17,7 +17,8 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     ResourceFileNameNormalizer,
     RichTextRewriter,
     RowDeserializer,
-    TranslationPlan
+    TranslationPlan,
+    DefaultResourceHubs
   }
 
   alias Operately.CompanyTransfers.Import.Relational.RowWriter
@@ -50,6 +51,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
 
     package =
       package
+      |> DefaultResourceHubs.normalize()
       |> ResourceFileNameNormalizer.normalize()
       |> PolymorphicRowPruner.prune()
       |> PackageOrder.reorder_for_insert(schema)

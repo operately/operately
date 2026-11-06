@@ -8,6 +8,7 @@ defmodule Operately.Groups.Group do
 
   schema "groups" do
     belongs_to :company, Operately.Companies.Company
+    belongs_to :default_resource_hub, Operately.ResourceHubs.ResourceHub
 
     has_many :memberships, Operately.Groups.Member, foreign_key: :group_id
     has_many :members, through: [:memberships, :person]

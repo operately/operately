@@ -44,6 +44,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateLink do
       input_schema:
         JsonSchema.object(
           %{
+            "resource_hub_id" => JsonSchema.string("Explicit hub identifier. Without it or a folder, space_id selects the default resource hub."),
             "space_id" => JsonSchema.string("The parent space identifier."),
             "project_id" => JsonSchema.string("The parent project identifier."),
             "goal_id" => JsonSchema.string("The parent goal identifier."),
@@ -66,8 +67,11 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateLink do
         ),
       output_schema:
         JsonSchema.object(
-          %{"link" => JsonSchema.any_object("The created link.")},
-          required: ["link"]
+          %{
+            "resource_hub_id" => JsonSchema.string("The resolved resource hub identifier."),
+            "link" => JsonSchema.any_object("The created link.")
+          },
+          required: ["resource_hub_id", "link"]
         )
     )
   end
