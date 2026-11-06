@@ -21,6 +21,15 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.SearchTest do
     ctx
   end
 
+  test "space search stays on the default while explicit hub search is isolated", ctx do
+    ctx = ctx |> Factory.add_resource_hub(:other_hub, :space, :creator)
+      |> Factory.add_document(:other_document, :other_hub, name: "Other search result", content: RichText.rich_text("Scoped search evidence"))
+    index_document(ctx.other_document)
+
+    assert_document_found(ctx, %{space_id: Paths.space_id(ctx.space)}, ctx.space_document)
+    assert_document_found(ctx, %{resource_hub_id: Paths.resource_hub_id(ctx.other_hub)}, ctx.other_document)
+  end
+
   test "searches by space_id", ctx do
     assert_document_found(ctx, %{space_id: Paths.space_id(ctx.space)}, ctx.space_document)
   end

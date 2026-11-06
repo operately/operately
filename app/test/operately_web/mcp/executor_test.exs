@@ -22,6 +22,12 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
     def call(_conn, _arguments), do: {:error, :bad_request}
   end
 
+  defmodule DetailedBadRequestTool do
+    def call(_conn, _arguments) do
+      {:error, :bad_request, "Choose a hub", %{code: "default_resource_hub_unavailable", candidates: [%{id: "hub_123"}]}}
+    end
+  end
+
   defmodule NotFoundTool do
     def call(_conn, _arguments), do: {:error, :not_found}
   end
@@ -48,6 +54,15 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
          ]
        }}
     end
+  end
+
+  test "preserves structured retry details in both error representations", %{conn: conn} do
+    definition = Definition.new!(name: "detailed_error", implementation: DetailedBadRequestTool, input_schema: %{"type" => "object", "properties" => %{}})
+    assert {:ok, result} = Executor.execute(conn, definition, %{})
+    assert result["isError"]
+    assert result["structuredContent"]["details"]["code"] == "default_resource_hub_unavailable"
+    assert [%{"text" => text}] = result["content"]
+    assert Jason.decode!(text) == result["structuredContent"]
   end
 
   test "serializes nested dates and times consistently in both MCP output representations", %{conn: conn} do

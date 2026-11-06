@@ -7,12 +7,8 @@ defmodule Operately.ResourceHubsFixtures do
   alias Operately.Support.RichText
 
   def default_resource_hub_for_space(space) do
-    from(h in ResourceHub,
-      where: h.space_id == ^space.id,
-      order_by: [asc: h.inserted_at],
-      limit: 1
-    )
-    |> Repo.one!()
+    space = Repo.get!(Operately.Groups.Group, space.id)
+    Repo.get!(ResourceHub, space.default_resource_hub_id)
   end
 
   def default_resource_hub_for_project(project) do

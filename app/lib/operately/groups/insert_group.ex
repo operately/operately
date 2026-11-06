@@ -84,5 +84,8 @@ defmodule Operately.Groups.InsertGroup do
         name: "Documents & Files",
       })
     end)
+    |> Multi.update(:group_with_default_hub, fn %{group: group, resource_hub: hub} ->
+      Ecto.Changeset.change(group, default_resource_hub_id: hub.id)
+    end)
   end
 end

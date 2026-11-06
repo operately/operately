@@ -3213,6 +3213,7 @@
   "This removes the item from the company feed. The underlying project, goal, task, or document will not be deleted.": "This removes the item from the company feed. The underlying project, goal, task, or document will not be deleted.",
   "This replaces the current title and content with the selected version. Later versions will stay in the history.": "This replaces the current title and content with the selected version. Later versions will stay in the history.",
   "This request is no longer active. Review your current email or request a new code.": "This request is no longer active. Review your current email or request a new code.",
+  "This space has no available default resource hub. Retry with resource_hub_id from the available hubs.": "This space has no available default resource hub. Retry with resource_hub_id from the available hubs.",
   "This space is visible only to members of the {{spaceName}} space.": "This space is visible only to members of the {{spaceName}} space.",
   "This space is visible to anyone on the internet who has the link.": "This space is visible to anyone on the internet who has the link.",
   "This starts a background job that adds missing entries and refreshes newer canonical records.": "This starts a background job that adds missing entries and refreshes newer canonical records.",
