@@ -1127,6 +1127,7 @@ export interface ActivityContentSpaceTaskCommented {
 
 export interface ActivityContentTaskAdding {
   __typename: "activity_content_task_adding";
+  boardId?: Id | null;
   space: Space;
   project: Project | null;
   milestone: Milestone | null;
@@ -1215,6 +1216,8 @@ export interface ActivityContentTaskMilestoneUpdating {
 
 export interface ActivityContentTaskMoving {
   __typename: "activity_content_task_moving";
+  originBoardId?: Id | null;
+  destinationBoardId?: Id | null;
   task: Task | null;
   taskName: string;
   originType: TaskType;
@@ -2663,6 +2666,7 @@ export interface ReviewAssignmentOrigin {
 }
 
 export interface SearchNavigationTarget {
+  boardId?: Id | null;
   resourceHubId?: string | null;
   folderId?: string | null;
   documentId?: string | null;
@@ -2793,6 +2797,7 @@ export interface Target {
 
 export interface Task {
   __typename: "task";
+  boardId?: Id | null;
   id: string;
   url?: string;
   name: string;
@@ -2817,6 +2822,15 @@ export interface Task {
   subscriptionList?: SubscriptionList | null;
   availableStatuses?: TaskStatus[] | null;
   type: TaskType;
+}
+
+export interface TaskBoardSummary {
+  __typename: "task_board_summary";
+  id: Id;
+  name: string;
+  position: number;
+  isDefault: boolean;
+  archivedAt: string | null;
 }
 
 export interface TaskReminder {
@@ -3305,12 +3319,12 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
+  | "goal_check_in"
   | "project_retrospective"
+  | "kpi"
   | "project_discussion"
   | "goal_discussion"
-  | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"
@@ -3364,6 +3378,8 @@ export type SubscriptionParentType =
   | "kpi";
 
 export type SuccessStatus = "achieved" | "missed";
+
+export type TaskBoardArchiveStatus = "active" | "archived" | "all";
 
 export type TaskReminderType = "before_due" | "due_day" | "overdue" | "on_date";
 
@@ -4401,6 +4417,7 @@ export interface SpacesListMembersResult {
 
 export interface SpacesListTasksInput {
   spaceId: Id;
+  boardId?: Id | null;
 }
 
 export interface SpacesListTasksResult {
@@ -4463,6 +4480,15 @@ export interface TasksListResult {
   tasks: Task[];
 }
 
+export interface TasksListBoardsInput {
+  spaceId: Id;
+  archiveStatus?: TaskBoardArchiveStatus;
+}
+
+export interface TasksListBoardsResult {
+  boards: TaskBoardSummary[];
+}
+
 export interface TasksListPotentialAssigneesInput {
   id: Id;
   type: TaskType;
@@ -4475,10 +4501,12 @@ export interface TasksListPotentialAssigneesResult {
 }
 
 export interface TasksListTaskStatusesInput {
-  taskId: Id;
+  taskId?: Id | null;
+  boardId?: Id | null;
 }
 
 export interface TasksListTaskStatusesResult {
+  boardId: Id | null;
   taskStatuses: TaskStatus[];
 }
 
@@ -6792,12 +6820,14 @@ export interface SpacesUpdateDiscussionResult {
 
 export interface SpacesUpdateKanbanInput {
   spaceId: Id;
+  boardId?: Id | null;
   taskId: Id;
   status: TaskStatus;
   kanbanState: Json;
 }
 
 export interface SpacesUpdateKanbanResult {
+  boardId: Id;
   task: Task;
 }
 
@@ -6821,11 +6851,13 @@ export interface SpacesUpdatePermissionsResult {
 
 export interface SpacesUpdateTaskStatusesInput {
   spaceId: Id;
+  boardId?: Id | null;
   taskStatuses: TaskStatus[];
   deletedStatusReplacements?: DeletedStatusReplacement[] | null;
 }
 
 export interface SpacesUpdateTaskStatusesResult {
+  boardId: Id;
   success: boolean;
 }
 
@@ -6842,6 +6874,7 @@ export interface SpacesUpdateToolsResult {
 export interface TasksCreateInput {
   type: TaskType;
   id: Id;
+  boardId?: Id | null;
   milestoneId?: Id | null;
   name: string;
   assigneeId?: Id | null;
@@ -6871,9 +6904,12 @@ export interface TasksMoveInput {
   taskId: Id;
   destinationType: TaskType;
   destinationId: Id;
+  destinationBoardId?: Id | null;
+  destinationStatusId?: string | null;
 }
 
 export interface TasksMoveResult {
+  boardId: Id | null;
   task: Task;
   destinationType: TaskType;
   destinationId: Id;
@@ -10875,6 +10911,21 @@ export default {
     listQuery: (input: TasksListInput) =>
       queryClient.query({
         ...buildApiQueryOptions<TasksListInput, TasksListResult>(defaultApiClient, "/tasks/list", input),
+        staleTime: Infinity,
+      }),
+
+    listBoardsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/tasks/list_boards"),
+    listBoardsQueryKey: (input: TasksListBoardsInput) =>
+      buildApiQueryKey(defaultApiClient, "/tasks/list_boards", input),
+    listBoardsQueryOptions: (input: TasksListBoardsInput) =>
+      buildApiQueryOptions<TasksListBoardsInput, TasksListBoardsResult>(defaultApiClient, "/tasks/list_boards", input),
+    listBoardsQuery: (input: TasksListBoardsInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<TasksListBoardsInput, TasksListBoardsResult>(
+          defaultApiClient,
+          "/tasks/list_boards",
+          input,
+        ),
         staleTime: Infinity,
       }),
 

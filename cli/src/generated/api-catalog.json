@@ -418,12 +418,12 @@
         "goal",
         "milestone",
         "document",
-        "kpi",
         "project_check_in",
+        "goal_check_in",
         "project_retrospective",
+        "kpi",
         "project_discussion",
         "goal_discussion",
-        "goal_check_in",
         "space_discussion",
         "comment",
         "person",
@@ -447,6 +447,11 @@
       ],
       "inline_thread_resource_type": [
         "resource_hub_document"
+      ],
+      "task_board_archive_status": [
+        "active",
+        "archived",
+        "all"
       ]
     },
     "int_enums": {
@@ -3717,6 +3722,17 @@
             },
             "optional": false,
             "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
             "has_default": false
           },
           {
@@ -9007,6 +9023,17 @@
           },
           {
             "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "id",
             "type": {
               "name": "string",
@@ -11807,6 +11834,17 @@
       },
       "search_navigation_target": {
         "fields": [
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
           {
             "default": null,
             "name": "resource_hub_id",
@@ -17508,6 +17546,28 @@
             },
             "optional": false,
             "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "origin_board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "destination_board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
             "has_default": false
           },
           {
@@ -24624,6 +24684,76 @@
             "has_default": false
           }
         ]
+      },
+      "task_board_summary": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "position",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "is_default",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "archived_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          }
+        ]
       }
     }
   },
@@ -24645,7 +24775,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 260,
+  "endpoint_count": 261,
   "endpoints": [
     {
       "name": "create",
@@ -40379,12 +40509,23 @@
           "optional": false,
           "nullable": false,
           "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
         }
       ],
       "full_name": "spaces/list_tasks",
       "method": "GET",
       "namespace": "spaces",
-      "docstring": "Lists tasks in a space."
+      "docstring": "Lists tasks across all boards in a space. Supply board_id to filter to one board."
     },
     {
       "name": "list_tools",
@@ -40851,6 +40992,17 @@
       "outputs": [
         {
           "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
           "name": "success",
           "type": {
             "name": "boolean",
@@ -40871,6 +41023,17 @@
           },
           "optional": false,
           "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
           "has_default": false
         },
         {
@@ -40905,7 +41068,7 @@
       "full_name": "spaces/update_task_statuses",
       "method": "POST",
       "namespace": "spaces",
-      "docstring": "Updates task statuses for a space."
+      "docstring": "Updates task statuses on the selected board, or the space’s default board when board_id is omitted."
     },
     {
       "name": "update_tools",
@@ -41030,6 +41193,17 @@
         },
         {
           "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
           "name": "milestone_id",
           "type": {
             "name": "id",
@@ -41112,7 +41286,7 @@
       "full_name": "tasks/create",
       "method": "POST",
       "namespace": "tasks",
-      "docstring": "Creates a new task in a project or space."
+      "docstring": "Creates a task in a project or space. Space requests use the persisted default board unless board_id selects another board in that space."
     },
     {
       "name": "delete",
@@ -41358,6 +41532,56 @@
       "docstring": "Lists all tasks for a project."
     },
     {
+      "name": "list_boards",
+      "type": "query",
+      "path": "/api/external/v1/tasks/list_boards",
+      "handler": "OperatelyWeb.Api.Tasks.ListBoards",
+      "outputs": [
+        {
+          "default": null,
+          "name": "boards",
+          "type": {
+            "item": {
+              "name": "task_board_summary",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "archive_status",
+          "type": {
+            "name": "task_board_archive_status",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/list_boards",
+      "method": "GET",
+      "namespace": "tasks",
+      "docstring": "Lists accessible task boards in saved order without loading their tasks."
+    },
+    {
       "name": "list_potential_assignees",
       "type": "query",
       "path": "/api/external/v1/tasks/list_potential_assignees",
@@ -41440,6 +41664,17 @@
       "outputs": [
         {
           "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
           "name": "task_statuses",
           "type": {
             "item": {
@@ -41461,15 +41696,26 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": false,
-          "nullable": false,
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
           "has_default": false
         }
       ],
       "full_name": "tasks/list_task_statuses",
       "method": "GET",
       "namespace": "tasks",
-      "docstring": "Lists the task statuses available for one task's project or space scope."
+      "docstring": "Lists statuses for a task or a board, including empty boards. Supply task_id or board_id; if both are supplied they must match."
     },
     {
       "name": "move",
@@ -41477,6 +41723,17 @@
       "path": "/api/external/v1/tasks/move",
       "handler": "OperatelyWeb.Api.Tasks.Move",
       "outputs": [
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "task",
@@ -41544,12 +41801,34 @@
           "optional": false,
           "nullable": false,
           "has_default": false
+        },
+        {
+          "default": null,
+          "name": "destination_board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "destination_status_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
         }
       ],
       "full_name": "tasks/move",
       "method": "POST",
       "namespace": "tasks",
-      "docstring": "Moves a task from one project or space to another."
+      "docstring": "Moves a task to a project or space. Space destinations use the default board unless destination_board_id is supplied.\nExplicit board moves require destination_status_id when no equivalent status exists."
     },
     {
       "name": "update_archive",
@@ -42094,7 +42373,7 @@
       "docstring": "Updates the status of a task."
     }
   ],
-  "query_count": 78,
+  "query_count": 79,
   "mutation_count": 182,
   "schema_version": 1
 }

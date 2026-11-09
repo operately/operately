@@ -82,7 +82,7 @@ defmodule OperatelyWeb.Api.Spaces do
 
   defmodule UpdateKanban do
     @moduledoc """
-    Updates the kanban state and status of a task in a space.
+    Updates ordering and task status on the selected board, or the space’s default board when board_id is omitted.
     """
 
     use TurboConnect.Mutation
@@ -90,12 +90,14 @@ defmodule OperatelyWeb.Api.Spaces do
 
     inputs do
       field :space_id, :id, null: false
+      field? :board_id, :id, null: true
       field :task_id, :id, null: false
       field :status, :task_status, null: false
       field :kanban_state, :json, null: false
     end
 
     outputs do
+      field :board_id, :id, null: false
       field :task, :task, null: false
     end
 
@@ -105,11 +107,12 @@ defmodule OperatelyWeb.Api.Spaces do
       |> Steps.find_space(inputs.space_id)
       |> Steps.find_task(inputs.task_id)
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.find_board(inputs[:board_id])
       |> Steps.update_space_kanban_state(inputs.status, inputs.kanban_state)
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
-        %{task: Serializer.serialize(changes.updated_task_with_preloads, level: :full)}
+        %{task: Serializer.serialize(changes.updated_task_with_preloads, level: :full), board_id: Operately.ShortUuid.encode!(changes.board.id)}
       end)
     end
   end
@@ -193,7 +196,7 @@ defmodule OperatelyWeb.Api.Spaces do
 
   defmodule ListTasks do
     @moduledoc """
-    Lists tasks in a space.
+    Lists tasks across all boards in a space. Supply board_id to filter to one board.
     """
 
     use TurboConnect.Query
@@ -201,6 +204,7 @@ defmodule OperatelyWeb.Api.Spaces do
 
     inputs do
       field :space_id, :id, null: false
+      field? :board_id, :id, null: true
     end
 
     outputs do
@@ -212,7 +216,7 @@ defmodule OperatelyWeb.Api.Spaces do
       |> Steps.start_transaction()
       |> Steps.find_space(inputs.space_id)
       |> Steps.check_permissions(:can_view)
-      |> Steps.get_tasks()
+      |> Steps.get_tasks(inputs[:board_id])
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{tasks: Serializer.serialize(changes.tasks, level: :full)}
@@ -222,7 +226,7 @@ defmodule OperatelyWeb.Api.Spaces do
 
   defmodule UpdateTaskStatuses do
     @moduledoc """
-    Updates task statuses for a space.
+    Updates task statuses on the selected board, or the space’s default board when board_id is omitted.
     """
 
     use TurboConnect.Mutation
@@ -230,11 +234,13 @@ defmodule OperatelyWeb.Api.Spaces do
 
     inputs do
       field :space_id, :id, null: false
+      field? :board_id, :id, null: true
       field :task_statuses, list_of(:task_status), null: false
       field? :deleted_status_replacements, list_of(:deleted_status_replacement), null: true
     end
 
     outputs do
+      field :board_id, :id, null: false
       field :success, :boolean, null: false
     end
 
@@ -245,13 +251,13 @@ defmodule OperatelyWeb.Api.Spaces do
       |> Steps.start_transaction()
       |> Steps.find_space(inputs.space_id)
       |> Steps.check_permissions(:can_edit)
-      |> Steps.find_default_board()
+      |> Steps.find_board(inputs[:board_id])
       |> Steps.validate_status_replacements(inputs.task_statuses, replacements)
       |> Steps.require_status_replacements(inputs.task_statuses, replacements)
       |> Steps.update_task_statuses(inputs.task_statuses)
       |> Steps.replace_deleted_task_statuses(replacements)
       |> Steps.commit()
-      |> Steps.respond(fn _ -> %{success: true} end)
+      |> Steps.respond(fn changes -> %{success: true, board_id: Operately.ShortUuid.encode!(changes.board.id)} end)
     end
   end
 
@@ -323,18 +329,17 @@ defmodule OperatelyWeb.Api.Spaces do
       end)
     end
 
-    def find_default_board(multi) do
-      Multi.run(multi, :board, fn _repo, %{space: space} ->
-        with {:ok, board} <- Operately.Tasks.TaskBoard.default_for_space(space),
-             {:ok, boards} <- Operately.Tasks.BoardSync.lock_boards([board.id]) do
-          {:ok, Map.fetch!(boards, board.id)}
+    def find_board(multi, board_id) do
+      Multi.run(multi, :board, fn _repo, %{me: me, space: space} ->
+        with {:ok, board} <- OperatelyWeb.Api.Tasks.BoardScope.resolve(me, space, board_id) do
+          OperatelyWeb.Api.Tasks.BoardScope.lock(board)
         end
       end)
     end
 
     def update_space_kanban_state(multi, status, kanban_state) do
-      Multi.merge(multi, fn %{me: me, space: space, task: task} ->
-        Operately.Operations.KanbanStateUpdating.run(me, %{type: :space, space: space}, task, status, kanban_state)
+      Multi.merge(multi, fn %{me: me, space: space, task: task, board: board} ->
+        Operately.Operations.KanbanStateUpdating.run(me, %{type: :space, space: space, board: board}, task, status, kanban_state)
       end)
     end
 
@@ -461,17 +466,18 @@ defmodule OperatelyWeb.Api.Spaces do
       |> Operately.Search.IndexUpdates.enqueue(:search_tasks_with_replaced_status, "task", fn changes -> changes.replace_task_statuses end)
     end
 
-    def get_tasks(multi) do
-      Multi.run(multi, :tasks, fn _repo, %{space: space} ->
-        tasks =
-          from(t in Operately.Tasks.Task,
-            where: t.space_id == ^space.id,
-            preload: [:assigned_people, subscription_list: [subscriptions: :person]]
-          )
-          |> Repo.all()
-          |> Operately.Tasks.Task.load_comments_count()
+    def get_tasks(multi, board_id) do
+      multi
+      |> Multi.run(:selected_board, fn _repo, %{me: me, space: space} ->
+        if board_id, do: OperatelyWeb.Api.Tasks.BoardScope.resolve(me, space, board_id), else: {:ok, nil}
+      end)
+      |> Multi.run(:tasks, fn _repo, %{space: space, selected_board: board} ->
+        query = from(t in Operately.Tasks.Task,
+          where: t.space_id == ^space.id,
+          preload: [:assigned_people, subscription_list: [subscriptions: :person]])
+        query = if board, do: from(t in query, where: t.board_id == ^board.id), else: query
 
-        {:ok, tasks}
+        {:ok, query |> Repo.all() |> Operately.Tasks.Task.load_comments_count()}
       end)
     end
 
@@ -494,6 +500,9 @@ defmodule OperatelyWeb.Api.Spaces do
 
     defp handle_error(reason) do
       case reason do
+        {:error, _step, {:bad_request, message, details}, _changes} ->
+          {:error, :bad_request, message, details}
+
         {:error, _failed_operation, {:bad_request, message}, _changes} ->
           {:error, :bad_request, message}
 

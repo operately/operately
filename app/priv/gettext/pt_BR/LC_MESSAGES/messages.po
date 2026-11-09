@@ -6597,7 +6597,7 @@ msgstr "Pelo menos 12 caracteres"
 #: lib/operately_web/api/project_templates/helpers.ex:13
 #: lib/operately_web/api/project_templates/helpers.ex:25
 #: lib/operately_web/api/projects.ex:793
-#: lib/operately_web/api/spaces.ex:364
+#: lib/operately_web/api/spaces.ex:379
 msgid "At least one task status is required"
 msgstr "É necessário pelo menos um status de tarefa"
 
@@ -7678,6 +7678,11 @@ msgstr "Escolha uma cadência"
 msgid "Choose a date"
 msgstr "Escolha uma data"
 
+#.elixir
+#: lib/operately_web/api/tasks/move.ex:84
+msgid "Choose a destination status and retry with destination_status_id."
+msgstr "Escolha um status de destino e tente novamente com destination_status_id."
+
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:39
 msgid "Choose a new plan for this company."
@@ -8144,7 +8149,7 @@ msgstr "As empresas precisam atender a todos os critérios de atividade para apa
 #.elixir
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:255
-#: lib/operately/md/space.ex:19
+#: lib/operately/md/space.ex:23
 #: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:150
 msgid "Company"
 msgstr "Empresa"
@@ -9068,7 +9073,7 @@ msgstr "Criar, atualizar, excluir e arquivar conteúdo do ambiente de trabalho"
 #: lib/operately/md/goal.ex:31
 #: lib/operately/md/milestone.ex:23
 #: lib/operately/md/project.ex:46
-#: lib/operately/md/space.ex:22
+#: lib/operately/md/space.ex:26
 #: lib/operately/md/task.ex:28
 msgid "Created"
 msgstr "Criado"
@@ -10857,7 +10862,7 @@ msgstr "Esc"
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:55
 #: lib/operately_web/api/projects.ex:1278
-#: lib/operately_web/api/spaces.ex:513
+#: lib/operately_web/api/spaces.ex:530
 msgid "Every deleted task status in use requires a replacement"
 msgstr "Cada status de tarefa em uso que for excluído precisa de um substituto"
 
@@ -12033,7 +12038,7 @@ msgid "General Access"
 msgstr "Acesso geral"
 
 #.elixir
-#: lib/operately/md/space.ex:80
+#: lib/operately/md/space.ex:84
 msgid "General Space"
 msgstr "Espaço geral"
 
@@ -12639,7 +12644,7 @@ msgid "Invalid float: %{value}"
 msgstr "Número decimal inválido: %{value}"
 
 #.elixir
-#: lib/operately_web/api/resource_hubs/update_parent_folder.ex:69
+#: lib/operately_web/api/resource_hubs/update_parent_folder.ex:70
 msgid "Invalid folder move"
 msgstr "Movimentação de pasta inválida"
 
@@ -12704,8 +12709,8 @@ msgid "Invalid profile update"
 msgstr "Atualização de perfil inválida"
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:757
-#: lib/operately_web/api/tasks.ex:763
+#: lib/operately_web/api/tasks.ex:785
+#: lib/operately_web/api/tasks.ex:791
 msgid "Invalid reminders"
 msgstr "Lembretes inválidos"
 
@@ -12727,14 +12732,17 @@ msgid "Invalid site message parameters"
 msgstr "Parâmetros de mensagem do site inválidos"
 
 #.elixir
-#: lib/operately/operations/kanban_state_updating.ex:57
-#: lib/operately/operations/kanban_state_updating.ex:69
-#: lib/operately_web/api/tasks.ex:1128
+#: lib/operately/operations/kanban_state_updating.ex:89
+#: lib/operately/operations/kanban_state_updating.ex:101
+#: lib/operately_web/api/spaces.ex:521
+#: lib/operately_web/api/tasks.ex:760
+#: lib/operately_web/api/tasks.ex:1164
+#: lib/operately_web/api/tasks.ex:1171
 msgid "Invalid status"
 msgstr "Status inválido"
 
 #.elixir
-#: lib/operately/operations/kanban_state_updating.ex:185
+#: lib/operately/operations/kanban_state_updating.ex:218
 msgid "Invalid status %{status}"
 msgstr "Status inválido %{status}"
 
@@ -12760,7 +12768,7 @@ msgid "Invalid token"
 msgstr "Token inválido"
 
 #.elixir
-#: lib/operately_web/api/spaces.ex:507
+#: lib/operately_web/api/spaces.ex:524
 msgid "Invalid tools"
 msgstr "Ferramentas inválidas"
 
@@ -13196,7 +13204,7 @@ msgstr "Última atividade"
 #: lib/operately/md/goal.ex:32
 #: lib/operately/md/milestone.ex:24
 #: lib/operately/md/project.ex:47
-#: lib/operately/md/space.ex:23
+#: lib/operately/md/space.ex:27
 #: lib/operately/md/task.ex:29
 msgid "Last Updated"
 msgstr "Última atualização"
@@ -13838,9 +13846,9 @@ msgstr "Valor do limite de membros"
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:48
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:132
-#: lib/operately/md/space.ex:21
-#: lib/operately/md/space.ex:46
-#: lib/operately/md/space.ex:54
+#: lib/operately/md/space.ex:25
+#: lib/operately/md/space.ex:50
+#: lib/operately/md/space.ex:58
 msgid "Members"
 msgstr "Membros"
 
@@ -13901,8 +13909,8 @@ msgstr "Marco não é %{name}"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:55
-#: lib/operately_web/api/tasks.ex:912
-#: lib/operately_web/api/tasks.ex:932
+#: lib/operately_web/api/tasks.ex:941
+#: lib/operately_web/api/tasks.ex:961
 msgid "Milestone must belong to the same project as the task"
 msgstr "O marco deve pertencer ao mesmo projeto que a tarefa"
 
@@ -13933,7 +13941,7 @@ msgstr "Marco não excluído"
 #: lib/operately_web/api/projects.ex:647
 #: lib/operately_web/api/projects.ex:662
 #: lib/operately_web/api/projects/milestones.ex:291
-#: lib/operately_web/api/tasks.ex:685
+#: lib/operately_web/api/tasks.ex:691
 msgid "Milestone not found"
 msgstr "Marco não encontrado"
 
@@ -14013,8 +14021,8 @@ msgid "Missing values appear as placeholders. Targets without a baseline or targ
 msgstr "Valores ausentes aparecem como campos não preenchidos. Metas sem valor inicial ou valor da meta são omitidas."
 
 #.elixir
-#: lib/operately/md/space.ex:31
-#: lib/operately/md/space.ex:37
+#: lib/operately/md/space.ex:35
+#: lib/operately/md/space.ex:41
 msgid "Mission"
 msgstr "Missão"
 
@@ -14845,7 +14853,7 @@ msgid "No matching templates."
 msgstr "Nenhum template encontrado."
 
 #.elixir
-#: lib/operately/md/space.ex:48
+#: lib/operately/md/space.ex:52
 msgid "No members listed."
 msgstr "Nenhum membro listado."
 
@@ -14880,7 +14888,7 @@ msgid "No milestones yet"
 msgstr "Nenhum marco ainda"
 
 #.elixir
-#: lib/operately/md/space.ex:33
+#: lib/operately/md/space.ex:37
 msgid "No mission provided."
 msgstr "Nenhuma missão informada."
 
@@ -15132,8 +15140,8 @@ msgstr "Nenhum trabalho para mostrar."
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:218
 #: lib/operately/md/milestone.ex:105
 #: lib/operately/md/milestone.ex:108
-#: lib/operately/md/space.ex:89
-#: lib/operately/md/space.ex:92
+#: lib/operately/md/space.ex:93
+#: lib/operately/md/space.ex:96
 #: lib/operately/md/task.ex:149
 #: lib/operately/md/task.ex:152
 msgid "None"
@@ -16813,9 +16821,9 @@ msgstr "O nome do projeto não pode ficar em branco"
 #: lib/operately_web/api/projects.ex:688
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:282
-#: lib/operately_web/api/tasks.ex:637
-#: lib/operately_web/api/tasks.ex:676
-#: lib/operately_web/api/tasks.ex:691
+#: lib/operately_web/api/tasks.ex:643
+#: lib/operately_web/api/tasks.ex:682
+#: lib/operately_web/api/tasks.ex:697
 msgid "Project not found"
 msgstr "Projeto não encontrado"
 
@@ -17674,7 +17682,7 @@ msgstr "Substituto"
 
 #.elixir
 #: lib/operately_web/api/projects.ex:831
-#: lib/operately_web/api/spaces.ex:408
+#: lib/operately_web/api/spaces.ex:423
 msgid "Replacement statuses must be existing statuses that are not being deleted"
 msgstr "Os status substitutos devem existir e não podem estar sendo excluídos"
 
@@ -19431,7 +19439,7 @@ msgstr "Varredura da fonte"
 #: lib/operately/md/goal.ex:30
 #: lib/operately/md/milestone.ex:21
 #: lib/operately/md/project.ex:328
-#: lib/operately/md/space.ex:81
+#: lib/operately/md/space.ex:85
 #: lib/operately/md/task.ex:24
 #: lib/operately/md/workmap.ex:102
 #: lib/operately_email/templates.ex:32
@@ -19510,7 +19518,7 @@ msgid "Space members will have full access."
 msgstr "Os membros do espaço terão acesso total."
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:646
+#: lib/operately_web/api/tasks.ex:652
 msgid "Space not found"
 msgstr "Espaço não encontrado"
 
@@ -20091,7 +20099,7 @@ msgid "Task \"%{taskName}\" was updated with new assignees"
 msgstr "A tarefa \"%{taskName}\" foi atualizada com novos responsáveis"
 
 #.elixir
-#: lib/operately/md/space.ex:64
+#: lib/operately/md/space.ex:68
 msgid "Task Statuses"
 msgstr "Status das tarefas"
 
@@ -20152,9 +20160,9 @@ msgstr "Tarefa não excluída"
 #: lib/operately_web/api/projects.ex:617
 #: lib/operately_web/api/projects.ex:632
 #: lib/operately_web/api/projects/milestones.ex:303
-#: lib/operately_web/api/spaces.ex:314
-#: lib/operately_web/api/tasks.ex:658
-#: lib/operately_web/api/tasks.ex:670
+#: lib/operately_web/api/spaces.ex:321
+#: lib/operately_web/api/tasks.ex:664
+#: lib/operately_web/api/tasks.ex:676
 msgid "Task not found"
 msgstr "Tarefa não encontrada"
 
@@ -21677,6 +21685,11 @@ msgstr "Esta solicitação não está mais ativa. Confira seu e-mail atual ou so
 msgid "This space has no available default resource hub. Retry with resource_hub_id from the available hubs."
 msgstr "Este espaço não tem um repositório de recursos padrão disponível. Tente novamente com o resource_hub_id de um dos repositórios disponíveis."
 
+#.elixir
+#: lib/operately_web/api/tasks/board_scope.ex:25
+msgid "This space has no available default task board. Retry with board_id from the available boards."
+msgstr "Este espaço não tem um quadro de tarefas padrão disponível. Tente novamente com o board_id de um dos quadros disponíveis."
+
 #.frontend
 #: ../turboui/src/PrivacyIndicator/index.tsx:76
 msgid "This space is visible only to members of the %{spaceName} space."
@@ -21712,6 +21725,12 @@ msgstr "Este status não pode ser excluído. O quadro Kanban deve ter pelo menos
 #: ee/assets/js/admin_api/staleClient.ts:23
 msgid "This tab is out of date. Reloading to get the latest version..."
 msgstr "Esta aba está desatualizada. Recarregando para obter a versão mais recente..."
+
+#.elixir
+#: lib/operately_web/api/tasks/board_scope.ex:47
+#: lib/operately_web/api/tasks/move.ex:88
+msgid "This task board is archived. Restore it before making changes."
+msgstr "Este quadro de tarefas está arquivado. Restaure-o antes de fazer alterações."
 
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:500
@@ -22092,7 +22111,7 @@ msgstr "Ative ou desative recursos experimentais para esta empresa."
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:116
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:30
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:162
-#: lib/operately/md/space.ex:20
+#: lib/operately/md/space.ex:24
 #: lib/operately/md/task.ex:18
 msgid "Type"
 msgstr "Tipo"
@@ -22280,7 +22299,7 @@ msgstr "A unidade é obrigatória"
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:407
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:21
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:166
-#: lib/operately/md/space.ex:79
+#: lib/operately/md/space.ex:83
 #: lib/operately/md/task.ex:93
 #: lib/operately/md/task.ex:124
 #: lib/operately/md/task.ex:131

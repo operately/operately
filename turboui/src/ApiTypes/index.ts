@@ -1031,6 +1031,7 @@ export interface ActivityContentSpaceTaskCommented {
 
 export interface ActivityContentTaskAdding {
   __typename: "activity_content_task_adding";
+  boardId?: Id | null;
   space: Space;
   project: Project | null;
   milestone: Milestone | null;
@@ -1119,6 +1120,8 @@ export interface ActivityContentTaskMilestoneUpdating {
 
 export interface ActivityContentTaskMoving {
   __typename: "activity_content_task_moving";
+  originBoardId?: Id | null;
+  destinationBoardId?: Id | null;
   task: Task | null;
   taskName: string;
   originType: TaskType;
@@ -2567,6 +2570,7 @@ export interface ReviewAssignmentOrigin {
 }
 
 export interface SearchNavigationTarget {
+  boardId?: Id | null;
   resourceHubId?: string | null;
   folderId?: string | null;
   documentId?: string | null;
@@ -2697,6 +2701,7 @@ export interface Target {
 
 export interface Task {
   __typename: "task";
+  boardId?: Id | null;
   id: string;
   url?: string;
   name: string;
@@ -2721,6 +2726,15 @@ export interface Task {
   subscriptionList?: SubscriptionList | null;
   availableStatuses?: TaskStatus[] | null;
   type: TaskType;
+}
+
+export interface TaskBoardSummary {
+  __typename: "task_board_summary";
+  id: Id;
+  name: string;
+  position: number;
+  isDefault: boolean;
+  archivedAt: string | null;
 }
 
 export interface TaskReminder {
@@ -3209,12 +3223,12 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
+  | "goal_check_in"
   | "project_retrospective"
+  | "kpi"
   | "project_discussion"
   | "goal_discussion"
-  | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"
@@ -3268,6 +3282,8 @@ export type SubscriptionParentType =
   | "kpi";
 
 export type SuccessStatus = "achieved" | "missed";
+
+export type TaskBoardArchiveStatus = "active" | "archived" | "all";
 
 export type TaskReminderType = "before_due" | "due_day" | "overdue" | "on_date";
 

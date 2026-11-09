@@ -38,7 +38,14 @@ defmodule Operately.Search.CompanyQuery do
     person.company_id
     |> candidate_query(person.id, normalized_query, filters)
     |> Repo.all()
+    |> attach_task_boards()
     |> ResultBuilder.build()
+  end
+
+  defp attach_task_boards(candidates) do
+    task_ids = for candidate <- candidates, candidate.source_type == :task, do: candidate.source_id
+    boards = if task_ids == [], do: %{}, else: Map.new(Repo.all(from t in Operately.Tasks.Task, where: t.id in ^task_ids, select: {t.id, t.board_id}))
+    Enum.map(candidates, &Map.put(&1, :board_id, boards[&1.source_id]))
   end
 
   defp candidate_query(company_id, person_id, query, filters) do
