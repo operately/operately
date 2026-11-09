@@ -23,6 +23,7 @@ defmodule Operately.Tasks.Task do
           milestone_id: Ecto.UUID.t() | nil,
           project_id: Ecto.UUID.t() | nil,
           space_id: Ecto.UUID.t() | nil,
+          board_id: Ecto.UUID.t() | nil,
           permissions: map() | nil,
           comments_count: integer() | nil,
           available_statuses: list() | nil,
@@ -35,6 +36,7 @@ defmodule Operately.Tasks.Task do
     belongs_to :milestone, Operately.Projects.Milestone
     belongs_to :project, Operately.Projects.Project
     belongs_to :space, Operately.Groups.Group
+    belongs_to :board, Operately.Tasks.TaskBoard
     belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
     has_one :project_space, through: [:project, :group]

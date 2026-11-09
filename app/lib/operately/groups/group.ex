@@ -9,6 +9,7 @@ defmodule Operately.Groups.Group do
   schema "groups" do
     belongs_to :company, Operately.Companies.Company
     belongs_to :default_resource_hub, Operately.ResourceHubs.ResourceHub
+    belongs_to :default_task_board, Operately.Tasks.TaskBoard
 
     has_many :memberships, Operately.Groups.Member, foreign_key: :group_id
     has_many :members, through: [:memberships, :person]
@@ -18,6 +19,7 @@ defmodule Operately.Groups.Group do
     field :mission, :string
 
     has_many :tasks, Operately.Tasks.Task, foreign_key: :space_id
+    has_many :task_boards, Operately.Tasks.TaskBoard, foreign_key: :space_id
     embeds_one :tools, Operately.Groups.SpaceTools, on_replace: :delete
     embeds_many :task_statuses, Operately.Tasks.Status, on_replace: :delete
     field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()

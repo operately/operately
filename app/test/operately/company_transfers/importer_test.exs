@@ -92,6 +92,46 @@ defmodule Operately.CompanyTransfers.ImporterTest do
            }
   end
 
+  test "run/1 preserves board ownership, defaults, statuses, and remapped task ordering", ctx do
+    alias Operately.Groups.Group
+    alias Operately.Tasks.{Task, TaskBoard}
+
+    ctx = ctx |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space)
+    board =
+      Repo.insert!(%TaskBoard{
+        space_id: ctx.space.id,
+        name: "Team board",
+        position: 3,
+        task_statuses: ctx.space.task_statuses,
+        tasks_kanban_state: %{"pending" => [WebPaths.task_id(ctx.task)]}
+      })
+    ctx.space |> change(default_task_board_id: board.id) |> Repo.update!()
+    ctx.task |> change(board_id: board.id) |> Repo.update!()
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               boards = Enum.find(package["tables"], &(&1["name"] == "task_boards"))
+               assert Enum.map(boards["rows"], & &1["id"]) == [board.id]
+               package
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    space = Repo.get_by!(Group, company_id: completed_run.company_id, name: ctx.space.name)
+    imported_board = Repo.get_by!(TaskBoard, space_id: space.id, name: board.name)
+    task = Repo.get_by!(Task, space_id: space.id, name: ctx.task.name)
+
+    assert imported_board.id != board.id
+    assert space.id != ctx.space.id
+    assert task.id != ctx.task.id
+    assert space.default_task_board_id == imported_board.id
+    assert task.board_id == imported_board.id
+    assert imported_board.position == board.position
+    assert imported_board.task_statuses == board.task_statuses
+    assert imported_board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(task)]}
+  end
+
   test "run/1 round-trips the core project template graph and provenance", ctx do
     ctx =
       ctx
