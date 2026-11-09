@@ -24,20 +24,15 @@ defmodule Operately.Tasks.TaskBoardTest do
     assert Enum.map(Repo.preload(space, :task_boards).task_boards, & &1.id) == [ctx.board.id]
   end
 
-  test "rejects a task board owned by another space", ctx do
-    ctx = Factory.add_space(ctx, :other_space)
-    board = Repo.insert!(%TaskBoard{space_id: ctx.other_space.id, name: "Other"})
-
+  test "rejects a task reference to a missing board", ctx do
     assert_raise Ecto.ConstraintError, ~r/tasks_board_id_fkey/, fn ->
-      ctx.task |> change(board_id: board.id) |> Repo.update!()
+      ctx.task |> change(board_id: Ecto.UUID.generate()) |> Repo.update!()
     end
   end
 
-  test "rejects a default board owned by another company", ctx do
-    other = Factory.setup(%{}) |> Factory.add_space(:space)
-
+  test "rejects a default reference to a missing board", ctx do
     assert_raise Ecto.ConstraintError, ~r/groups_default_task_board_id_fkey/, fn ->
-      other.space |> change(default_task_board_id: ctx.board.id) |> Repo.update!()
+      ctx.space |> change(default_task_board_id: Ecto.UUID.generate()) |> Repo.update!()
     end
   end
 

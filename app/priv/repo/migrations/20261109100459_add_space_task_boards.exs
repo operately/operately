@@ -14,15 +14,9 @@ defmodule Operately.Repo.Migrations.AddSpaceTaskBoards do
     end
 
     create index(:task_boards, [:space_id, :position])
-    create unique_index(:task_boards, [:id, :space_id])
 
     alter table(:tasks) do
-      add :board_id,
-          references(:task_boards,
-            type: :binary_id,
-            with: [space_id: :space_id],
-            on_delete: :nothing
-          )
+      add :board_id, references(:task_boards, type: :binary_id, on_delete: :nothing)
     end
 
     create index(:tasks, [:board_id])
@@ -33,7 +27,7 @@ defmodule Operately.Repo.Migrations.AddSpaceTaskBoards do
 
     alter table(:groups) do
       add :default_task_board_id,
-          references(:task_boards, type: :binary_id, with: [id: :space_id], on_delete: :nothing)
+          references(:task_boards, type: :binary_id, on_delete: :nothing)
     end
 
     create index(:groups, [:default_task_board_id])

@@ -75,7 +75,7 @@ Verify permissions, company isolation, empty/nonempty deletion, concurrent conte
 
 ### PR 3 — Board schema preparation ✅
 
-- Add the board table, nullable task/default references, and ownership constraints without changing runtime behavior.
+- Add the board table and nullable task/default references using ordinary foreign keys, without changing runtime behavior. Matching-space ownership is validated by operations, not composite foreign keys.
 - Prepare an idempotent data migration using migration-local schemas. Do not enable additional boards yet.
 - Cover preservation of status IDs, ordering, task IDs, and spaces with disabled tools in migration tests.
 
@@ -83,6 +83,7 @@ Verify permissions, company isolation, empty/nonempty deletion, concurrent conte
 
 - Run the backfill and switch readers/writers together under a deployment write pause so concurrent legacy writes cannot be lost. Verify every space task has a board before enabling writes.
 - Update creation, statuses, ordering synchronization, task moves, archives, serializers, and space creation to use boards. Retain legacy API projections and URL adapters.
+- Validate that assigned boards and defaults belong to the destination space before writing references.
 - Add explicit board selection and discovery to API/MCP/CLI; preserve all-space task listings. Continue exposing one board per space in the UI.
 - Update activity/navigation context, search, and company export/import so board ownership survives links and data transfers. Audit the corresponding hub metadata added in PRs 1–2.
 - Verify existing single-board flows and old clients, plus board isolation, status mapping, and task-specific links using multiple-board fixtures.

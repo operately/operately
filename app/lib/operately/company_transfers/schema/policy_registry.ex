@@ -211,6 +211,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "resource_nodes",
     "targets",
     "task_assignees",
+    "task_boards",
     "tasks"
   ]
 
