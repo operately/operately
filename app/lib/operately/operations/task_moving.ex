@@ -1,7 +1,7 @@
 defmodule Operately.Operations.TaskMoving do
   alias Ecto.Multi
   alias Operately.Repo
-  alias Operately.Tasks.Task
+  alias Operately.Tasks.{Task, TaskBoard}
   alias Operately.Groups.Group
   alias Operately.Projects.Project
   alias Operately.Activities
@@ -28,32 +28,62 @@ defmodule Operately.Operations.TaskMoving do
   end
 
   defp persist_move(author, task, destination_type, destination) do
-    with {:ok, status, selection} <- destination_status(task, destination_type, destination) do
-      attrs = move_attrs(destination_type, destination) |> Map.merge(status_attrs(task, status, selection))
+    Multi.new()
+    |> Multi.run(:destination_board, fn _repo, _ ->
+      if destination_type == :space, do: Operately.Tasks.TaskBoard.default_for_space(destination), else: {:ok, nil}
+    end)
+    |> Multi.run(:boards, fn _repo, %{destination_board: board} ->
+      Operately.Tasks.BoardSync.lock_boards([task.board_id, board && board.id])
+    end)
+    |> Multi.run(:locked_task, fn _repo, %{boards: boards} ->
+      with {:ok, current} <- Operately.Tasks.BoardSync.lock_task(task, boards) do
+        {:ok, Repo.preload(current, [:space, project: :group])}
+      end
+    end)
+    |> Multi.run(:status, fn _repo, %{locked_task: current, destination_board: board, boards: boards} ->
+      status_scope = if board, do: Map.fetch!(boards, board.id), else: destination
 
-      Multi.new()
-      |> Multi.update(:task, Task.changeset(task, attrs))
-      |> IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.task.id end)
-      |> Activities.insert_sync(author.id, :task_moving, fn _ ->
-        activity_content(task, destination_type, destination)
-      end)
-      |> Repo.transaction()
-      |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result([task.project_id, destination_project_id(destination_type, destination)])
-      |> Repo.extract_result(:task)
-    end
+      with {:ok, status, selection} <- destination_status(current, destination_type, status_scope) do
+        {:ok, %{status: status, selection: selection}}
+      end
+    end)
+    |> Multi.run(:remove_from_board, fn _repo, %{locked_task: current, boards: boards} ->
+      Operately.Tasks.BoardSync.remove_task(boards[current.board_id], current)
+    end)
+    |> Multi.update(:task, fn %{locked_task: current, destination_board: board, status: status} ->
+      attrs =
+        move_attrs(destination_type, destination)
+        |> Map.put(:board_id, board && board.id)
+        |> Map.merge(status_attrs(current, status.status, status.selection))
+
+      Task.changeset(current, attrs)
+    end)
+    |> Multi.run(:add_to_board, fn _repo, %{task: updated, boards: boards} ->
+      Operately.Tasks.BoardSync.add_task(boards[updated.board_id], updated)
+    end)
+    |> Multi.run(:loaded_task, fn _repo, %{task: updated} ->
+      {:ok, Repo.preload(updated, [:space, project: :group], force: true)}
+    end)
+    |> IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.task.id end)
+    |> Activities.insert_sync(author.id, :task_moving, fn %{locked_task: current} ->
+      activity_content(current, destination_type, destination)
+    end)
+    |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result([task.project_id, destination_project_id(destination_type, destination)])
+    |> Repo.extract_result(:loaded_task)
   end
 
   defp destination_project_id(:project, destination), do: destination.id
   defp destination_project_id(:space, _destination), do: nil
 
-  defp destination_status(task = %Task{project_id: project_id}, :space, space = %Group{}) when not is_nil(project_id) do
+  defp destination_status(task = %Task{project_id: project_id}, :space, board = %TaskBoard{}) when not is_nil(project_id) do
     matching_status =
-      space.task_statuses
+      board.task_statuses
       |> List.wrap()
       |> Enum.find(&equivalent_status?(&1, task.task_status))
 
     case matching_status do
-      nil -> destination_default_status(:space, space) |> status_with_selection(:fallback)
+      nil -> destination_default_status(:space, board) |> status_with_selection(:fallback)
       status -> status_to_map(status) |> status_with_selection(:equivalent)
     end
   end
@@ -77,9 +107,9 @@ defmodule Operately.Operations.TaskMoving do
     |> status_to_map()
   end
 
-  defp destination_default_status(:space, space = %Group{}) do
-    space
-    |> Group.get_default_task_status()
+  defp destination_default_status(:space, board = %TaskBoard{}) do
+    board
+    |> TaskBoard.get_default_task_status()
     |> status_to_map()
   end
 

@@ -1,13 +1,13 @@
 defmodule Operately.Operations.TaskArchiveUpdating do
-  import Ecto.Query
   alias Ecto.Multi
   alias Operately.{Activities, Repo}
-  alias Operately.Tasks.Task
 
   def run(author, task, archived) do
     Multi.new()
-    |> Multi.run(:locked_task, fn repo, _ ->
-      {:ok, repo.one!(from t in Task, where: t.id == ^task.id, lock: "FOR UPDATE")}
+    |> Multi.run(:locked_task, fn _repo, _ ->
+      with {:ok, boards} <- Operately.Tasks.BoardSync.lock_boards([task.board_id]) do
+        Operately.Tasks.BoardSync.lock_task(task, boards)
+      end
     end)
     |> Multi.run(:task, fn repo, %{locked_task: current} ->
       cond do
@@ -43,7 +43,7 @@ defmodule Operately.Operations.TaskArchiveUpdating do
     |> Repo.transaction()
     |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(task.project_id)
     |> case do
-      {:ok, %{task: updated}} -> {:ok, updated}
+      {:ok, %{task: updated}} -> {:ok, Repo.preload(updated, [:space, :project])}
       {:error, _step, reason, _changes} -> {:error, reason}
     end
   end

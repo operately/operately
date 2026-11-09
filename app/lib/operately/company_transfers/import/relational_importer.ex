@@ -18,7 +18,8 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     RichTextRewriter,
     RowDeserializer,
     TranslationPlan,
-    DefaultResourceHubs
+    DefaultResourceHubs,
+    DefaultTaskBoards
   }
 
   alias Operately.CompanyTransfers.Import.Relational.RowWriter
@@ -52,11 +53,13 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     package =
       package
       |> DefaultResourceHubs.normalize()
+      |> DefaultTaskBoards.normalize()
       |> ResourceFileNameNormalizer.normalize()
       |> PolymorphicRowPruner.prune()
       |> PackageOrder.reorder_for_insert(schema)
 
-    with {:ok, account_resolution} <- AccountResolver.resolve(package),
+    with :ok <- DefaultTaskBoards.validate(package),
+         {:ok, account_resolution} <- AccountResolver.resolve(package),
          plan = TranslationPlan.build(package, account_resolution.mapping),
          {:ok, deferred_updates} <- insert_tables(package, schema, plan),
          :ok <- apply_deferred_updates(deferred_updates) do

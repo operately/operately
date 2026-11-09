@@ -40,9 +40,8 @@ defmodule Operately.Features.SpaceKanban.StatusesTest do
     statuses = Steps.single_status("Solo")
     status_params = Enum.map(statuses, &Map.from_struct/1)
 
-    {:ok, space} = Operately.Groups.update_group(ctx.space, %{task_statuses: status_params})
-
-    ctx = Map.put(ctx, :space, space)
+    board = Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id)
+    {:ok, _} = board |> Operately.Tasks.TaskBoard.changeset(%{task_statuses: status_params}) |> Repo.update()
     solo_value = hd(statuses).value
 
     ctx

@@ -1,7 +1,11 @@
 defmodule Operately.MD.Space do
   use Gettext, backend: OperatelyWeb.Gettext
   def render(space) do
-    space = Operately.Repo.preload(space, [:company, :members])
+    space = Operately.Repo.preload(space, [:company, :members, :default_task_board])
+    statuses = case space.default_task_board do
+      %{space_id: space_id, task_statuses: statuses} when space_id == space.id -> statuses || []
+      _ -> []
+    end
 
     """
     # #{space.name}
@@ -9,7 +13,7 @@ defmodule Operately.MD.Space do
     #{render_overview_info(space)}
     #{render_mission(space)}
     #{render_members(space.members)}
-    #{render_task_statuses(space.task_statuses || [])}
+    #{render_task_statuses(statuses)}
     """
     |> compact_empty_lines()
   end

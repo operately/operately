@@ -299,6 +299,7 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
 
   defp serialize_space(space) do
     space
+    |> Repo.preload(:default_task_board)
     |> Serializer.serialize(level: :full)
     |> Jason.encode!()
     |> Jason.decode!(keys: :atoms)
