@@ -158,7 +158,7 @@ defmodule Operately.Operations.CompanyAdding do
 
   defp insert_person(multi, attrs) do
     multi
-    |> Multi.run(:company_space, fn _, changes -> {:ok, changes.group_with_default_hub} end)
+    |> Multi.run(:company_space, fn _, changes -> {:ok, changes.group_with_default_board} end)
     |> Multi.run(:avatar_url, fn _, changes -> find_avatar_from_account(changes.account) end)
     |> Operately.People.insert_person(fn changes ->
       Person.changeset(%{

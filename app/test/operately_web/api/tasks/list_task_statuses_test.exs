@@ -100,18 +100,22 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
     test "returns statuses for a space task", ctx do
       add_person_to_space(ctx)
 
+      board = Repo.insert!(%Operately.Tasks.TaskBoard{
+        space_id: ctx.space.id,
+        name: "Other",
+        task_statuses: [%Operately.Tasks.Status{id: Ecto.UUID.generate(), value: "review", label: "Review", color: :blue, index: 0, closed: false}]
+      })
       task =
         task_fixture(%{
           creator_id: ctx.creator.id,
           space_id: ctx.space.id,
+          board_id: board.id,
           name: "Space Task"
         })
 
-      space = Repo.preload(task, :space).space
-
       assert {200, res} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(task)})
       assert length(res.task_statuses) > 0
-      assert_statuses_match(res.task_statuses, space.task_statuses)
+      assert_statuses_match(res.task_statuses, board.task_statuses)
     end
   end
 

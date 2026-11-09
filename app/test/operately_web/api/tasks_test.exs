@@ -20,6 +20,46 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     |> Factory.add_project_task(:task, :milestone)
   end
 
+  describe "board storage compatibility" do
+    setup ctx do
+      Factory.log_in_person(ctx, :creator)
+    end
+
+    test "space-only creation uses its persisted default after another board is added", ctx do
+      alias Operately.Tasks.TaskBoard
+      other = Repo.insert!(%TaskBoard{space_id: ctx.engineering.id, name: "Other", position: -1})
+      before = Repo.reload!(ctx.engineering)
+      assert {200, response} = mutation(ctx.conn, [:tasks, :create], %{type: "space", id: Paths.space_id(ctx.engineering), name: "Default task", due_date: nil})
+      {:ok, id} = OperatelyWeb.Api.Types.Id.decode(response.task.id)
+      task = Repo.get!(Operately.Tasks.Task, id)
+      assert task.board_id == before.default_task_board_id
+      assert Repo.reload!(other).tasks_kanban_state == %{}
+      assert Repo.reload!(ctx.engineering).tasks_kanban_state == before.tasks_kanban_state
+      board = Repo.get!(TaskBoard, task.board_id)
+      assert Paths.task_id(task) in board.tasks_kanban_state[task.task_status.value]
+    end
+
+    test "task-specific status changes and deletion synchronize only its own board", ctx do
+      alias Operately.Tasks.TaskBoard
+      board = Repo.insert!(%TaskBoard{space_id: ctx.engineering.id, name: "Other", task_statuses: ctx.engineering.task_statuses})
+      ctx = Factory.create_space_task(ctx, :board_task, :engineering, board_id: board.id)
+      default = Repo.get!(TaskBoard, ctx.engineering.default_task_board_id)
+      status = Enum.find(board.task_statuses, & &1.closed) |> Map.from_struct() |> Map.update!(:color, &to_string/1)
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_status], %{task_id: Paths.task_id(ctx.board_task), type: "space", status: status})
+      assert Repo.reload!(board).tasks_kanban_state[status.value] == [Paths.task_id(ctx.board_task)]
+      assert {200, _} = mutation(ctx.conn, [:tasks, :delete], %{task_id: Paths.task_id(ctx.board_task), type: "space"})
+      assert Repo.reload!(board).tasks_kanban_state |> Map.values() |> List.flatten() == []
+      assert Repo.reload!(default) == default
+    end
+
+    test "missing defaults reject creation without initializing a board", ctx do
+      ctx.engineering |> Ecto.Changeset.change(default_task_board_id: nil) |> Repo.update!()
+      count = Repo.aggregate(Operately.Tasks.TaskBoard, :count)
+      assert {400, _} = mutation(ctx.conn, [:tasks, :create], %{type: "space", id: Paths.space_id(ctx.engineering), name: "No destination", due_date: nil})
+      assert Repo.aggregate(Operately.Tasks.TaskBoard, :count) == count
+    end
+  end
+
   describe "assignee company boundaries" do
     setup ctx do
       ctx
@@ -1003,7 +1043,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       space_before = Operately.Groups.get_group!(ctx.engineering.id)
-      kanban_state_before = space_before.tasks_kanban_state
+      kanban_state_before = Repo.get!(Operately.Tasks.TaskBoard, space_before.default_task_board_id).tasks_kanban_state
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         id: Paths.space_id(ctx.engineering),
@@ -1018,7 +1058,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert res.updated_space.id == Paths.space_id(ctx.engineering)
 
       space_after = Operately.Groups.get_group!(ctx.engineering.id)
-      kanban_state_after = space_after.tasks_kanban_state
+      kanban_state_after = Repo.get!(Operately.Tasks.TaskBoard, space_after.default_task_board_id).tasks_kanban_state
 
       refute kanban_state_before == kanban_state_after
       assert Map.has_key?(kanban_state_after, "pending")
@@ -1199,7 +1239,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.space_task),
-        status: @done_status,
+        status: Enum.find(ctx.engineering.task_statuses, & &1.closed) |> Map.from_struct() |> Map.update!(:color, &to_string/1),
         type: "space"
       })
 

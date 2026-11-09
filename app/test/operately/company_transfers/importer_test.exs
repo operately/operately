@@ -111,7 +111,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert {:ok, import_run} =
              export_and_stage_import(ctx, fn package ->
                boards = Enum.find(package["tables"], &(&1["name"] == "task_boards"))
-               assert Enum.map(boards["rows"], & &1["id"]) == [board.id]
+               assert board.id in Enum.map(boards["rows"], & &1["id"])
                package
              end)
 
@@ -130,6 +130,34 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert imported_board.position == board.position
     assert imported_board.task_statuses == board.task_statuses
     assert imported_board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(task)]}
+  end
+
+  test "run/1 initializes board ownership and ordering for older packages", ctx do
+    alias Operately.Groups.Group
+    alias Operately.Tasks.{Task, TaskBoard}
+    ctx = ctx |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space)
+    ordering = %{"pending" => [WebPaths.task_id(ctx.task)]}
+    ctx.space |> change(tasks_kanban_state: ordering) |> Repo.update!()
+
+    assert {:ok, import_run} = export_and_stage_import(ctx, fn package ->
+      tables = package["tables"] |> Enum.reject(&(&1["name"] == "task_boards")) |> Enum.map(fn table ->
+        case table["name"] do
+          "groups" -> Map.update!(table, "rows", &Enum.map(&1, fn row -> Map.delete(row, "default_task_board_id") end))
+          "tasks" -> Map.update!(table, "rows", &Enum.map(&1, fn row -> Map.delete(row, "board_id") end))
+          _ -> table
+        end
+      end)
+      Map.put(package, "tables", tables)
+    end)
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed} = Importer.run(import_run)
+    space = Repo.get_by!(Group, company_id: completed.company_id, name: ctx.space.name)
+    task = Repo.get_by!(Task, space_id: space.id, name: ctx.task.name)
+    board = Repo.get!(TaskBoard, space.default_task_board_id)
+    assert task.board_id == board.id
+    assert board.task_statuses == ctx.space.task_statuses
+    assert board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(task)]}
+    assert board.inserted_at == ctx.space.inserted_at
   end
 
   test "run/1 round-trips the core project template graph and provenance", ctx do

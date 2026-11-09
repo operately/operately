@@ -57,7 +57,7 @@ defmodule OperatelyWeb.Api.Spaces.GetDiscussion do
       include_author: :author,
       include_reactions: [reactions: :person],
       include_space: :space,
-      include_space_members: [space: [:members, :company]],
+      include_space_members: [space: [:members, :company, :default_task_board]],
       include_subscriptions_list: :subscription_list,
       include_potential_subscribers: [:access_context, space: :members],
     ])

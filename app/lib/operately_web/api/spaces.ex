@@ -245,6 +245,7 @@ defmodule OperatelyWeb.Api.Spaces do
       |> Steps.start_transaction()
       |> Steps.find_space(inputs.space_id)
       |> Steps.check_permissions(:can_edit)
+      |> Steps.find_default_board()
       |> Steps.validate_status_replacements(inputs.task_statuses, replacements)
       |> Steps.require_status_replacements(inputs.task_statuses, replacements)
       |> Steps.update_task_statuses(inputs.task_statuses)
@@ -322,6 +323,15 @@ defmodule OperatelyWeb.Api.Spaces do
       end)
     end
 
+    def find_default_board(multi) do
+      Multi.run(multi, :board, fn _repo, %{space: space} ->
+        with {:ok, board} <- Operately.Tasks.TaskBoard.default_for_space(space),
+             {:ok, boards} <- Operately.Tasks.BoardSync.lock_boards([board.id]) do
+          {:ok, Map.fetch!(boards, board.id)}
+        end
+      end)
+    end
+
     def update_space_kanban_state(multi, status, kanban_state) do
       Multi.merge(multi, fn %{me: me, space: space, task: task} ->
         Operately.Operations.KanbanStateUpdating.run(me, %{type: :space, space: space}, task, status, kanban_state)
@@ -365,8 +375,8 @@ defmodule OperatelyWeb.Api.Spaces do
           end)
 
         _ ->
-          Multi.update(multi, :updated_space, fn %{space: space} ->
-            Space.changeset(space, %{task_statuses: task_statuses})
+          Multi.update(multi, :updated_board, fn %{board: board} ->
+            Operately.Tasks.TaskBoard.changeset(board, %{task_statuses: task_statuses})
           end)
       end
     end
@@ -378,8 +388,8 @@ defmodule OperatelyWeb.Api.Spaces do
     end
 
     def require_status_replacements(multi, task_statuses, replacements) do
-      Multi.run(multi, :require_status_replacements, fn _repo, %{space: space} ->
-        if Operately.Tasks.Status.replacement_required?(space, task_statuses, replacements) do
+      Multi.run(multi, :require_status_replacements, fn _repo, %{board: board} ->
+        if Operately.Tasks.Status.replacement_required?(board, task_statuses, replacements) do
           {:error, :replacement_required}
         else
           {:ok, :valid}
@@ -414,7 +424,7 @@ defmodule OperatelyWeb.Api.Spaces do
 
     def replace_deleted_task_statuses(multi, replacements) do
       Multi.run(multi, :replace_task_statuses, fn _repo, changes ->
-        space = Map.get(changes, :updated_space, changes.space)
+        board = changes.updated_board
         replacement_map =
           Map.new(replacements, fn r -> {r.deleted_status_id, r.replacement_status_id} end)
 
@@ -422,37 +432,30 @@ defmodule OperatelyWeb.Api.Spaces do
 
         tasks =
           from(t in Operately.Tasks.Task,
-            where: t.space_id == ^space.id,
+            where: t.board_id == ^board.id,
+            order_by: t.id,
+            lock: "FOR UPDATE",
             where: fragment("?->>'id' = ANY(?)", t.task_status, ^deleted_status_ids)
           )
           |> Repo.all()
 
-        new_statuses_by_id = Map.new(space.task_statuses, fn s -> {s.id, s} end)
+        new_statuses_by_id = Map.new(board.task_statuses, fn s -> {s.id, s} end)
 
-        results =
-          Enum.map(tasks, fn task ->
-            old_status_id = task.task_status.id
-            new_status_id = Map.get(replacement_map, old_status_id)
-            new_status = Map.get(new_statuses_by_id, new_status_id)
+        Enum.reduce_while(tasks, {:ok, board}, fn task, {:ok, board} ->
+          replacement_id = Map.fetch!(replacement_map, task.task_status.id)
+          status = Map.fetch!(new_statuses_by_id, replacement_id)
+          attrs = Operately.Tasks.Task.status_change_attrs(task, status)
 
-            if new_status do
-              task
-              |> Operately.Tasks.Task.changeset(%{task_status: Map.from_struct(new_status)})
-              |> Repo.update()
-            else
-              {:ok, task}
-            end
-          end)
-
-        errors = Enum.filter(results, fn
-          {:error, _} -> true
-          _ -> false
+          with {:ok, updated} <- task |> Operately.Tasks.Task.changeset(attrs) |> Repo.update(),
+               {:ok, board} <- Operately.Tasks.BoardSync.add_task(board, updated) do
+            {:cont, {:ok, board}}
+          else
+            error -> {:halt, error}
+          end
         end)
-
-        if Enum.empty?(errors) do
-          {:ok, Enum.map(tasks, & &1.id)}
-        else
-          List.first(errors)
+        |> case do
+          {:ok, _board} -> {:ok, Enum.map(tasks, & &1.id)}
+          error -> error
         end
       end)
       |> Operately.Search.IndexUpdates.enqueue(:search_tasks_with_replaced_status, "task", fn changes -> changes.replace_task_statuses end)
@@ -502,6 +505,12 @@ defmodule OperatelyWeb.Api.Spaces do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
+
+        {:error, _failed_operation, :bad_request, _changes} ->
+          {:error, :bad_request}
+
+        {:error, :updated_board, %Ecto.Changeset{}, _changes} ->
+          {:error, :bad_request, gettext("Invalid status")}
 
         {:error, :updated_space, %Ecto.Changeset{}, _changes} ->
           {:error, :bad_request, gettext("Invalid tools")}

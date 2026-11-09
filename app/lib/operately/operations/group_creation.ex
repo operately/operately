@@ -17,7 +17,7 @@ defmodule Operately.Operations.GroupCreation do
     |> insert_creator(creator)
     |> insert_activity(creator)
     |> Repo.transaction()
-    |> Repo.extract_result(:group_with_default_hub)
+    |> Repo.extract_result(:group_with_default_board)
   end
 
   defp insert_creator(multi, creator) do

@@ -130,16 +130,13 @@ defmodule Operately.GroupsTest do
         }
       ]
 
-      assert {:ok, %Group{} = group_with_custom_statuses} =
-               Groups.update_group(ctx.group, %{task_statuses: custom_statuses})
-
-      assert Enum.map(group_with_custom_statuses.task_statuses, & &1.id) == ["custom_todo"]
-
-      assert {:ok, %Group{} = updated_group} =
-               Groups.update_group(group_with_custom_statuses, %{name: "some updated name"})
-
+      board = Repo.get!(Operately.Tasks.TaskBoard, ctx.group.default_task_board_id)
+      {:ok, board} = board |> Operately.Tasks.TaskBoard.changeset(%{task_statuses: custom_statuses}) |> Repo.update()
+      assert {:ok, %Group{} = updated_group} = Groups.update_group(ctx.group, %{name: "some updated name", task_statuses: []})
       assert updated_group.name == "some updated name"
-      assert Enum.map(updated_group.task_statuses, & &1.id) == ["custom_todo"]
+      assert Repo.reload!(board).task_statuses == board.task_statuses
+      assert updated_group.task_statuses == ctx.group.task_statuses
+
     end
 
     test "update_group/2 can update tools settings", ctx do

@@ -9,7 +9,7 @@ Related issue: [#5587 — Support multiple kanban boards per space](https://gith
 ## Current State
 
 - Resource hubs have persisted defaults, explicit selection, discovery, ordering, and management APIs. API, MCP, and CLI support creating, renaming, and deleting empty non-default hubs; reordering is internal-only.
-- A space's task statuses and kanban ordering live on `Groups.Group`. Tasks reference the space directly; no board entity exists.
+- Space task statuses and ordering live on `TaskBoard`; space tasks reference their board and space. Legacy space responses project the default board. Explicit board selection and discovery remain in PR 4B.
 - Space Tools configuration exposes category toggles, not instance management.
 
 ## Scope and Experience
@@ -79,14 +79,24 @@ Verify permissions, company isolation, empty/nonempty deletion, concurrent conte
 - Prepare an idempotent data migration using migration-local schemas. Do not enable additional boards yet.
 - Cover preservation of status IDs, ordering, task IDs, and spaces with disabled tools in migration tests.
 
-### PR 4 — Move existing space task behavior onto boards
+### PR 4A — Move existing task flows onto boards ✅
 
-- Run the backfill and switch readers/writers together under a deployment write pause so concurrent legacy writes cannot be lost. Verify every space task has a board before enabling writes.
-- Update creation, statuses, ordering synchronization, task moves, archives, serializers, and space creation to use boards. Retain legacy API projections and URL adapters.
-- Validate that assigned boards and defaults belong to the destination space before writing references.
-- Add explicit board selection and discovery to API/MCP/CLI; preserve all-space task listings. Continue exposing one board per space in the UI.
-- Update activity/navigation context, search, and company export/import so board ownership survives links and data transfers. Audit the corresponding hub metadata added in PRs 1–2.
-- Verify existing single-board flows and old clients, plus board isolation, status mapping, and task-specific links using multiple-board fixtures.
+- Invoke the prepared backfill and validate every space default and space-task board reference during the coordinated deployment.
+- Create default boards transactionally with spaces. Use boards for task creation, statuses, ordering, moves, deletion, and task-specific status reads; preserve task archive behavior.
+- Lock affected boards in ID order before tasks, recheck task ownership, and synchronize task/order changes atomically. Legacy status/order mutations affect only the default board.
+- Preserve legacy response fields and all-space listings. Retain group status/order columns temporarily until PR 7, without runtime updates. Preserve activity, search, and existing task links.
+- Preserve board ownership and ordering through exports/imports; initialize older packages before remapping IDs. Verify isolation, concurrent writers, old clients, and single-board UI flows.
+
+Deployment: stop all application writers and background workers before running migrations with the new release. The migration runs `Change121` and rejects missing or mismatched defaults/task boards. Start only the new release after validation succeeds; do not use a rolling deployment with legacy writers. For the single-host updater, stop the app before `operately update`, which otherwise migrates while the old app is running.
+
+Rollback: the data migration's `down` preserves boards. Once new writes have occurred, reverting to legacy code requires a write pause and reconciliation of current default-board statuses/order back into group fields. An application rollback alone is unsafe.
+
+### PR 4B — Explicit board selection and agent discovery
+
+- Add board selectors and lightweight discovery to API/MCP/CLI, resolved board IDs in responses, and optional filtering while preserving all-space listings.
+- Add structured unavailable-default errors with accessible choices and retry guidance; PR 4A rejects missing defaults without guessing.
+- Add explicit board move destinations and status mapping. Extend activity/navigation context and search results for board-specific links; preserve legacy URL adapters.
+- Keep the UI on one board per space until management and the combined redesign are ready. Verify multiple-board fixtures and agent compatibility; regenerate affected clients/catalogs.
 
 ### PR 5 — Board instance management APIs
 
@@ -103,5 +113,12 @@ Verify permissions, company isolation, empty/nonempty deletion, concurrent conte
 - Reuse TurboUI controls, forms, menus, and confirmations; use generated TanStack queries/mutations. Invalidate configuration, cards, discovery, and affected content after mutations.
 - Apply Resource Hub terminology consistently across management, drafts, and rename dialogs. Include translations and regenerated resources with the redesign.
 - Verify two-board/two-hub workflows, archive/restore, defaults, disabled categories, and old links in feature tests.
+
+### PR 7 — Remove legacy space task storage (upcoming)
+
+- Initialize statuses and ordering directly on the default board during space creation. Remove the corresponding initialization and compatibility helpers from `Group`.
+- After the board cutover is deployed and no runtime code depends on the old fields, remove `Group.task_statuses` and `Group.tasks_kanban_state` and drop their database columns in a new migration.
+- Keep legacy API response fields as projections of the default board. Continue reading old package fields during import normalization, converting them to board data before inserting rows.
+- Verify new-space creation, upgrades and fresh installs, older-package imports, export/import round trips, and legacy API responses. Document that rollback to legacy writers requires restoring and repopulating the removed columns.
 
 For every API contract PR, regenerate clients and the CLI catalog, update MCP schemas/examples/catalog tests, run `make test.cli.catalog.sync`, and extend backward-compatibility coverage. Preserve one-instance behavior throughout rollout.

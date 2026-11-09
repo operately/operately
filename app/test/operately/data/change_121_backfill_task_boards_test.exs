@@ -17,6 +17,7 @@ defmodule Operately.Data.Change121BackfillTaskBoardsTest do
     timestamps = [inserted_at: ~N[2020-01-01 00:00:00], updated_at: ~N[2021-01-01 00:00:00]]
     from(s in Change.Space, where: s.id == ^ctx.space.id) |> Repo.update_all(set: timestamps ++ [task_statuses: statuses, tasks_kanban_state: ordering])
     from(t in Task, where: t.space_id == ^ctx.space.id) |> Repo.update_all(set: timestamps)
+    remove_runtime_boards()
     space_before = Repo.get!(Change.Space, ctx.space.id)
     tasks_before = Repo.all(from t in Task, where: t.space_id == ^ctx.space.id)
 
@@ -50,6 +51,7 @@ defmodule Operately.Data.Change121BackfillTaskBoardsTest do
       |> Factory.add_project_milestone(:milestone, :project)
       |> Factory.add_project_task(:project_task, :milestone)
 
+    remove_runtime_boards()
     Repo.soft_delete!(ctx.deleted_space)
     project_task = Repo.reload!(ctx.project_task)
 
@@ -71,6 +73,7 @@ defmodule Operately.Data.Change121BackfillTaskBoardsTest do
     other = Repo.insert!(%TaskBoard{space_id: ctx.space.id, name: "Other", position: 1})
     ctx.space |> change(default_task_board_id: default.id) |> Repo.update!()
     ctx.assigned |> change(board_id: other.id) |> Repo.update!()
+    ctx.unassigned |> change(board_id: nil) |> Repo.update!()
 
     Change.run()
     boards = Repo.all(TaskBoard)
@@ -87,6 +90,7 @@ defmodule Operately.Data.Change121BackfillTaskBoardsTest do
   end
 
   test "preserves null legacy statuses and ordering", ctx do
+    remove_runtime_boards()
     from(s in Change.Space, where: s.id == ^ctx.space.id) |> Repo.update_all(set: [task_statuses: nil, tasks_kanban_state: nil])
 
     Change.run()
@@ -95,5 +99,35 @@ defmodule Operately.Data.Change121BackfillTaskBoardsTest do
     board = Repo.get!(Change.Board, space.default_task_board_id)
     assert board.task_statuses == nil
     assert board.tasks_kanban_state == nil
+  end
+
+  test "validation rejects cross-space defaults and task assignments", ctx do
+    ctx = ctx |> Factory.add_space(:other) |> Factory.create_space_task(:task, :space)
+    ctx.space |> change(default_task_board_id: ctx.other.default_task_board_id) |> Repo.update!()
+    assert_raise RuntimeError, ~r/invalid default or task board ownership/, fn -> Change.validate!() end
+    Repo.reload!(ctx.space) |> change(default_task_board_id: ctx.space.default_task_board_id) |> Repo.update!()
+    ctx.task |> change(board_id: ctx.other.default_task_board_id) |> Repo.update!()
+    assert_raise RuntimeError, ~r/invalid default or task board ownership/, fn -> Change.validate!() end
+  end
+
+  test "rolls back the entire backfill when validation fails", ctx do
+    ctx = ctx |> Factory.add_space(:other) |> Factory.create_space_task(:task, :space)
+    remove_runtime_boards()
+    board = Repo.insert!(%TaskBoard{space_id: ctx.other.id, name: "Other space's board"})
+    ctx.space |> change(default_task_board_id: board.id) |> Repo.update!()
+
+    snapshots = for schema <- [Change.Space, Change.Board, Change.Task], do: {schema, Repo.all(from r in schema, order_by: r.id)}
+
+    assert_raise RuntimeError, ~r/invalid default or task board ownership/, fn -> Change.run() end
+
+    for {schema, records} <- snapshots do
+      assert Repo.all(from r in schema, order_by: r.id) == records
+    end
+  end
+
+  defp remove_runtime_boards do
+    Repo.update_all(Task, set: [board_id: nil])
+    Repo.update_all(Change.Space, set: [default_task_board_id: nil])
+    Repo.delete_all(TaskBoard)
   end
 end
