@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.Create do
     Definition.new!(
       name: "create_task",
       title: "Create Task",
-      description: "Creates a new task in exactly one project or one space.",
+      description: "Creates a task in one project or space. Space requests use the default board unless board_id selects another board in that space.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,
@@ -26,6 +26,7 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.Create do
           %{
             "project_id" => JsonSchema.string("The project where the task should be created."),
             "space_id" => JsonSchema.string("The space where the task should be created."),
+            "board_id" => JsonSchema.string("Optional board identifier within the selected space. Omit to use its default board."),
             "milestone_id" => JsonSchema.string("An optional milestone identifier for project tasks."),
             "name" => JsonSchema.string("The task name."),
             "assignee_id" => JsonSchema.string("An optional assignee person identifier."),
@@ -45,6 +46,7 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.Create do
   @impl true
   def call(conn, arguments) do
     with {:ok, type, parent_id} <- decode_parent(arguments),
+         {:ok, board_id} <- Helpers.decode_optional_id(arguments["board_id"]),
          {:ok, milestone_id} <- decode_milestone(arguments, type),
          {:ok, assignee_id} <- Helpers.decode_optional_id(arguments["assignee_id"]),
          {:ok, description} <- decode_optional_description(arguments["description"]),
@@ -53,6 +55,7 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.Create do
         type: type,
         id: parent_id,
         milestone_id: milestone_id,
+        board_id: board_id,
         name: arguments["name"],
         assignee_id: assignee_id,
         description: description,

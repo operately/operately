@@ -63,6 +63,7 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
              goal_id: nil,
              milestone_id: nil,
              task_id: nil,
+             board_id: nil,
              person_id: nil,
              discussion_id: nil,
              project_check_in_id: nil,

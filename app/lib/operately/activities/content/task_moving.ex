@@ -2,6 +2,9 @@ defmodule Operately.Activities.Content.TaskMoving do
   use Operately.Activities.Content
 
   embedded_schema do
+    belongs_to :origin_board, Operately.Tasks.TaskBoard
+    belongs_to :destination_board, Operately.Tasks.TaskBoard
+
     belongs_to :company, Operately.Companies.Company
     belongs_to :task, Operately.Tasks.Task
 

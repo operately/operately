@@ -518,6 +518,69 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
     end
   end
 
+  describe "explicit board destinations" do
+    setup ctx do
+      ctx = ctx |> Factory.setup() |> Factory.add_space(:board_space) |> Factory.set_space_tools(:board_space, tasks_enabled: true) |> Factory.create_space_task(:board_task, :board_space) |> Factory.log_in_person(:creator)
+      board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.board_space.id, name: "Other", task_statuses: ctx.board_space.task_statuses})
+      Map.put(ctx, :board, board)
+    end
+
+    test "moves within a space and updates both boards and activity context", ctx do
+      assert {200, response} = mutation(ctx.conn, [:tasks, :move], %{
+        task_id: Paths.task_id(ctx.board_task), destination_type: "space", destination_id: Paths.space_id(ctx.board_space), destination_board_id: ctx.board.id
+      })
+      assert response.board_id == Operately.ShortUuid.encode!(ctx.board.id)
+      task = Repo.reload!(ctx.board_task)
+      assert task.board_id == ctx.board.id
+      source = Repo.get!(Operately.Tasks.TaskBoard, ctx.board_space.default_task_board_id)
+      refute Paths.task_id(task) in List.flatten(Map.values(source.tasks_kanban_state))
+      assert Paths.task_id(task) in List.flatten(Map.values(Repo.reload!(ctx.board).tasks_kanban_state))
+      activity = Repo.one!(from a in Activity, where: a.action == "task_moving" and a.content["task_id"] == ^task.id)
+      assert activity.content["origin_board_id"] == source.id
+      assert activity.content["destination_board_id"] == ctx.board.id
+    end
+
+    test "updates completion when a matching status ID has a different closed state", ctx do
+      status = ctx.board_task.task_status |> Map.from_struct() |> Map.put(:closed, true)
+      ctx.board |> Operately.Tasks.TaskBoard.changeset(%{task_statuses: [status]}) |> Repo.update!()
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :move], %{
+        task_id: Paths.task_id(ctx.board_task),
+        destination_type: "space",
+        destination_id: Paths.space_id(ctx.board_space),
+        destination_board_id: ctx.board.id
+      })
+
+      task = Repo.reload!(ctx.board_task)
+      assert task.task_status.closed
+      assert task.closed_at
+    end
+
+    test "requires a mapping for incompatible statuses and rolls back before retry", ctx do
+      status = %{id: "review", value: "review", label: "Review", color: :blue, index: 0, closed: false}
+      ctx.board |> Operately.Tasks.TaskBoard.changeset(%{task_statuses: [status]}) |> Repo.update!()
+      inputs = %{task_id: Paths.task_id(ctx.board_task), destination_type: "space", destination_id: Paths.space_id(ctx.board_space), destination_board_id: ctx.board.id}
+      source = Repo.get!(Operately.Tasks.TaskBoard, ctx.board_space.default_task_board_id)
+      assert {400, response} = mutation(ctx.conn, [:tasks, :move], inputs)
+      assert response.details.code == "task_board_status_mapping_required"
+      assert [%{id: "review"}] = response.details.task_statuses
+      assert Repo.reload!(ctx.board_task).board_id == source.id
+      assert Repo.reload!(source).tasks_kanban_state == source.tasks_kanban_state
+      assert {200, response} = mutation(ctx.conn, [:tasks, :move], Map.put(inputs, :destination_status_id, "review"))
+      assert response.task.status.id == "review"
+    end
+
+    test "rejects current-board, mismatched-space, and archived destinations", ctx do
+      inputs = %{task_id: Paths.task_id(ctx.board_task), destination_type: "space", destination_id: Paths.space_id(ctx.board_space)}
+      assert {400, _} = mutation(ctx.conn, [:tasks, :move], Map.put(inputs, :destination_board_id, ctx.board_space.default_task_board_id))
+      ctx = Factory.add_space(ctx, :another_space)
+      assert {400, _} = mutation(ctx.conn, [:tasks, :move], Map.put(inputs, :destination_board_id, ctx.another_space.default_task_board_id))
+      ctx.board |> Ecto.Changeset.change(archived_at: ~N[2026-01-01 00:00:00]) |> Repo.update!()
+      assert {400, error} = mutation(ctx.conn, [:tasks, :move], Map.put(inputs, :destination_board_id, ctx.board.id))
+      assert error.details.code == "task_board_archived"
+    end
+  end
+
   defp assert_destination_changed(task, destination, :project) do
     assert task.project_id == destination.id
     assert task.space_id == nil
@@ -668,4 +731,5 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
 
     assert Map.take(actual, fields) == Map.take(expected, fields)
   end
+
 end

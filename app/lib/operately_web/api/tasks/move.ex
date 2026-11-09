@@ -1,8 +1,10 @@
 defmodule OperatelyWeb.Api.Tasks.Move do
   @moduledoc """
-  Moves a task from one project or space to another.
+  Moves a task to a project or space. Space destinations use the default board unless destination_board_id is supplied.
+  Explicit board moves require destination_status_id when no equivalent status exists.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -17,9 +19,12 @@ defmodule OperatelyWeb.Api.Tasks.Move do
     field :task_id, :id, null: false
     field :destination_type, :task_type, null: false
     field :destination_id, :id, null: false
+    field? :destination_board_id, :id, null: true
+    field? :destination_status_id, :string, null: true
   end
 
   outputs do
+    field :board_id, :id, null: true
     field :task, :task, null: false
     field :destination_type, :task_type, null: false
     field :destination_id, :id, null: false
@@ -33,10 +38,20 @@ defmodule OperatelyWeb.Api.Tasks.Move do
     |> run(:destination, fn ctx -> load_destination(ctx.me, inputs.destination_type, inputs.destination_id) end)
     |> run(:check_destination_permissions, fn ctx -> check_destination_permissions(inputs.destination_type, ctx.destination, company_read_only(conn)) end)
     |> run(:validate_destination, fn ctx -> validate_destination(inputs.destination_type, ctx.destination) end)
-    |> run(:operation, fn ctx -> TaskMoving.run(ctx.me, ctx.task, inputs.destination_type, ctx.destination) end)
+    |> run(:board, fn ctx -> resolve_board(ctx.me, inputs, ctx.destination) end)
+    |> run(:operation, fn ctx ->
+      opts = [
+        board: ctx.board,
+        explicit_board: not is_nil(inputs[:destination_board_id]),
+        status_id: inputs[:destination_status_id]
+      ]
+
+      TaskMoving.run(ctx.me, ctx.task, inputs.destination_type, ctx.destination, opts)
+    end)
     |> run(:serialized, fn ctx ->
       {:ok, %{
         task: Serializer.serialize(ctx.operation.task, level: :full),
+        board_id: ctx.operation.task.board_id && Operately.ShortUuid.encode!(ctx.operation.task.board_id),
         destination_type: ctx.operation.destination_type,
         destination_id: destination_id(ctx.destination)
       }}
@@ -64,12 +79,36 @@ defmodule OperatelyWeb.Api.Tasks.Move do
       {:error, :validate_destination, _} ->
         {:error, :bad_request}
 
+      {:error, _step, %{error: {:bad_request, message, details}}} ->
+        {:error, :bad_request, message, details}
+
+      {:error, :board, %{error: reason}} when reason in [:not_found, :bad_request] ->
+        {:error, reason}
+
+      {:error, :operation, %{error: {:status_mapping_required, statuses}}} ->
+        {:error, :bad_request, gettext("Choose a destination status and retry with destination_status_id."),
+         %{code: "task_board_status_mapping_required", task_statuses: Serializer.serialize(statuses)}}
+
+      {:error, :operation, %{error: :task_board_archived}} ->
+        {:error, :bad_request, gettext("This task board is archived. Restore it before making changes."), %{code: "task_board_archived"}}
+
+      {:error, :operation, %{error: :not_found}} ->
+        {:error, :not_found}
+
       {:error, :operation, _} ->
         {:error, :bad_request}
 
       _ ->
         {:error, :internal_server_error}
     end
+  end
+
+  defp resolve_board(me, %{destination_type: :space} = inputs, space) do
+    OperatelyWeb.Api.Tasks.BoardScope.resolve(me, space, inputs[:destination_board_id])
+  end
+
+  defp resolve_board(_me, inputs, _project) do
+    if inputs[:destination_board_id], do: {:error, :bad_request}, else: {:ok, nil}
   end
 
   defp load_task(me, task_id) do

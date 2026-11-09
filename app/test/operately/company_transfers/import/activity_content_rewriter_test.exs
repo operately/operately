@@ -3,6 +3,20 @@ defmodule Operately.CompanyTransfers.Import.ActivityContentRewriterTest do
 
   alias Operately.CompanyTransfers.Import.{ActivityContentRewriter, TranslationPlan}
 
+  test "remaps optional task board context and preserves older activity payloads" do
+    source = Ecto.UUID.generate()
+    destination = Ecto.UUID.generate()
+    plan = translation_plan(%{"task_boards" => %{source => destination}})
+
+    for {action, keys} <- [{"task_adding", ["board_id"]}, {"task_moving", ["origin_board_id", "destination_board_id"]}] do
+      row = %{"action" => action, "content" => Map.new(keys, &{&1, source})}
+      assert {:ok, rewritten} = ActivityContentRewriter.rewrite_row_content(row, "activities", plan)
+      assert rewritten["content"] == Map.new(keys, &{&1, destination})
+      legacy = %{row | "content" => %{}}
+      assert {:ok, ^legacy} = ActivityContentRewriter.rewrite_row_content(legacy, "activities", plan)
+    end
+  end
+
   test "translates root belongs_to ids in activity content" do
     source_company_id = Ecto.UUID.generate()
     source_space_id = Ecto.UUID.generate()

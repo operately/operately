@@ -7,10 +7,9 @@ defmodule Operately.Operations.TaskMoving do
   alias Operately.Activities
   alias Operately.Search.IndexUpdates
 
-  def run(author, task, destination_type, destination) do
+  def run(author, task, destination_type, destination, opts \\ []) do
     with :ok <- ensure_valid_destination(destination_type, destination),
-         :ok <- ensure_different_destination(task, destination_type, destination.id),
-         {:ok, moved_task} <- persist_move(author, task, destination_type, destination) do
+         {:ok, moved_task} <- persist_move(author, task, destination_type, destination, opts) do
       {:ok, %{task: moved_task, destination_type: destination_type, destination_id: destination.id}}
     end
   end
@@ -19,18 +18,15 @@ defmodule Operately.Operations.TaskMoving do
   defp ensure_valid_destination(:space, %Group{}), do: :ok
   defp ensure_valid_destination(_, _), do: {:error, :invalid_destination}
 
-  defp ensure_different_destination(task, :project, destination_id) do
-    if task.project_id == destination_id, do: {:error, :bad_request}, else: :ok
-  end
-
-  defp ensure_different_destination(task, :space, destination_id) do
-    if task.space_id == destination_id, do: {:error, :bad_request}, else: :ok
-  end
-
-  defp persist_move(author, task, destination_type, destination) do
+  defp persist_move(author, task, destination_type, destination, opts) do
     Multi.new()
     |> Multi.run(:destination_board, fn _repo, _ ->
-      if destination_type == :space, do: Operately.Tasks.TaskBoard.default_for_space(destination), else: {:ok, nil}
+      case {destination_type, opts[:board]} do
+        {:space, nil} -> TaskBoard.default_for_space(destination)
+        {:space, board} -> {:ok, board}
+        {:project, nil} -> {:ok, nil}
+        _ -> {:error, :bad_request}
+      end
     end)
     |> Multi.run(:boards, fn _repo, %{destination_board: board} ->
       Operately.Tasks.BoardSync.lock_boards([task.board_id, board && board.id])
@@ -40,10 +36,16 @@ defmodule Operately.Operations.TaskMoving do
         {:ok, Repo.preload(current, [:space, project: :group])}
       end
     end)
+    |> Multi.run(:validate_destination, fn _repo, %{destination_board: board, boards: boards} ->
+      with :ok <- ensure_different_destination(task, destination_type, if(board, do: board.id, else: destination.id)),
+           :ok <- validate_board_destination(board && boards[board.id], destination) do
+        {:ok, nil}
+      end
+    end)
     |> Multi.run(:status, fn _repo, %{locked_task: current, destination_board: board, boards: boards} ->
       status_scope = if board, do: Map.fetch!(boards, board.id), else: destination
 
-      with {:ok, status, selection} <- destination_status(current, destination_type, status_scope) do
+      with {:ok, status, selection} <- select_destination_status(current, destination_type, status_scope, opts) do
         {:ok, %{status: status, selection: selection}}
       end
     end)
@@ -65,12 +67,54 @@ defmodule Operately.Operations.TaskMoving do
       {:ok, Repo.preload(updated, [:space, project: :group], force: true)}
     end)
     |> IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.task.id end)
-    |> Activities.insert_sync(author.id, :task_moving, fn %{locked_task: current} ->
+    |> Activities.insert_sync(author.id, :task_moving, fn %{locked_task: current, task: updated} ->
       activity_content(current, destination_type, destination)
+      |> Map.merge(%{origin_board_id: current.board_id, destination_board_id: updated.board_id})
     end)
     |> Repo.transaction()
     |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result([task.project_id, destination_project_id(destination_type, destination)])
-    |> Repo.extract_result(:loaded_task)
+    |> case do
+      {:ok, %{loaded_task: task}} -> {:ok, task}
+      {:error, _step, reason, _changes} -> {:error, reason}
+    end
+  end
+
+  defp ensure_different_destination(task, :project, destination_id) do
+    if task.project_id == destination_id, do: {:error, :bad_request}, else: :ok
+  end
+
+  defp ensure_different_destination(task, :space, board_id) do
+    if task.board_id == board_id, do: {:error, :bad_request}, else: :ok
+  end
+
+
+  defp validate_board_destination(nil, %Project{}), do: :ok
+  defp validate_board_destination(%TaskBoard{space_id: space_id, archived_at: nil}, %Group{id: space_id}), do: :ok
+  defp validate_board_destination(%TaskBoard{archived_at: archived_at}, _) when not is_nil(archived_at), do: {:error, :task_board_archived}
+  defp validate_board_destination(_, _), do: {:error, :bad_request}
+
+  defp select_destination_status(task, type, destination, opts) do
+    cond do
+      opts[:status_id] ->
+        case Enum.find(destination.task_statuses || [], &(&1.id == opts[:status_id])) do
+          nil -> {:error, {:status_mapping_required, destination.task_statuses || []}}
+          status -> status_to_map(status) |> status_with_selection(:explicit)
+        end
+
+      opts[:explicit_board] ->
+        statuses = destination.task_statuses || []
+        same_id = task.task_status && Enum.find(statuses, &(&1.id == task.task_status.id))
+        equivalent = Enum.filter(statuses, &equivalent_status?(&1, task.task_status))
+
+        case same_id || (if length(equivalent) == 1, do: hd(equivalent)) do
+          nil -> {:error, {:status_mapping_required, statuses}}
+          status ->
+            selection = if equivalent_status?(status, task.task_status), do: :equivalent, else: :explicit
+            status_to_map(status) |> status_with_selection(selection)
+        end
+
+      true -> destination_status(task, type, destination)
+    end
   end
 
   defp destination_project_id(:project, destination), do: destination.id
@@ -143,6 +187,7 @@ defmodule Operately.Operations.TaskMoving do
     }
   end
 
+  defp status_attrs(task, status, :explicit), do: Task.status_change_attrs(task, status)
   defp status_attrs(_task, status, :equivalent), do: %{task_status: status, status: status.value}
   defp status_attrs(task, status, :fallback), do: Task.status_change_attrs(task, status)
   defp status_attrs(_task, status, :default), do: %{task_status: status}

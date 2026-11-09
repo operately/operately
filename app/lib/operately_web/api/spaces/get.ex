@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Spaces.Get do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:space, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
-    |> run(:board, fn ctx -> Operately.Tasks.TaskBoard.default_for_space(ctx.space) end)
+    |> run(:board, fn ctx -> OperatelyWeb.Api.Tasks.BoardScope.resolve(ctx.me, ctx.space, nil) end)
     |> run(:serialized, fn ctx -> serialize(%{ctx.space | default_task_board: ctx.board}, inputs[:include_markdown]) end)
     |> respond()
   end
@@ -50,6 +50,7 @@ defmodule OperatelyWeb.Api.Spaces.Get do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :board, %{error: {:bad_request, message, details}}} -> {:error, :bad_request, message, details}
       {:error, :board, _} -> {:error, :bad_request}
       {:error, :update, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :not_found}

@@ -144,6 +144,11 @@ defmodule Operately.Search.CompanyQueryTest do
 
     assert id == space_task.id
 
+    other_board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Other"})
+    space_task |> Ecto.Changeset.change(board_id: other_board.id) |> Repo.update!()
+    assert [%{navigation_target: %{board_id: board_id}}] = Search.search_company(ctx.creator, "Cadence marker")
+    assert board_id == other_board.id
+
     assert [%{id: id, context: company_name, matched_field: :name, snippet: nil, navigation_target: %{person_id: person_id}}] =
              Search.search_company(ctx.creator, "Taylor Reed")
 

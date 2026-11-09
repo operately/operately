@@ -114,6 +114,41 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     end
   end
 
+  describe "explicit board selection" do
+    setup ctx do
+      board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.engineering.id, name: "Other", task_statuses: ctx.engineering.task_statuses})
+      ctx |> Factory.log_in_person(:creator) |> Map.put(:board, board)
+    end
+
+    test "creates on the selected board and keeps legacy space fields on the default", ctx do
+      assert {200, response} = mutation(ctx.conn, [:tasks, :create], %{
+        type: "space", id: Paths.space_id(ctx.engineering), board_id: ctx.board.id, name: "Selected", due_date: nil
+      })
+      assert response.task.board_id == Operately.ShortUuid.encode!(ctx.board.id)
+      assert {200, %{space: space}} = query(ctx.conn, [:spaces, :get], %{id: Paths.space_id(ctx.engineering)})
+      assert Map.new(space.tasks_kanban_state, fn {key, ids} -> {to_string(key), ids} end) == Repo.get!(Operately.Tasks.TaskBoard, ctx.engineering.default_task_board_id).tasks_kanban_state
+      assert response.task.id in List.flatten(Map.values(Repo.reload!(ctx.board).tasks_kanban_state))
+    end
+
+    test "missing default returns active candidates and explicit selection still works", ctx do
+      ctx.engineering |> Ecto.Changeset.change(default_task_board_id: nil) |> Repo.update!()
+      inputs = %{type: "space", id: Paths.space_id(ctx.engineering), name: "Selected", due_date: nil}
+      assert {400, response} = mutation(ctx.conn, [:tasks, :create], inputs)
+      assert response.details.code == "default_task_board_unavailable"
+      assert Enum.any?(response.details.candidates, &(&1.id == Operately.ShortUuid.encode!(ctx.board.id)))
+      assert {200, _} = mutation(ctx.conn, [:tasks, :create], Map.put(inputs, :board_id, ctx.board.id))
+    end
+
+    test "rejects project selectors, mismatched spaces, and archived boards", ctx do
+      assert {400, _} = mutation(ctx.conn, [:tasks, :create], %{type: "project", id: Paths.project_id(ctx.project), board_id: ctx.board.id, name: "Invalid", due_date: nil})
+      ctx = Factory.add_space(ctx, :other_space)
+      assert {400, _} = mutation(ctx.conn, [:tasks, :create], %{type: "space", id: Paths.space_id(ctx.other_space), board_id: ctx.board.id, name: "Invalid", due_date: nil})
+      ctx.board |> Ecto.Changeset.change(archived_at: ~N[2026-01-01 00:00:00]) |> Repo.update!()
+      assert {400, response} = mutation(ctx.conn, [:tasks, :create], %{type: "space", id: Paths.space_id(ctx.engineering), board_id: ctx.board.id, name: "Invalid", due_date: nil})
+      assert response.details.code == "task_board_archived"
+    end
+  end
+
   defp task_boundary_inputs(ctx, type, :create) do
     id = if type == :project, do: ctx.project.id, else: ctx.engineering.id
     %{type: Atom.to_string(type), id: id, name: "New task", due_date: nil}
@@ -3019,4 +3054,5 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       0 -> :ok
     end
   end
+
 end

@@ -9,7 +9,7 @@ Related issue: [#5587 — Support multiple kanban boards per space](https://gith
 ## Current State
 
 - Resource hubs have persisted defaults, explicit selection, discovery, ordering, and management APIs. API, MCP, and CLI support creating, renaming, and deleting empty non-default hubs; reordering is internal-only.
-- Space task statuses and ordering live on `TaskBoard`; space tasks reference their board and space. Legacy space responses project the default board. Explicit board selection and discovery remain in PR 4B.
+- Space task statuses and ordering live on `TaskBoard`; space tasks reference their board and space. Legacy space responses project the default board. API, MCP, and CLI support explicit board selection, discovery, and moves.
 - Space Tools configuration exposes category toggles, not instance management.
 
 ## Scope and Experience
@@ -91,11 +91,11 @@ Deployment: stop all application writers and background workers before running m
 
 Rollback: the data migration's `down` preserves boards. Once new writes have occurred, reverting to legacy code requires a write pause and reconciliation of current default-board statuses/order back into group fields. An application rollback alone is unsafe.
 
-### PR 4B — Explicit board selection and agent discovery
+### PR 4B — Explicit board selection and agent discovery ✅
 
 - Add board selectors and lightweight discovery to API/MCP/CLI, resolved board IDs in responses, and optional filtering while preserving all-space listings.
 - Add structured unavailable-default errors with accessible choices and retry guidance; PR 4A rejects missing defaults without guessing.
-- Add explicit board move destinations and status mapping. Extend activity/navigation context and search results for board-specific links; preserve legacy URL adapters.
+- Add explicit board move destinations and status mapping. Existing moves retain their status fallback; explicit board moves require a destination status when no equivalent exists. Activity and search payloads include board context. Board-specific navigation and legacy URL adapters move to PR 6.
 - Keep the UI on one board per space until management and the combined redesign are ready. Verify multiple-board fixtures and agent compatibility; regenerate affected clients/catalogs.
 
 ### PR 5 — Board instance management APIs
@@ -109,7 +109,7 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 - Redesign the configuration page once, using the completed board and hub APIs. Give each category an ordered list of named instances with consistent create, rename, and reorder controls.
 - Save instance actions immediately, separately from category Save/Cancel. Keep instance management available when a category is disabled.
 - Boards expose archive/restore and default selection. Hubs expose deletion with confirmation only for empty non-default hubs; hide deletion for the fixed default hub.
-- Add board-specific cards/routes and destination selection when creating or moving tasks. Preserve existing hub links and show each instance as a separate named card.
+- Add board-specific cards/routes and destination selection when creating or moving tasks. Resolve legacy task links to the task’s board and space-only links to the default board. Preserve existing hub links and show each instance as a separate named card.
 - Reuse TurboUI controls, forms, menus, and confirmations; use generated TanStack queries/mutations. Invalidate configuration, cards, discovery, and affected content after mutations.
 - Apply Resource Hub terminology consistently across management, drafts, and rename dialogs. Include translations and regenerated resources with the redesign.
 - Verify two-board/two-hub workflows, archive/restore, defaults, disabled categories, and old links in feature tests.

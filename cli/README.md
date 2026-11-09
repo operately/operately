@@ -403,3 +403,11 @@ Apache-2.0
 ## Support
 
 - [GitHub Issues](https://github.com/operately/operately/issues)
+
+### Task boards
+
+Use `operately tasks list_boards --space-id <space-id>` to discover boards. Task creation and move destinations use the space’s default board unless `--board-id` or `--destination-board-id` selects another board. Keep the space ID in these requests.
+
+`operately spaces list_tasks --space-id <space-id>` lists tasks across all boards; add `--board-id` to filter. Use `operately tasks list_task_statuses --board-id <board-id>` to inspect destination statuses, including on empty boards. Explicit board moves with incompatible statuses return available choices; retry with `--destination-status-id`.
+
+Unavailable-default errors include accessible board candidates. Retry with an explicit board ID.

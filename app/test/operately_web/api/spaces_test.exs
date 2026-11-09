@@ -1183,6 +1183,38 @@ defmodule OperatelyWeb.Api.SpacesTest do
     assert Enum.all?(response.space.task_statuses, &(&1.label == "Updated"))
   end
 
+  describe "explicit board task operations" do
+    setup ctx do
+      ctx = ctx |> Factory.add_space(:space) |> Factory.log_in_person(:creator)
+      board = Repo.insert!(%TaskBoard{space_id: ctx.space.id, name: "Other", task_statuses: ctx.space.task_statuses})
+      ctx |> Map.put(:board, board) |> Factory.create_space_task(:default_task, :space) |> Factory.create_space_task(:other_task, :space, board_id: board.id)
+    end
+
+    test "lists all space tasks by default and filters only when requested", ctx do
+      assert {200, %{tasks: tasks}} = query(ctx.conn, [:spaces, :list_tasks], %{space_id: Paths.space_id(ctx.space)})
+      assert length(tasks) == 2
+      assert {200, %{tasks: [task]}} = query(ctx.conn, [:spaces, :list_tasks], %{space_id: Paths.space_id(ctx.space), board_id: ctx.board.id})
+      assert task.id == Paths.task_id(ctx.other_task)
+      assert task.board_id == Operately.ShortUuid.encode!(ctx.board.id)
+    end
+
+    test "updates only the explicit board's statuses and ordering", ctx do
+      default_before = board_for(ctx.space)
+      statuses = Enum.map(ctx.board.task_statuses, fn status ->
+        status |> Map.from_struct() |> Map.update!(:color, &to_string/1) |> Map.put(:label, "Selected board")
+      end)
+      assert {200, response} = mutation(ctx.conn, [:spaces, :update_task_statuses], %{space_id: Paths.space_id(ctx.space), board_id: ctx.board.id, task_statuses: statuses})
+      assert response.board_id == Operately.ShortUuid.encode!(ctx.board.id)
+      status = hd(statuses)
+      assert {200, response} = mutation(ctx.conn, [:spaces, :update_kanban], %{
+        space_id: Paths.space_id(ctx.space), board_id: ctx.board.id, task_id: Paths.task_id(ctx.other_task),
+        status: status, kanban_state: Jason.encode!(%{status.value => [Paths.task_id(ctx.other_task)]})
+      })
+      assert response.board_id == Operately.ShortUuid.encode!(ctx.board.id)
+      assert board_for(ctx.space) == default_before
+    end
+  end
+
   #
   # Helpers
   #
@@ -1195,4 +1227,5 @@ defmodule OperatelyWeb.Api.SpacesTest do
   end
 
   defp board_for(space), do: Repo.get!(Operately.Tasks.TaskBoard, space.default_task_board_id)
+
 end
