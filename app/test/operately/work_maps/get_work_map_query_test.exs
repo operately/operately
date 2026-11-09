@@ -129,6 +129,39 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       end
     end
 
+    test "loads boards in one query when including statuses for multiple space tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:first_task, :space)
+        |> Factory.create_space_task(:second_task, :space)
+        |> Factory.add_task_assignee(:first_assignment, :first_task, :creator)
+        |> Factory.add_task_assignee(:second_assignment, :second_task, :creator)
+
+      caller = self()
+      handler_id = make_ref()
+
+      :telemetry.attach(handler_id, [:operately, :repo, :query], fn _, _, metadata, _ ->
+        if metadata.source == "task_boards", do: send(caller, :board_query)
+      end, nil)
+
+      on_exit(fn -> :telemetry.detach(handler_id) end)
+
+      assert {:ok, work_map} = GetWorkMapQuery.execute(ctx.creator, %{
+        company_id: ctx.company.id,
+        include_tasks: true,
+        include_task_statuses: true
+      }, :flat)
+
+      items = index_work_map_by_id(work_map)
+
+      for task <- [ctx.first_task, ctx.second_task] do
+        assert Map.fetch!(items, task.id).resource.available_statuses == ctx.space.task_statuses
+      end
+
+      assert_received :board_query
+      refute_received :board_query
+    end
+
     test "prioritizes contributor_id over requester when include_tasks is true", ctx do
       {:ok, work_map} =
         GetWorkMapQuery.execute(ctx.assignee, %{
