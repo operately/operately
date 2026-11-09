@@ -1243,6 +1243,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :access_levels, :access_levels, null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :notifications, list_of(:notification), null: true
+    field? :default_task_board_id, :id, null: true
     field? :task_statuses, list_of(:task_status), null: true
     field? :tasks_kanban_state, :json, null: true
   end

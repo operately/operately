@@ -2727,6 +2727,7 @@ export interface Space {
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  defaultTaskBoardId?: Id | null;
   taskStatuses?: TaskStatus[] | null;
   tasksKanbanState?: Json | null;
 }
@@ -3319,12 +3320,12 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "project_check_in"
-  | "goal_check_in"
-  | "project_retrospective"
   | "kpi"
-  | "project_discussion"
+  | "project_check_in"
+  | "project_retrospective"
   | "goal_discussion"
+  | "project_discussion"
+  | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"

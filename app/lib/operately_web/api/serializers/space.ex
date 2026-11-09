@@ -24,6 +24,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Group do
       access_levels: OperatelyWeb.Api.Serializer.serialize(space.access_levels, level: :full),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(space.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(space.notifications),
+      default_task_board_id: board && Operately.ShortUuid.encode!(board.id),
       task_statuses: OperatelyWeb.Api.Serializer.serialize(board && board.task_statuses),
       tasks_kanban_state: OperatelyWeb.Api.Serializer.serialize(%Operately.Tasks.KanbanState{state: (board && board.tasks_kanban_state) || %{}}),
     })
