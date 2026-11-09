@@ -120,7 +120,12 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
           name: "Moved task"
         })
 
-      assert {:ok, restored} = TaskArchiveUpdating.run(ctx.creator, task, false)
+      assert {:error, :not_found} = TaskArchiveUpdating.run(ctx.creator, task, false)
+      assert Repo.reload!(task).archived_at == task.archived_at
+      assert archive_activities(task) == []
+
+      assert {:ok, current} = Task.get(ctx.creator, id: task.id)
+      assert {:ok, restored} = TaskArchiveUpdating.run(ctx.creator, current, false)
       assert is_nil(restored.archived_at)
       assert restored.project_id == moved.project_id
       assert [activity] = archive_activities(task)
@@ -141,7 +146,12 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
           space_id: ctx.destination_space.id
         })
 
-      assert {:ok, restored} = TaskArchiveUpdating.run(ctx.creator, task, false)
+      assert {:error, :not_found} = TaskArchiveUpdating.run(ctx.creator, task, false)
+      assert Repo.reload!(task).archived_at == task.archived_at
+      assert archive_activities(task) == []
+
+      assert {:ok, current} = Task.get(ctx.creator, id: task.id)
+      assert {:ok, restored} = TaskArchiveUpdating.run(ctx.creator, current, false)
       assert is_nil(restored.archived_at)
       assert restored.space_id == ctx.destination_space.id
       assert [activity] = archive_activities(task)

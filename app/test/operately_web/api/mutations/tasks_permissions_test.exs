@@ -245,10 +245,16 @@ defmodule OperatelyWeb.Api.Mutations.TasksPermissionsTest do
     tabletest @space_table do
       test "if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
         %{task: task} = create_space_task_context(ctx, @test)
+        status =
+          task
+          |> Operately.Tasks.Task.available_statuses()
+          |> Enum.find(& &1.closed)
+          |> Map.from_struct()
+          |> Map.update!(:color, &to_string/1)
 
         assert {code, res} = mutation(ctx.conn, [:tasks, :update_status], %{
           task_id: Paths.task_id(task),
-          status: status_input(),
+          status: status,
           type: "space"
         })
         assert code == @test.expected
