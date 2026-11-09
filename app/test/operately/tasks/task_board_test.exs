@@ -9,10 +9,9 @@ defmodule Operately.Tasks.TaskBoardTest do
     Map.put(ctx, :board, board)
   end
 
-  test "legacy spaces and tasks keep nullable board references", ctx do
-    assert ctx.task.board_id == nil
-    assert ctx.space.default_task_board_id == nil
-    assert Repo.preload(ctx.task, :board).board == nil
+  test "space tasks inherit the persisted default", ctx do
+    assert ctx.task.board_id == ctx.space.default_task_board_id
+    assert Repo.preload(ctx.task, :board).board.space_id == ctx.space.id
   end
 
   test "tasks and defaults can reference a board in their own space", ctx do
@@ -21,7 +20,7 @@ defmodule Operately.Tasks.TaskBoardTest do
 
     assert Repo.preload(task, :board).board.id == ctx.board.id
     assert Repo.preload(space, :default_task_board).default_task_board.id == ctx.board.id
-    assert Enum.map(Repo.preload(space, :task_boards).task_boards, & &1.id) == [ctx.board.id]
+    assert ctx.board.id in Enum.map(Repo.preload(space, :task_boards).task_boards, & &1.id)
   end
 
   test "rejects a task reference to a missing board", ctx do

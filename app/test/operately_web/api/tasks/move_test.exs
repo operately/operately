@@ -260,6 +260,11 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
 
       assert task.project_id == destination_project.id
       assert task.space_id == nil
+      assert task.board_id == nil
+
+      board = Repo.get!(Operately.Tasks.TaskBoard, origin.task.board_id)
+
+      refute Paths.task_id(task) in (board.tasks_kanban_state |> Map.values() |> List.flatten())
       assert task.milestone_id == nil
       assert Task.task_type(task) == "project"
       assert task.task_status.value == default.value
@@ -283,6 +288,13 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
 
       assert task.project_id == nil
       assert task.space_id == destination_space.id
+      assert task.board_id == destination_space.default_task_board_id
+
+      origin_board = Repo.get!(Operately.Tasks.TaskBoard, origin.task.board_id)
+      destination_board = Repo.get!(Operately.Tasks.TaskBoard, task.board_id)
+
+      refute Paths.task_id(task) in (origin_board.tasks_kanban_state |> Map.values() |> List.flatten())
+      assert Paths.task_id(task) in destination_board.tasks_kanban_state[task.task_status.value]
       assert task.milestone_id == nil
       assert Task.task_type(task) == "space"
       assert task.task_status.value == default.value
@@ -428,7 +440,7 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
           status("Underway", :blue, "in_progress")
         ])
 
-      destination_status = Enum.find(destination_space.task_statuses, &(&1.value == "in_progress"))
+      destination_status = Enum.find(destination_space.default_task_board.task_statuses, &(&1.value == "in_progress"))
       {:ok, closed_task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, closed_status))
       {:ok, task} = Operately.Tasks.update_task(closed_task, Task.status_change_attrs(closed_task, source_status))
 
@@ -469,7 +481,7 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
     test "uses the destination default and reopens a closed task when no equivalent status exists", ctx do
       source_status = Enum.find(ctx.project.task_statuses, &(&1.value == "done"))
       destination_space = set_space_statuses(ctx.destination_space, [status("Ready", :gray, "ready")])
-      destination_status = hd(destination_space.task_statuses)
+      destination_status = hd(destination_space.default_task_board.task_statuses)
       {:ok, task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, source_status))
 
       assert task.closed_at
@@ -627,8 +639,9 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
       |> Enum.with_index()
       |> Enum.map(fn {status, index} -> Map.put(status, :index, index) end)
 
-    {:ok, space} = Operately.Groups.update_group(space, %{task_statuses: statuses})
-    space
+    board = Repo.get!(Operately.Tasks.TaskBoard, space.default_task_board_id)
+    {:ok, board} = board |> Operately.Tasks.TaskBoard.changeset(%{task_statuses: statuses}) |> Repo.update()
+    %{space | default_task_board: board}
   end
 
   defp status(label, color, value, opts \\ []) do

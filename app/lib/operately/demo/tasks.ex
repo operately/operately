@@ -37,6 +37,11 @@ defmodule Operately.Demo.Tasks do
   def resolve_assignee(_resources, nil), do: nil
   def resolve_assignee(resources, assignee_key), do: Resources.get(resources, assignee_key)
 
+  def resolve_task_status(%Operately.Groups.Group{} = space, status) do
+    {:ok, board} = Operately.Tasks.TaskBoard.default_for_space(space)
+    resolve_task_status(board, status)
+  end
+
   def resolve_task_status(scope, nil), do: default_status(scope)
 
   def resolve_task_status(scope, status) do
@@ -94,8 +99,8 @@ defmodule Operately.Demo.Tasks do
     Operately.Projects.Project.get_default_task_status(project)
   end
 
-  defp default_status(%Operately.Groups.Group{} = space) do
-    Operately.Groups.Group.get_default_task_status(space)
+  defp default_status(%Operately.Tasks.TaskBoard{} = board) do
+    Operately.Tasks.TaskBoard.get_default_task_status(board)
   end
 
   defp bump_due_date(due_date) do

@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Spaces.List do
       company_id: me.company_id,
       opts: [
         required_access_level: Binding.from_atom(inputs[:access_level] || :view_access),
-        preload: [:company, :members],
+        preload: [:company, :members, :default_task_board],
         order_by: [asc: :name]
       ]
     )
