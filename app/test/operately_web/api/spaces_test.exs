@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.SpacesTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.People
+  alias Operately.Tasks.TaskBoard
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
 
@@ -535,7 +536,7 @@ defmodule OperatelyWeb.Api.SpacesTest do
                  task_statuses: Enum.map(remaining, &(&1 |> Map.from_struct() |> Map.update!(:color, fn color -> to_string(color) end)))
                })
 
-      refute Enum.any?(Repo.reload!(ctx.space).task_statuses, &(&1.id == removed.id))
+      refute Enum.any?(board_for(ctx.space).task_statuses, &(&1.id == removed.id))
     end
 
     for archived <- [false, true] do
@@ -557,7 +558,7 @@ defmodule OperatelyWeb.Api.SpacesTest do
                    deleted_status_replacements: []
                  })
 
-        assert Repo.reload!(ctx.space).task_statuses == ctx.space.task_statuses
+        assert board_for(ctx.space).task_statuses == ctx.space.task_statuses
         assert Repo.reload!(ctx.task).task_status == ctx.task.task_status
       end
     end
@@ -605,10 +606,10 @@ defmodule OperatelyWeb.Api.SpacesTest do
 
       assert res.success == true
 
-      space = Repo.reload(ctx.space)
+      space = Repo.preload(Repo.reload(ctx.space), :default_task_board)
 
-      assert length(space.task_statuses) == 3
-      assert Enum.map(space.task_statuses, & &1.label) == ["Todo", "In progress", "Done"]
+      assert length(space.default_task_board.task_statuses) == 3
+      assert Enum.map(space.default_task_board.task_statuses, & &1.label) == ["Todo", "In progress", "Done"]
     end
 
     test "validation fails when replacement status does not exist in new statuses", ctx do
@@ -664,10 +665,10 @@ defmodule OperatelyWeb.Api.SpacesTest do
         task_statuses: old_statuses
       })
 
-      space = Repo.reload(ctx.space)
-      in_review_status = Enum.find(space.task_statuses, & &1.id == "in_review")
-      blocked_status = Enum.find(space.task_statuses, & &1.id == "blocked")
-      done_status = Enum.find(space.task_statuses, & &1.id == "done")
+      space = Repo.preload(Repo.reload(ctx.space), :default_task_board)
+      in_review_status = Enum.find(space.default_task_board.task_statuses, & &1.id == "in_review")
+      blocked_status = Enum.find(space.default_task_board.task_statuses, & &1.id == "blocked")
+      done_status = Enum.find(space.default_task_board.task_statuses, & &1.id == "done")
 
       task_in_review = Operately.TasksFixtures.task_fixture(%{
         creator_id: ctx.creator.id,
@@ -720,6 +721,10 @@ defmodule OperatelyWeb.Api.SpacesTest do
 
       task_done = Repo.reload(task_done)
       assert task_done.task_status.id == "done"
+
+      ordering = board_for(ctx.space).tasks_kanban_state
+      assert Enum.sort(ordering["todo"]) == Enum.sort(Enum.map([task_in_review, task_blocked], &Paths.task_id/1))
+      assert ordering["done"] == [Paths.task_id(task_done)]
     end
 
     test "it can add a new status and use it as a replacement for a deleted status", ctx do
@@ -736,8 +741,8 @@ defmodule OperatelyWeb.Api.SpacesTest do
         task_statuses: old_statuses
       })
 
-      space = Repo.reload(ctx.space)
-      in_review_status = Enum.find(space.task_statuses, & &1.id == "in_review")
+      space = Repo.preload(Repo.reload(ctx.space), :default_task_board)
+      in_review_status = Enum.find(space.default_task_board.task_statuses, & &1.id == "in_review")
 
       task_in_review = Operately.TasksFixtures.task_fixture(%{
         creator_id: ctx.creator.id,
@@ -764,8 +769,8 @@ defmodule OperatelyWeb.Api.SpacesTest do
 
       assert res.success == true
 
-      space = Repo.reload(ctx.space)
-      assert Enum.any?(space.task_statuses, &(&1.id == "triage"))
+      space = Repo.preload(Repo.reload(ctx.space), :default_task_board)
+      assert Enum.any?(space.default_task_board.task_statuses, &(&1.id == "triage"))
 
       task_in_review = Repo.reload(task_in_review)
       assert task_in_review.task_status.id == "triage"
@@ -804,10 +809,10 @@ defmodule OperatelyWeb.Api.SpacesTest do
     test "it updates status and kanban state for a space", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      space = Repo.reload(ctx.engineering)
+      space = Repo.preload(Repo.reload(ctx.engineering), :default_task_board)
 
       status_input =
-        Enum.find(space.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(space.default_task_board.task_statuses || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -830,17 +835,17 @@ defmodule OperatelyWeb.Api.SpacesTest do
 
       assert res.task.status.value == "in_progress"
 
-      space = Repo.reload(ctx.engineering)
-      assert space.tasks_kanban_state["in_progress"] == kanban_state.in_progress
+      space = Repo.preload(Repo.reload(ctx.engineering), :default_task_board)
+      assert space.default_task_board.tasks_kanban_state["in_progress"] == kanban_state.in_progress
     end
 
     test "it rejects invalid statuses in space kanban state", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      space = Repo.reload(ctx.engineering)
+      space = Repo.preload(Repo.reload(ctx.engineering), :default_task_board)
 
       status_input =
-        Enum.find(space.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(space.default_task_board.task_statuses || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -868,10 +873,10 @@ defmodule OperatelyWeb.Api.SpacesTest do
     test "it creates an activity when space task status is updated", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      space = Repo.reload(ctx.engineering)
+      space = Repo.preload(Repo.reload(ctx.engineering), :default_task_board)
 
       status_input =
-        Enum.find(space.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(space.default_task_board.task_statuses || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -902,10 +907,10 @@ defmodule OperatelyWeb.Api.SpacesTest do
     test "it only creates activity when task status changes", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      space = Repo.reload(ctx.engineering)
+      space = Repo.preload(Repo.reload(ctx.engineering), :default_task_board)
 
       status_input =
-        Enum.find(space.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(space.default_task_board.task_statuses || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -947,10 +952,10 @@ defmodule OperatelyWeb.Api.SpacesTest do
         |> Factory.create_space_task(:task2, :engineering)
         |> Factory.log_in_person(:creator)
 
-      space = Repo.reload(ctx.engineering)
+      space = Repo.preload(Repo.reload(ctx.engineering), :default_task_board)
 
       status_input =
-        Enum.find(space.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(space.default_task_board.task_statuses || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -989,8 +994,8 @@ defmodule OperatelyWeb.Api.SpacesTest do
         kanban_state: Jason.encode!(kanban_state_2)
       })
 
-      space = Repo.reload(ctx.engineering)
-      assert space.tasks_kanban_state["in_progress"] == kanban_state_2.in_progress
+      space = Repo.preload(Repo.reload(ctx.engineering), :default_task_board)
+      assert space.default_task_board.tasks_kanban_state["in_progress"] == kanban_state_2.in_progress
       assert count_task_activities(ctx.task1, "task_status_updating") == before_count + 1
     end
 
@@ -1001,10 +1006,10 @@ defmodule OperatelyWeb.Api.SpacesTest do
         |> Factory.create_space_task(:foreign_task, :other_space)
         |> Factory.log_in_person(:creator)
 
-      space = Repo.reload(ctx.engineering)
+      space = Repo.preload(Repo.reload(ctx.engineering), :default_task_board)
 
       status_input =
-        Enum.find(space.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(space.default_task_board.task_statuses || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -1125,6 +1130,59 @@ defmodule OperatelyWeb.Api.SpacesTest do
     end
   end
 
+  test "space status and ordering mutations only affect the default board", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.create_space_task(:default_task, :space)
+      |> Factory.log_in_person(:creator)
+
+    default_board = board_for(ctx.space)
+    other_board = Repo.insert!(%TaskBoard{space_id: ctx.space.id, name: "Other", task_statuses: default_board.task_statuses})
+    ctx = Factory.create_space_task(ctx, :other_task, :space, board_id: other_board.id)
+
+    space_id = Paths.space_id(ctx.space)
+    default_task_id = Paths.task_id(ctx.default_task)
+    other_task_id = Paths.task_id(ctx.other_task)
+    status = default_board.task_statuses |> hd() |> Map.from_struct() |> Map.update!(:color, &to_string/1)
+
+    # A task from another board cannot be moved through the space endpoint.
+    assert {404, _} = mutation(ctx.conn, [:spaces, :update_kanban], %{
+      space_id: space_id,
+      task_id: other_task_id,
+      status: status,
+      kanban_state: Jason.encode!(%{status.value => [other_task_id]})
+    })
+
+    # Updating a default-board task cannot include another board's task in its ordering.
+    assert {404, _} = mutation(ctx.conn, [:spaces, :update_kanban], %{
+      space_id: space_id,
+      task_id: default_task_id,
+      status: status,
+      kanban_state: Jason.encode!(%{status.value => [default_task_id, other_task_id]})
+    })
+
+    updated_statuses = Enum.map(default_board.task_statuses, fn status ->
+      status
+      |> Map.from_struct()
+      |> Map.update!(:color, &to_string/1)
+      |> Map.put(:label, "Updated")
+    end)
+
+    assert {200, _} = mutation(ctx.conn, [:spaces, :update_task_statuses], %{
+      space_id: space_id,
+      task_statuses: updated_statuses
+    })
+
+    # Status changes leave the other board and legacy space fields untouched.
+    assert Repo.reload!(other_board).task_statuses == other_board.task_statuses
+    assert Repo.reload!(ctx.other_task).task_status == ctx.other_task.task_status
+    assert Repo.reload!(ctx.space).task_statuses == ctx.space.task_statuses
+
+    assert {200, response} = query(ctx.conn, [:spaces, :get], %{id: space_id})
+    assert Enum.all?(response.space.task_statuses, &(&1.label == "Updated"))
+  end
+
   #
   # Helpers
   #
@@ -1135,4 +1193,6 @@ defmodule OperatelyWeb.Api.SpacesTest do
     )
     |> Repo.aggregate(:count)
   end
+
+  defp board_for(space), do: Repo.get!(Operately.Tasks.TaskBoard, space.default_task_board_id)
 end

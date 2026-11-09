@@ -47,4 +47,16 @@ defmodule Operately.Tasks.KanbanStateTest do
 
     assert loaded["todo"] == [1]
   end
+
+  test "append and remove identify renamed tasks without disturbing other tasks" do
+    task = %Operately.Tasks.Task{id: Ecto.UUID.generate(), name: "Original name"}
+    other = %Operately.Tasks.Task{id: Ecto.UUID.generate(), name: "Other task"}
+    old_id = OperatelyWeb.Paths.task_id(task)
+    other_id = OperatelyWeb.Paths.task_id(other)
+    state = %{"pending" => [other_id, old_id], "done" => [old_id]}
+    task = %{task | name: "Renamed task", task_status: %Operately.Tasks.Status{value: "done"}}
+
+    assert KanbanState.remove(state, task) == %{"pending" => [other_id], "done" => []}
+    assert KanbanState.append(state, task) == %{"pending" => [other_id], "done" => [OperatelyWeb.Paths.task_id(task)]}
+  end
 end

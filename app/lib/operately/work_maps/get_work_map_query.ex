@@ -203,7 +203,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     Task.list(person,
       opts: [
         ids: Map.keys(assignments),
-        preload: [:project, :space, :company, :assigned_people],
+        preload: [:project, :space, :board, :company, :assigned_people],
         auth_preload: [:project_space],
         after_load: if(Map.get(args, :include_task_statuses, false), do: [&Task.preload_available_statuses/1], else: [])
       ]

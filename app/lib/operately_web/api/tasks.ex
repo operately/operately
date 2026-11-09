@@ -70,7 +70,8 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     defp build_activity_content(changes) do
-      old_status = changes.task.task_status && Map.from_struct(changes.task.task_status)
+      original_task = changes.locked_task
+      old_status = original_task.task_status && Map.from_struct(original_task.task_status)
       new_status = changes.updated_task.task_status && Map.from_struct(changes.updated_task.task_status)
 
       base = %{
@@ -470,8 +471,6 @@ defmodule OperatelyWeb.Api.Tasks do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
-    alias Operately.Tasks.SpaceSync
-
     inputs do
       field :type, :task_type, null: false
       field :id, :id, null: false
@@ -498,6 +497,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.validate_milestone_belongs_to_project(inputs[:milestone_id])
       |> Steps.validate_assignees(Steps.assignee_ids(inputs))
       |> Steps.create_task(inputs)
+      |> Steps.sync_created_task()
       |> Steps.save_activity(:task_adding, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -525,9 +525,10 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_space(inputs.id)
       |> Steps.check_permissions(:can_edit)
+      |> Steps.find_default_board()
       |> Steps.validate_assignees(Steps.assignee_ids(inputs))
       |> Steps.create_task(inputs)
-      |> SpaceSync.sync_after_task_create(inputs.id)
+      |> Steps.sync_created_task()
       |> Steps.save_activity(:task_adding, fn changes ->
         %{
           company_id: changes.space.company_id,
@@ -736,10 +737,33 @@ defmodule OperatelyWeb.Api.Tasks do
 
     def update_task_status(multi, new_status) do
       multi
-      |> Ecto.Multi.update(:updated_task, fn %{task: task} ->
-        Operately.Tasks.Task.changeset(task, Operately.Tasks.Task.status_change_attrs(task, new_status))
+      |> Ecto.Multi.run(:boards, fn _repo, %{task: task} -> Operately.Tasks.BoardSync.lock_boards([task.board_id]) end)
+      |> Ecto.Multi.run(:locked_task, fn _repo, %{task: task, boards: boards} -> Operately.Tasks.BoardSync.lock_task(task, boards) end)
+      |> Ecto.Multi.run(:updated_task, fn _repo, %{locked_task: task, boards: boards} ->
+        with {:ok, status} <- validate_task_status(task, new_status),
+             {:ok, updated} <- task |> Operately.Tasks.Task.changeset(Operately.Tasks.Task.status_change_attrs(task, status)) |> Repo.update(),
+             {:ok, _} <- Operately.Tasks.BoardSync.add_task(boards[task.board_id], updated) do
+          {:ok, Repo.preload(updated, [:assigned_people, :space, :project])}
+        end
       end)
       |> Operately.Search.IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.updated_task.id end)
+    end
+
+    defp validate_task_status(%{space_id: nil}, status), do: {:ok, status}
+    defp validate_task_status(task, status) do
+      case Enum.find(Operately.Tasks.Task.available_statuses(task), &(status && &1.id == status.id)) do
+        nil -> {:error, {:bad_request, gettext("Invalid status")}}
+        current -> {:ok, current}
+      end
+    end
+
+    def find_default_board(multi) do
+      Ecto.Multi.run(multi, :board, fn _repo, %{space: space} ->
+        with {:ok, board} <- Operately.Tasks.TaskBoard.default_for_space(space),
+             {:ok, boards} <- Operately.Tasks.BoardSync.lock_boards([board.id]) do
+          {:ok, Map.fetch!(boards, board.id)}
+        end
+      end)
     end
 
     def update_task_due_date(multi, new_due_date) do
@@ -825,7 +849,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
     def validate_assignees(multi, person_ids) do
       Ecto.Multi.run(multi, :company_members, fn _repo, changes ->
-        case get_context_from_changes(changes) do
+        case changes[:project] || changes[:space] do
           %{company_id: company_id} when company_id == changes.me.company_id ->
             case Operately.People.validate_active_company_members(company_id, person_ids) do
               :ok -> {:ok, :valid}
@@ -890,9 +914,10 @@ defmodule OperatelyWeb.Api.Tasks do
       multi
       |> Operately.Search.IndexUpdates.delete(:search_task, "task", fn changes -> changes.task.id end)
       |> Ecto.Multi.run(:delete_task, fn repo, %{task: task} ->
-        case repo.delete(task) do
-          {:ok, deleted_task} -> {:ok, deleted_task}
-          {:error, changeset} -> {:error, changeset}
+        with {:ok, boards} <- Operately.Tasks.BoardSync.lock_boards([task.board_id]),
+             {:ok, task} <- Operately.Tasks.BoardSync.lock_task(task, boards),
+             {:ok, _} <- Operately.Tasks.BoardSync.remove_task(boards[task.board_id], task) do
+          repo.delete(task)
         end
       end)
     end
@@ -958,6 +983,14 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
+    def sync_created_task(multi) do
+      Ecto.Multi.run(multi, :updated_space, fn _repo, changes ->
+        with {:ok, board} <- Operately.Tasks.BoardSync.add_task(changes[:board], changes.task) do
+          if board, do: {:ok, %{changes.space | default_task_board: board}}, else: {:ok, nil}
+        end
+      end)
+    end
+
     def create_task(multi, inputs) do
       assignee_ids = assignee_ids(inputs)
 
@@ -978,6 +1011,7 @@ defmodule OperatelyWeb.Api.Tasks do
             milestone_id: milestone_id,
             project_id: project_id,
             space_id: space_id,
+            board_id: changes[:board] && changes.board.id,
             creator_id: changes.me.id,
             due_date: inputs.due_date,
             subscription_list_id: changes.subscription_list.id,
@@ -1098,7 +1132,7 @@ defmodule OperatelyWeb.Api.Tasks do
     defp get_context_from_changes(changes) do
       cond do
         Map.has_key?(changes, :project) -> changes.project
-        Map.has_key?(changes, :space) -> changes.space
+        Map.has_key?(changes, :board) -> changes.board
         true -> nil
       end
     end
@@ -1115,14 +1149,14 @@ defmodule OperatelyWeb.Api.Tasks do
       default_status =
         case context do
           %Operately.Projects.Project{} -> Operately.Projects.Project.get_default_task_status(context)
-          %Operately.Groups.Group{} -> Operately.Groups.Group.get_default_task_status(context)
+          %Operately.Tasks.TaskBoard{} -> Operately.Tasks.TaskBoard.get_default_task_status(context)
         end
 
-      {:ok, Map.from_struct(default_status)}
+      if default_status, do: {:ok, Map.from_struct(default_status)}, else: {:error, {:bad_request, gettext("Invalid status")}}
     end
 
     defp validate_or_get_default_status(context, status) when not is_nil(context) do
-      if Enum.any?(context.task_statuses, fn s -> s.id == status.id end) do
+      if Enum.any?(context.task_statuses || [], fn s -> s.id == status.id end) do
         {:ok, status}
       else
         {:error, {:bad_request, gettext("Invalid status")}}

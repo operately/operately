@@ -97,6 +97,7 @@ defmodule Operately.Tasks.Task do
       :milestone_id,
       :project_id,
       :space_id,
+      :board_id,
       :subscription_list_id
     ])
     |> cast_embed(:due_date)
@@ -105,6 +106,7 @@ defmodule Operately.Tasks.Task do
     |> put_default_task_status()
     |> validate_required([:name, :description, :creator_id, :subscription_list_id])
     |> validate_project_or_group()
+    |> prepare_changes(&assign_and_validate_board/1)
   end
 
   def status_change_attrs(task, new_status) do
@@ -248,17 +250,27 @@ defmodule Operately.Tasks.Task do
   end
 
   def available_statuses(task = %__MODULE__{}) do
-    task =
-      if Ecto.assoc_loaded?(task.project) and Ecto.assoc_loaded?(task.space) do
-        task
-      else
-        Operately.Repo.preload(task, [:project, :space])
-      end
+    task = Operately.Repo.preload(task, [:project, :board])
 
     cond do
       task.project -> task.project.task_statuses || []
-      task.space -> task.space.task_statuses || []
+      task.board && task.board.space_id == task.space_id -> task.board.task_statuses || []
       true -> []
+    end
+  end
+
+  defp assign_and_validate_board(changeset) do
+    space_id = get_field(changeset, :space_id)
+    project_id = get_field(changeset, :project_id)
+    board_id = get_field(changeset, :board_id)
+
+    cond do
+      project_id && board_id -> add_error(changeset, :board_id, "is invalid")
+      is_nil(space_id) -> changeset
+      true ->
+        board_id = board_id || changeset.repo.one(from s in Operately.Groups.Group, where: s.id == ^space_id, select: s.default_task_board_id)
+        board = board_id && changeset.repo.one(from b in Operately.Tasks.TaskBoard, where: b.id == ^board_id and b.space_id == ^space_id)
+        if board, do: put_change(changeset, :board_id, board.id), else: add_error(changeset, :board_id, "is invalid")
     end
   end
 

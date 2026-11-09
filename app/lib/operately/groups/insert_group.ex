@@ -11,6 +11,7 @@ defmodule Operately.Groups.InsertGroup do
     |> insert_bindings(attrs)
     |> insert_default_messages_board()
     |> insert_default_resource_hub()
+    |> insert_default_task_board()
   end
 
   defp insert_group(multi, attrs) do
@@ -86,6 +87,22 @@ defmodule Operately.Groups.InsertGroup do
     end)
     |> Multi.update(:group_with_default_hub, fn %{group: group, resource_hub: hub} ->
       Ecto.Changeset.change(group, default_resource_hub_id: hub.id)
+    end)
+  end
+
+  defp insert_default_task_board(multi) do
+    multi
+    |> Multi.insert(:task_board, fn %{group: group} ->
+      Operately.Tasks.TaskBoard.changeset(%{
+        space_id: group.id,
+        name: "Tasks",
+        task_statuses: Enum.map(group.task_statuses, &Map.from_struct/1),
+        tasks_kanban_state: group.tasks_kanban_state,
+        position: 0
+      })
+    end)
+    |> Multi.update(:group_with_default_board, fn %{group_with_default_hub: group, task_board: board} ->
+      Groups.Group.default_task_board_changeset(group, board)
     end)
   end
 end

@@ -43,13 +43,19 @@ defmodule Operately.Groups.Group do
 
   def changeset(group, attrs) do
     group
-    |> cast(attrs, [:company_id, :name, :mission, :deleted_at, :tasks_kanban_state])
+    |> cast(attrs, [:company_id, :name, :mission, :deleted_at])
     |> cast_embed(:tools)
-    |> cast_embed(:task_statuses)
+    |> cast_initial_task_state(attrs)
     |> put_default_tools()
     |> put_default_task_statuses()
     |> validate_required([:company_id, :name, :mission])
   end
+
+  defp cast_initial_task_state(%Ecto.Changeset{data: %{id: nil}} = changeset, attrs) do
+    changeset |> cast(attrs, [:tasks_kanban_state]) |> cast_embed(:task_statuses)
+  end
+
+  defp cast_initial_task_state(changeset, _attrs), do: changeset
 
   defp put_default_tools(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
     case Ecto.Changeset.get_field(changeset, :tools) do
@@ -71,20 +77,19 @@ defmodule Operately.Groups.Group do
 
   defp put_default_task_statuses(changeset), do: changeset
 
+  def default_task_board_changeset(space, board) do
+    changeset = change(space, default_task_board_id: board.id)
+    if board.space_id == space.id and is_nil(board.archived_at), do: changeset, else: add_error(changeset, :default_task_board_id, "is invalid")
+  end
+
   def task_status_values(space = %__MODULE__{}) do
-    space.task_statuses
-    |> Elixir.List.wrap()
-    |> Enum.map(& &1.value)
-    |> Enum.filter(& &1)
-    |> Enum.map(&to_string/1)
+    {:ok, board} = Operately.Tasks.TaskBoard.default_for_space(space)
+    Operately.Tasks.TaskBoard.task_status_values(board)
   end
 
   def get_default_task_status(space = %__MODULE__{}) do
-    statuses = space.task_statuses
-
-    Enum.find(statuses, fn s -> s.color == :gray end) ||
-      Enum.find(statuses, fn s -> s.color == :blue end) ||
-      List.first(statuses)
+    {:ok, board} = Operately.Tasks.TaskBoard.default_for_space(space)
+    Operately.Tasks.TaskBoard.get_default_task_status(board)
   end
 
   #

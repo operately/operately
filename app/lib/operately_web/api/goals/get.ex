@@ -98,7 +98,7 @@ defmodule OperatelyWeb.Api.Goals.Get do
     Inputs.parse_includes(inputs,
       include_potential_subscribers: [group: :members],
       include_space: [:group],
-      include_space_members: [group: [:members, :company]],
+      include_space_members: [group: [:members, :company, :default_task_board]],
       include_projects: [projects: [:champion, :reviewer]],
       always_include: :parent_goal
     )
