@@ -4,6 +4,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
   def serialize(task, level: :essential) do
     %{
       id: OperatelyWeb.Paths.task_id(task),
+      board_id: task.board_id && Operately.ShortUuid.encode!(task.board_id),
       name: task.name
     }
   end
@@ -11,6 +12,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
   def serialize(task, level: :full) do
     %{
       id: OperatelyWeb.Paths.task_id(task),
+      board_id: task.board_id && Operately.ShortUuid.encode!(task.board_id),
       name: task.name,
       description: task.description && Jason.encode!(task.description),
       priority: task.priority,

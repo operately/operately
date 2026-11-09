@@ -1,13 +1,17 @@
 import Api, { Space, Task } from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
+import { assertPresent } from "@/utils/assertions";
 import { useQueryClient } from "@tanstack/react-query";
 
 export async function loader({ params }) {
   const spaceInput = { id: params.id, includePermissions: true };
-  const tasksInput = { spaceId: params.id };
+  const { space } = await Api.spaces.getQuery(spaceInput);
 
-  await Promise.all([Api.spaces.getQuery(spaceInput), Api.spaces.listTasksQuery(tasksInput)]);
+  assertPresent(space.defaultTaskBoardId, "Space default task board is unavailable");
+  const tasksInput = { spaceId: params.id, boardId: space.defaultTaskBoardId };
+
+  await Api.spaces.listTasksQuery(tasksInput);
 
   return { spaceInput, tasksInput };
 }

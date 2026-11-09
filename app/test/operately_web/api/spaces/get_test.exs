@@ -88,6 +88,7 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
 
       assert {200, res} = query(ctx.conn, [:spaces, :get], %{id: Paths.space_id(space)})
       assert res.space == serialize_space(space)
+      assert res.space.default_task_board_id == Operately.ShortUuid.encode!(space.default_task_board_id)
     end
 
     test "get_space when not a member", ctx do

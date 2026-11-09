@@ -465,7 +465,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
   defmodule Create do
     @moduledoc """
-    Creates a new task in a project or space.
+    Creates a task in a project or space. Space requests use the persisted default board unless board_id selects another board in that space.
     """
 
     use TurboConnect.Mutation
@@ -474,6 +474,7 @@ defmodule OperatelyWeb.Api.Tasks do
     inputs do
       field :type, :task_type, null: false
       field :id, :id, null: false
+      field? :board_id, :id, null: true
       field? :milestone_id, :id, null: true
       field :name, :string, null: false
       field? :assignee_id, :id, null: true
@@ -488,6 +489,8 @@ defmodule OperatelyWeb.Api.Tasks do
       field? :updated_milestone, :milestone, null: false
       field? :updated_space, :space, null: false
     end
+
+    def call(_conn, %{type: :project, board_id: board_id}) when not is_nil(board_id), do: {:error, :bad_request}
 
     def call(conn, inputs = %{type: :project}) do
       conn
@@ -505,6 +508,7 @@ defmodule OperatelyWeb.Api.Tasks do
           project_id: changes.project.id,
           milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
+          board_id: changes.task.board_id,
           name: changes.task.name,
           description: changes.task.description
         }
@@ -525,7 +529,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_space(inputs.id)
       |> Steps.check_permissions(:can_edit)
-      |> Steps.find_default_board()
+      |> Steps.find_board(inputs[:board_id])
       |> Steps.validate_assignees(Steps.assignee_ids(inputs))
       |> Steps.create_task(inputs)
       |> Steps.sync_created_task()
@@ -536,6 +540,7 @@ defmodule OperatelyWeb.Api.Tasks do
           project_id: nil,
           milestone_id: nil,
           task_id: changes.task.id,
+          board_id: changes.task.board_id,
           name: changes.task.name,
           description: changes.task.description
         }
@@ -757,11 +762,10 @@ defmodule OperatelyWeb.Api.Tasks do
       end
     end
 
-    def find_default_board(multi) do
-      Ecto.Multi.run(multi, :board, fn _repo, %{space: space} ->
-        with {:ok, board} <- Operately.Tasks.TaskBoard.default_for_space(space),
-             {:ok, boards} <- Operately.Tasks.BoardSync.lock_boards([board.id]) do
-          {:ok, Map.fetch!(boards, board.id)}
+    def find_board(multi, board_id) do
+      Ecto.Multi.run(multi, :board, fn _repo, %{me: me, space: space} ->
+        with {:ok, board} <- OperatelyWeb.Api.Tasks.BoardScope.resolve(me, space, board_id) do
+          OperatelyWeb.Api.Tasks.BoardScope.lock(board)
         end
       end)
     end
@@ -986,7 +990,12 @@ defmodule OperatelyWeb.Api.Tasks do
     def sync_created_task(multi) do
       Ecto.Multi.run(multi, :updated_space, fn _repo, changes ->
         with {:ok, board} <- Operately.Tasks.BoardSync.add_task(changes[:board], changes.task) do
-          if board, do: {:ok, %{changes.space | default_task_board: board}}, else: {:ok, nil}
+          if board do
+            space = if board.id == changes.space.default_task_board_id, do: %{changes.space | default_task_board: board}, else: Repo.preload(changes.space, :default_task_board)
+            {:ok, space}
+          else
+            {:ok, nil}
+          end
         end
       end)
     end
@@ -1212,6 +1221,9 @@ defmodule OperatelyWeb.Api.Tasks do
 
     defp handle_error(reason) do
       case reason do
+        {:error, _step, {:bad_request, message, details}, _changes} ->
+          {:error, :bad_request, message, details}
+
         {:error, _failed_operation, {:not_found, message}, _changes} ->
           {:error, :not_found, message}
 

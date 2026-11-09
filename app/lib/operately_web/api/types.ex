@@ -1243,6 +1243,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :access_levels, :access_levels, null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :notifications, list_of(:notification), null: true
+    field? :default_task_board_id, :id, null: true
     field? :task_statuses, list_of(:task_status), null: true
     field? :tasks_kanban_state, :json, null: true
   end
@@ -1682,6 +1683,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_task_adding, for: Operately.Activities.Content.TaskAdding do
+    field? :board_id, :id, null: true
     field :space, :space
     field :project, :project, null: true
     field :milestone, :milestone, null: true
@@ -1700,6 +1702,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_task_moving, for: Operately.Activities.Content.TaskMoving do
+    field? :origin_board_id, :id, null: true
+    field? :destination_board_id, :id, null: true
     field :task, :task, null: true
     field :task_name, :string, null: false
     field :origin_type, :task_type, null: false
@@ -2060,6 +2064,7 @@ defmodule OperatelyWeb.Api.Types do
   enum :search_sort, values: Operately.Search.CompanyQuery.Filters.sorts()
 
   object :search_navigation_target do
+    field? :board_id, :id, null: true
     field? :resource_hub_id, :string, null: true
     field? :folder_id, :string, null: true
     field? :document_id, :string, null: true
@@ -2136,7 +2141,18 @@ defmodule OperatelyWeb.Api.Types do
     field? :date, :date, null: true
   end
 
+  enum :task_board_archive_status, values: [:active, :archived, :all]
+
+  object :task_board_summary, for: Operately.Tasks.BoardSummary do
+    field :id, :id, null: false
+    field :name, :string, null: false
+    field :position, :integer, null: false
+    field :is_default, :boolean, null: false
+    field :archived_at, :datetime, null: true
+  end
+
   object :task, for: Operately.Tasks.Task do
+    field? :board_id, :id, null: true
     field :id, :string
     field? :url, :string
     field :name, :string

@@ -24,6 +24,7 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
       ],
       input_schema:
         JsonSchema.object(%{
+          "board_id" => JsonSchema.string("Optional board identifier within the selected space. Omit to list tasks across all its boards."),
           "space_id" => JsonSchema.string("Optional space identifier used to filter tasks."),
           "project_id" => JsonSchema.string("Optional project identifier used to filter tasks.")
         }),
@@ -43,17 +44,18 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
       {nil, nil} ->
         {:error, :invalid_arguments}
 
-      {project_id, nil} ->
+      {project_id, nil} when not is_map_key(arguments, "board_id") ->
         with {:ok, project_id} <- Helpers.decode_id(project_id) do
           ProjectTasksList.call(conn, %{project_id: project_id})
         end
 
       {nil, space_id} ->
-        with {:ok, space_id} <- Helpers.decode_id(space_id) do
-          SpaceTasksList.call(conn, %{space_id: space_id})
+        with {:ok, space_id} <- Helpers.decode_id(space_id),
+             {:ok, board_id} <- Helpers.decode_optional_id(arguments["board_id"]) do
+          SpaceTasksList.call(conn, %{space_id: space_id, board_id: board_id})
         end
 
-      {_project_id, _space_id} ->
+      _ ->
         {:error, :invalid_arguments}
     end
   end

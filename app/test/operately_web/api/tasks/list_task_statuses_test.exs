@@ -25,9 +25,9 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
       Map.merge(ctx, %{space: space, creator: creator})
     end
 
-    test "it requires a task_id", ctx do
+    test "it requires a task or board selector", ctx do
       assert {400, res} = query(ctx.conn, [:tasks, :list_task_statuses], %{})
-      assert res.message == "Missing required fields: task_id"
+      assert res.message == "The request was malformed"
     end
 
     test "returns not found for unknown task", ctx do
@@ -119,6 +119,16 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
     end
   end
 
+  test "reads an empty board and rejects conflicting task and board selectors", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space) |> Factory.log_in_person(:creator)
+    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Empty", task_statuses: ctx.space.task_statuses})
+    assert {200, response} = query(ctx.conn, [:tasks, :list_task_statuses], %{board_id: board.id})
+    assert response.board_id == Operately.ShortUuid.encode!(board.id)
+    assert length(response.task_statuses) == length(board.task_statuses)
+    assert {400, _} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(ctx.task), board_id: board.id})
+    assert {200, _} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(ctx.task), board_id: ctx.task.board_id})
+  end
+
   defp create_task(ctx, opts) do
     project =
       project_fixture(%{
@@ -156,4 +166,5 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
       assert serialized.value == status.value
     end)
   end
+
 end
