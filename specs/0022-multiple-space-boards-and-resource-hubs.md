@@ -8,7 +8,7 @@ Related issue: [#5587 — Support multiple kanban boards per space](https://gith
 
 ## Current State
 
-- Resource hubs already have independent IDs, and Space Tools renders a collection of hubs. `Api.Wrappers.DocsAndFiles.HubScope` selects the oldest hub for a space; external document wrappers and MCP tools generally accept parent IDs rather than hub IDs.
+- Resource hubs have persisted defaults, explicit selection, discovery, ordering, and management APIs. API, MCP, and CLI support creating, renaming, and deleting empty non-default hubs; reordering is internal-only.
 - A space's task statuses and kanban ordering live on `Groups.Group`. Tasks reference the space directly; no board entity exists.
 - Space Tools configuration exposes category toggles, not instance management.
 
@@ -51,7 +51,7 @@ Implement selection and authorization in shared API/domain code. MCP remains a t
 
 ## Implementation PRs
 
-Merge in order. Each PR includes relevant tests; expose multiple instances only after all affected consumers support explicit selection.
+Complete the boards backend before redesigning Space Tools for both boards and hubs. Keep the existing configuration UI until then; discard the separate hub-management UI implementation. Each PR includes relevant tests; expose multiple instances only after all affected consumers support explicit selection.
 
 ### PR 1 — Explicit hub selection and defaults ✅
 
@@ -62,21 +62,20 @@ Merge in order. Each PR includes relevant tests; expose multiple instances only 
 
 Implemented `documents/list_hubs`, MCP `list_resource_hubs`, persisted defaults, folder-derived selection, and structured retry errors. CLI file uploads also accept explicit hub IDs. Defaults survive export/import; older imports initialize missing defaults. Validation: 1,621 targeted backend checks, 23 CLI checks, catalog sync, and translation checks passed.
 
-### PR 2 — Resource hub management in Space Tools
+### PR 2 — Resource hub backend (implemented)
 
-Split into three independently reviewable PRs:
+Split into two independently reviewable PRs:
 
 1. **Data foundation:** add/backfill `position` using migration-local schemas; preserve ordering and defaults through export/import, including older packages. No archive state.
 2. **Management API:** create, rename, and delete through actual `resource_hubs` endpoints, external `documents/*` routes, MCP, and generated CLI commands. Reordering is internal-only for Space Tools. Require space edit permission and respect company read-only mode. Lock the space and hubs transactionally. Reordering requires every hub exactly once. New hubs append without changing the default; space creation initializes the default.
-3. **Space Tools UI:** immediately saved hub controls, separate from category Save/Cancel. Include deletion confirmation for non-default hubs; hide deletion for the default. Keep management available when the category is disabled. Use TurboUI controls and generated TanStack queries/mutations.
 
 Deletion rejects live content, including drafts by any author and empty folders. Deleted content and deleted folder trees do not block removal; clean up their remaining records with the hub. The default hub cannot be deleted, including when it is the last hub. The default hub cannot be changed. Return `default_resource_hub_deletion_forbidden` for default deletion attempts. Return `resource_hub_not_empty` with removal guidance. No archive/restore endpoints, filters, or read-only state.
 
-Verify permissions, company isolation, empty/nonempty deletion, concurrent content creation, ordering, fixed default preservation, import compatibility, and disabled categories. Include one complete two-hub UI flow and one lifecycle workflow each for CLI and MCP.
+Verify permissions, company isolation, empty/nonempty deletion, concurrent content creation and moves, ordering, fixed default preservation, import compatibility, and disabled categories. Include one lifecycle workflow each for CLI and MCP. Hub management UI and its feature coverage move to PR 6.
 
-### PR 3 — Board schema preparation
+### PR 3 — Board schema preparation ✅
 
-- Add the board table, nullable task/default references, and ownership constraints without changing runtime behavior.
+- Add the board table and nullable task/default references using ordinary foreign keys, without changing runtime behavior. Matching-space ownership is validated by operations, not composite foreign keys.
 - Prepare an idempotent data migration using migration-local schemas. Do not enable additional boards yet.
 - Cover preservation of status IDs, ordering, task IDs, and spaces with disabled tools in migration tests.
 
@@ -84,6 +83,7 @@ Verify permissions, company isolation, empty/nonempty deletion, concurrent conte
 
 - Run the backfill and switch readers/writers together under a deployment write pause so concurrent legacy writes cannot be lost. Verify every space task has a board before enabling writes.
 - Update creation, statuses, ordering synchronization, task moves, archives, serializers, and space creation to use boards. Retain legacy API projections and URL adapters.
+- Validate that assigned boards and defaults belong to the destination space before writing references.
 - Add explicit board selection and discovery to API/MCP/CLI; preserve all-space task listings. Continue exposing one board per space in the UI.
 - Update activity/navigation context, search, and company export/import so board ownership survives links and data transfers. Audit the corresponding hub metadata added in PRs 1–2.
 - Verify existing single-board flows and old clients, plus board isolation, status mapping, and task-specific links using multiple-board fixtures.
@@ -94,10 +94,14 @@ Verify permissions, company isolation, empty/nonempty deletion, concurrent conte
 - Extend Space Tools responses with board summaries while preserving existing fields.
 - Verify concurrent default/archive changes, cross-space rejection, and independent statuses/order across two boards before enabling creation.
 
-### PR 6 — Multiple boards in Space Tools
+### PR 6 — Combined Space Tools redesign for boards and hubs
 
-- Add board instance controls alongside hub controls, board-specific cards/routes, and destination selection when creating or moving tasks.
-- Reuse TurboUI board and configuration primitives; use generated TanStack queries/mutations for affected app surfaces. Include translations and regenerated resources with each UI PR.
+- Redesign the configuration page once, using the completed board and hub APIs. Give each category an ordered list of named instances with consistent create, rename, and reorder controls.
+- Save instance actions immediately, separately from category Save/Cancel. Keep instance management available when a category is disabled.
+- Boards expose archive/restore and default selection. Hubs expose deletion with confirmation only for empty non-default hubs; hide deletion for the fixed default hub.
+- Add board-specific cards/routes and destination selection when creating or moving tasks. Preserve existing hub links and show each instance as a separate named card.
+- Reuse TurboUI controls, forms, menus, and confirmations; use generated TanStack queries/mutations. Invalidate configuration, cards, discovery, and affected content after mutations.
+- Apply Resource Hub terminology consistently across management, drafts, and rename dialogs. Include translations and regenerated resources with the redesign.
 - Verify two-board/two-hub workflows, archive/restore, defaults, disabled categories, and old links in feature tests.
 
 For every API contract PR, regenerate clients and the CLI catalog, update MCP schemas/examples/catalog tests, run `make test.cli.catalog.sync`, and extend backward-compatibility coverage. Preserve one-instance behavior throughout rollout.
