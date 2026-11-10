@@ -1074,6 +1074,14 @@ export interface ActivityContentTaskBoardCreated {
   name: string;
 }
 
+export interface ActivityContentTaskBoardDefaultChanged {
+  __typename: "activity_content_task_board_default_changed";
+  space: Space | null;
+  boardId: Id;
+  previousBoardId: Id | null;
+  name: string;
+}
+
 export interface ActivityContentTaskBoardRenamed {
   __typename: "activity_content_task_board_renamed";
   space: Space | null;
@@ -3021,6 +3029,7 @@ export type ActivityContent =
   | ActivityContentResourceHubRenamed
   | ActivityContentTaskBoardCreated
   | ActivityContentTaskBoardRenamed
+  | ActivityContentTaskBoardDefaultChanged
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
   | ActivityContentResourceHubLinkDeleted
@@ -3242,8 +3251,8 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "project_check_in"
   | "kpi"
+  | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"

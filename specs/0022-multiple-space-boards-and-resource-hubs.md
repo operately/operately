@@ -10,7 +10,7 @@ Related issue: [#5587 — Support multiple kanban boards per space](https://gith
 
 - Resource hubs have persisted defaults, explicit selection, discovery, ordering, and management APIs. API, MCP, and CLI support creating, renaming, and deleting empty non-default hubs; reordering is internal-only.
 - Space task statuses and ordering live on `TaskBoard`; space tasks reference their board and space. Legacy space responses project the default board. API, MCP, and CLI support explicit board selection, discovery, and moves.
-- Board creation and renaming are available through API/MCP/CLI; reordering is internal-only. Space Tools returns active board summaries even when Tasks is disabled. Default selection and archive management are upcoming.
+- Board creation, renaming, and default selection are available through API/MCP/CLI; reordering is internal-only. Space Tools returns active board summaries even when Tasks is disabled. Archive management is upcoming.
 - Space Tools configuration exposes category toggles, not instance management.
 
 ## Scope and Experience
@@ -105,7 +105,7 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 - Append new boards with independent statuses/order without changing the default. Reordering requires every active board exactly once. Extend Space Tools responses with board summaries; preserve existing fields and disabled-category management.
 - Record creation/rename activities. Verify permissions, company isolation, ordering, concurrency, and agent workflows.
 
-### PR 5B — Change the default board
+### PR 5B — Change the default board ✅
 
 - Add default selection through API/MCP/CLI, accepting only an active board in the same space. Record the change and preserve legacy requests following the selected default.
 - Verify permissions, ownership, and concurrent changes under the space lock.

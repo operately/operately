@@ -1859,6 +1859,16 @@ msgid "%{author} joined the space"
 msgstr "%{author} ist dem Arbeitsbereich beigetreten"
 
 #.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:23
+msgid "%{author} made %{boardName} the default task board in the <space>%{spaceName}</space> space."
+msgstr "%{author} hat %{boardName} im Arbeitsbereich <space>%{spaceName}</space> als Standardboard festgelegt."
+
+#.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:22
+msgid "%{author} made %{boardName} the default task board."
+msgstr "%{author} hat %{boardName} als Standardboard festgelegt."
+
+#.frontend
 #: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:54
 msgid "%{author} made a copy of the <original>%{originalName}</original> folder and named it <folder>%{folderName}</folder>"
 msgstr "%{author} hat eine Kopie des Ordners <original>%{originalName}</original> erstellt und sie <folder>%{folderName}</folder> genannt"
@@ -7322,6 +7332,13 @@ msgstr "Zu schreibgeschütztem Zugriff wechseln"
 #: assets/js/features/activities/GoalReparent/index.tsx:107
 msgid "Changed a goal's parent goal"
 msgstr "Übergeordnetes Ziel eines Ziels geändert"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:10
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:15
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:37
+msgid "Changed default task board"
+msgstr "Standardboard geändert"
 
 #.frontend
 #: assets/js/features/activities/ProjectChampionUpdating/index.tsx:92
@@ -21243,6 +21260,7 @@ msgstr "Dieser Tab ist nicht aktuell. Die neueste Version wird geladen …"
 #.elixir
 #: lib/operately_web/api/tasks/board_scope.ex:47
 #: lib/operately_web/api/tasks/move.ex:93
+#: lib/operately_web/api/tasks/set_default_board.ex:27
 msgid "This task board is archived. Restore it before making changes."
 msgstr "Dieses Aufgabenboard ist archiviert. Stelle es wieder her, bevor du Änderungen vornimmst."
 

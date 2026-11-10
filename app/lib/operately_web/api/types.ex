@@ -1348,6 +1348,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_resource_hub_renamed,
       :activity_content_task_board_created,
       :activity_content_task_board_renamed,
+      :activity_content_task_board_default_changed,
       :activity_content_resource_hub_link_commented,
       :activity_content_resource_hub_link_created,
       :activity_content_resource_hub_link_deleted,
@@ -1415,6 +1416,13 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_task_board_created, for: Operately.Activities.Content.TaskBoardCreated do
     field :space, :space, null: true
     field :board_id, :id, null: false
+    field :name, :string, null: false
+  end
+
+  object :activity_content_task_board_default_changed, for: Operately.Activities.Content.TaskBoardDefaultChanged do
+    field :space, :space, null: true
+    field :board_id, :id, null: false
+    field :previous_board_id, :id, null: true
     field :name, :string, null: false
   end
 

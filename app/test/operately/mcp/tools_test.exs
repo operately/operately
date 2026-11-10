@@ -103,6 +103,7 @@ defmodule Operately.Mcp.ToolsTest do
     "create_task_board",
     "move_task",
     "rename_task_board",
+    "set_default_task_board",
     "create_milestone",
     "update_milestone_title",
     "update_milestone_description",

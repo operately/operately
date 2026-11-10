@@ -1864,6 +1864,16 @@ msgid "%{author} joined the space"
 msgstr "%{author} entrou no espaço"
 
 #.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:23
+msgid "%{author} made %{boardName} the default task board in the <space>%{spaceName}</space> space."
+msgstr "%{author} definiu %{boardName} como o quadro de tarefas padrão no espaço <space>%{spaceName}</space>."
+
+#.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:22
+msgid "%{author} made %{boardName} the default task board."
+msgstr "%{author} definiu %{boardName} como o quadro de tarefas padrão."
+
+#.frontend
 #: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:54
 msgid "%{author} made a copy of the <original>%{originalName}</original> folder and named it <folder>%{folderName}</folder>"
 msgstr "%{author} fez uma cópia da pasta <original>%{originalName}</original> e a nomeou <folder>%{folderName}</folder>"
@@ -7448,6 +7458,13 @@ msgstr "Alterar para somente leitura"
 #: assets/js/features/activities/GoalReparent/index.tsx:107
 msgid "Changed a goal's parent goal"
 msgstr "Alterou o objetivo superior de um objetivo"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:10
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:15
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:37
+msgid "Changed default task board"
+msgstr "Quadro de tarefas padrão alterado"
 
 #.frontend
 #: assets/js/features/activities/ProjectChampionUpdating/index.tsx:92
@@ -21770,6 +21787,7 @@ msgstr "Esta aba está desatualizada. Recarregando para obter a versão mais rec
 #.elixir
 #: lib/operately_web/api/tasks/board_scope.ex:47
 #: lib/operately_web/api/tasks/move.ex:93
+#: lib/operately_web/api/tasks/set_default_board.ex:27
 msgid "This task board is archived. Restore it before making changes."
 msgstr "Este quadro de tarefas está arquivado. Restaure-o antes de fazer alterações."
 

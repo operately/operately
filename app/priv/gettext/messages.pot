@@ -1858,6 +1858,16 @@ msgid "%{author} joined the space"
 msgstr ""
 
 #.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:23
+msgid "%{author} made %{boardName} the default task board in the <space>%{spaceName}</space> space."
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:22
+msgid "%{author} made %{boardName} the default task board."
+msgstr ""
+
+#.frontend
 #: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:54
 msgid "%{author} made a copy of the <original>%{originalName}</original> folder and named it <folder>%{folderName}</folder>"
 msgstr ""
@@ -7259,6 +7269,13 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/GoalReparent/index.tsx:107
 msgid "Changed a goal's parent goal"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:10
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:15
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:37
+msgid "Changed default task board"
 msgstr ""
 
 #.frontend
@@ -21009,6 +21026,7 @@ msgstr ""
 #.elixir
 #: lib/operately_web/api/tasks/board_scope.ex:47
 #: lib/operately_web/api/tasks/move.ex:93
+#: lib/operately_web/api/tasks/set_default_board.ex:27
 msgid "This task board is archived. Restore it before making changes."
 msgstr ""
 
