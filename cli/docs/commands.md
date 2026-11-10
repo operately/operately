@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 261
+- Endpoints: 263
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -252,6 +252,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `spaces update_task_statuses` | `op spaces update_task_statuses` | `POST` | `/api/external/v1/spaces/update_task_statuses` |
 | `spaces update_tools` | `op spaces update_tools` | `POST` | `/api/external/v1/spaces/update_tools` |
 | `tasks create` | `op tasks create` | `POST` | `/api/external/v1/tasks/create` |
+| `tasks create_board` | `op tasks create_board` | `POST` | `/api/external/v1/tasks/create_board` |
 | `tasks delete` | `op tasks delete` | `POST` | `/api/external/v1/tasks/delete` |
 | `tasks get` | `op tasks get` | `GET` | `/api/external/v1/tasks/get` |
 | `tasks list` | `op tasks list` | `GET` | `/api/external/v1/tasks/list` |
@@ -259,6 +260,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `tasks list_potential_assignees` | `op tasks list_potential_assignees` | `GET` | `/api/external/v1/tasks/list_potential_assignees` |
 | `tasks list_task_statuses` | `op tasks list_task_statuses` | `GET` | `/api/external/v1/tasks/list_task_statuses` |
 | `tasks move` | `op tasks move` | `POST` | `/api/external/v1/tasks/move` |
+| `tasks rename_board` | `op tasks rename_board` | `POST` | `/api/external/v1/tasks/rename_board` |
 | `tasks update_archive` | `op tasks update_archive` | `POST` | `/api/external/v1/tasks/update_archive` |
 | `tasks update_assignee` | `op tasks update_assignee` | `POST` | `/api/external/v1/tasks/update_assignee` |
 | `tasks update_description` | `op tasks update_description` | `POST` | `/api/external/v1/tasks/update_description` |

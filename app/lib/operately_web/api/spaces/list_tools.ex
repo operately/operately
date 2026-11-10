@@ -73,6 +73,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
        projects: projects,
        goals: goals,
        tasks: tasks,
+       task_boards: OperatelyWeb.Api.Tasks.BoardScope.list(me, space),
        messages_boards: messages_boards,
        resource_hubs: resource_hubs,
        kpis: kpis,

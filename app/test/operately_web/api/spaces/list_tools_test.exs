@@ -484,6 +484,21 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
     end
   end
 
+  test "includes active board summaries even when Tasks is disabled", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.set_space_tools(:space, tasks_enabled: false) |> Factory.log_in_person(:creator)
+    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Other", position: 1})
+    Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Archived", position: 2, archived_at: ~N[2026-01-01 00:00:00]})
+
+    assert {200, %{tools: tools}} = query(ctx.conn, [:spaces, :list_tools], %{space_id: ctx.space.id})
+    assert Enum.map(tools.task_boards, & &1.id) == Enum.map([ctx.space.default_task_board_id, board.id], &Operately.ShortUuid.encode!/1)
+    assert Enum.map(tools.task_boards, & &1.is_default) == [true, false]
+    assert tools.tasks == []
+    refute tools.tasks_enabled
+
+    ctx = ctx |> Factory.add_company_member(:outsider) |> Factory.log_in_person(:outsider)
+    assert {200, %{tools: %{task_boards: []}}} = query(ctx.conn, [:spaces, :list_tools], %{space_id: ctx.space.id})
+  end
+
   #
   # Helpers
   #

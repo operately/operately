@@ -10,6 +10,7 @@ Related issue: [#5587 — Support multiple kanban boards per space](https://gith
 
 - Resource hubs have persisted defaults, explicit selection, discovery, ordering, and management APIs. API, MCP, and CLI support creating, renaming, and deleting empty non-default hubs; reordering is internal-only.
 - Space task statuses and ordering live on `TaskBoard`; space tasks reference their board and space. Legacy space responses project the default board. API, MCP, and CLI support explicit board selection, discovery, and moves.
+- Board creation and renaming are available through API/MCP/CLI; reordering is internal-only. Space Tools returns active board summaries even when Tasks is disabled. Default selection and archive management are upcoming.
 - Space Tools configuration exposes category toggles, not instance management.
 
 ## Scope and Experience
@@ -98,11 +99,26 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 - Add explicit board move destinations and status mapping. Existing moves retain their status fallback; explicit board moves require a destination status when no equivalent exists. Activity and search payloads include board context. Board-specific navigation and legacy URL adapters move to PR 6.
 - Keep the UI on one board per space until management and the combined redesign are ready. Verify multiple-board fixtures and agent compatibility; regenerate affected clients/catalogs.
 
-### PR 5 — Board instance management APIs
+### PR 5A — Create, rename, and reorder boards ✅
 
-- Add create, rename, reorder, archive/restore, and default-selection APIs with MCP/CLI exposure. Enforce ownership, default, and archive invariants.
-- Extend Space Tools responses with board summaries while preserving existing fields.
-- Verify concurrent default/archive changes, cross-space rejection, and independent statuses/order across two boards before enabling creation.
+- Add create/rename APIs with MCP/CLI adapters; keep reordering internal-only. Require space edit access and serialize management changes by locking the space before boards.
+- Append new boards with independent statuses/order without changing the default. Reordering requires every active board exactly once. Extend Space Tools responses with board summaries; preserve existing fields and disabled-category management.
+- Record creation/rename activities. Verify permissions, company isolation, ordering, concurrency, and agent workflows.
+
+### PR 5B — Change the default board
+
+- Add default selection through API/MCP/CLI, accepting only an active board in the same space. Record the change and preserve legacy requests following the selected default.
+- Verify permissions, ownership, and concurrent changes under the space lock.
+
+### PR 5C — Archived-board write protection
+
+- Reject writes to archived boards in shared operations, including tasks, moves, comments, and reactions. Check archive state inside write transactions; preserve authorized reads.
+- Add structured restore guidance and test archived fixtures. Do not expose archive controls yet.
+
+### PR 5D — Archive and restore boards
+
+- Add archive/restore APIs with MCP/CLI adapters and activities. Archiving the default requires an explicit active replacement; reject archiving the last active default.
+- Append restored boards without changing the default. Verify concurrent archive/default changes, ordering, and export/import preservation. Build on PR 5C's write protection.
 
 ### PR 6 — Combined Space Tools redesign for boards and hubs
 

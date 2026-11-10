@@ -169,6 +169,8 @@ defmodule OperatelyWeb.Api do
         query(:list_potential_assignees, OperatelyWeb.Api.Tasks.ListPotentialAssignees)
         query(:list_task_statuses, OperatelyWeb.Api.Tasks.ListTaskStatuses)
         query(:list_boards, OperatelyWeb.Api.Tasks.ListBoards)
+        mutation(:create_board, OperatelyWeb.Api.Tasks.CreateBoard)
+        mutation(:rename_board, OperatelyWeb.Api.Tasks.RenameBoard)
 
         mutation(:create, OperatelyWeb.Api.Tasks.Create)
         mutation(:delete, OperatelyWeb.Api.Tasks.Delete)
@@ -367,6 +369,10 @@ defmodule OperatelyWeb.Api do
 
   defmacro internal_endpoints do
     quote do
+      namespace :tasks do
+        mutation :reorder_boards, OperatelyWeb.Api.Tasks.ReorderBoards
+      end
+
       namespace :resource_hubs do
         mutation :reorder, OperatelyWeb.Api.ResourceHubs.Reorder
       end

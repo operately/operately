@@ -1368,6 +1368,16 @@ msgid "%{author} created the project"
 msgstr "%{author} criou o projeto"
 
 #.frontend
+#: assets/js/features/activities/TaskBoardCreated/index.tsx:23
+msgid "%{author} created the task board %{boardName} in the <space>%{spaceName}</space> space."
+msgstr "%{author} criou o quadro de tarefas %{boardName} no espaço <space>%{spaceName}</space>."
+
+#.frontend
+#: assets/js/features/activities/TaskBoardCreated/index.tsx:22
+msgid "%{author} created the task board %{boardName}."
+msgstr "%{author} criou o quadro de tarefas %{boardName}."
+
+#.frontend
 #: assets/js/features/activities/CompanyAdding/index.tsx:30
 msgid "%{author} created this company"
 msgstr "%{author} criou esta empresa"
@@ -2327,6 +2337,16 @@ msgstr "%{author} renomeou o objetivo"
 #: assets/js/features/activities/ProjectRenamed/index.tsx:35
 msgid "%{author} renamed the project"
 msgstr "%{author} renomeou o projeto"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRenamed/index.tsx:23
+msgid "%{author} renamed the task board %{boardName} in the <space>%{spaceName}</space> space."
+msgstr "%{author} renomeou o quadro de tarefas %{boardName} no espaço <space>%{spaceName}</space>."
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRenamed/index.tsx:22
+msgid "%{author} renamed the task board %{boardName}."
+msgstr "%{author} renomeou o quadro de tarefas %{boardName}."
 
 #.frontend
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:30
@@ -7679,7 +7699,7 @@ msgid "Choose a date"
 msgstr "Escolha uma data"
 
 #.elixir
-#: lib/operately_web/api/tasks/move.ex:84
+#: lib/operately_web/api/tasks/move.ex:89
 msgid "Choose a destination status and retry with destination_status_id."
 msgstr "Escolha um status de destino e tente novamente com destination_status_id."
 
@@ -9138,6 +9158,13 @@ msgstr "Data de criação entre"
 #~ #: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:86
 #~ msgid "Created folder: a folder"
 #~ msgstr "Criou a pasta: uma pasta"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardCreated/index.tsx:10
+#: assets/js/features/activities/TaskBoardCreated/index.tsx:15
+#: assets/js/features/activities/TaskBoardCreated/index.tsx:37
+msgid "Created task board"
+msgstr "Quadro de tarefas criado"
 
 #.frontend
 #: ../turboui/src/SortControl/index.tsx:19
@@ -10862,7 +10889,7 @@ msgstr "Esc"
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:55
 #: lib/operately_web/api/projects.ex:1278
-#: lib/operately_web/api/spaces.ex:530
+#: lib/operately_web/api/spaces.ex:531
 msgid "Every deleted task status in use requires a replacement"
 msgstr "Cada status de tarefa em uso que for excluído precisa de um substituto"
 
@@ -12505,6 +12532,11 @@ msgstr "Incluir"
 msgid "Include every Resource Hub exactly once when reordering."
 msgstr "Inclua cada central de recursos exatamente uma vez ao reordenar."
 
+#.elixir
+#: lib/operately_web/api/tasks/reorder_boards.ex:28
+msgid "Include every active task board exactly once when reordering."
+msgstr "Inclua cada quadro de tarefas ativo exatamente uma vez ao reordenar."
+
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:123
 msgid "Include in template"
@@ -12734,7 +12766,7 @@ msgstr "Parâmetros de mensagem do site inválidos"
 #.elixir
 #: lib/operately/operations/kanban_state_updating.ex:89
 #: lib/operately/operations/kanban_state_updating.ex:101
-#: lib/operately_web/api/spaces.ex:521
+#: lib/operately_web/api/spaces.ex:522
 #: lib/operately_web/api/tasks.ex:760
 #: lib/operately_web/api/tasks.ex:1164
 #: lib/operately_web/api/tasks.ex:1171
@@ -12768,7 +12800,7 @@ msgid "Invalid token"
 msgstr "Token inválido"
 
 #.elixir
-#: lib/operately_web/api/spaces.ex:524
+#: lib/operately_web/api/spaces.ex:525
 msgid "Invalid tools"
 msgstr "Ferramentas inválidas"
 
@@ -14282,6 +14314,8 @@ msgstr "O nome não pode ficar em branco"
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
 #: lib/operately_web/api/resource_hubs/create.ex:27
 #: lib/operately_web/api/resource_hubs/rename.ex:37
+#: lib/operately_web/api/tasks/create_board.ex:26
+#: lib/operately_web/api/tasks/rename_board.ex:26
 msgid "Name is required"
 msgstr "O nome é obrigatório"
 
@@ -17590,6 +17624,13 @@ msgstr "Renomeou a pasta: %{folderName}"
 #~ #: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
 #~ msgid "Renamed a folder: a folder"
 #~ msgstr "Renomeou a pasta: uma pasta"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRenamed/index.tsx:10
+#: assets/js/features/activities/TaskBoardRenamed/index.tsx:15
+#: assets/js/features/activities/TaskBoardRenamed/index.tsx:37
+msgid "Renamed task board"
+msgstr "Quadro de tarefas renomeado"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:92
@@ -21728,7 +21769,7 @@ msgstr "Esta aba está desatualizada. Recarregando para obter a versão mais rec
 
 #.elixir
 #: lib/operately_web/api/tasks/board_scope.ex:47
-#: lib/operately_web/api/tasks/move.ex:88
+#: lib/operately_web/api/tasks/move.ex:93
 msgid "This task board is archived. Restore it before making changes."
 msgstr "Este quadro de tarefas está arquivado. Restaure-o antes de fazer alterações."
 

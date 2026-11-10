@@ -1067,6 +1067,21 @@ export interface ActivityContentTaskAssigneeUpdating {
   removedAssignees: Person[];
 }
 
+export interface ActivityContentTaskBoardCreated {
+  __typename: "activity_content_task_board_created";
+  space: Space | null;
+  boardId: Id;
+  name: string;
+}
+
+export interface ActivityContentTaskBoardRenamed {
+  __typename: "activity_content_task_board_renamed";
+  space: Space | null;
+  boardId: Id;
+  oldName: string;
+  newName: string;
+}
+
 export interface ActivityContentTaskClosing {
   __typename: "activity_content_task_closing";
   companyId?: string | null;
@@ -2661,6 +2676,7 @@ export interface SpaceTools {
   messagesBoards: MessagesBoard[] | null;
   resourceHubs: ResourceHub[] | null;
   tasks: Task[] | null;
+  taskBoards?: TaskBoardSummary[] | null;
   kpis: Kpi[] | null;
   templates: ProjectTemplate[] | null;
 }
@@ -3003,6 +3019,8 @@ export type ActivityContent =
   | ActivityContentResourceHubFolderRenamed
   | ActivityContentResourceHubDeleted
   | ActivityContentResourceHubRenamed
+  | ActivityContentTaskBoardCreated
+  | ActivityContentTaskBoardRenamed
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
   | ActivityContentResourceHubLinkDeleted
@@ -3224,11 +3242,11 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
+  | "kpi"
   | "project_retrospective"
-  | "goal_discussion"
   | "project_discussion"
+  | "goal_discussion"
   | "goal_check_in"
   | "space_discussion"
   | "comment"
