@@ -40,6 +40,21 @@ defmodule Operately.Support.CliE2E.Tasks.BoardSelectionSteps do
     ctx
   end
 
+  step :set_default_board, ctx do
+    payload = command!(ctx, ["tasks", "set_default_board", "--space-id", ctx.space.id, "--board-id", ctx.board.id])
+    assert payload["success"]
+    space = Repo.reload!(ctx.space)
+    assert space.default_task_board_id == ctx.board.id
+    Map.put(ctx, :space, space)
+  end
+
+  step :assert_selected_default_listed, ctx do
+    payload = command!(ctx, ["tasks", "list_boards", "--space-id", ctx.space.id])
+    assert [default] = Enum.filter(payload["boards"], & &1["is_default"])
+    assert default["id"] == Operately.ShortUuid.encode!(ctx.board.id)
+    ctx
+  end
+
   step :discover_boards, ctx do
     payload = command!(ctx, ["tasks", "list_boards", "--space-id", ctx.space.id])
     assert length(payload["boards"]) == 2

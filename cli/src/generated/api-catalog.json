@@ -832,6 +832,10 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_task_board_default_changed",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_resource_hub_link_commented",
           "kind": "named"
         },
@@ -24894,6 +24898,65 @@
             "has_default": false
           }
         ]
+      },
+      "activity_content_task_board_default_changed": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "previous_board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
       }
     }
   },
@@ -24915,7 +24978,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 263,
+  "endpoint_count": 264,
   "endpoints": [
     {
       "name": "create",
@@ -42065,6 +42128,53 @@
       "docstring": "Renames a task board. Requires space edit access."
     },
     {
+      "name": "set_default_board",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/set_default_board",
+      "handler": "OperatelyWeb.Api.Tasks.SetDefaultBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/set_default_board",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Selects the active task board used by space requests without a board selector."
+    },
+    {
       "name": "update_archive",
       "type": "mutation",
       "path": "/api/external/v1/tasks/update_archive",
@@ -42608,6 +42718,6 @@
     }
   ],
   "query_count": 79,
-  "mutation_count": 184,
+  "mutation_count": 185,
   "schema_version": 1
 }
