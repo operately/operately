@@ -47,9 +47,24 @@ defmodule OperatelyWeb.Api.Tasks.CreateBoardTest do
 
   test "blank names do not create boards or activities", ctx do
     count = Repo.aggregate(TaskBoard, :count)
-    assert {400, _} = mutation(ctx.conn, [:tasks, :create_board], %{space_id: ctx.space.id, name: "   "})
+    assert {400, %{message: "Name is required", details: %{field: "name"}}} = mutation(ctx.conn, [:tasks, :create_board], %{space_id: ctx.space.id, name: "   "})
     assert Repo.aggregate(TaskBoard, :count) == count
     refute Repo.get_by(Operately.Activities.Activity, action: "task_board_created")
+  end
+
+  test "accepts 255 characters and rejects longer names without creating records", ctx do
+    name = String.duplicate("é", 255)
+    assert {200, %{board: %{name: ^name}}} = mutation(ctx.conn, [:tasks, :create_board], %{space_id: ctx.space.id, name: name})
+    board_count = Repo.aggregate(TaskBoard, :count)
+    activity_count = Repo.aggregate(Operately.Activities.Activity, :count)
+
+    for name <- [String.duplicate("a", 256), String.duplicate("e\u0301", 128)] do
+      assert {400, error} = mutation(ctx.conn, [:tasks, :create_board], %{space_id: ctx.space.id, name: name})
+      assert error.message == "should be at most 255 character(s)"
+      assert error.details.field == "name"
+      assert Repo.aggregate(TaskBoard, :count) == board_count
+      assert Repo.aggregate(Operately.Activities.Activity, :count) == activity_count
+    end
   end
 
   defp grant_access(_ctx, :no_access), do: :ok

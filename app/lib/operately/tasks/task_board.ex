@@ -26,6 +26,7 @@ defmodule Operately.Tasks.TaskBoard do
     |> cast(attrs, [:space_id, :name, :tasks_kanban_state, :position])
     |> cast_embed(:task_statuses)
     |> validate_required([:space_id, :name, :position])
+    |> validate_length(:name, max: 255, count: :codepoints)
     |> foreign_key_constraint(:space_id)
   end
 

@@ -23,7 +23,9 @@ defmodule OperatelyWeb.Api.Tasks.RenameBoard do
          {:ok, _board} <- Operately.Operations.TaskBoardRenaming.run(me, board, inputs.new_name) do
       {:ok, %{success: true}}
     else
-      {:error, %Ecto.Changeset{}} -> {:error, :bad_request, gettext("Name is required"), %{field: "new_name"}}
+      {:error, %Ecto.Changeset{errors: [name: {"can't be blank", _}]}} -> {:error, :bad_request, gettext("Name is required"), %{field: "new_name"}}
+      {:error, %Ecto.Changeset{errors: [name: error]}} -> {:error, :bad_request, Operately.I18n.ValidationErrors.translate(error), %{field: "new_name"}}
+      {:error, %Ecto.Changeset{}} -> {:error, :bad_request}
       {:error, reason} -> {:error, reason}
     end
   end

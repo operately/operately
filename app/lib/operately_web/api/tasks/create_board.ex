@@ -23,7 +23,9 @@ defmodule OperatelyWeb.Api.Tasks.CreateBoard do
          {:ok, board} <- Operately.Operations.TaskBoardCreating.run(me, space, inputs.name) do
       {:ok, %{board: Serializer.serialize(BoardSummary.build(board, space.default_task_board_id))}}
     else
-      {:error, %Ecto.Changeset{}} -> {:error, :bad_request, gettext("Name is required"), %{field: "name"}}
+      {:error, %Ecto.Changeset{errors: [name: {"can't be blank", _}]}} -> {:error, :bad_request, gettext("Name is required"), %{field: "name"}}
+      {:error, %Ecto.Changeset{errors: [name: error]}} -> {:error, :bad_request, Operately.I18n.ValidationErrors.translate(error), %{field: "name"}}
+      {:error, %Ecto.Changeset{}} -> {:error, :bad_request}
       {:error, reason} -> {:error, reason}
     end
   end

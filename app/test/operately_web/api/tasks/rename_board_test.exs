@@ -39,8 +39,25 @@ defmodule OperatelyWeb.Api.Tasks.RenameBoardTest do
     assert [activity] = Repo.all(from a in Operately.Activities.Activity, where: a.action == "task_board_renamed")
     assert activity.content["old_name"] == board.name
     assert activity.content["new_name"] == "Design"
-    assert {400, _} = mutation(ctx.conn, [:tasks, :rename_board], %{inputs | new_name: " "})
+    assert {400, %{message: "Name is required", details: %{field: "new_name"}}} = mutation(ctx.conn, [:tasks, :rename_board], %{inputs | new_name: " "})
     assert Repo.reload!(board).name == "Design"
+  end
+
+  test "accepts 255 characters and rejects longer names without changing records", ctx do
+    name = String.duplicate("é", 255)
+    inputs = %{board_id: ctx.space.default_task_board_id, new_name: name}
+    assert {200, _} = mutation(ctx.conn, [:tasks, :rename_board], inputs)
+    board = Repo.get!(TaskBoard, inputs.board_id)
+    assert board.name == name
+    activity_count = Repo.aggregate(Operately.Activities.Activity, :count)
+
+    for name <- [String.duplicate("a", 256), String.duplicate("e\u0301", 128)] do
+      assert {400, error} = mutation(ctx.conn, [:tasks, :rename_board], %{inputs | new_name: name})
+      assert error.message == "should be at most 255 character(s)"
+      assert error.details.field == "new_name"
+      assert Repo.reload!(board) == board
+      assert Repo.aggregate(Operately.Activities.Activity, :count) == activity_count
+    end
   end
 
   defp grant_access(_ctx, :no_access), do: :ok
