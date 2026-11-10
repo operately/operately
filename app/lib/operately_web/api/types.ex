@@ -1346,6 +1346,8 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_resource_hub_folder_renamed,
       :activity_content_resource_hub_deleted,
       :activity_content_resource_hub_renamed,
+      :activity_content_task_board_created,
+      :activity_content_task_board_renamed,
       :activity_content_resource_hub_link_commented,
       :activity_content_resource_hub_link_created,
       :activity_content_resource_hub_link_deleted,
@@ -1408,6 +1410,19 @@ defmodule OperatelyWeb.Api.Types do
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field :name, :string, null: false
+  end
+
+  object :activity_content_task_board_created, for: Operately.Activities.Content.TaskBoardCreated do
+    field :space, :space, null: true
+    field :board_id, :id, null: false
+    field :name, :string, null: false
+  end
+
+  object :activity_content_task_board_renamed, for: Operately.Activities.Content.TaskBoardRenamed do
+    field :space, :space, null: true
+    field :board_id, :id, null: false
+    field :old_name, :string, null: false
+    field :new_name, :string, null: false
   end
 
   object :activity_content_resource_hub_renamed, for: Operately.Activities.Content.ResourceHubRenamed do
@@ -1784,6 +1799,7 @@ defmodule OperatelyWeb.Api.Types do
     field :messages_boards, list_of(:messages_board), null: true
     field :resource_hubs, list_of(:resource_hub), null: true
     field :tasks, list_of(:task), null: true
+    field? :task_boards, list_of(:task_board_summary), null: true
     field :kpis, list_of(:kpi), null: true
     field :templates, list_of(:project_template), null: true
   end
