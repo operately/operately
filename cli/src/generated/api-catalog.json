@@ -824,6 +824,14 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_task_board_created",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_board_renamed",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_resource_hub_link_commented",
           "kind": "named"
         },
@@ -8621,6 +8629,20 @@
               "kind": "list"
             },
             "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "task_boards",
+            "type": {
+              "item": {
+                "name": "task_board_summary",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
             "nullable": true,
             "has_default": false
           },
@@ -24765,6 +24787,113 @@
             "has_default": false
           }
         ]
+      },
+      "activity_content_task_board_created": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_task_board_renamed": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "old_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "new_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
       }
     }
   },
@@ -24786,7 +24915,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 261,
+  "endpoint_count": 263,
   "endpoints": [
     {
       "name": "create",
@@ -41300,6 +41429,53 @@
       "docstring": "Creates a task in a project or space. Space requests use the persisted default board unless board_id selects another board in that space."
     },
     {
+      "name": "create_board",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/create_board",
+      "handler": "OperatelyWeb.Api.Tasks.CreateBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "board",
+          "type": {
+            "name": "task_board_summary",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/create_board",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Creates a task board at the end of the space's active boards without changing the default. Requires space edit access."
+    },
+    {
       "name": "delete",
       "type": "mutation",
       "path": "/api/external/v1/tasks/delete",
@@ -41840,6 +42016,53 @@
       "method": "POST",
       "namespace": "tasks",
       "docstring": "Moves a task to a project or space. Space destinations use the default board unless destination_board_id is supplied.\nExplicit board moves require destination_status_id when no equivalent status exists."
+    },
+    {
+      "name": "rename_board",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/rename_board",
+      "handler": "OperatelyWeb.Api.Tasks.RenameBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "new_name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/rename_board",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Renames a task board. Requires space edit access."
     },
     {
       "name": "update_archive",
@@ -42385,6 +42608,6 @@
     }
   ],
   "query_count": 79,
-  "mutation_count": 182,
+  "mutation_count": 184,
   "schema_version": 1
 }

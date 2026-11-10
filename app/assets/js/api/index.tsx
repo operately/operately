@@ -1163,6 +1163,21 @@ export interface ActivityContentTaskAssigneeUpdating {
   removedAssignees: Person[];
 }
 
+export interface ActivityContentTaskBoardCreated {
+  __typename: "activity_content_task_board_created";
+  space: Space | null;
+  boardId: Id;
+  name: string;
+}
+
+export interface ActivityContentTaskBoardRenamed {
+  __typename: "activity_content_task_board_renamed";
+  space: Space | null;
+  boardId: Id;
+  oldName: string;
+  newName: string;
+}
+
 export interface ActivityContentTaskClosing {
   __typename: "activity_content_task_closing";
   companyId?: string | null;
@@ -2757,6 +2772,7 @@ export interface SpaceTools {
   messagesBoards: MessagesBoard[] | null;
   resourceHubs: ResourceHub[] | null;
   tasks: Task[] | null;
+  taskBoards?: TaskBoardSummary[] | null;
   kpis: Kpi[] | null;
   templates: ProjectTemplate[] | null;
 }
@@ -3099,6 +3115,8 @@ export type ActivityContent =
   | ActivityContentResourceHubFolderRenamed
   | ActivityContentResourceHubDeleted
   | ActivityContentResourceHubRenamed
+  | ActivityContentTaskBoardCreated
+  | ActivityContentTaskBoardRenamed
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
   | ActivityContentResourceHubLinkDeleted
@@ -3320,11 +3338,11 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
+  | "kpi"
   | "project_retrospective"
-  | "goal_discussion"
   | "project_discussion"
+  | "goal_discussion"
   | "goal_check_in"
   | "space_discussion"
   | "comment"
@@ -6891,6 +6909,15 @@ export interface TasksCreateResult {
   updatedSpace?: Space;
 }
 
+export interface TasksCreateBoardInput {
+  spaceId: Id;
+  name: string;
+}
+
+export interface TasksCreateBoardResult {
+  board: TaskBoardSummary;
+}
+
 export interface TasksDeleteInput {
   taskId: Id;
   type: TaskType;
@@ -6914,6 +6941,24 @@ export interface TasksMoveResult {
   task: Task;
   destinationType: TaskType;
   destinationId: Id;
+}
+
+export interface TasksRenameBoardInput {
+  boardId: Id;
+  newName: string;
+}
+
+export interface TasksRenameBoardResult {
+  success: boolean;
+}
+
+export interface TasksReorderBoardsInput {
+  spaceId: Id;
+  boardIds: Id[];
+}
+
+export interface TasksReorderBoardsResult {
+  success: boolean;
 }
 
 export interface TasksUpdateArchiveInput {
@@ -7610,12 +7655,24 @@ class ApiNamespaceTasks {
     return this.client.post("/tasks/create", input);
   }
 
+  async createBoard(input: TasksCreateBoardInput): Promise<TasksCreateBoardResult> {
+    return this.client.post("/tasks/create_board", input);
+  }
+
   async delete(input: TasksDeleteInput): Promise<TasksDeleteResult> {
     return this.client.post("/tasks/delete", input);
   }
 
   async move(input: TasksMoveInput): Promise<TasksMoveResult> {
     return this.client.post("/tasks/move", input);
+  }
+
+  async renameBoard(input: TasksRenameBoardInput): Promise<TasksRenameBoardResult> {
+    return this.client.post("/tasks/rename_board", input);
+  }
+
+  async reorderBoards(input: TasksReorderBoardsInput): Promise<TasksReorderBoardsResult> {
+    return this.client.post("/tasks/reorder_boards", input);
   }
 
   async updateArchive(input: TasksUpdateArchiveInput): Promise<TasksUpdateArchiveResult> {
@@ -10989,6 +11046,26 @@ export default {
         mutationFn: (input: TasksUpdateAssigneeInput) => defaultApiClient.apiNamespaceTasks.updateAssignee(input),
       }),
 
+    createBoard: (input: TasksCreateBoardInput) => defaultApiClient.apiNamespaceTasks.createBoard(input),
+    useCreateBoard: () =>
+      useMutation<TasksCreateBoardInput, TasksCreateBoardResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.createBoard(input),
+      ),
+    createBoardMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksCreateBoardInput) => defaultApiClient.apiNamespaceTasks.createBoard(input),
+      }),
+
+    renameBoard: (input: TasksRenameBoardInput) => defaultApiClient.apiNamespaceTasks.renameBoard(input),
+    useRenameBoard: () =>
+      useMutation<TasksRenameBoardInput, TasksRenameBoardResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.renameBoard(input),
+      ),
+    renameBoardMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksRenameBoardInput) => defaultApiClient.apiNamespaceTasks.renameBoard(input),
+      }),
+
     create: (input: TasksCreateInput) => defaultApiClient.apiNamespaceTasks.create(input),
     useCreate: () =>
       useMutation<TasksCreateInput, TasksCreateResult>((input) => defaultApiClient.apiNamespaceTasks.create(input)),
@@ -11064,6 +11141,16 @@ export default {
     moveMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: TasksMoveInput) => defaultApiClient.apiNamespaceTasks.move(input),
+      }),
+
+    reorderBoards: (input: TasksReorderBoardsInput) => defaultApiClient.apiNamespaceTasks.reorderBoards(input),
+    useReorderBoards: () =>
+      useMutation<TasksReorderBoardsInput, TasksReorderBoardsResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.reorderBoards(input),
+      ),
+    reorderBoardsMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksReorderBoardsInput) => defaultApiClient.apiNamespaceTasks.reorderBoards(input),
       }),
 
     updateDueDate: (input: TasksUpdateDueDateInput) => defaultApiClient.apiNamespaceTasks.updateDueDate(input),

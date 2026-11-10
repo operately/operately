@@ -1362,6 +1362,16 @@ msgid "%{author} created the project"
 msgstr ""
 
 #.frontend
+#: assets/js/features/activities/TaskBoardCreated/index.tsx:23
+msgid "%{author} created the task board %{boardName} in the <space>%{spaceName}</space> space."
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/TaskBoardCreated/index.tsx:22
+msgid "%{author} created the task board %{boardName}."
+msgstr ""
+
+#.frontend
 #: assets/js/features/activities/CompanyAdding/index.tsx:30
 msgid "%{author} created this company"
 msgstr ""
@@ -2320,6 +2330,16 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectRenamed/index.tsx:35
 msgid "%{author} renamed the project"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRenamed/index.tsx:23
+msgid "%{author} renamed the task board %{boardName} in the <space>%{spaceName}</space> space."
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRenamed/index.tsx:22
+msgid "%{author} renamed the task board %{boardName}."
 msgstr ""
 
 #.frontend
@@ -7471,7 +7491,7 @@ msgid "Choose a date"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/tasks/move.ex:84
+#: lib/operately_web/api/tasks/move.ex:89
 msgid "Choose a destination status and retry with destination_status_id."
 msgstr ""
 
@@ -8894,6 +8914,13 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskBoard/utils/filterDescription.ts:37
 msgid "Created date between"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/TaskBoardCreated/index.tsx:10
+#: assets/js/features/activities/TaskBoardCreated/index.tsx:15
+#: assets/js/features/activities/TaskBoardCreated/index.tsx:37
+msgid "Created task board"
 msgstr ""
 
 #.frontend
@@ -10548,7 +10575,7 @@ msgstr ""
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:55
 #: lib/operately_web/api/projects.ex:1278
-#: lib/operately_web/api/spaces.ex:530
+#: lib/operately_web/api/spaces.ex:531
 msgid "Every deleted task status in use requires a replacement"
 msgstr ""
 
@@ -12109,6 +12136,11 @@ msgstr ""
 msgid "Include every Resource Hub exactly once when reordering."
 msgstr ""
 
+#.elixir
+#: lib/operately_web/api/tasks/reorder_boards.ex:28
+msgid "Include every active task board exactly once when reordering."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:123
 msgid "Include in template"
@@ -12333,7 +12365,7 @@ msgstr ""
 #.elixir
 #: lib/operately/operations/kanban_state_updating.ex:89
 #: lib/operately/operations/kanban_state_updating.ex:101
-#: lib/operately_web/api/spaces.ex:521
+#: lib/operately_web/api/spaces.ex:522
 #: lib/operately_web/api/tasks.ex:760
 #: lib/operately_web/api/tasks.ex:1164
 #: lib/operately_web/api/tasks.ex:1171
@@ -12367,7 +12399,7 @@ msgid "Invalid token"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/spaces.ex:524
+#: lib/operately_web/api/spaces.ex:525
 msgid "Invalid tools"
 msgstr ""
 
@@ -13806,6 +13838,8 @@ msgstr ""
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
 #: lib/operately_web/api/resource_hubs/create.ex:27
 #: lib/operately_web/api/resource_hubs/rename.ex:37
+#: lib/operately_web/api/tasks/create_board.ex:26
+#: lib/operately_web/api/tasks/rename_board.ex:26
 msgid "Name is required"
 msgstr ""
 
@@ -16986,6 +17020,13 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:91
 msgid "Renamed a folder: %{folderName}"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRenamed/index.tsx:10
+#: assets/js/features/activities/TaskBoardRenamed/index.tsx:15
+#: assets/js/features/activities/TaskBoardRenamed/index.tsx:37
+msgid "Renamed task board"
 msgstr ""
 
 #.frontend
@@ -20967,7 +21008,7 @@ msgstr ""
 
 #.elixir
 #: lib/operately_web/api/tasks/board_scope.ex:47
-#: lib/operately_web/api/tasks/move.ex:88
+#: lib/operately_web/api/tasks/move.ex:93
 msgid "This task board is archived. Restore it before making changes."
 msgstr ""
 
