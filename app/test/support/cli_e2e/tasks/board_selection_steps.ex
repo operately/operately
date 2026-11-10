@@ -7,8 +7,37 @@ defmodule Operately.Support.CliE2E.Tasks.BoardSelectionSteps do
     assert result.exit_code == 0, result.output
     ctx = Map.put(ctx, :profile, "e2e")
     ctx = Factory.set_space_tools(ctx, :space, tasks_enabled: true)
+    ctx
+  end
+
+  step :given_another_board, ctx do
     board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Other", position: 1, task_statuses: ctx.space.task_statuses})
     Map.put(ctx, :board, board)
+  end
+
+  step :create_board, ctx do
+    payload = command!(ctx, ["tasks", "create_board", "--space-id", ctx.space.id, "--name", "Other"])
+    board = Repo.get!(Operately.Tasks.TaskBoard, Operately.ShortUuid.decode!(payload["board"]["id"]))
+    assert payload["board"]["is_default"] == false
+    Map.put(ctx, :board, board)
+  end
+
+  step :rename_board, ctx do
+    payload = command!(ctx, ["tasks", "rename_board", "--board-id", ctx.board.id, "--new-name", "Design"])
+    assert payload["success"]
+    assert Repo.reload!(ctx.board).name == "Design"
+    ctx
+  end
+
+  step :assert_managed_boards_listed, ctx do
+    payload = command!(ctx, ["tasks", "list_boards", "--space-id", ctx.space.id])
+    assert [default, created] = payload["boards"]
+    assert default["id"] == Operately.ShortUuid.encode!(ctx.space.default_task_board_id)
+    assert default["is_default"]
+    assert created["id"] == Operately.ShortUuid.encode!(ctx.board.id)
+    assert created["name"] == "Design"
+    refute created["is_default"]
+    ctx
   end
 
   step :discover_boards, ctx do

@@ -406,6 +406,8 @@ Apache-2.0
 
 ### Task boards
 
+Use `tasks create_board --space-id <id> --name <name>` and `tasks rename_board --board-id <id> --new-name <name>` to manage boards with space edit access. New boards have independent statuses and append to the active list without changing the default. These commands work when the Tasks category is disabled. Reordering is reserved for the web interface.
+
 Use `operately tasks list_boards --space-id <space-id>` to discover boards. Task creation and move destinations use the space’s default board unless `--board-id` or `--destination-board-id` selects another board. Keep the space ID in these requests.
 
 `operately spaces list_tasks --space-id <space-id>` lists tasks across all boards; add `--board-id` to filter. Use `operately tasks list_task_statuses --board-id <board-id>` to inspect destination statuses, including on empty boards. Explicit board moves with incompatible statuses return available choices; retry with `--destination-status-id`.
