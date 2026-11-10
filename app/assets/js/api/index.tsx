@@ -1170,6 +1170,14 @@ export interface ActivityContentTaskBoardCreated {
   name: string;
 }
 
+export interface ActivityContentTaskBoardDefaultChanged {
+  __typename: "activity_content_task_board_default_changed";
+  space: Space | null;
+  boardId: Id;
+  previousBoardId: Id | null;
+  name: string;
+}
+
 export interface ActivityContentTaskBoardRenamed {
   __typename: "activity_content_task_board_renamed";
   space: Space | null;
@@ -3117,6 +3125,7 @@ export type ActivityContent =
   | ActivityContentResourceHubRenamed
   | ActivityContentTaskBoardCreated
   | ActivityContentTaskBoardRenamed
+  | ActivityContentTaskBoardDefaultChanged
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
   | ActivityContentResourceHubLinkDeleted
@@ -3338,8 +3347,8 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "project_check_in"
   | "kpi"
+  | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"
@@ -6961,6 +6970,15 @@ export interface TasksReorderBoardsResult {
   success: boolean;
 }
 
+export interface TasksSetDefaultBoardInput {
+  spaceId: Id;
+  boardId: Id;
+}
+
+export interface TasksSetDefaultBoardResult {
+  success: boolean;
+}
+
 export interface TasksUpdateArchiveInput {
   taskId: Id;
   archived: boolean;
@@ -7673,6 +7691,10 @@ class ApiNamespaceTasks {
 
   async reorderBoards(input: TasksReorderBoardsInput): Promise<TasksReorderBoardsResult> {
     return this.client.post("/tasks/reorder_boards", input);
+  }
+
+  async setDefaultBoard(input: TasksSetDefaultBoardInput): Promise<TasksSetDefaultBoardResult> {
+    return this.client.post("/tasks/set_default_board", input);
   }
 
   async updateArchive(input: TasksUpdateArchiveInput): Promise<TasksUpdateArchiveResult> {
@@ -11141,6 +11163,16 @@ export default {
     moveMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: TasksMoveInput) => defaultApiClient.apiNamespaceTasks.move(input),
+      }),
+
+    setDefaultBoard: (input: TasksSetDefaultBoardInput) => defaultApiClient.apiNamespaceTasks.setDefaultBoard(input),
+    useSetDefaultBoard: () =>
+      useMutation<TasksSetDefaultBoardInput, TasksSetDefaultBoardResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.setDefaultBoard(input),
+      ),
+    setDefaultBoardMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksSetDefaultBoardInput) => defaultApiClient.apiNamespaceTasks.setDefaultBoard(input),
       }),
 
     reorderBoards: (input: TasksReorderBoardsInput) => defaultApiClient.apiNamespaceTasks.reorderBoards(input),

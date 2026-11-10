@@ -17,6 +17,14 @@ defmodule Operately.McpE2E.Tools.BoardSelectionTest do
     |> Steps.assert_unavailable_default_details()
   end
 
+  test "changes the default and uses it for space-only task creation", ctx do
+    ctx
+    |> Steps.given_another_board()
+    |> Steps.set_default_board()
+    |> Steps.assert_selected_default_listed()
+    |> Steps.create_task_on_default_board()
+  end
+
   test "creates and renames a board without changing the default", ctx do
     ctx
     |> Steps.create_board()

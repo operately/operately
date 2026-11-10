@@ -37,6 +37,21 @@ defmodule Operately.Support.McpE2E.Tools.BoardSelectionSteps do
     ctx
   end
 
+  step :set_default_board, ctx do
+    payload = call!(ctx, "set_default_task_board", %{"space_id" => ctx.space.id, "board_id" => ctx.board.id})
+    assert payload["success"]
+    space = Repo.reload!(ctx.space)
+    assert space.default_task_board_id == ctx.board.id
+    Map.put(ctx, :space, space)
+  end
+
+  step :assert_selected_default_listed, ctx do
+    payload = call!(ctx, "list_task_boards", %{"space_id" => ctx.space.id})
+    assert [default] = Enum.filter(payload["boards"], & &1["is_default"])
+    assert default["id"] == Operately.ShortUuid.encode!(ctx.board.id)
+    ctx
+  end
+
   step :discover_boards, ctx do
     payload = call!(ctx, "list_task_boards", %{"space_id" => ctx.space.id})
     assert length(payload["boards"]) == 2

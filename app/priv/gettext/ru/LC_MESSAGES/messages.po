@@ -1865,6 +1865,16 @@ msgid "%{author} joined the space"
 msgstr "%{author} теперь в пространстве"
 
 #.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:23
+msgid "%{author} made %{boardName} the default task board in the <space>%{spaceName}</space> space."
+msgstr "%{author} выбрал(а) %{boardName} в качестве доски задач по умолчанию в пространстве <space>%{spaceName}</space>."
+
+#.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:22
+msgid "%{author} made %{boardName} the default task board."
+msgstr "%{author} выбрал(а) %{boardName} в качестве доски задач по умолчанию."
+
+#.frontend
 #: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:54
 msgid "%{author} made a copy of the <original>%{originalName}</original> folder and named it <folder>%{folderName}</folder>"
 msgstr "%{author}: создана копия папки <original>%{originalName}</original> под названием <folder>%{folderName}</folder>"
@@ -7490,6 +7500,13 @@ msgstr "Переключить в режим только для чтения"
 #: assets/js/features/activities/GoalReparent/index.tsx:107
 msgid "Changed a goal's parent goal"
 msgstr "Родительская цель изменена"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:10
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:15
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:37
+msgid "Changed default task board"
+msgstr "Доска задач по умолчанию изменена"
 
 #.frontend
 #: assets/js/features/activities/ProjectChampionUpdating/index.tsx:92
@@ -21457,6 +21474,7 @@ msgstr "Эта вкладка устарела. Перезагрузка, что
 #.elixir
 #: lib/operately_web/api/tasks/board_scope.ex:47
 #: lib/operately_web/api/tasks/move.ex:93
+#: lib/operately_web/api/tasks/set_default_board.ex:27
 msgid "This task board is archived. Restore it before making changes."
 msgstr "Эта доска задач находится в архиве. Восстановите её, прежде чем вносить изменения."
 

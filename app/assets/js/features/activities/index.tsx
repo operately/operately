@@ -177,6 +177,7 @@ export const DISPLAYED_IN_FEED = [
   "resource_hub_renamed",
   "task_board_created",
   "task_board_renamed",
+  "task_board_default_changed",
   "resource_hub_link_created",
   "resource_hub_link_edited",
   "resource_hub_link_deleted",
@@ -297,6 +298,7 @@ import ResourceHubDeleted from "@/features/activities/ResourceHubDeleted";
 import ResourceHubRenamed from "@/features/activities/ResourceHubRenamed";
 import TaskBoardCreated from "@/features/activities/TaskBoardCreated";
 import TaskBoardRenamed from "@/features/activities/TaskBoardRenamed";
+import TaskBoardDefaultChanged from "@/features/activities/TaskBoardDefaultChanged";
 import ResourceHubLinkCommented from "@/features/activities/ResourceHubLinkCommented";
 import ResourceHubLinkCreated from "@/features/activities/ResourceHubLinkCreated";
 import ResourceHubLinkDeleted from "@/features/activities/ResourceHubLinkDeleted";
@@ -415,6 +417,7 @@ function handler(activity: Activity) {
     .with("resource_hub_renamed", () => ResourceHubRenamed)
     .with("task_board_created", () => TaskBoardCreated)
     .with("task_board_renamed", () => TaskBoardRenamed)
+    .with("task_board_default_changed", () => TaskBoardDefaultChanged)
     .with("resource_hub_link_created", () => ResourceHubLinkCreated)
     .with("resource_hub_link_edited", () => ResourceHubLinkEdited)
     .with("resource_hub_link_deleted", () => ResourceHubLinkDeleted)
