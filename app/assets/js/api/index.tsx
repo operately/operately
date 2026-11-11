@@ -2863,6 +2863,15 @@ export interface Task {
   type: TaskType;
 }
 
+export interface TaskBoard {
+  __typename: "task_board";
+  id: Id;
+  name: string;
+  archivedAt: string | null;
+  taskStatuses: TaskStatus[];
+  tasksKanbanState: Json;
+}
+
 export interface TaskBoardSummary {
   __typename: "task_board_summary";
   id: Id;
@@ -4514,6 +4523,15 @@ export interface TasksGetInput {
 export interface TasksGetResult {
   task?: Task | null;
   markdown?: string;
+}
+
+export interface TasksGetBoardInput {
+  spaceId: Id;
+  boardId: Id;
+}
+
+export interface TasksGetBoardResult {
+  board: TaskBoard;
 }
 
 export interface TasksListInput {
@@ -11023,6 +11041,16 @@ export default {
     getQuery: (input: TasksGetInput) =>
       queryClient.query({
         ...buildApiQueryOptions<TasksGetInput, TasksGetResult>(defaultApiClient, "/tasks/get", input),
+        staleTime: Infinity,
+      }),
+
+    getBoardQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/tasks/get_board"),
+    getBoardQueryKey: (input: TasksGetBoardInput) => buildApiQueryKey(defaultApiClient, "/tasks/get_board", input),
+    getBoardQueryOptions: (input: TasksGetBoardInput) =>
+      buildApiQueryOptions<TasksGetBoardInput, TasksGetBoardResult>(defaultApiClient, "/tasks/get_board", input),
+    getBoardQuery: (input: TasksGetBoardInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<TasksGetBoardInput, TasksGetBoardResult>(defaultApiClient, "/tasks/get_board", input),
         staleTime: Infinity,
       }),
 

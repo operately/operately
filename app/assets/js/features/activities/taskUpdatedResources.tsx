@@ -1,3 +1,4 @@
+import { spaceTaskPath } from "./feedItemLinks";
 import type {
   ActivityContentTaskAssigneeUpdating,
   ActivityContentTaskDueDateUpdating,
@@ -51,7 +52,7 @@ function updatedTask(activity: Activity, paths: Paths): ActivityTaskListEntry | 
   if (project) {
     path = paths.taskPath(task.id);
   } else if (space?.id) {
-    path = paths.spaceKanbanPath(space.id, { taskId: task.id });
+    path = spaceTaskPath(paths, space.id, task);
   } else {
     return null;
   }

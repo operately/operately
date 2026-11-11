@@ -5,7 +5,7 @@ import React from "react";
 import type { ActivityContentTaskDescriptionChange } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
-import { activityAuthorName, taskLink } from "../feedItemLinks";
+import { activityAuthorName, taskLink, spaceTaskPath } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -19,7 +19,7 @@ const TaskDescriptionChange: ActivityHandler = {
     const isSpaceTask = task?.type === "space";
 
     if (isSpaceTask) {
-      return space ? paths.spaceKanbanPath(space.id, { taskId: task.id }) : paths.homePath();
+      return space ? spaceTaskPath(paths, space.id, task) : paths.homePath();
     } else {
       return task ? paths.taskPath(task.id) : paths.homePath();
     }

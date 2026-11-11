@@ -221,7 +221,11 @@ defmodule OperatelyWeb.Paths do
   end
 
   def space_kanban_path(company = %Company{}, space = %Group{}) do
-    create_path([company_id(company), "spaces", space_id(space), "kanban"])
+    space_kanban_path(company, space, space.default_task_board_id)
+  end
+
+  def space_kanban_path(company = %Company{}, space = %Group{}, board_id) do
+    create_path([company_id(company), "spaces", space_id(space), "boards", Operately.ShortUuid.encode!(board_id)])
   end
 
   def space_kpis_path(company = %Company{}, space = %Group{}) do
@@ -237,7 +241,7 @@ defmodule OperatelyWeb.Paths do
   end
 
   def space_task_path(company = %Company{}, space = %Group{}, task = %Operately.Tasks.Task{}) do
-    create_path([company_id(company), "spaces", space_id(space), "kanban"]) <> "?taskId=#{task_id(task)}"
+    space_kanban_path(company, space, task.board_id) <> "?taskId=#{task_id(task)}"
   end
 
   def task_path(company = %Company{}, task = %Task{}) do

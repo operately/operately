@@ -1,3 +1,4 @@
+import { spaceTaskPath } from "../feedItemLinks";
 import type { ActivityContentTaskAdding } from "@/api";
 import i18n, { translationText } from "@/i18n";
 import type { Activity } from "@/models/activities";
@@ -25,11 +26,7 @@ const TaskAdding: ActivityHandler = {
       return paths.projectPath(project.id, { tab: "tasks" });
     }
 
-    if (task) {
-      return paths.spaceKanbanPath(space.id, { taskId: task.id });
-    }
-
-    return paths.spaceKanbanPath(space.id);
+    return spaceTaskPath(paths, space.id, task);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -157,7 +154,7 @@ function taskLinkAnchor(
 ) {
   if (!task?.id) return <span />;
 
-  const path = !project && space?.id ? paths.spaceKanbanPath(space.id, { taskId: task.id }) : paths.taskPath(task.id);
+  const path = !project && space?.id ? spaceTaskPath(paths, space.id, task) : paths.taskPath(task.id);
 
   return <Link to={path}>{null}</Link>;
 }

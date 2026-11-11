@@ -5,7 +5,7 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { Trans } from "../i18n";
 import i18n, { tn } from "@/i18n";
-import { activityAuthorName, projectLink, spaceLink, taskLink } from "../feedItemLinks";
+import { activityAuthorName, projectLink, spaceLink, taskLink, spaceTaskPath } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 import { AvatarWithName } from "turboui";
@@ -26,11 +26,7 @@ const TaskAssigneeUpdating: ActivityHandler = {
       return paths.projectPath(project.id, { tab: "tasks" });
     }
 
-    if (task) {
-      return paths.spaceKanbanPath(space.id, { taskId: task.id });
-    }
-
-    return paths.spaceKanbanPath(space.id);
+    return spaceTaskPath(paths, space.id, task);
   },
 
   PageTitle(_props: { activity: any }) {

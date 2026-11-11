@@ -4,7 +4,7 @@ import { Paths } from "@/routes/paths";
 import React from "react";
 import { Link } from "turboui";
 import { Trans } from "../i18n";
-import { activityAuthorName, projectLink, spaceLink } from "../feedItemLinks";
+import { activityAuthorName, projectLink, spaceLink, spaceTaskPath } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const TaskCommentDeleting: ActivityHandler = {
@@ -20,14 +20,14 @@ const TaskCommentDeleting: ActivityHandler = {
     }
 
     if (task) {
-      return paths.spaceKanbanPath(space.id, { taskId: task.id });
+      return spaceTaskPath(paths, space.id, task);
     }
 
     if (project) {
       return paths.projectPath(project.id, { tab: "tasks" });
     }
 
-    return paths.spaceKanbanPath(space.id);
+    return paths.spacePath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -135,14 +135,14 @@ function taskPath(paths: Paths, activity: Activity) {
   }
 
   if (task) {
-    return paths.spaceKanbanPath(space.id, { taskId: task.id });
+    return spaceTaskPath(paths, space.id, task);
   }
 
   if (project) {
     return paths.projectPath(project.id, { tab: "tasks" });
   }
 
-  return paths.spaceKanbanPath(space.id);
+  return paths.spacePath(space.id);
 }
 
 export default TaskCommentDeleting;

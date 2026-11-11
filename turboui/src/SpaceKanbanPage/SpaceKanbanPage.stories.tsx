@@ -97,6 +97,7 @@ const buildTaskPageProps = (
   subscriptions: TaskPage.Props["subscriptions"],
   opts: {
     timelineItems: TimelineItemType[];
+    boardArchived?: boolean;
     currentUser: NonNullable<TaskPage.ContentProps["currentUser"]>;
     onAddComment: (taskId: string, content: any) => void;
     onEditComment: (taskId: string, commentId: string, content: any) => void;
@@ -150,6 +151,7 @@ const buildTaskPageProps = (
     assigneePersonSearch: ctx.assigneePersonSearch!,
     richTextHandlers: ctx.richTextHandlers!,
     canEdit: true,
+    boardArchived: opts.boardArchived,
     timelineItems: opts.timelineItems,
     currentUser: opts.currentUser,
     canComment: true,
@@ -288,7 +290,8 @@ export const Default: Story = {
     return (
       <div className="relative h-screen bg-surface-base">
         <SpaceKanbanPage
-          canEdit={false}
+          canEdit={args.canEdit ?? false}
+          board={args.board ?? { name: "Tasks", archivedAt: null }}
           space={space}
           navigation={[{ to: "/spaces/demo-space", label: "Demo Space" }]}
           tasks={tasks}
@@ -297,6 +300,7 @@ export const Default: Story = {
           getTaskPageProps={(taskId, ctx) =>
             buildTaskPageProps(taskId, ctx, subscriptions, {
               timelineItems: timelineByTaskId[taskId] ?? [],
+              boardArchived: Boolean(args.board?.archivedAt),
               currentUser,
               onAddComment,
               onEditComment,
@@ -494,6 +498,7 @@ export const WithStatusManagement: Story = {
     return (
       <div className="relative h-screen bg-surface-base">
         <SpaceKanbanPage
+          board={{ name: "Tasks", archivedAt: null }}
           space={space}
           navigation={[{ to: "/spaces/demo-space", label: "Demo Space" }]}
           tasks={tasks}
@@ -567,4 +572,9 @@ export const WithStatusManagement: Story = {
       </div>
     );
   },
+};
+
+export const Archived: Story = {
+  ...Default,
+  args: { canEdit: true, board: { name: "Past launches", archivedAt: "2026-11-01T00:00:00Z" } },
 };

@@ -5,7 +5,7 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { Trans } from "../i18n";
 import i18n from "@/i18n";
-import { activityAuthorName, projectLink, spaceLink, taskLink } from "../feedItemLinks";
+import { activityAuthorName, projectLink, spaceLink, taskLink, spaceTaskPath } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
@@ -25,11 +25,7 @@ const TaskStatusUpdating: ActivityHandler = {
       return paths.projectPath(project.id);
     }
 
-    if (task) {
-      return paths.spaceKanbanPath(space.id, { taskId: task.id });
-    }
-
-    return paths.spaceKanbanPath(space.id);
+    return spaceTaskPath(paths, space.id, task);
   },
 
   PageTitle(_props: { activity: any }) {

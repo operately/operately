@@ -11,7 +11,8 @@ jest.mock("@/contexts/TimezoneContext", () => ({ useLocale: () => "en" }));
 jest.mock("@/routes/paths", () => ({
   usePaths: () => ({
     spacePath: (id: string) => `/spaces/${id}`,
-    spaceKanbanPath: (id: string, { taskId }: { taskId: string }) => `/spaces/${id}/kanban?taskId=${taskId}`,
+    spaceKanbanPath: (id: string, boardId: string, { taskId }: { taskId: string }) =>
+      `/spaces/${id}/boards/${boardId}?taskId=${taskId}`,
   }),
 }));
 
@@ -40,7 +41,7 @@ test("wires compact aggregated due-date updates while retaining the location rul
         oldDueDate: { __typename: "contextual_date", dateType: "day", value: "2026-10-28", date: "2026-10-28" },
         newDueDate: { __typename: "contextual_date", dateType: "day", value: "2026-11-02", date: "2026-11-02" },
         space: { __typename: "space", id: "space", name: "Custom automations" },
-        task: { __typename: "task", id: `task-${index}`, name: `Task ${index}`, type: "space" },
+        task: { __typename: "task", boardId: "board-1", id: `task-${index}`, name: `Task ${index}`, type: "space" },
       },
     }),
   );
@@ -58,9 +59,9 @@ test("wires compact aggregated due-date updates while retaining the location rul
       ),
     );
     expect(Array.from(container.querySelectorAll("a")).map((link) => link.getAttribute("href"))).toEqual([
-      "/spaces/space/kanban?taskId=task-0",
-      "/spaces/space/kanban?taskId=task-1",
-      "/spaces/space/kanban?taskId=task-2",
+      "/spaces/space/boards/board-1?taskId=task-0",
+      "/spaces/space/boards/board-1?taskId=task-1",
+      "/spaces/space/boards/board-1?taskId=task-2",
     ]);
     expect(
       container.querySelector('[data-test-id="activity-task-list-disclosure"]')?.getAttribute("aria-expanded"),

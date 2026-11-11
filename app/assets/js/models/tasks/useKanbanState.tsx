@@ -37,6 +37,7 @@ type UseKanbanStateOptions =
   | (BaseKanbanStateOptions & {
       type: "space";
       spaceId: string;
+      boardId: string;
       updateKanban: (input: SpacesUpdateKanbanInput) => Promise<unknown>;
     })
   | (BaseKanbanStateOptions & {
@@ -106,6 +107,7 @@ export function useKanbanState(options: UseKanbanStateOptions) {
         } else if (options.type === "space") {
           await options.updateKanban({
             spaceId: options.spaceId,
+            boardId: options.boardId,
             taskId: event.taskId,
             status: backendStatus,
             kanbanState: serializeKanbanState(event.updatedKanbanState),

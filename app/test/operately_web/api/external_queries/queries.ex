@@ -53,6 +53,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Spaces.Get,
       Queries.Spaces.List,
       Queries.Tasks.Get,
+      Queries.Tasks.GetBoard,
       Queries.Tasks.ListBoards,
       Queries.Notifications.GetUnreadCount,
       Queries.Goals.ListAccessMembers,

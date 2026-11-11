@@ -90,7 +90,7 @@ defmodule Operately.RichContent.ResourceLinks do
 
   defp parse_route(uri) do
     case path_segments(uri.path) do
-      [company_id, "spaces", _space_id, "kanban"] ->
+      [company_id, "spaces", _space_id, "boards", _board_id] ->
         case task_id_from_query(uri.query) do
           {:ok, task_id} -> {:ok, ref(company_id, :task, task_id)}
           :error -> :error

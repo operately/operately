@@ -2,7 +2,7 @@
 
 ## Summary
 
-Support multiple named task boards and resource hubs per space, managed through Space Tools. Preserve existing API, MCP, CLI, and URL behavior through explicit default instances.
+Support multiple named task boards and resource hubs per space, managed through Space Tools. Preserve existing API, MCP, and CLI behavior through explicit default instances.
 
 Related issue: [#5587 — Support multiple kanban boards per space](https://github.com/operately/operately/issues/5587).
 
@@ -47,7 +47,7 @@ Implement selection and authorization in shared API/domain code. MCP remains a t
 - Expose lightweight instance discovery with ID, name, type, position, default designation, and archive state for boards. Avoid requiring agents to load tool contents to discover destinations.
 - Add explicit instance selectors to existing API/MCP operations and generated CLI flags, including create, list/search, and move/copy destinations where applicable. Preserve old inputs, routes, command names, and response fields; expose the resolved instance in results.
 - Document default selection in schemas, help, and examples. Reject archiving the default board; select another default first. Reject changes to or deletion of the default hub. Adding or reordering instances never changes an existing default.
-- Preserve old space-board URLs: task-specific links resolve the task's actual board; links without a task resolve the default. Hub URLs retain their IDs.
+- Use board-specific URLs and update generated links to the task's actual board. Legacy board/task URL adapters are out of scope; existing links may stop working. Hub URLs retain their IDs.
 - Moving a task updates both boards' ordering atomically. Preserve a valid destination status or require an explicit mapping when statuses differ; never leave a task with a status unavailable on its destination board.
 
 ## Implementation PRs
@@ -96,7 +96,7 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 
 - Add board selectors and lightweight discovery to API/MCP/CLI, resolved board IDs in responses, and optional filtering while preserving all-space listings.
 - Add structured unavailable-default errors with accessible choices and retry guidance; PR 4A rejects missing defaults without guessing.
-- Add explicit board move destinations and status mapping. Existing moves retain their status fallback; explicit board moves require a destination status when no equivalent exists. Activity and search payloads include board context. Board-specific navigation and legacy URL adapters move to PR 6.
+- Add explicit board move destinations and status mapping. Existing moves retain their status fallback; explicit board moves require a destination status when no equivalent exists. Activity and search payloads include board context. Board-specific navigation moves to PR 6.
 - Keep the UI on one board per space until management and the combined redesign are ready. Verify multiple-board fixtures and agent compatibility; regenerate affected clients/catalogs.
 
 ### PR 5A — Create, rename, and reorder boards ✅
@@ -120,16 +120,26 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 - Add archive/restore APIs with MCP/CLI adapters and activities. Reject archiving the default board, including the last active board. Users must select another default before archiving the former default.
 - Append restored boards without changing the default. Verify concurrent archive/default changes, ordering, and export/import preservation. Build on PR 5C's write protection.
 
-### PR 6 — Combined Space Tools redesign for boards and hubs
+### PR 6A — Board navigation and archive state ✅
 
-- Redesign the configuration page once, using the completed board and hub APIs. Give each category an ordered list of named instances with consistent create, rename, and reorder controls.
-- Save instance actions immediately, separately from category Save/Cancel. Keep instance management available when a category is disabled.
-- Boards expose archive/restore and default selection. Hubs expose deletion with confirmation only for empty non-default hubs; hide deletion for the fixed default hub.
-- Use board archive state separately from access permissions to disable protected task actions; keep description edits, comments, reactions, and rich-text checklist toggles available.
-- Add board-specific cards/routes and destination selection when creating or moving tasks. Resolve legacy task links to the task’s board and space-only links to the default board. Preserve existing hub links and show each instance as a separate named card.
-- Reuse TurboUI controls, forms, menus, and confirmations; use generated TanStack queries/mutations. Invalidate configuration, cards, discovery, and affected content after mutations.
-- Apply Resource Hub terminology consistently across management, drafts, and rename dialogs. Include translations and regenerated resources with the redesign.
-- Verify two-board/two-hub workflows, archive/restore, defaults, disabled categories, and old links in feature tests.
+- Use `spaces/:id/boards/:boardId` and a shared board query on the existing kanban page, also exposed through CLI/MCP. Scope its task creation, statuses, and ordering to the selected board; update task/search links. No legacy URL adapters; preserve existing hub links.
+- Show archive state separately from access permissions and disable protected task actions. Keep description edits, comments, reactions, and rich-text checklist toggles available.
+- Verify explicit/default board navigation and archived-board action availability.
+
+### PR 6B — Combined Space Tools redesign for boards and hubs
+
+- Redesign configuration once for both categories, with ordered instances and create, rename, and reorder controls. Show each active instance as a separate named space card.
+- Save instance actions immediately, separately from category Save/Cancel. Keep management and archived-board links available when a category is disabled.
+- Boards expose archive/restore and default selection; prevent archiving the default. Hubs expose confirmed deletion only when empty and non-default; hide deletion for the fixed default hub.
+- Apply Resource Hub terminology across management, drafts, and rename dialogs. Invalidate configuration, cards, discovery, and affected content after mutations.
+- Verify management with two boards and two hubs, defaults, archive/restore, deletion, and disabled categories.
+
+### PR 6C — Board selection in task workflows
+
+- Add board selection when creating or moving tasks, preserving default selection for legacy requests and supporting destination status mapping.
+- Verify complete two-board/two-hub workflows and compatibility with existing task requests, including moves between boards and unavailable archived destinations.
+
+All three PRs reuse TurboUI controls and generated TanStack queries/mutations, include translations and regenerated resources, and add focused feature tests.
 
 ### PR 7 — Remove legacy space task storage (upcoming)
 

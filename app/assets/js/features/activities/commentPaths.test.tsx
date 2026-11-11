@@ -27,8 +27,8 @@ const paths: any = {
   resourceHubFilePath: (id: string) => `/files/${id}`,
   resourceHubLinkPath: (id: string) => `/links/${id}`,
   resourceHubPath: (id: string) => `/resource-hubs/${id}`,
-  spaceKanbanPath: (id: string, opts?: { taskId?: string }) =>
-    opts?.taskId ? `/spaces/${id}/kanban?taskId=${opts.taskId}` : `/spaces/${id}/kanban`,
+  spaceKanbanPath: (id: string, boardId: string, opts?: { taskId?: string }) =>
+    opts?.taskId ? `/spaces/${id}/boards/${boardId}?taskId=${opts.taskId}` : `/spaces/${id}/boards/${boardId}`,
   spacePath: (id: string) => `/spaces/${id}`,
   taskPath: (id: string) => `/tasks/${id}`,
 };
@@ -36,8 +36,8 @@ const paths: any = {
 describe("comment activity paths", () => {
   it("appends comment anchors consistently", () => {
     expect(commentPath("/documents/doc-1", { id: "comment-1" } as any)).toEqual("/documents/doc-1#comment-1");
-    expect(commentPath("/spaces/space-1/kanban?taskId=task-1", { id: "comment-1" } as any)).toEqual(
-      "/spaces/space-1/kanban?taskId=task-1#comment-1",
+    expect(commentPath("/spaces/space-1/boards/board-1?taskId=task-1", { id: "comment-1" } as any)).toEqual(
+      "/spaces/space-1/boards/board-1?taskId=task-1#comment-1",
     );
     expect(commentPath("/documents/doc-1", null)).toEqual("/documents/doc-1");
   });
@@ -101,9 +101,9 @@ describe("comment activity paths", () => {
 
     expect(
       SpaceTaskCommented.pagePath(paths, {
-        content: { task: { id: "task-1" }, space: { id: "space-1" }, comment },
+        content: { task: { id: "task-1", boardId: "board-1" }, space: { id: "space-1" }, comment },
       } as any),
-    ).toEqual("/spaces/space-1/kanban?taskId=task-1#comment-1");
+    ).toEqual("/spaces/space-1/boards/board-1?taskId=task-1#comment-1");
   });
 
   it("falls back from resource-hub comment targets to hub, project, space, then home", () => {

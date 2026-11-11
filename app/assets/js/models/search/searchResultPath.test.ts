@@ -39,9 +39,9 @@ describe("searchResultPath", () => {
   });
 
   test("maps a space task to the space kanban", () => {
-    expect(searchResultPath(paths, result("task", { taskId: "task-1", spaceId: "space-1" }))).toEqual(
-      "/acme/spaces/space-1/kanban?taskId=task-1",
-    );
+    expect(
+      searchResultPath(paths, result("task", { taskId: "task-1", spaceId: "space-1", boardId: "board-2" })),
+    ).toEqual("/acme/spaces/space-1/boards/board-2?taskId=task-1");
   });
 
   test("prefers the project task page when both project and space are present", () => {

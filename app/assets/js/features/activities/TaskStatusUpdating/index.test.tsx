@@ -20,7 +20,8 @@ jest.mock("@/routes/paths", () => ({
         projectPath: (id: string) => `/projects/${id}`,
         spacePath: (id: string) => `/spaces/${id}`,
         taskPath: (id: string) => `/tasks/${id}`,
-        spaceKanbanPath: (id: string, { taskId }: { taskId: string }) => `/spaces/${id}/kanban?taskId=${taskId}`,
+        spaceKanbanPath: (id: string, boardId: string, { taskId }: { taskId: string }) =>
+          `/spaces/${id}/boards/${boardId}?taskId=${taskId}`,
       }),
       [],
     );
@@ -56,7 +57,15 @@ function activity(id: string, inProject: boolean, hasTask = true): Activity {
           }
         : null,
       space: { __typename: "space", id: "space", name: "Space" },
-      task: hasTask ? { __typename: "task", id, name: id, type: inProject ? "project" : "space" } : null,
+      task: hasTask
+        ? {
+            __typename: "task",
+            boardId: inProject ? null : "board-1",
+            id,
+            name: id,
+            type: inProject ? "project" : "space",
+          }
+        : null,
       name: id,
       oldStatus: {
         __typename: "task_status",
@@ -114,7 +123,7 @@ for (const inProject of [true, false]) {
         .filter((href) => href?.startsWith("/tasks/") || href?.includes("taskId="));
     }
 
-    const taskPath = (id: string) => (inProject ? `/tasks/${id}` : `/spaces/space/kanban?taskId=${id}`);
+    const taskPath = (id: string) => (inProject ? `/tasks/${id}` : `/spaces/space/boards/board-1?taskId=${id}`);
 
     it("keeps rendering when pagination aggregates a row and deletion separates it again", async () => {
       const first = activity("first", inProject);

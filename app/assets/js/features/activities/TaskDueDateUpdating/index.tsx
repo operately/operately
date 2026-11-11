@@ -5,7 +5,7 @@ import React from "react";
 import { DateDisplay } from "turboui";
 import { Trans } from "../i18n";
 import i18n from "@/i18n";
-import { activityAuthorName, projectLink, spaceLink, taskLink } from "../feedItemLinks";
+import { activityAuthorName, projectLink, spaceLink, taskLink, spaceTaskPath } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { parseContextualDate } from "@/models/contextualDates";
 import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
@@ -26,11 +26,7 @@ const TaskDueDateUpdating: ActivityHandler = {
       return paths.projectPath(project.id, { tab: "tasks" });
     }
 
-    if (task) {
-      return paths.spaceKanbanPath(space.id, { taskId: task.id });
-    }
-
-    return paths.spaceKanbanPath(space.id);
+    return spaceTaskPath(paths, space.id, task);
   },
 
   PageTitle(_props: { activity: any }) {
