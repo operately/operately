@@ -1,23 +1,24 @@
 import { useTranslation } from "react-i18next";
 import * as React from "react";
 
-import { GhostButton, IconSquareCheckFilled, IconCircleDashed } from "turboui";
+import { GhostButton } from "../Button";
+import { IconSquareCheckFilled, IconCircleDashed } from "../icons";
 import classNames from "classnames";
 
-export function ZeroState() {
+export function ZeroState({ name }: { name: string }) {
   return (
     <div>
       <Examples />
-      <ExplanationAndButton />
+      <ExplanationAndButton name={name} />
     </div>
   );
 }
 
-function ExplanationAndButton() {
+function ExplanationAndButton({ name }: { name: string }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col justify-center items-center group">
-      <div className="text-base font-bold">{t("Tasks")}</div>
+      <div className="text-base font-bold">{name}</div>
 
       <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
         {t("Organize tasks on a Kanban board with status columns.")}
