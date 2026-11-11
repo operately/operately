@@ -37,6 +37,27 @@ function renderPage(overrides: Partial<SpaceToolsConfigurationPage.Props> = {}) 
   );
 }
 
+it.each([false, true])("lets readers cancel unless a save is pending: %s", (isSubmitting) => {
+  const onCancel = jest.fn();
+  renderPage({
+    management: { boards: [], hubs: [], canEdit: false, onAction: async () => true },
+    isSubmitting,
+    onCancel,
+  });
+
+  expect(queryByTestId("save")).toBeDisabled();
+  screen.getAllByRole("switch").forEach((toggle) => expect(toggle).toBeDisabled());
+
+  const cancel = screen.getByRole("button", { name: "Cancel" });
+  if (isSubmitting) {
+    expect(cancel).toBeDisabled();
+  } else {
+    expect(cancel).toBeEnabled();
+  }
+  fireEvent.click(cancel);
+  expect(onCancel).toHaveBeenCalledTimes(isSubmitting ? 0 : 1);
+});
+
 describe("SpaceToolsConfigurationPage KPIs", () => {
   test("shows the KPIs tool row", () => {
     renderPage();

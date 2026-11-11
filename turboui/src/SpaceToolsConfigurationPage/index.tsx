@@ -97,14 +97,14 @@ export function SpaceToolsConfigurationPage(props: SpaceToolsConfigurationPage.P
         </div>
 
         <form onSubmit={handleSave} className="mt-6 pt-6 border-t border-stroke-base">
-          <fieldset disabled={visibilityDisabled} className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <PrimaryButton type="submit" loading={props.isSubmitting} disabled={visibilityDisabled} testId="save">
               {t("Save visibility")}
             </PrimaryButton>
-            <SecondaryButton type="button" onClick={props.onCancel} disabled={visibilityDisabled} testId="cancel">
+            <SecondaryButton type="button" onClick={props.onCancel} disabled={props.isSubmitting} testId="cancel">
               {t("Cancel")}
             </SecondaryButton>
-          </fieldset>
+          </div>
         </form>
       </div>
     </Page>
