@@ -6,6 +6,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Tasks.CreateBoard,
       Mutations.Tasks.RenameBoard,
       Mutations.Tasks.SetDefaultBoard,
+      Mutations.Tasks.ArchiveBoard,
+      Mutations.Tasks.RestoreBoard,
       Mutations.Documents.CreateHub,
       Mutations.Documents.DeleteHub,
       Mutations.Documents.RenameHub,

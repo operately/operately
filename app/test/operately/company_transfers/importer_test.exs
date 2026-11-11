@@ -108,6 +108,11 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     ctx.space |> change(default_task_board_id: board.id) |> Repo.update!()
     ctx.task |> change(board_id: board.id) |> Repo.update!()
 
+    {:ok, archived} = Operately.Operations.TaskBoardCreating.run(ctx.creator, ctx.space, "Archived board")
+    ctx = Factory.create_space_task(ctx, :archived_task, :space, board_id: archived.id)
+    {:ok, archived} = Operately.Operations.TaskBoardArchiving.run(ctx.creator, ctx.space, archived)
+
+
     assert {:ok, import_run} =
              export_and_stage_import(ctx, fn package ->
                boards = Enum.find(package["tables"], &(&1["name"] == "task_boards"))
@@ -130,6 +135,18 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert imported_board.position == board.position
     assert imported_board.task_statuses == board.task_statuses
     assert imported_board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(task)]}
+
+    imported_archive = Repo.get_by!(TaskBoard, space_id: space.id, name: archived.name)
+    archived_task = Repo.get_by!(Task, space_id: space.id, name: ctx.archived_task.name)
+
+    assert imported_archive.archived_at == archived.archived_at
+    assert imported_archive.position == archived.position
+    assert imported_archive.task_statuses == archived.task_statuses
+    assert archived_task.board_id == imported_archive.id
+    assert imported_archive.tasks_kanban_state == Map.put(archived.tasks_kanban_state, ctx.archived_task.task_status.value, [WebPaths.task_id(archived_task)])
+    assert Repo.exists?(from a in Operately.Activities.Activity,
+      where: a.action == "task_board_archived" and a.content["board_id"] == ^imported_archive.id and a.content["space_id"] == ^space.id)
+
   end
 
   test "run/1 initializes board ownership and ordering for older packages", ctx do

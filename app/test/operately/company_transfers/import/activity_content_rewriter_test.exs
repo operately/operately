@@ -8,7 +8,7 @@ defmodule Operately.CompanyTransfers.Import.ActivityContentRewriterTest do
     destination = Ecto.UUID.generate()
     plan = translation_plan(%{"task_boards" => %{source => destination}})
 
-    for {action, keys} <- [{"task_adding", ["board_id"]}, {"task_moving", ["origin_board_id", "destination_board_id"]}, {"task_board_created", ["board_id"]}, {"task_board_renamed", ["board_id"]}, {"task_board_default_changed", ["board_id", "previous_board_id"]}] do
+    for {action, keys} <- [{"task_adding", ["board_id"]}, {"task_moving", ["origin_board_id", "destination_board_id"]}, {"task_board_created", ["board_id"]}, {"task_board_archived", ["board_id"]}, {"task_board_restored", ["board_id"]}, {"task_board_renamed", ["board_id"]}, {"task_board_default_changed", ["board_id", "previous_board_id"]}] do
       row = %{"action" => action, "content" => Map.new(keys, &{&1, source})}
       assert {:ok, rewritten} = ActivityContentRewriter.rewrite_row_content(row, "activities", plan)
       assert rewritten["content"] == Map.new(keys, &{&1, destination})

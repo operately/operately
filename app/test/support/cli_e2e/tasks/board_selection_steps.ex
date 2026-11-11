@@ -45,7 +45,7 @@ defmodule Operately.Support.CliE2E.Tasks.BoardSelectionSteps do
     assert payload["success"]
     space = Repo.reload!(ctx.space)
     assert space.default_task_board_id == ctx.board.id
-    Map.put(ctx, :space, space)
+    ctx |> Map.put(:previous_default_board_id, ctx.space.default_task_board_id) |> Map.put(:space, space)
   end
 
   step :assert_selected_default_listed, ctx do
@@ -90,6 +90,38 @@ defmodule Operately.Support.CliE2E.Tasks.BoardSelectionSteps do
 
   step :list_all_space_tasks, ctx do
     assert length((command!(ctx, ["spaces", "list_tasks", "--space-id", ctx.space.id]))["tasks"]) == 2
+    ctx
+  end
+
+  step :archive_original_board, ctx do
+    payload = command!(ctx, ["tasks", "archive_board", "--space-id", ctx.space.id, "--board-id", ctx.previous_default_board_id])
+    assert payload["success"]
+    ctx
+  end
+
+  step :assert_archived_board_listed, ctx do
+    payload = command!(ctx, ["tasks", "list_boards", "--space-id", ctx.space.id, "--archive-status", "archived"])
+    assert [board] = payload["boards"]
+    assert board["id"] == Operately.ShortUuid.encode!(ctx.previous_default_board_id)
+    assert board["archived_at"]
+    refute board["is_default"]
+    ctx
+  end
+
+  step :restore_original_board, ctx do
+    payload = command!(ctx, ["tasks", "restore_board", "--space-id", ctx.space.id, "--board-id", ctx.previous_default_board_id])
+    assert payload["success"]
+    ctx
+  end
+
+  step :assert_restored_board_listed, ctx do
+    payload = command!(ctx, ["tasks", "list_boards", "--space-id", ctx.space.id])
+    assert [default, restored] = payload["boards"]
+    assert default["id"] == Operately.ShortUuid.encode!(ctx.board.id)
+    assert default["is_default"]
+    assert restored["id"] == Operately.ShortUuid.encode!(ctx.previous_default_board_id)
+    refute restored["is_default"]
+    refute restored["archived_at"]
     ctx
   end
 

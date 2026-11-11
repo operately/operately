@@ -1067,6 +1067,13 @@ export interface ActivityContentTaskAssigneeUpdating {
   removedAssignees: Person[];
 }
 
+export interface ActivityContentTaskBoardArchived {
+  __typename: "activity_content_task_board_archived";
+  space: Space | null;
+  boardId: Id;
+  name: string;
+}
+
 export interface ActivityContentTaskBoardCreated {
   __typename: "activity_content_task_board_created";
   space: Space | null;
@@ -1088,6 +1095,13 @@ export interface ActivityContentTaskBoardRenamed {
   boardId: Id;
   oldName: string;
   newName: string;
+}
+
+export interface ActivityContentTaskBoardRestored {
+  __typename: "activity_content_task_board_restored";
+  space: Space | null;
+  boardId: Id;
+  name: string;
 }
 
 export interface ActivityContentTaskClosing {
@@ -3030,6 +3044,8 @@ export type ActivityContent =
   | ActivityContentTaskBoardCreated
   | ActivityContentTaskBoardRenamed
   | ActivityContentTaskBoardDefaultChanged
+  | ActivityContentTaskBoardArchived
+  | ActivityContentTaskBoardRestored
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
   | ActivityContentResourceHubLinkDeleted
@@ -3251,11 +3267,11 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"
+  | "kpi"
   | "goal_check_in"
   | "space_discussion"
   | "comment"

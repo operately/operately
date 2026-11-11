@@ -172,6 +172,8 @@ defmodule OperatelyWeb.Api do
         mutation(:create_board, OperatelyWeb.Api.Tasks.CreateBoard)
         mutation(:rename_board, OperatelyWeb.Api.Tasks.RenameBoard)
         mutation(:set_default_board, OperatelyWeb.Api.Tasks.SetDefaultBoard)
+        mutation(:archive_board, OperatelyWeb.Api.Tasks.ArchiveBoard)
+        mutation(:restore_board, OperatelyWeb.Api.Tasks.RestoreBoard)
 
         mutation(:create, OperatelyWeb.Api.Tasks.Create)
         mutation(:delete, OperatelyWeb.Api.Tasks.Delete)
