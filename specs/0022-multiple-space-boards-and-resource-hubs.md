@@ -47,7 +47,7 @@ Implement selection and authorization in shared API/domain code. MCP remains a t
 - Expose lightweight instance discovery with ID, name, type, position, default designation, and archive state for boards. Avoid requiring agents to load tool contents to discover destinations.
 - Add explicit instance selectors to existing API/MCP operations and generated CLI flags, including create, list/search, and move/copy destinations where applicable. Preserve old inputs, routes, command names, and response fields; expose the resolved instance in results.
 - Document default selection in schemas, help, and examples. Reject archiving the default board; select another default first. Reject changes to or deletion of the default hub. Adding or reordering instances never changes an existing default.
-- Use board-specific URLs and update generated links to the task's actual board. Legacy board/task URL adapters are out of scope; existing links may stop working. Hub URLs retain their IDs.
+- Use board-specific URLs and update generated links to the task's actual board. Redirect legacy `spaces/:id/kanban` URLs to the default board, preserving query parameters. Hub URLs retain their IDs.
 - Moving a task updates both boards' ordering atomically. Preserve a valid destination status or require an explicit mapping when statuses differ; never leave a task with a status unavailable on its destination board.
 
 ## Implementation PRs
@@ -122,7 +122,7 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 
 ### PR 6A — Board navigation and archive state ✅
 
-- Use `spaces/:id/boards/:boardId` and a shared board query on the existing kanban page, also exposed through CLI/MCP. Scope its task creation, statuses, and ordering to the selected board; update task/search links. No legacy URL adapters; preserve existing hub links.
+- Use `spaces/:id/boards/:boardId` and a shared board query on the existing kanban page, also exposed through CLI/MCP. Scope its task creation, statuses, and ordering to the selected board; update task/search links. Redirect legacy kanban URLs to the default board; preserve existing hub links.
 - Show archive state separately from access permissions and disable protected task actions. Keep description edits, comments, reactions, and rich-text checklist toggles available.
 - Verify explicit/default board navigation and archived-board action availability.
 
