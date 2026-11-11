@@ -418,11 +418,11 @@
         "goal",
         "milestone",
         "document",
-        "kpi",
         "project_check_in",
         "project_retrospective",
         "project_discussion",
         "goal_discussion",
+        "kpi",
         "goal_check_in",
         "space_discussion",
         "comment",
@@ -833,6 +833,14 @@
         },
         {
           "name": "activity_content_task_board_default_changed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_board_archived",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_board_restored",
           "kind": "named"
         },
         {
@@ -24957,6 +24965,102 @@
             "has_default": false
           }
         ]
+      },
+      "activity_content_task_board_archived": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_task_board_restored": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
       }
     }
   },
@@ -24978,7 +25082,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 264,
+  "endpoint_count": 266,
   "endpoints": [
     {
       "name": "create",
@@ -41332,6 +41436,53 @@
       "docstring": "Updates the tools configuration for a space."
     },
     {
+      "name": "archive_board",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/archive_board",
+      "handler": "OperatelyWeb.Api.Tasks.ArchiveBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/archive_board",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Archives a non-default task board without deleting its tasks. To archive the current default, first select another default with set_default_board."
+    },
+    {
       "name": "create",
       "type": "mutation",
       "path": "/api/external/v1/tasks/create",
@@ -42128,6 +42279,53 @@
       "docstring": "Renames a task board. Requires space edit access."
     },
     {
+      "name": "restore_board",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/restore_board",
+      "handler": "OperatelyWeb.Api.Tasks.RestoreBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/restore_board",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Restores an archived task board at the end of the active list without changing the default."
+    },
+    {
       "name": "set_default_board",
       "type": "mutation",
       "path": "/api/external/v1/tasks/set_default_board",
@@ -42718,6 +42916,6 @@
     }
   ],
   "query_count": 79,
-  "mutation_count": 185,
+  "mutation_count": 187,
   "schema_version": 1
 }

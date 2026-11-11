@@ -749,6 +749,16 @@ msgid "%{author} archived the project"
 msgstr "%{author} arquivou o projeto"
 
 #.frontend
+#: assets/js/features/activities/TaskBoardArchived/index.tsx:24
+msgid "%{author} archived the task board %{boardName} in the <space>%{spaceName}</space> space."
+msgstr "%{author} arquivou o quadro de tarefas %{boardName} no espaço <space>%{spaceName}</space>."
+
+#.frontend
+#: assets/js/features/activities/TaskBoardArchived/index.tsx:23
+msgid "%{author} archived the task board %{boardName}."
+msgstr "%{author} arquivou o quadro de tarefas %{boardName}."
+
+#.frontend
 #: assets/js/features/activities/GoalArchived/index.tsx:34
 msgid "%{author} archived this goal"
 msgstr "%{author} arquivou este objetivo"
@@ -2422,6 +2432,16 @@ msgstr "%{author} restaurou um documento para uma versão anterior"
 #: assets/js/features/activities/CompanyMemberRestoring/index.tsx:45
 msgid "%{author} restored a member's account"
 msgstr "%{author} restaurou a conta de um membro"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRestored/index.tsx:24
+msgid "%{author} restored the task board %{boardName} in the <space>%{spaceName}</space> space."
+msgstr "%{author} restaurou o quadro de tarefas %{boardName} no espaço <space>%{spaceName}</space>."
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRestored/index.tsx:23
+msgid "%{author} restored the task board %{boardName}."
+msgstr "%{author} restaurou o quadro de tarefas %{boardName}."
 
 #.elixir
 #: lib/operately_email/templates/project_resuming.text.eex:1
@@ -6413,6 +6433,13 @@ msgstr "Arquivado em"
 #: ee/lib/admin_api/mutations/set_active_billing_product.ex:25
 msgid "Archived products cannot be activated"
 msgstr "Produtos arquivados não podem ser ativados"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardArchived/index.tsx:10
+#: assets/js/features/activities/TaskBoardArchived/index.tsx:15
+#: assets/js/features/activities/TaskBoardArchived/index.tsx:38
+msgid "Archived task board"
+msgstr "Quadro de tarefas arquivado"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:124
@@ -12758,8 +12785,8 @@ msgid "Invalid profile update"
 msgstr "Atualização de perfil inválida"
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:798
-#: lib/operately_web/api/tasks.ex:804
+#: lib/operately_web/api/tasks.ex:797
+#: lib/operately_web/api/tasks.ex:803
 msgid "Invalid reminders"
 msgstr "Lembretes inválidos"
 
@@ -12784,9 +12811,9 @@ msgstr "Parâmetros de mensagem do site inválidos"
 #: lib/operately/operations/kanban_state_updating.ex:93
 #: lib/operately/operations/kanban_state_updating.ex:105
 #: lib/operately_web/api/spaces.ex:522
-#: lib/operately_web/api/tasks.ex:773
-#: lib/operately_web/api/tasks.ex:1175
-#: lib/operately_web/api/tasks.ex:1182
+#: lib/operately_web/api/tasks.ex:772
+#: lib/operately_web/api/tasks.ex:1174
+#: lib/operately_web/api/tasks.ex:1181
 msgid "Invalid status"
 msgstr "Status inválido"
 
@@ -13958,8 +13985,8 @@ msgstr "Marco não é %{name}"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:55
-#: lib/operately_web/api/tasks.ex:952
-#: lib/operately_web/api/tasks.ex:972
+#: lib/operately_web/api/tasks.ex:951
+#: lib/operately_web/api/tasks.ex:971
 msgid "Milestone must belong to the same project as the task"
 msgstr "O marco deve pertencer ao mesmo projeto que a tarefa"
 
@@ -13990,7 +14017,7 @@ msgstr "Marco não excluído"
 #: lib/operately_web/api/projects.ex:647
 #: lib/operately_web/api/projects.ex:662
 #: lib/operately_web/api/projects/milestones.ex:291
-#: lib/operately_web/api/tasks.ex:700
+#: lib/operately_web/api/tasks.ex:699
 msgid "Milestone not found"
 msgstr "Marco não encontrado"
 
@@ -16872,9 +16899,9 @@ msgstr "O nome do projeto não pode ficar em branco"
 #: lib/operately_web/api/projects.ex:688
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:282
-#: lib/operately_web/api/tasks.ex:652
-#: lib/operately_web/api/tasks.ex:691
-#: lib/operately_web/api/tasks.ex:706
+#: lib/operately_web/api/tasks.ex:651
+#: lib/operately_web/api/tasks.ex:690
+#: lib/operately_web/api/tasks.ex:705
 msgid "Project not found"
 msgstr "Projeto não encontrado"
 
@@ -17921,6 +17948,13 @@ msgstr "Restaurar “%{name}”?"
 #: assets/js/features/activities/ResourceHubDocumentVersionRestored/index.tsx:94
 msgid "Restored a document version"
 msgstr "Restaurou uma versão do documento"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRestored/index.tsx:10
+#: assets/js/features/activities/TaskBoardRestored/index.tsx:15
+#: assets/js/features/activities/TaskBoardRestored/index.tsx:38
+msgid "Restored task board"
+msgstr "Quadro de tarefas restaurado"
 
 #.frontend
 #: assets/js/features/activities/CompanyMemberRestoring/index.tsx:65
@@ -19576,7 +19610,7 @@ msgid "Space members will have full access."
 msgstr "Os membros do espaço terão acesso total."
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:661
+#: lib/operately_web/api/tasks.ex:660
 msgid "Space not found"
 msgstr "Espaço não encontrado"
 
@@ -20219,8 +20253,8 @@ msgstr "Tarefa não excluída"
 #: lib/operately_web/api/projects.ex:632
 #: lib/operately_web/api/projects/milestones.ex:303
 #: lib/operately_web/api/spaces.ex:321
-#: lib/operately_web/api/tasks.ex:673
-#: lib/operately_web/api/tasks.ex:685
+#: lib/operately_web/api/tasks.ex:672
+#: lib/operately_web/api/tasks.ex:684
 msgid "Task not found"
 msgstr "Tarefa não encontrada"
 
@@ -20635,7 +20669,7 @@ msgid "The company is being imported in the background."
 msgstr "A empresa está sendo importada em segundo plano."
 
 #.elixir
-#: lib/operately_web/api/rich_content/set_task_item_checked.ex:56
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:51
 msgid "The content has changed. Refresh and try again."
 msgstr "O conteúdo foi alterado. Atualize a página e tente novamente."
 
@@ -20658,6 +20692,11 @@ msgstr "A assinatura atual será encerrada ao final do ciclo de faturamento vige
 #: lib/operately_web/api/resource_hubs/delete.ex:28
 msgid "The default Resource Hub cannot be deleted."
 msgstr "A central de recursos padrão não pode ser excluída."
+
+#.elixir
+#: lib/operately_web/api/tasks/archive_board.ex:28
+msgid "The default task board cannot be archived. Select another default board first."
+msgstr "O quadro de tarefas padrão não pode ser arquivado. Selecione outro quadro padrão primeiro."
 
 #.elixir
 #: lib/operately_email/templates/goal_description_changed.html.eex:11
@@ -20984,7 +21023,7 @@ msgid "The selected reviewer doesn't have access to the selected space"
 msgstr "O reviewer selecionado não tem acesso ao espaço selecionado"
 
 #.elixir
-#: lib/operately_web/api/rich_content/set_task_item_checked.ex:57
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:52
 msgid "The selected task item no longer exists"
 msgstr "O item de tarefa selecionado não existe mais"
 
@@ -21785,7 +21824,7 @@ msgid "This tab is out of date. Reloading to get the latest version..."
 msgstr "Esta aba está desatualizada. Recarregando para obter a versão mais recente..."
 
 #.elixir
-#: lib/operately/tasks/task_board.ex:40
+#: lib/operately/tasks/task_board.ex:42
 #: lib/operately_web/api/tasks/move.ex:93
 #: lib/operately_web/api/tasks/set_default_board.ex:28
 msgid "This task board is archived. Restore it before making changes."

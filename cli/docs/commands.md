@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 264
+- Endpoints: 266
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -251,6 +251,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `spaces update_permissions` | `op spaces update_permissions` | `POST` | `/api/external/v1/spaces/update_permissions` |
 | `spaces update_task_statuses` | `op spaces update_task_statuses` | `POST` | `/api/external/v1/spaces/update_task_statuses` |
 | `spaces update_tools` | `op spaces update_tools` | `POST` | `/api/external/v1/spaces/update_tools` |
+| `tasks archive_board` | `op tasks archive_board` | `POST` | `/api/external/v1/tasks/archive_board` |
 | `tasks create` | `op tasks create` | `POST` | `/api/external/v1/tasks/create` |
 | `tasks create_board` | `op tasks create_board` | `POST` | `/api/external/v1/tasks/create_board` |
 | `tasks delete` | `op tasks delete` | `POST` | `/api/external/v1/tasks/delete` |
@@ -261,6 +262,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `tasks list_task_statuses` | `op tasks list_task_statuses` | `GET` | `/api/external/v1/tasks/list_task_statuses` |
 | `tasks move` | `op tasks move` | `POST` | `/api/external/v1/tasks/move` |
 | `tasks rename_board` | `op tasks rename_board` | `POST` | `/api/external/v1/tasks/rename_board` |
+| `tasks restore_board` | `op tasks restore_board` | `POST` | `/api/external/v1/tasks/restore_board` |
 | `tasks set_default_board` | `op tasks set_default_board` | `POST` | `/api/external/v1/tasks/set_default_board` |
 | `tasks update_archive` | `op tasks update_archive` | `POST` | `/api/external/v1/tasks/update_archive` |
 | `tasks update_assignee` | `op tasks update_assignee` | `POST` | `/api/external/v1/tasks/update_assignee` |

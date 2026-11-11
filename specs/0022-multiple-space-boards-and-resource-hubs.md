@@ -10,7 +10,7 @@ Related issue: [#5587 — Support multiple kanban boards per space](https://gith
 
 - Resource hubs have persisted defaults, explicit selection, discovery, ordering, and management APIs. API, MCP, and CLI support creating, renaming, and deleting empty non-default hubs; reordering is internal-only.
 - Space task statuses and ordering live on `TaskBoard`; space tasks reference their board and space. Legacy space responses project the default board. API, MCP, and CLI support explicit board selection, discovery, and moves.
-- Board creation, renaming, and default selection are available through API/MCP/CLI; reordering is internal-only. Space Tools returns active board summaries even when Tasks is disabled. Archive management is upcoming.
+- Board creation, renaming, default selection, archiving, and restoring are available through API/MCP/CLI; reordering is internal-only. Space Tools returns active board summaries even when Tasks is disabled.
 - Space Tools configuration exposes category toggles, not instance management.
 
 ## Scope and Experience
@@ -46,7 +46,7 @@ Implement selection and authorization in shared API/domain code. MCP remains a t
 
 - Expose lightweight instance discovery with ID, name, type, position, default designation, and archive state for boards. Avoid requiring agents to load tool contents to discover destinations.
 - Add explicit instance selectors to existing API/MCP operations and generated CLI flags, including create, list/search, and move/copy destinations where applicable. Preserve old inputs, routes, command names, and response fields; expose the resolved instance in results.
-- Document default selection in schemas, help, and examples. Require an explicit replacement before archiving a default board. Reject changes to or deletion of the default hub. Adding or reordering instances never changes an existing default.
+- Document default selection in schemas, help, and examples. Reject archiving the default board; select another default first. Reject changes to or deletion of the default hub. Adding or reordering instances never changes an existing default.
 - Preserve old space-board URLs: task-specific links resolve the task's actual board; links without a task resolve the default. Hub URLs retain their IDs.
 - Moving a task updates both boards' ordering atomically. Preserve a valid destination status or require an explicit mapping when statuses differ; never leave a task with a status unavailable on its destination board.
 
@@ -115,9 +115,9 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 - Reject writes to archived boards in shared operations, including task changes and moves. Check archive state inside write transactions; preserve authorized reads, task description edits, comments, reactions, and rich-text checklist toggles.
 - Return structured restore guidance and test archived fixtures and concurrent writes across API/MCP/CLI. Keep access permissions independent of archive state. No archive controls yet.
 
-### PR 5D — Archive and restore boards
+### PR 5D — Archive and restore boards ✅
 
-- Add archive/restore APIs with MCP/CLI adapters and activities. Archiving the default requires an explicit active replacement; reject archiving the last active default.
+- Add archive/restore APIs with MCP/CLI adapters and activities. Reject archiving the default board, including the last active board. Users must select another default before archiving the former default.
 - Append restored boards without changing the default. Verify concurrent archive/default changes, ordering, and export/import preservation. Build on PR 5C's write protection.
 
 ### PR 6 — Combined Space Tools redesign for boards and hubs
