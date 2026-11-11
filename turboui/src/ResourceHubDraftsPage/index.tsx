@@ -23,9 +23,9 @@ export function ResourceHubDraftsPage(props: ResourceHubDraftsPage.Props) {
         <DraftsHeader actions={props.actions} />
         {props.nodes.length === 0 ? (
           <div className="text-center py-12" data-test-id="drafts-empty">
-            <p>{t("You don’t have any drafts in these Docs & Files.")}</p>
+            <p>{t("You don’t have any drafts in this Resource Hub.")}</p>
             <Link to={props.resourceHubPath} className="mt-3 inline-block">
-              {t("Back to Docs & Files")}
+              {t("Back to Resource Hub")}
             </Link>
           </div>
         ) : (

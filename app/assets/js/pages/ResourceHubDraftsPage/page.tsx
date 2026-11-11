@@ -20,7 +20,7 @@ export function Page() {
   const { mutateAsync: deleteDocument } = useDeleteDocument(mutationScope);
 
   const props: ResourceHubDraftsPage.Props = {
-    title: [t("Drafts"), resourceHub.name ?? t("Docs & Files")],
+    title: [t("Drafts"), resourceHub.name ?? t("Resource Hub")],
     navigation: buildDraftsPageNavigation(resourceHub, paths),
     nodes: draftNodes,
     resourceHubPath: resourceHubLandingPath(paths, resourceHub),
