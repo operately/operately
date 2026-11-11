@@ -1,43 +1,46 @@
-import Api, { Space, Task } from "@/api";
+import Api, { Space, Task, TaskBoard } from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-import { assertPresent } from "@/utils/assertions";
 import { useQueryClient } from "@tanstack/react-query";
 
 export async function loader({ params }) {
   const spaceInput = { id: params.id, includePermissions: true };
-  const { space } = await Api.spaces.getQuery(spaceInput);
+  const boardInput = { spaceId: params.id, boardId: params.boardId };
+  const tasksInput = boardInput;
 
-  assertPresent(space.defaultTaskBoardId, "Space default task board is unavailable");
-  const tasksInput = { spaceId: params.id, boardId: space.defaultTaskBoardId };
+  await Promise.all([
+    Api.spaces.getQuery(spaceInput),
+    Api.tasks.getBoardQuery(boardInput),
+    Api.spaces.listTasksQuery(tasksInput),
+  ]);
 
-  await Api.spaces.listTasksQuery(tasksInput);
-
-  return { spaceInput, tasksInput };
+  return { spaceInput, boardInput, tasksInput };
 }
 
 type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
-export function useLoadedData(): { space: Space; tasks: Task[] } {
-  const { spaceInput, tasksInput } = Pages.useLoadedData<LoaderResult>();
+export function useLoadedData(): { space: Space; board: TaskBoard; tasks: Task[] } {
+  const { spaceInput, boardInput, tasksInput } = Pages.useLoadedData<LoaderResult>();
   const { data: spaceData } = useLoadedQuery(Api.spaces.getQueryOptions(spaceInput));
+  const { data: boardData } = useLoadedQuery(Api.tasks.getBoardQueryOptions(boardInput));
   const { data: tasksData } = useLoadedQuery(Api.spaces.listTasksQueryOptions(tasksInput));
 
-  if (!spaceData?.space || !tasksData) {
+  if (!spaceData?.space || !boardData || !tasksData) {
     throw new Error(`Space Kanban data is unavailable for space "${spaceInput.id}"`);
   }
 
-  return { space: spaceData.space, tasks: tasksData.tasks };
+  return { space: spaceData.space, board: boardData.board, tasks: tasksData.tasks };
 }
 
 export function useRefresh(): () => Promise<void> {
   const queryClient = useQueryClient();
-  const { spaceInput, tasksInput } = Pages.useLoadedData<LoaderResult>();
+  const { spaceInput, boardInput, tasksInput } = Pages.useLoadedData<LoaderResult>();
 
   return async () => {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: Api.spaces.getQueryKey(spaceInput) }),
       queryClient.invalidateQueries({ queryKey: Api.spaces.listTasksQueryKey(tasksInput) }),
+      queryClient.invalidateQueries({ queryKey: Api.tasks.getBoardQueryKey(boardInput) }),
     ]);
   };
 }

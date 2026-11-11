@@ -2740,6 +2740,7 @@ export interface Target {
 
 export interface Task {
   __typename: "task";
+  spaceId?: Id | null;
   boardId?: Id | null;
   id: string;
   url?: string;
@@ -2765,6 +2766,15 @@ export interface Task {
   subscriptionList?: SubscriptionList | null;
   availableStatuses?: TaskStatus[] | null;
   type: TaskType;
+}
+
+export interface TaskBoard {
+  __typename: "task_board";
+  id: Id;
+  name: string;
+  archivedAt: string | null;
+  taskStatuses: TaskStatus[];
+  tasksKanbanState: Json;
 }
 
 export interface TaskBoardSummary {

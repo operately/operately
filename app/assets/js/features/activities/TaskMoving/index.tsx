@@ -5,7 +5,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Trans } from "../i18n";
 import i18n from "@/i18n";
-import { activityAuthorName, projectLink, spaceLink, taskLink } from "../feedItemLinks";
+import { activityAuthorName, projectLink, spaceLink, taskLink, taskActivityPath } from "../feedItemLinks";
 
 const TaskMoving: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -17,13 +17,12 @@ const TaskMoving: ActivityHandler = {
     const task = data.task;
 
     if (data.destinationType === "space") {
-      if (data.destinationSpace?.id && task?.id)
-        return paths.spaceKanbanPath(data.destinationSpace.id, { taskId: task.id });
-      if (data.destinationSpace?.id) return paths.spaceKanbanPath(data.destinationSpace.id);
+      if (data.destinationSpace?.id && task?.id) return taskActivityPath(paths, task, data.destinationSpace.id);
+      if (data.destinationSpace?.id) return paths.spacePath(data.destinationSpace.id);
       return paths.homePath();
     }
 
-    if (task?.id) return paths.taskPath(task.id);
+    if (task?.id) return taskActivityPath(paths, task);
     if (data.destinationProject?.id) return paths.projectPath(data.destinationProject.id, { tab: "tasks" });
 
     return paths.homePath();

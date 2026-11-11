@@ -4,7 +4,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Trans } from "../i18n";
 import i18n from "@/i18n";
-import { activityAuthorName, projectLink, spaceLink, taskLink } from "../feedItemLinks";
+import { activityAuthorName, projectLink, spaceLink, taskLink, taskActivityPath } from "../feedItemLinks";
 
 function content(activity: Activity): ActivityContentTaskArchiveUpdating {
   return activity.content as ActivityContentTaskArchiveUpdating;
@@ -57,9 +57,9 @@ const TaskArchiveUpdating: ActivityHandler = {
 
   pagePath(paths, activity) {
     const { task, project, space } = content(activity);
-    if (task && project) return paths.taskPath(task.id);
+    if (task && project) return taskActivityPath(paths, task);
     if (project) return paths.projectPath(project.id);
-    return paths.spaceKanbanPath(space.id, task ? { taskId: task.id } : undefined);
+    return taskActivityPath(paths, task, space.id);
   },
 
   pageHtmlTitle: (activity) => content(activity).name,

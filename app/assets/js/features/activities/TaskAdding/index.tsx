@@ -1,3 +1,4 @@
+import { taskActivityPath } from "../feedItemLinks";
 import type { ActivityContentTaskAdding } from "@/api";
 import i18n, { translationText } from "@/i18n";
 import type { Activity } from "@/models/activities";
@@ -18,18 +19,14 @@ const TaskAdding: ActivityHandler = {
     const { project, space, task } = content(activity);
 
     if (project && task) {
-      return paths.taskPath(task.id);
+      return taskActivityPath(paths, task);
     }
 
     if (project) {
       return paths.projectPath(project.id, { tab: "tasks" });
     }
 
-    if (task) {
-      return paths.spaceKanbanPath(space.id, { taskId: task.id });
-    }
-
-    return paths.spaceKanbanPath(space.id);
+    return taskActivityPath(paths, task, space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -68,7 +65,7 @@ const TaskAdding: ActivityHandler = {
     }
 
     const name = task?.name ?? taskName;
-    const taskAnchor = taskLinkAnchor(paths, task, project, space);
+    const taskAnchor = taskLinkAnchor(paths, task, space);
 
     if (!task) {
       if (showLocation) {
@@ -152,12 +149,11 @@ function locationAnchor(
 function taskLinkAnchor(
   paths: Paths,
   task: ActivityContentTaskAdding["task"],
-  project: ActivityContentTaskAdding["project"],
   space: ActivityContentTaskAdding["space"],
 ) {
   if (!task?.id) return <span />;
 
-  const path = !project && space?.id ? paths.spaceKanbanPath(space.id, { taskId: task.id }) : paths.taskPath(task.id);
+  const path = taskActivityPath(paths, task, space?.id);
 
   return <Link to={path}>{null}</Link>;
 }
