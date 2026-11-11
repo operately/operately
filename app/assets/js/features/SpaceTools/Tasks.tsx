@@ -15,7 +15,10 @@ interface Props {
 
 export function Tasks(props: Props) {
   const paths = usePaths();
-  const path = paths.spaceKanbanPath(props.space.id!);
+  const boardId = props.space.defaultTaskBoardId;
+  if (!boardId) return null;
+
+  const path = paths.spaceKanbanPath(props.space.id, boardId);
   const isZeroState = props.tasks.length < 1;
 
   return (

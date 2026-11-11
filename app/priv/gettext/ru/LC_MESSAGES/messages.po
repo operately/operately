@@ -171,7 +171,7 @@ msgstr "%{author}: <action>комментарий</action> к <retrospective>и�
 
 #.frontend
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:52
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:55
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:62
 msgid "%{author} <action>commented</action> on <task>%{taskName}</task>"
 msgstr "%{author}: <action>комментарий</action> к задаче <task>%{taskName}</task>"
 
@@ -181,7 +181,7 @@ msgid "%{author} <action>commented</action> on <task>%{taskName}</task> in the <
 msgstr "%{author}: <action>комментарий</action> к задаче <task>%{taskName}</task> в проекте <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:65
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:72
 msgid "%{author} <action>commented</action> on <task>%{taskName}</task> in the <space>%{spaceName}</space> space"
 msgstr "%{author}: <action>комментарий</action> к задаче <task>%{taskName}</task> в пространстве <space>%{spaceName}</space>"
 
@@ -596,12 +596,12 @@ msgid "%{author} added new contributors to the project"
 msgstr "%{author}: в проект добавлены новые участники"
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:67
+#: assets/js/features/activities/TaskAdding/index.tsx:69
 msgid "%{author} added tasks <tasks/>"
 msgstr "%{author}: добавлены задачи <tasks/>"
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:59
+#: assets/js/features/activities/TaskAdding/index.tsx:61
 msgid "%{author} added tasks <tasks/> in <location>%{locationName}</location>"
 msgstr "%{author}: добавлены задачи <tasks/> в <location>%{locationName}</location>"
 
@@ -646,22 +646,22 @@ msgid "%{author} added the <goal>%{goalName}</goal> goal"
 msgstr "%{author}: добавлена цель <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:84
+#: assets/js/features/activities/TaskAdding/index.tsx:86
 msgid "%{author} added the task \"%{taskName}\""
 msgstr "%{author}: добавлена задача «%{taskName}»"
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:76
+#: assets/js/features/activities/TaskAdding/index.tsx:78
 msgid "%{author} added the task \"%{taskName}\" in <location>%{locationName}</location>"
 msgstr "%{author}: добавлена задача «%{taskName}» в <location>%{locationName}</location>"
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:98
+#: assets/js/features/activities/TaskAdding/index.tsx:100
 msgid "%{author} added the task <task>%{taskName}</task>"
 msgstr "%{author}: добавлена задача <task>%{taskName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:89
+#: assets/js/features/activities/TaskAdding/index.tsx:91
 msgid "%{author} added the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr "%{author}: добавлена задача <task>%{taskName}</task> в <location>%{locationName}</location>"
 
@@ -764,7 +764,7 @@ msgid "%{author} assigned %{champion} as the champion on %{project_name}"
 msgstr "%{author}: роль «Ответственный» в проекте «%{project_name}» назначена участнику %{champion}"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:197
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:199
 msgid "%{author} assigned %{count} person to the task <task>%{taskName}</task>"
 msgid_plural "%{author} assigned %{count} people to the task <task>%{taskName}</task>"
 msgstr[0] "%{author}: для задачи <task>%{taskName}</task> назначен %{count} исполнитель"
@@ -773,7 +773,7 @@ msgstr[2] "%{author}: для задачи <task>%{taskName}</task> назнач�
 msgstr[3] "%{author}: для задачи <task>%{taskName}</task> назначено %{count} исполнителя"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:192
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:194
 msgid "%{author} assigned %{count} person to the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgid_plural "%{author} assigned %{count} people to the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr[0] "%{author}: для задачи <task>%{taskName}</task> в <location>%{locationName}</location> назначен %{count} исполнитель"
@@ -829,12 +829,12 @@ msgid "%{author} assigned <task>%{taskName}</task> to milestone <new>%{newName}<
 msgstr "%{author}: задача <task>%{taskName}</task> назначена вехе <new>%{newName}</new> в проекте <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:177
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:179
 msgid "%{author} assigned to %{personName} the task <task>%{taskName}</task>"
 msgstr "%{author}: задача <task>%{taskName}</task> назначена участнику %{personName}"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:174
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:176
 msgid "%{author} assigned to %{personName} the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr "%{author}: задача <task>%{taskName}</task> в <location>%{locationName}</location> назначена участнику %{personName}"
 
@@ -889,12 +889,12 @@ msgid "%{author} assinged you as the champion on %{goal_name}"
 msgstr "%{author}: вам назначена роль «Ответственный» за цель «%{goal_name}»"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:189
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:191
 msgid "%{author} changed assignees on the task <task>%{taskName}</task>"
 msgstr "%{author}: изменены исполнители задачи <task>%{taskName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:186
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:188
 msgid "%{author} changed assignees on the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr "%{author}: изменены исполнители задачи <task>%{taskName}</task> в <location>%{locationName}</location>"
 
@@ -942,12 +942,12 @@ msgid "%{author} changed the due date to <date/>"
 msgstr "%{author}: срок выполнения изменён на <date/>"
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:84
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:86
 msgid "%{author} changed the due date to <date/> on <task>%{taskName}</task>"
 msgstr "%{author}: срок выполнения задачи <task>%{taskName}</task> изменён на <date/>"
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:77
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:79
 msgid "%{author} changed the due date to <date/> on <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr "%{author}: срок выполнения задачи <task>%{taskName}</task> в <location>%{locationName}</location> изменён на <date/>"
 
@@ -1024,12 +1024,12 @@ msgid "%{author} cleared the due date"
 msgstr "%{author}: срок выполнения удалён"
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:85
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:87
 msgid "%{author} cleared the due date on <task>%{taskName}</task>"
 msgstr "%{author}: срок выполнения задачи <task>%{taskName}</task> удалён"
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:80
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:82
 msgid "%{author} cleared the due date on <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr "%{author}: срок выполнения задачи <task>%{taskName}</task> в <location>%{locationName}</location> удалён"
 
@@ -1131,7 +1131,7 @@ msgstr "%{author}: комментарий к итогам проекта «%{pro
 
 #.frontend
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:58
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:61
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:68
 msgid "%{author} commented on a task"
 msgstr "%{author}: комментарий к задаче"
 
@@ -1141,7 +1141,7 @@ msgid "%{author} commented on a task in the <project>%{projectName}</project> pr
 msgstr "%{author}: комментарий к задаче в проекте <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:71
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:78
 msgid "%{author} commented on a task in the <space>%{spaceName}</space> space"
 msgstr "%{author}: комментарий к задаче в пространстве <space>%{spaceName}</space>"
 
@@ -1462,18 +1462,18 @@ msgid "%{author} deleted a KPI update in the <space>%{spaceName}</space> space"
 msgstr "%{author}: удалена запись KPI в пространстве <space>%{spaceName}</space>"
 
 #.frontend
-#: assets/js/features/activities/TaskCommentDeleting/index.tsx:57
-#: assets/js/features/activities/TaskCommentDeleting/index.tsx:67
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:59
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:69
 msgid "%{author} deleted a comment on <task>%{taskName}</task>"
 msgstr "%{author}: удалён комментарий к задаче <task>%{taskName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskCommentDeleting/index.tsx:77
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:79
 msgid "%{author} deleted a comment on <task>%{taskName}</task> in the <project>%{projectName}</project> project"
 msgstr "%{author}: удалён комментарий к задаче <task>%{taskName}</task> в проекте <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/TaskCommentDeleting/index.tsx:86
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:88
 msgid "%{author} deleted a comment on <task>%{taskName}</task> in the <space>%{spaceName}</space> space"
 msgstr "%{author}: удалён комментарий к задаче <task>%{taskName}</task> в пространстве <space>%{spaceName}</space>"
 
@@ -1905,12 +1905,12 @@ msgid "%{author} made a copy of the <original>%{originalName}</original> folder 
 msgstr "%{author}: в пространстве <parent>%{parentName}</parent> создана копия папки <original>%{originalName}</original> под названием <folder>%{folderName}</folder>"
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:78
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:80
 msgid "%{author} marked <task>%{taskName}</task> as %{status}"
 msgstr "%{author}: для задачи <task>%{taskName}</task> установлен статус «%{status}»"
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:75
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:77
 msgid "%{author} marked <task>%{taskName}</task> as %{status} in <location>%{locationName}</location>"
 msgstr "%{author}: для задачи <task>%{taskName}</task> в <location>%{locationName}</location> установлен статус «%{status}»"
 
@@ -1935,12 +1935,12 @@ msgid "%{author} marked a checklist item as pending on <goal>%{goalName}</goal>"
 msgstr "%{author}: с пункта чек-листа цели <goal>%{goalName}</goal> снята отметка о выполнении"
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:79
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:81
 msgid "%{author} marked the \"%{taskName}\" task as %{status}"
 msgstr "%{author}: для задачи «%{taskName}» установлен статус «%{status}»"
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:76
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:78
 msgid "%{author} marked the \"%{taskName}\" task as %{status} in <location>%{locationName}</location>"
 msgstr "%{author}: для задачи «%{taskName}» в <location>%{locationName}</location> установлен статус «%{status}»"
 
@@ -1990,12 +1990,12 @@ msgid "%{author} moved the project"
 msgstr "%{author}: проект перемещён"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:70
+#: assets/js/features/activities/TaskMoving/index.tsx:72
 msgid "%{author} moved the task \"%{taskName}\" to <destination>%{destinationName}</destination>"
 msgstr "%{author}: задача «%{taskName}» перемещена в <destination>%{destinationName}</destination>"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:64
+#: assets/js/features/activities/TaskMoving/index.tsx:66
 msgid "%{author} moved the task <task>%{taskName}</task> to <destination>%{destinationName}</destination>"
 msgstr "%{author}: задача <task>%{taskName}</task> перемещена в <destination>%{destinationName}</destination>"
 
@@ -2290,12 +2290,12 @@ msgid "%{author} renamed <goal>%{goalName}</goal>"
 msgstr "%{author}: переименована цель <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:57
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:59
 msgid "%{author} renamed <tasks/>"
 msgstr "%{author}: переименованы задачи <tasks/>"
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:65
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:67
 msgid "%{author} renamed <tasks/> in <location>%{locationName}</location>"
 msgstr "%{author}: переименованы задачи <tasks/> в <location>%{locationName}</location>"
 
@@ -2310,12 +2310,12 @@ msgid "%{author} renamed milestone to <milestone>%{title}</milestone> in <projec
 msgstr "%{author}: веха переименована в <milestone>%{title}</milestone> в проекте <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:80
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:82
 msgid "%{author} renamed task to <task>%{newName}</task>"
 msgstr "%{author}: задача переименована в <task>%{newName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:88
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:90
 msgid "%{author} renamed task to <task>%{newName}</task> in <location>%{locationName}</location>"
 msgstr "%{author}: задача переименована в <task>%{newName}</task> в <location>%{locationName}</location>"
 
@@ -2498,7 +2498,7 @@ msgid "%{author} submitted a check-in"
 msgstr "%{author}: опубликован отчёт о ходе работы"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:209
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:211
 msgid "%{author} unassigned %{count} person from the task <task>%{taskName}</task>"
 msgid_plural "%{author} unassigned %{count} people from the task <task>%{taskName}</task>"
 msgstr[0] "%{author}: отменено назначение %{count} исполнителя задачи <task>%{taskName}</task>"
@@ -2507,7 +2507,7 @@ msgstr[2] "%{author}: отменено назначение %{count} испол�
 msgstr[3] "%{author}: отменено назначение %{count} исполнителя задачи <task>%{taskName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:204
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:206
 msgid "%{author} unassigned %{count} person from the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgid_plural "%{author} unassigned %{count} people from the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr[0] "%{author}: отменено назначение %{count} исполнителя задачи <task>%{taskName}</task> в <location>%{locationName}</location>"
@@ -2516,12 +2516,12 @@ msgstr[2] "%{author}: отменено назначение %{count} испол�
 msgstr[3] "%{author}: отменено назначение %{count} исполнителя задачи <task>%{taskName}</task> в <location>%{locationName}</location>"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:183
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:185
 msgid "%{author} unassigned %{personName} from the task <task>%{taskName}</task>"
 msgstr "%{author}: отменено назначение участника %{personName} на задачу <task>%{taskName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:180
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:182
 msgid "%{author} unassigned %{personName} from the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr "%{author}: отменено назначение участника %{personName} на задачу <task>%{taskName}</task> в <location>%{locationName}</location>"
 
@@ -2551,33 +2551,33 @@ msgid "%{author} updated <task>%{taskName}</task> milestone in <project>%{projec
 msgstr "%{author}: изменена веха задачи <task>%{taskName}</task> в проекте <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:68
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:70
 msgid "%{author} updated assignees on <tasks/>"
 msgstr "%{author}: изменены исполнители задач <tasks/>"
 
 #.frontend
 #: ../turboui/src/ActivityTaskList/index.stories.tsx:89
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:62
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:64
 msgid "%{author} updated assignees on <tasks/> in <location>%{locationName}</location>"
 msgstr "%{author}: изменены исполнители задач <tasks/> в <location>%{locationName}</location>"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:219
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:221
 msgid "%{author} updated assignees on the task <task>%{taskName}</task>"
 msgstr "%{author}: изменены исполнители задачи <task>%{taskName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:216
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:218
 msgid "%{author} updated assignees on the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr "%{author}: изменены исполнители задачи <task>%{taskName}</task> в <location>%{locationName}</location>"
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:70
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:72
 msgid "%{author} updated due dates on <tasks/>"
 msgstr "%{author}: изменены сроки выполнения задач <tasks/>"
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:64
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:66
 msgid "%{author} updated due dates on <tasks/> in <location>%{locationName}</location>"
 msgstr "%{author}: изменены сроки выполнения задач <tasks/> в <location>%{locationName}</location>"
 
@@ -2657,22 +2657,22 @@ msgid "%{author} updated the description for \"%{task_name}\"."
 msgstr "%{author}: обновлено описание задачи «%{task_name}»."
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:78
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:82
 msgid "%{author} updated the description of <task>%{taskName}</task>"
 msgstr "%{author}: обновлено описание задачи <task>%{taskName}</task>"
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:72
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:76
 msgid "%{author} updated the description of <task>%{taskName}</task> in %{context}"
 msgstr "%{author}: обновлено описание задачи <task>%{taskName}</task> в %{context}"
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:64
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:68
 msgid "%{author} updated the description of a task"
 msgstr "%{author}: обновлено описание задачи"
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:59
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:63
 msgid "%{author} updated the description of a task in %{context}"
 msgstr "%{author}: обновлено описание задачи в %{context}"
 
@@ -2718,12 +2718,12 @@ msgid "%{author} updated the project description"
 msgstr "%{author}: обновлено описание проекта"
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:68
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:70
 msgid "%{author} updated the status of <tasks/>"
 msgstr "%{author}: обновлён статус задач <tasks/>"
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:62
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:64
 msgid "%{author} updated the status of <tasks/> in <location>%{locationName}</location>"
 msgstr "%{author}: обновлён статус задач <tasks/> в <location>%{locationName}</location>"
 
@@ -3199,10 +3199,10 @@ msgstr "%{price} / месяц"
 msgid "%{role} on <location>%{location}</location>"
 msgstr "%{role} в <location>%{location}</location>"
 
-#.frontend
-#: ../turboui/src/SpaceKanbanPage/index.tsx:65
-msgid "%{space} Tasks"
-msgstr "Задачи пространства «%{space}»"
+#~ #.frontend
+#~ #: ../turboui/src/SpaceKanbanPage/index.tsx:65
+#~ msgid "%{space} Tasks"
+#~ msgstr "Задачи пространства «%{space}»"
 
 #.frontend
 #: ../turboui/src/utils/timeframes.tsx:56
@@ -5333,23 +5333,23 @@ msgstr "Для построения линии тренда нужна втор�
 #~ msgstr "Пространство объединяет работу вашей команды."
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:234
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:251
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:236
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:253
 msgid "A task was assigned to %{personName}"
 msgstr "Задача назначена участнику %{personName}"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:240
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:242
 msgid "A task was no longer assigned to %{personName}"
 msgstr "Участник %{personName} больше не назначен на задачу"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:253
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:255
 msgid "A task was unassigned"
 msgstr "Назначение исполнителей задачи отменено"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:245
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:247
 msgid "A task was updated with new assignees"
 msgstr "У задачи обновлены исполнители"
 
@@ -6456,7 +6456,7 @@ msgstr "Архивировать продукт"
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:499
 #: ../turboui/src/TaskPage/Sidebar.tsx:501
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:74
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:76
 msgid "Archive task"
 msgstr "Архивировать задачу"
 
@@ -7374,7 +7374,7 @@ msgid "Cannot delete goal"
 msgstr "Невозможно удалить цель"
 
 #.frontend
-#: assets/js/models/tasks/useKanbanState.tsx:244
+#: assets/js/models/tasks/useKanbanState.tsx:246
 msgid "Cannot move task to unknown status"
 msgstr "Невозможно переместить задачу в неизвестный статус"
 
@@ -7947,7 +7947,7 @@ msgid "Cleared due date for %{projectName}"
 msgstr "Удалён срок выполнения проекта «%{projectName}»"
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:147
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:149
 msgid "Cleared due date for %{taskName}"
 msgstr "Удалён срок выполнения задачи «%{taskName}»"
 
@@ -10806,9 +10806,9 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/models/reactions/useReactionHandlers.tsx:67
 #: assets/js/models/reactions/useReactionHandlers.tsx:96
 #: assets/js/models/subscriptions/useSubscription.tsx:113
-#: assets/js/models/tasks/useKanbanState.tsx:122
-#: assets/js/models/tasks/useKanbanState.tsx:244
-#: assets/js/models/tasks/useKanbanState.tsx:251
+#: assets/js/models/tasks/useKanbanState.tsx:124
+#: assets/js/models/tasks/useKanbanState.tsx:246
+#: assets/js/models/tasks/useKanbanState.tsx:253
 #: assets/js/models/tasks/useProjectKanbanState.ts:72
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:202
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:227
@@ -10821,16 +10821,16 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:452
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:464
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:499
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:108
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:132
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:160
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:188
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:216
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:246
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:261
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:286
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:110
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:134
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:162
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:190
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:218
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:248
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:263
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:288
 #: assets/js/models/tasks/useTaskArchiveChange.ts:25
-#: assets/js/models/tasks/useTaskSlideInProps.tsx:216
+#: assets/js/models/tasks/useTaskSlideInProps.tsx:217
 #: assets/js/pages/AccountNotificationSettingsPage/index.tsx:73
 #: assets/js/pages/CompanyAdminPage/page.tsx:27
 #: assets/js/pages/HomePage/index.tsx:74
@@ -10841,7 +10841,7 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/pages/ProjectPage/index.tsx:292
 #: assets/js/pages/ProjectPage/index.tsx:793
 #: assets/js/pages/ProjectPage/index.tsx:822
-#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:67
+#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:69
 #: assets/js/pages/SpaceKpisPage/page.tsx:102
 #: assets/js/pages/SpacePage/page.tsx:119
 #: assets/js/pages/TaskPage/index.tsx:84
@@ -11282,7 +11282,7 @@ msgstr "Не удалось создать продукт в Polar"
 
 #.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:202
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:108
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:110
 msgid "Failed to create task"
 msgstr "Не удалось создать задачу"
 
@@ -11340,7 +11340,7 @@ msgstr "Не удалось удалить показатель"
 
 #.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:499
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:261
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:263
 msgid "Failed to delete task"
 msgstr "Не удалось удалить задачу"
 
@@ -11383,7 +11383,7 @@ msgid "Failed to move task"
 msgstr "Не удалось переместить задачу"
 
 #.frontend
-#: assets/js/models/tasks/useTaskSlideInProps.tsx:216
+#: assets/js/models/tasks/useTaskSlideInProps.tsx:217
 #: assets/js/pages/TaskPage/index.tsx:376
 msgid "Failed to move task."
 msgstr "Не удалось переместить задачу."
@@ -11591,12 +11591,12 @@ msgstr "Не удалось обновить целевое значение"
 
 #.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:281
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:216
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:218
 msgid "Failed to update task assignee"
 msgstr "Не удалось обновить исполнителя задачи"
 
 #.frontend
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:286
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:288
 msgid "Failed to update task description"
 msgstr "Не удалось обновить описание задачи"
 
@@ -11608,7 +11608,7 @@ msgstr "Не удалось обновить описание задачи."
 
 #.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:227
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:160
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:162
 msgid "Failed to update task due date"
 msgstr "Не удалось обновить срок выполнения задачи"
 
@@ -11618,7 +11618,7 @@ msgid "Failed to update task milestone"
 msgstr "Не удалось обновить веху задачи"
 
 #.frontend
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:132
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:134
 msgid "Failed to update task name"
 msgstr "Не удалось обновить название задачи"
 
@@ -11630,14 +11630,14 @@ msgid "Failed to update task name."
 msgstr "Не удалось обновить название задачи."
 
 #.frontend
-#: assets/js/models/tasks/useKanbanState.tsx:122
+#: assets/js/models/tasks/useKanbanState.tsx:124
 #: assets/js/models/tasks/useProjectKanbanState.ts:72
 msgid "Failed to update task position"
 msgstr "Не удалось обновить положение задачи"
 
 #.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:256
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:188
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:190
 msgid "Failed to update task reminders"
 msgstr "Не удалось обновить напоминания о задачах"
 
@@ -11647,9 +11647,9 @@ msgid "Failed to update task reminders."
 msgstr "Не удалось обновить напоминания о задачах."
 
 #.frontend
-#: assets/js/models/tasks/useKanbanState.tsx:251
+#: assets/js/models/tasks/useKanbanState.tsx:253
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:381
-#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:246
+#: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:248
 msgid "Failed to update task status"
 msgstr "Не удалось обновить статус задачи"
 
@@ -11662,7 +11662,7 @@ msgstr "Не удалось обновить статус задачи."
 #.frontend
 #: assets/js/models/projects/useTaskStatuses.tsx:67
 #: assets/js/models/projects/useTaskStatuses.tsx:73
-#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:67
+#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:69
 msgid "Failed to update task statuses"
 msgstr "Не удалось обновить статусы задач"
 
@@ -14087,7 +14087,7 @@ msgid "Move up"
 msgstr "Переместить вверх"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:109
+#: assets/js/features/activities/TaskMoving/index.tsx:111
 msgid "Moved task \"%{taskName}\" to %{destinationName}"
 msgstr "Задача «%{taskName}» перемещена в «%{destinationName}»"
 
@@ -14426,7 +14426,7 @@ msgid "New task"
 msgstr "Новая задача"
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:124
+#: assets/js/features/activities/TaskAdding/index.tsx:126
 msgid "New task \"%{taskName}\" was created"
 msgstr "Создана новая задача «%{taskName}»"
 
@@ -16355,7 +16355,7 @@ msgid "Previously %{personName} was a %{oldRole}"
 msgstr "Ранее участнику %{personName} была назначена роль «%{oldRole}»"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:96
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:98
 msgid "Previously assigned to %{count} person"
 msgid_plural "Previously assigned to %{count} people"
 msgstr[0] "Предыдущие исполнители: %{count} человек"
@@ -16364,14 +16364,14 @@ msgstr[2] "Предыдущие исполнители: %{count} человек"
 msgstr[3] "Предыдущие исполнители: %{count} человека"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:101
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:103
 msgid "Previously assigned to:"
 msgstr "Ранее назначенные исполнители:"
 
 #.frontend
 #: assets/js/features/activities/GoalDueDateUpdating/index.tsx:71
 #: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:70
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:114
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:116
 msgid "Previously had no due date"
 msgstr "Раньше не было срока"
 
@@ -16387,14 +16387,14 @@ msgid "Previously it was %{oldName}, now it is %{newName}."
 msgstr "Раньше это был %{oldName}, теперь это %{newName}."
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:109
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:111
 msgid "Previously it was unassigned"
 msgstr "Ранее никто не был назначен"
 
 #.frontend
 #: assets/js/features/activities/GoalDueDateUpdating/index.tsx:69
 #: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:68
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:107
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:109
 msgid "Previously the due date was <date/>"
 msgstr "Прежний срок выполнения: <date/>"
 
@@ -16422,7 +16422,7 @@ msgid "Previously, %{personName} was the reviewer."
 msgstr "Ранее роль «Куратор» была назначена участнику %{personName}."
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:82
+#: assets/js/features/activities/TaskMoving/index.tsx:84
 msgid "Previously, it was in <origin>%{originName}</origin>"
 msgstr "Ранее он был в <origin>%{originName}</origin>."
 
@@ -16437,12 +16437,12 @@ msgid "Previously, the milestone was called <name>\"%{oldTitle}\"</name>."
 msgstr "Ранее веха называлась <name>«%{oldTitle}»</name>."
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:89
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:91
 msgid "Previously, the task was %{oldStatus}. Now it's %{newStatus}."
 msgstr "Прежний статус задачи — «%{oldStatus}». Новый — «%{newStatus}»."
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:102
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:104
 msgid "Previously, the task was named \"%{oldName}\"."
 msgstr "Раньше задача называлась «%{oldName}»."
 
@@ -16919,8 +16919,8 @@ msgstr "Веха снова открыта: %{title}"
 #: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
 #: assets/js/features/activities/ResourceHubFileCommented/index.tsx:113
 #: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:111
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:111
-#: assets/js/features/activities/TaskCommentDeleting/index.tsx:112
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:118
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:114
 msgid "Re: %{title}"
 msgstr "Re: %{title}"
 
@@ -16946,7 +16946,7 @@ msgstr "Re: Ссылка"
 
 #.frontend
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:108
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:111
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:118
 msgid "Re: a task"
 msgstr "Re: задача"
 
@@ -17657,7 +17657,7 @@ msgstr "Восстановить эту версию?"
 
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:457
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:74
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:76
 msgid "Restore to board"
 msgstr "Вернуть на доску"
 
@@ -19873,13 +19873,13 @@ msgid "Task"
 msgstr "Задача"
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:119
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:121
 msgid "Task \"%{oldName}\" was renamed to \"%{newName}\""
 msgstr "Задача «%{oldName}» переименована в «%{newName}»"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:233
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:250
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:235
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:252
 msgid "Task \"%{taskName}\" was assigned to %{personName}"
 msgstr "Задача «%{taskName}» назначена участнику %{personName}"
 
@@ -19889,22 +19889,22 @@ msgid "Task \"%{taskName}\" was deleted"
 msgstr "Задача «%{taskName}» удалена"
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:111
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:113
 msgid "Task \"%{taskName}\" was marked as %{status}"
 msgstr "Для задачи «%{taskName}» установлен статус «%{status}»"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:239
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:241
 msgid "Task \"%{taskName}\" was no longer assigned to %{personName}"
 msgstr "Участник %{personName} больше не назначен на задачу «%{taskName}»"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:253
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:255
 msgid "Task \"%{taskName}\" was unassigned"
 msgstr "Назначение исполнителей задачи «%{taskName}» отменено"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:244
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:246
 msgid "Task \"%{taskName}\" was updated with new assignees"
 msgstr "У задачи «%{taskName}» обновлены исполнители"
 
@@ -20032,7 +20032,6 @@ msgstr "Задача убрана из вехи «%{title}»"
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:261
 #: ../turboui/src/SearchPage/filterOptions.ts:13
-#: ../turboui/src/SpaceKanbanPage/index.tsx:111
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:69
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:124
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:128
@@ -21028,6 +21027,12 @@ msgstr "Этот запрос авторизации должен содержа
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:194
 msgid "This billing interval is not available right now"
 msgstr "Эта периодичность оплаты сейчас недоступна"
+
+#.frontend
+#: ../turboui/src/SpaceKanbanPage/index.tsx:110
+#: ../turboui/src/TaskPage/index.tsx:145
+msgid "This board is archived."
+msgstr "Эта доска в архиве."
 
 #.elixir
 #: lib/operately_email/templates/email_changed.html.eex:5
@@ -22366,7 +22371,7 @@ msgid "Updated due date for %{projectName} to <date/>"
 msgstr "Срок выполнения проекта «%{projectName}» изменён на <date/>"
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:137
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:139
 msgid "Updated due date for %{taskName} to <date/>"
 msgstr "Срок выполнения задачи «%{taskName}» изменён на <date/>"
 
@@ -22376,12 +22381,12 @@ msgid "Updated the %{spaceName} space"
 msgstr "Обновлено пространство %{spaceName}"
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:115
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:119
 msgid "Updated the description of: %{taskName}"
 msgstr "Обновлено описание: %{taskName}"
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:116
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:120
 msgid "Updated the description of: a task"
 msgstr "Обновлено описание: задача"
 
@@ -24045,21 +24050,21 @@ msgid "a milestone"
 msgstr "веха"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:60
-#: assets/js/features/activities/TaskMoving/index.tsx:88
+#: assets/js/features/activities/TaskMoving/index.tsx:62
+#: assets/js/features/activities/TaskMoving/index.tsx:90
 msgid "a project"
 msgstr "проект"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:60
-#: assets/js/features/activities/TaskMoving/index.tsx:88
+#: assets/js/features/activities/TaskMoving/index.tsx:62
+#: assets/js/features/activities/TaskMoving/index.tsx:90
 msgid "a space"
 msgstr "пространство"
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:54
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:56
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:132
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:56
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:58
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:134
 #: assets/js/models/activities/feed.tsx:163
 #: assets/js/models/activities/feed.tsx:214
 #: assets/js/models/activities/feed.tsx:243
@@ -24097,7 +24102,7 @@ msgid "added the link \"%{link_name}\""
 msgstr "— добавлена ссылка «%{link_name}»"
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:137
+#: assets/js/features/activities/TaskMoving/index.tsx:139
 msgid "another destination"
 msgstr "другое место"
 

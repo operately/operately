@@ -27,6 +27,7 @@ export function useTaskSlideInProps(opts: {
   onRefresh?: () => Promise<void>;
 
   canEdit: boolean;
+  boardArchived?: boolean;
   canComment: boolean;
   variant: Extract<TaskPage.Variant, "space-task" | "project-task">;
 
@@ -232,6 +233,7 @@ export function useTaskSlideInProps(opts: {
         localDraftKeyBase: `task:${taskId}`,
 
         canEdit,
+        boardArchived: opts.boardArchived,
 
         currentUser: parsedCurrentUser,
         timelineItems: currentTimelineItems,
@@ -265,6 +267,7 @@ export function useTaskSlideInProps(opts: {
       activeTaskId,
       backendTasks,
       canComment,
+      opts.boardArchived,
       canEdit,
       addComment,
       addReaction,

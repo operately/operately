@@ -47,8 +47,8 @@ describe("task slide-in field changes", () => {
       currentUser: null,
       paths: {
         taskPath: (taskId: string) => `/tasks/${taskId}`,
-        spaceKanbanPath: (spaceId: string, opts: { taskId: string }) =>
-          `/spaces/${spaceId}/kanban?taskId=${opts.taskId}`,
+        spaceKanbanPath: (spaceId: string, boardId: string, opts: { taskId: string }) =>
+          `/spaces/${spaceId}/boards/${boardId}?taskId=${opts.taskId}`,
       },
       commentEntityType: "project_task",
       variant: "project-task",
@@ -114,13 +114,14 @@ describe("task slide-in field changes", () => {
     {
       destinationType: "space",
       destinationId: "destination-space",
-      expectedPath: "/spaces/destination-space/kanban?taskId=moved-task",
+      expectedPath: "/spaces/destination-space/boards/destination-board?taskId=moved-task",
     },
   ])("navigates to the $destinationType returned by a successful move", async (destination) => {
     mockMoveTask.mockResolvedValue({
       task: { id: "moved-task" },
       destinationType: destination.destinationType,
       destinationId: destination.destinationId,
+      boardId: destination.destinationType === "space" ? "destination-board" : null,
     });
 
     const moved = await moveSlideInTask(hook);
@@ -130,6 +131,7 @@ describe("task slide-in field changes", () => {
       movedTaskId: "moved-task",
       destinationType: destination.destinationType,
       destinationId: destination.destinationId,
+      boardId: destination.destinationType === "space" ? "destination-board" : null,
     });
     expect(mockNavigate).toHaveBeenCalledWith(destination.expectedPath);
   });

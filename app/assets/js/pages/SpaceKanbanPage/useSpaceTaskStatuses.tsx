@@ -8,11 +8,12 @@ import { SpaceKanbanPage, showErrorToast } from "turboui";
 
 interface UseSpaceTaskStatusesOptions {
   spaceId: string;
+  boardId: string;
   tasks: SpaceKanbanPage.Task[];
   setTasks: React.Dispatch<React.SetStateAction<SpaceKanbanPage.Task[]>>;
 }
 
-export function useSpaceTaskStatuses({ spaceId, tasks, setTasks }: UseSpaceTaskStatusesOptions) {
+export function useSpaceTaskStatuses({ spaceId, boardId, tasks, setTasks }: UseSpaceTaskStatusesOptions) {
   const updateTaskStatuses = Spaces.useUpdateSpaceTaskStatuses();
 
   const handleStatusesChange = React.useCallback(
@@ -59,6 +60,7 @@ export function useSpaceTaskStatuses({ spaceId, tasks, setTasks }: UseSpaceTaskS
       try {
         await updateTaskStatuses.mutateAsync({
           spaceId,
+          boardId,
           taskStatuses,
           deletedStatusReplacements,
         });
@@ -67,7 +69,7 @@ export function useSpaceTaskStatuses({ spaceId, tasks, setTasks }: UseSpaceTaskS
         showErrorToast(i18n.t("Error"), i18n.t("Failed to update task statuses"));
       }
     },
-    [setTasks, spaceId, tasks, updateTaskStatuses],
+    [setTasks, spaceId, boardId, tasks, updateTaskStatuses],
   );
 
   return { handleStatusesChange };

@@ -21,6 +21,7 @@ describe("task lifecycle queries", () => {
     const milestoneKey = Api.projects.getMilestoneQueryKey({ id: "milestone-1", includeProject: true });
     const milestoneTasksKey = Api.projects.listMilestoneTasksQueryKey({ milestoneId: "milestone-1" });
     const spaceKey = Api.spaces.getQueryKey({ id: "space-1", includePermissions: true });
+    const boardKey = Api.tasks.getBoardQueryKey({ spaceId: "space-1", boardId: "board-2" });
     const spaceTasksKey = Api.spaces.listTasksQueryKey({ spaceId: "space-1" });
     const projectKey = Api.projects.getQueryKey({ id: "project-1" });
     const projectTasksKey = Api.tasks.listQueryKey({ projectId: "project-1" });
@@ -30,6 +31,7 @@ describe("task lifecycle queries", () => {
 
     [
       taskKey,
+      boardKey,
       commentsKey,
       activitiesKey,
       childrenCountKey,
@@ -44,6 +46,7 @@ describe("task lifecycle queries", () => {
 
     await invalidateTaskLifecycleQueries(queryClient);
 
+    expect(queryClient.getQueryState(boardKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(taskKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(commentsKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(activitiesKey)?.isInvalidated).toBe(true);

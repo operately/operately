@@ -2767,6 +2767,15 @@ export interface Task {
   type: TaskType;
 }
 
+export interface TaskBoard {
+  __typename: "task_board";
+  id: Id;
+  name: string;
+  archivedAt: string | null;
+  taskStatuses: TaskStatus[];
+  tasksKanbanState: Json;
+}
+
 export interface TaskBoardSummary {
   __typename: "task_board_summary";
   id: Id;

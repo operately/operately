@@ -7,6 +7,34 @@ defmodule Operately.Features.SpaceKanban.TaskCardsTest do
 
   setup ctx, do: Steps.setup(ctx)
 
+  feature "create a task on a non-default board", ctx do
+    ctx
+    |> Steps.add_second_board()
+    |> Steps.visit_second_board()
+    |> Steps.assert_default_board_tasks_hidden()
+    |> Steps.add_inline_task(status_value: "support_queue", title: "Support task")
+    |> Steps.load_task_by_name(key: :support_task, name: "Support task")
+    |> Steps.assert_task_on_second_board(:support_task)
+    |> Steps.visit_second_board()
+    |> Steps.open_task_slide_in(:support_task)
+  end
+
+  feature "an archived board remains readable and task notes remain editable", ctx do
+    ctx
+    |> Steps.add_second_board()
+    |> Steps.visit_second_board()
+    |> Steps.add_inline_task(status_value: "support_queue", title: "Past task")
+    |> Steps.load_task_by_name(key: :past_task, name: "Past task")
+    |> Steps.archive_second_board()
+    |> Steps.visit_second_board()
+    |> Steps.assert_board_read_only()
+    |> Steps.open_task_slide_in(:past_task)
+    |> Steps.assert_task_controls_read_only()
+    |> Steps.add_task_description(content: "Notes added after archiving.")
+    |> Steps.assert_description(content: "Notes added after archiving.")
+    |> Steps.assert_task_description_saved(task_key: :past_task, content: "Notes added after archiving.")
+  end
+
   feature "add a task inline in a column", ctx do
     [primary_status | _] = ctx.status_values
 

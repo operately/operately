@@ -15,7 +15,8 @@ jest.mock("@/routes/paths", () => ({
     projectPath: (id: string) => `/projects/${id}`,
     spacePath: (id: string) => `/spaces/${id}`,
     taskPath: (id: string) => `/tasks/${id}`,
-    spaceKanbanPath: (id: string, { taskId }: { taskId: string }) => `/spaces/${id}/kanban?taskId=${taskId}`,
+    spaceKanbanPath: (id: string, boardId: string, { taskId }: { taskId: string }) =>
+      `/spaces/${id}/boards/${boardId}?taskId=${taskId}`,
   }),
 }));
 

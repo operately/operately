@@ -2181,6 +2181,14 @@ defmodule OperatelyWeb.Api.Types do
 
   enum :task_board_archive_status, values: [:active, :archived, :all]
 
+  object :task_board, for: Operately.Tasks.TaskBoard do
+    field :id, :id, null: false
+    field :name, :string, null: false
+    field :archived_at, :datetime, null: true
+    field :task_statuses, list_of(:task_status), null: false
+    field :tasks_kanban_state, :json, null: false
+  end
+
   object :task_board_summary, for: Operately.Tasks.BoardSummary do
     field :id, :id, null: false
     field :name, :string, null: false
