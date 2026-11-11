@@ -18,7 +18,7 @@ Related issue: [#5587 — Support multiple kanban boards per space](https://gith
 - Add, rename, and reorder boards or hubs through Space Tools. Board defaults can be changed; hub defaults are fixed. Show each instance as a separate named card. Boards support archive/restore; hubs support deletion only when empty.
 - Retain category toggles and their current semantics. Disabling a category preserves its instances and content.
 - Instances inherit space access. Managing instances requires the existing permission to configure space tools; content operations retain their existing permission requirements.
-- Archived boards remain readable through direct links and an archived-tools list, but reject content mutations until restored. Archiving does not delete content or complete tasks.
+- Archived boards remain readable through direct links and an archived-tools list, but reject task and board changes until restored. Task description edits, comments, reactions, and rich-text checklist toggles remain available under their usual permissions. Archiving does not delete content or complete tasks.
 - Exclude deletion of nonempty hubs, permanent board deletion, independent instance permissions, multiple project/goal hubs, and changes to project/milestone board ownership.
 
 ## Data Model
@@ -110,10 +110,10 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 - Add default selection through API/MCP/CLI, accepting only an active board in the same space. Record the change and preserve legacy requests following the selected default.
 - Verify permissions, ownership, and concurrent changes under the space lock.
 
-### PR 5C — Archived-board write protection
+### PR 5C — Archived-board write protection ✅
 
-- Reject writes to archived boards in shared operations, including tasks, moves, comments, and reactions. Check archive state inside write transactions; preserve authorized reads.
-- Add structured restore guidance and test archived fixtures. Do not expose archive controls yet.
+- Reject writes to archived boards in shared operations, including task changes and moves. Check archive state inside write transactions; preserve authorized reads, task description edits, comments, reactions, and rich-text checklist toggles.
+- Return structured restore guidance and test archived fixtures and concurrent writes across API/MCP/CLI. Keep access permissions independent of archive state. No archive controls yet.
 
 ### PR 5D — Archive and restore boards
 
@@ -125,6 +125,7 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 - Redesign the configuration page once, using the completed board and hub APIs. Give each category an ordered list of named instances with consistent create, rename, and reorder controls.
 - Save instance actions immediately, separately from category Save/Cancel. Keep instance management available when a category is disabled.
 - Boards expose archive/restore and default selection. Hubs expose deletion with confirmation only for empty non-default hubs; hide deletion for the fixed default hub.
+- Use board archive state separately from access permissions to disable protected task actions; keep description edits, comments, reactions, and rich-text checklist toggles available.
 - Add board-specific cards/routes and destination selection when creating or moving tasks. Resolve legacy task links to the task’s board and space-only links to the default board. Preserve existing hub links and show each instance as a separate named card.
 - Reuse TurboUI controls, forms, menus, and confirmations; use generated TanStack queries/mutations. Invalidate configuration, cards, discovery, and affected content after mutations.
 - Apply Resource Hub terminology consistently across management, drafts, and rename dialogs. Include translations and regenerated resources with the redesign.

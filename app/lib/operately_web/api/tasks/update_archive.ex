@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.Tasks.UpdateArchive do
          {:ok, task} <- TaskArchiveUpdating.run(me(conn), task, inputs.archived) do
       {:ok, %{task: Serializer.serialize(task, level: :full)}}
     else
+      {:error, {:bad_request, message, details}} -> {:error, :bad_request, message, details}
       {:error, :forbidden} -> {:error, :forbidden}
       {:error, :bad_request} -> {:error, :bad_request}
       {:error, :not_found} -> {:error, :not_found}

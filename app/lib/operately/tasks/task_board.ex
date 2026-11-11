@@ -1,6 +1,7 @@
 defmodule Operately.Tasks.TaskBoard do
   use Operately.Schema
   use Operately.Repo.Getter
+  use Gettext, backend: OperatelyWeb.Gettext
 
   import Ecto.Query
   alias Operately.Repo
@@ -32,6 +33,13 @@ defmodule Operately.Tasks.TaskBoard do
 
   def getter_profile(:default) do
     %Operately.Repo.Getter.Profile{access_contexts: [:space_access_context]}
+  end
+
+  def check_writable(%__MODULE__{archived_at: nil}), do: :ok
+  def check_writable(%__MODULE__{}), do: archived_error()
+
+  def archived_error do
+    {:error, {:bad_request, gettext("This task board is archived. Restore it before making changes."), %{code: "task_board_archived"}}}
   end
 
   def default_for_space(space = %Operately.Groups.Group{}) do

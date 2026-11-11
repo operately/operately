@@ -8,6 +8,13 @@ defmodule OperatelyWeb.Api.Tasks.RenameBoardTest do
     ctx |> Factory.setup() |> Factory.add_space(:space, company_permissions: 0) |> Factory.log_in_person(:creator)
   end
 
+  test "rejects renaming an archived board", ctx do
+    board = Repo.get!(TaskBoard, ctx.space.default_task_board_id)
+    board |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00]) |> Repo.update!()
+    assert {400, %{details: %{code: "task_board_archived"}}} = mutation(ctx.conn, [:tasks, :rename_board], inputs(ctx))
+    assert Repo.reload!(board).name == board.name
+  end
+
   test "requires authentication", ctx do
     assert {401, _} = mutation(Phoenix.ConnTest.build_conn(), [:tasks, :rename_board], inputs(ctx))
   end

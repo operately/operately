@@ -36,7 +36,11 @@ defmodule Operately.Operations.KanbanStateUpdating do
     |> IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.updated_task.id end)
   end
 
-  defp resolve_scope(%{type: :space, board: _board} = scope), do: {:ok, scope}
+  defp resolve_scope(%{type: :space, board: board} = scope) do
+    with {:ok, boards} <- Operately.Tasks.BoardSync.lock_boards([board.id]) do
+      {:ok, %{scope | board: Map.fetch!(boards, board.id)}}
+    end
+  end
 
   defp resolve_scope(%{type: :space, space: space} = scope) do
     with {:ok, board} <- Operately.Tasks.TaskBoard.default_for_space(space),
