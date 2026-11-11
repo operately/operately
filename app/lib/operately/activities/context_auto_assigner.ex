@@ -41,6 +41,8 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "task_board_created",
     "task_board_renamed",
     "task_board_default_changed",
+    "task_board_archived",
+    "task_board_restored",
     "space_joining",
     "space_permissions_edited",
     "space_added",

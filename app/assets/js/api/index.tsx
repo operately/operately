@@ -1163,6 +1163,13 @@ export interface ActivityContentTaskAssigneeUpdating {
   removedAssignees: Person[];
 }
 
+export interface ActivityContentTaskBoardArchived {
+  __typename: "activity_content_task_board_archived";
+  space: Space | null;
+  boardId: Id;
+  name: string;
+}
+
 export interface ActivityContentTaskBoardCreated {
   __typename: "activity_content_task_board_created";
   space: Space | null;
@@ -1184,6 +1191,13 @@ export interface ActivityContentTaskBoardRenamed {
   boardId: Id;
   oldName: string;
   newName: string;
+}
+
+export interface ActivityContentTaskBoardRestored {
+  __typename: "activity_content_task_board_restored";
+  space: Space | null;
+  boardId: Id;
+  name: string;
 }
 
 export interface ActivityContentTaskClosing {
@@ -3126,6 +3140,8 @@ export type ActivityContent =
   | ActivityContentTaskBoardCreated
   | ActivityContentTaskBoardRenamed
   | ActivityContentTaskBoardDefaultChanged
+  | ActivityContentTaskBoardArchived
+  | ActivityContentTaskBoardRestored
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
   | ActivityContentResourceHubLinkDeleted
@@ -3347,11 +3363,11 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"
+  | "kpi"
   | "goal_check_in"
   | "space_discussion"
   | "comment"
@@ -6899,6 +6915,15 @@ export interface SpacesUpdateToolsResult {
   tools: SpaceTools;
 }
 
+export interface TasksArchiveBoardInput {
+  spaceId: Id;
+  boardId: Id;
+}
+
+export interface TasksArchiveBoardResult {
+  success: boolean;
+}
+
 export interface TasksCreateInput {
   type: TaskType;
   id: Id;
@@ -6967,6 +6992,15 @@ export interface TasksReorderBoardsInput {
 }
 
 export interface TasksReorderBoardsResult {
+  success: boolean;
+}
+
+export interface TasksRestoreBoardInput {
+  spaceId: Id;
+  boardId: Id;
+}
+
+export interface TasksRestoreBoardResult {
   success: boolean;
 }
 
@@ -7669,6 +7703,10 @@ class ApiNamespaceSpaces {
 class ApiNamespaceTasks {
   constructor(private client: ApiClient) {}
 
+  async archiveBoard(input: TasksArchiveBoardInput): Promise<TasksArchiveBoardResult> {
+    return this.client.post("/tasks/archive_board", input);
+  }
+
   async create(input: TasksCreateInput): Promise<TasksCreateResult> {
     return this.client.post("/tasks/create", input);
   }
@@ -7691,6 +7729,10 @@ class ApiNamespaceTasks {
 
   async reorderBoards(input: TasksReorderBoardsInput): Promise<TasksReorderBoardsResult> {
     return this.client.post("/tasks/reorder_boards", input);
+  }
+
+  async restoreBoard(input: TasksRestoreBoardInput): Promise<TasksRestoreBoardResult> {
+    return this.client.post("/tasks/restore_board", input);
   }
 
   async setDefaultBoard(input: TasksSetDefaultBoardInput): Promise<TasksSetDefaultBoardResult> {
@@ -11118,6 +11160,16 @@ export default {
         mutationFn: (input: TasksUpdateMilestoneInput) => defaultApiClient.apiNamespaceTasks.updateMilestone(input),
       }),
 
+    archiveBoard: (input: TasksArchiveBoardInput) => defaultApiClient.apiNamespaceTasks.archiveBoard(input),
+    useArchiveBoard: () =>
+      useMutation<TasksArchiveBoardInput, TasksArchiveBoardResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.archiveBoard(input),
+      ),
+    archiveBoardMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksArchiveBoardInput) => defaultApiClient.apiNamespaceTasks.archiveBoard(input),
+      }),
+
     updateArchive: (input: TasksUpdateArchiveInput) => defaultApiClient.apiNamespaceTasks.updateArchive(input),
     useUpdateArchive: () =>
       useMutation<TasksUpdateArchiveInput, TasksUpdateArchiveResult>((input) =>
@@ -11155,6 +11207,16 @@ export default {
     updateStatusMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: TasksUpdateStatusInput) => defaultApiClient.apiNamespaceTasks.updateStatus(input),
+      }),
+
+    restoreBoard: (input: TasksRestoreBoardInput) => defaultApiClient.apiNamespaceTasks.restoreBoard(input),
+    useRestoreBoard: () =>
+      useMutation<TasksRestoreBoardInput, TasksRestoreBoardResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.restoreBoard(input),
+      ),
+    restoreBoardMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksRestoreBoardInput) => defaultApiClient.apiNamespaceTasks.restoreBoard(input),
       }),
 
     move: (input: TasksMoveInput) => defaultApiClient.apiNamespaceTasks.move(input),

@@ -16,6 +16,16 @@ defmodule Operately.CliE2E.Tasks.BoardSelectionTest do
     |> Steps.assert_unavailable_default_details()
   end
 
+  test "changes the default, then archives and restores the former default", ctx do
+    ctx
+    |> Steps.given_another_board()
+    |> Steps.set_default_board()
+    |> Steps.archive_original_board()
+    |> Steps.assert_archived_board_listed()
+    |> Steps.restore_original_board()
+    |> Steps.assert_restored_board_listed()
+  end
+
   test "returns restore guidance when updating a task on an archived board", ctx do
     ctx
     |> Steps.given_another_board()

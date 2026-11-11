@@ -744,6 +744,16 @@ msgid "%{author} archived the project"
 msgstr "%{author}: проект архивирован"
 
 #.frontend
+#: assets/js/features/activities/TaskBoardArchived/index.tsx:24
+msgid "%{author} archived the task board %{boardName} in the <space>%{spaceName}</space> space."
+msgstr "%{author} архивирует доску задач %{boardName} в пространстве <space>%{spaceName}</space>."
+
+#.frontend
+#: assets/js/features/activities/TaskBoardArchived/index.tsx:23
+msgid "%{author} archived the task board %{boardName}."
+msgstr "%{author} архивирует доску задач %{boardName}."
+
+#.frontend
 #: assets/js/features/activities/GoalArchived/index.tsx:34
 msgid "%{author} archived this goal"
 msgstr "%{author}: эта цель архивирована"
@@ -2423,6 +2433,16 @@ msgstr "%{author}: восстановлена предыдущая версия 
 #: assets/js/features/activities/CompanyMemberRestoring/index.tsx:45
 msgid "%{author} restored a member's account"
 msgstr "%{author}: восстановлен доступ участника"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRestored/index.tsx:24
+msgid "%{author} restored the task board %{boardName} in the <space>%{spaceName}</space> space."
+msgstr "%{author} возвращает доску задач %{boardName} из архива в пространстве <space>%{spaceName}</space>."
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRestored/index.tsx:23
+msgid "%{author} restored the task board %{boardName}."
+msgstr "%{author} возвращает доску задач %{boardName} из архива."
 
 #.elixir
 #: lib/operately_email/templates/project_resuming.text.eex:1
@@ -6470,6 +6490,13 @@ msgstr "Дата архивации"
 #: ee/lib/admin_api/mutations/set_active_billing_product.ex:25
 msgid "Archived products cannot be activated"
 msgstr "Нельзя активировать продукты в архиве"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardArchived/index.tsx:10
+#: assets/js/features/activities/TaskBoardArchived/index.tsx:15
+#: assets/js/features/activities/TaskBoardArchived/index.tsx:38
+msgid "Archived task board"
+msgstr "Доска задач архивирована"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:124
@@ -12633,8 +12660,8 @@ msgid "Invalid profile update"
 msgstr "Недействительное обновление профиля"
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:798
-#: lib/operately_web/api/tasks.ex:804
+#: lib/operately_web/api/tasks.ex:797
+#: lib/operately_web/api/tasks.ex:803
 msgid "Invalid reminders"
 msgstr "Недействительные напоминания"
 
@@ -12659,9 +12686,9 @@ msgstr "Некорректные параметры системного соо�
 #: lib/operately/operations/kanban_state_updating.ex:93
 #: lib/operately/operations/kanban_state_updating.ex:105
 #: lib/operately_web/api/spaces.ex:522
-#: lib/operately_web/api/tasks.ex:773
-#: lib/operately_web/api/tasks.ex:1175
-#: lib/operately_web/api/tasks.ex:1182
+#: lib/operately_web/api/tasks.ex:772
+#: lib/operately_web/api/tasks.ex:1174
+#: lib/operately_web/api/tasks.ex:1181
 msgid "Invalid status"
 msgstr "Недействительный статус"
 
@@ -13818,8 +13845,8 @@ msgstr "Веха — не %{name}"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:55
-#: lib/operately_web/api/tasks.ex:952
-#: lib/operately_web/api/tasks.ex:972
+#: lib/operately_web/api/tasks.ex:951
+#: lib/operately_web/api/tasks.ex:971
 msgid "Milestone must belong to the same project as the task"
 msgstr "Веха должна принадлежать тому же проекту, что и задача"
 
@@ -13850,7 +13877,7 @@ msgstr "Веха не удалена"
 #: lib/operately_web/api/projects.ex:647
 #: lib/operately_web/api/projects.ex:662
 #: lib/operately_web/api/projects/milestones.ex:291
-#: lib/operately_web/api/tasks.ex:700
+#: lib/operately_web/api/tasks.ex:699
 msgid "Milestone not found"
 msgstr "Веха не найдена"
 
@@ -16629,9 +16656,9 @@ msgstr "Название проекта не может быть пустым"
 #: lib/operately_web/api/projects.ex:688
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:282
-#: lib/operately_web/api/tasks.ex:652
-#: lib/operately_web/api/tasks.ex:691
-#: lib/operately_web/api/tasks.ex:706
+#: lib/operately_web/api/tasks.ex:651
+#: lib/operately_web/api/tasks.ex:690
+#: lib/operately_web/api/tasks.ex:705
 msgid "Project not found"
 msgstr "Проект не найден"
 
@@ -17643,6 +17670,13 @@ msgstr "Восстановить «%{name}»?"
 #: assets/js/features/activities/ResourceHubDocumentVersionRestored/index.tsx:94
 msgid "Restored a document version"
 msgstr "Восстановлена версия документа"
+
+#.frontend
+#: assets/js/features/activities/TaskBoardRestored/index.tsx:10
+#: assets/js/features/activities/TaskBoardRestored/index.tsx:15
+#: assets/js/features/activities/TaskBoardRestored/index.tsx:38
+msgid "Restored task board"
+msgstr "Доска задач возвращена из архива"
 
 #.frontend
 #: assets/js/features/activities/CompanyMemberRestoring/index.tsx:65
@@ -19299,7 +19333,7 @@ msgid "Space members will have full access."
 msgstr "Участники пространства получат полный доступ."
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:661
+#: lib/operately_web/api/tasks.ex:660
 msgid "Space not found"
 msgstr "Пространство не найдено"
 
@@ -19937,8 +19971,8 @@ msgstr "Задача не удалена"
 #: lib/operately_web/api/projects.ex:632
 #: lib/operately_web/api/projects/milestones.ex:303
 #: lib/operately_web/api/spaces.ex:321
-#: lib/operately_web/api/tasks.ex:673
-#: lib/operately_web/api/tasks.ex:685
+#: lib/operately_web/api/tasks.ex:672
+#: lib/operately_web/api/tasks.ex:684
 msgid "Task not found"
 msgstr "Задача не найдена"
 
@@ -20354,7 +20388,7 @@ msgid "The company is being imported in the background."
 msgstr "Компания импортируется в фоновом режиме."
 
 #.elixir
-#: lib/operately_web/api/rich_content/set_task_item_checked.ex:56
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:51
 msgid "The content has changed. Refresh and try again."
 msgstr "Содержимое изменилось. Обновите страницу и попробуйте снова."
 
@@ -20372,6 +20406,11 @@ msgstr "Текущая подписка закончится в конце те�
 #: lib/operately_web/api/resource_hubs/delete.ex:28
 msgid "The default Resource Hub cannot be deleted."
 msgstr "Центр ресурсов по умолчанию нельзя удалить."
+
+#.elixir
+#: lib/operately_web/api/tasks/archive_board.ex:28
+msgid "The default task board cannot be archived. Select another default board first."
+msgstr "Доску задач по умолчанию нельзя архивировать. Сначала выберите другую доску по умолчанию."
 
 #.elixir
 #: lib/operately_email/templates/goal_description_changed.html.eex:11
@@ -20693,7 +20732,7 @@ msgid "The selected reviewer doesn't have access to the selected space"
 msgstr "Выбранный куратор не имеет доступа к выбранному пространству"
 
 #.elixir
-#: lib/operately_web/api/rich_content/set_task_item_checked.ex:57
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:52
 msgid "The selected task item no longer exists"
 msgstr "Выбранного пункта задачи больше не существует"
 
@@ -21472,7 +21511,7 @@ msgid "This tab is out of date. Reloading to get the latest version..."
 msgstr "Эта вкладка устарела. Перезагрузка, чтобы получить последнюю версию..."
 
 #.elixir
-#: lib/operately/tasks/task_board.ex:40
+#: lib/operately/tasks/task_board.ex:42
 #: lib/operately_web/api/tasks/move.ex:93
 #: lib/operately_web/api/tasks/set_default_board.ex:28
 msgid "This task board is archived. Restore it before making changes."
