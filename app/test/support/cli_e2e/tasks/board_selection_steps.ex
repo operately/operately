@@ -93,6 +93,22 @@ defmodule Operately.Support.CliE2E.Tasks.BoardSelectionSteps do
     ctx
   end
 
+  step :archive_selected_board, ctx do
+    ctx.board |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00]) |> Repo.update!()
+    ctx
+  end
+
+  step :assert_archived_task_write_rejected, ctx do
+    result = run_cli(ctx, ["tasks", "update_name", "--task-id", ctx.task_id, "--type", "space", "--name", "Blocked"])
+    assert result.exit_code == 4, result.output
+    [_, json] = String.split(result.output, "API request failed (400): ", parts: 2)
+    error = Jason.decode!(String.trim(json))
+    assert error["details"]["code"] == "task_board_archived"
+    {:ok, task_id} = OperatelyWeb.Api.Types.Id.decode(ctx.task_id)
+    assert Repo.get!(Operately.Tasks.Task, task_id).name == "Selected"
+    ctx
+  end
+
   step :assert_unavailable_default_details, ctx do
     ctx.space |> Ecto.Changeset.change(default_task_board_id: nil) |> Repo.update!()
     result = run_cli(ctx, ["tasks", "create", "--type", "space", "--id", ctx.space.id, "--name", "Missing", "--due-date", "null"])

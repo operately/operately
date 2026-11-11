@@ -1864,12 +1864,12 @@ msgid "%{author} joined the space"
 msgstr "%{author} entrou no espaço"
 
 #.frontend
-#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:23
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:24
 msgid "%{author} made %{boardName} the default task board in the <space>%{spaceName}</space> space."
 msgstr "%{author} definiu %{boardName} como o quadro de tarefas padrão no espaço <space>%{spaceName}</space>."
 
 #.frontend
-#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:22
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:23
 msgid "%{author} made %{boardName} the default task board."
 msgstr "%{author} definiu %{boardName} como o quadro de tarefas padrão."
 
@@ -3369,7 +3369,7 @@ msgid "(%{location}) %{author} commented on: %{link_name}"
 msgstr "(%{location}) %{author} comentou em: %{link_name}"
 
 #.elixir
-#: lib/operately_email/emails/project_task_commented_email.ex:22
+#: lib/operately_email/emails/project_task_commented_email.ex:28
 #: lib/operately_email/emails/space_task_commented_email.ex:22
 msgid "(%{location}) %{author} commented on: %{task_name}"
 msgstr "(%{location}) %{author} comentou em: %{task_name}"
@@ -7462,7 +7462,7 @@ msgstr "Alterou o objetivo superior de um objetivo"
 #.frontend
 #: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:10
 #: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:15
-#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:37
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:38
 msgid "Changed default task board"
 msgstr "Quadro de tarefas padrão alterado"
 
@@ -12758,8 +12758,8 @@ msgid "Invalid profile update"
 msgstr "Atualização de perfil inválida"
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:785
-#: lib/operately_web/api/tasks.ex:791
+#: lib/operately_web/api/tasks.ex:798
+#: lib/operately_web/api/tasks.ex:804
 msgid "Invalid reminders"
 msgstr "Lembretes inválidos"
 
@@ -12781,17 +12781,17 @@ msgid "Invalid site message parameters"
 msgstr "Parâmetros de mensagem do site inválidos"
 
 #.elixir
-#: lib/operately/operations/kanban_state_updating.ex:89
-#: lib/operately/operations/kanban_state_updating.ex:101
+#: lib/operately/operations/kanban_state_updating.ex:93
+#: lib/operately/operations/kanban_state_updating.ex:105
 #: lib/operately_web/api/spaces.ex:522
-#: lib/operately_web/api/tasks.ex:760
-#: lib/operately_web/api/tasks.ex:1164
-#: lib/operately_web/api/tasks.ex:1171
+#: lib/operately_web/api/tasks.ex:773
+#: lib/operately_web/api/tasks.ex:1175
+#: lib/operately_web/api/tasks.ex:1182
 msgid "Invalid status"
 msgstr "Status inválido"
 
 #.elixir
-#: lib/operately/operations/kanban_state_updating.ex:218
+#: lib/operately/operations/kanban_state_updating.ex:222
 msgid "Invalid status %{status}"
 msgstr "Status inválido %{status}"
 
@@ -13958,8 +13958,8 @@ msgstr "Marco não é %{name}"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:55
-#: lib/operately_web/api/tasks.ex:941
-#: lib/operately_web/api/tasks.ex:961
+#: lib/operately_web/api/tasks.ex:952
+#: lib/operately_web/api/tasks.ex:972
 msgid "Milestone must belong to the same project as the task"
 msgstr "O marco deve pertencer ao mesmo projeto que a tarefa"
 
@@ -13990,7 +13990,7 @@ msgstr "Marco não excluído"
 #: lib/operately_web/api/projects.ex:647
 #: lib/operately_web/api/projects.ex:662
 #: lib/operately_web/api/projects/milestones.ex:291
-#: lib/operately_web/api/tasks.ex:691
+#: lib/operately_web/api/tasks.ex:700
 msgid "Milestone not found"
 msgstr "Marco não encontrado"
 
@@ -14332,7 +14332,7 @@ msgstr "O nome não pode ficar em branco"
 #: lib/operately_web/api/resource_hubs/create.ex:27
 #: lib/operately_web/api/resource_hubs/rename.ex:37
 #: lib/operately_web/api/tasks/create_board.ex:26
-#: lib/operately_web/api/tasks/rename_board.ex:26
+#: lib/operately_web/api/tasks/rename_board.ex:27
 msgid "Name is required"
 msgstr "O nome é obrigatório"
 
@@ -16872,9 +16872,9 @@ msgstr "O nome do projeto não pode ficar em branco"
 #: lib/operately_web/api/projects.ex:688
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:282
-#: lib/operately_web/api/tasks.ex:643
-#: lib/operately_web/api/tasks.ex:682
-#: lib/operately_web/api/tasks.ex:697
+#: lib/operately_web/api/tasks.ex:652
+#: lib/operately_web/api/tasks.ex:691
+#: lib/operately_web/api/tasks.ex:706
 msgid "Project not found"
 msgstr "Projeto não encontrado"
 
@@ -19576,7 +19576,7 @@ msgid "Space members will have full access."
 msgstr "Os membros do espaço terão acesso total."
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:652
+#: lib/operately_web/api/tasks.ex:661
 msgid "Space not found"
 msgstr "Espaço não encontrado"
 
@@ -20219,8 +20219,8 @@ msgstr "Tarefa não excluída"
 #: lib/operately_web/api/projects.ex:632
 #: lib/operately_web/api/projects/milestones.ex:303
 #: lib/operately_web/api/spaces.ex:321
-#: lib/operately_web/api/tasks.ex:664
-#: lib/operately_web/api/tasks.ex:676
+#: lib/operately_web/api/tasks.ex:673
+#: lib/operately_web/api/tasks.ex:685
 msgid "Task not found"
 msgstr "Tarefa não encontrada"
 
@@ -20635,7 +20635,7 @@ msgid "The company is being imported in the background."
 msgstr "A empresa está sendo importada em segundo plano."
 
 #.elixir
-#: lib/operately_web/api/rich_content/set_task_item_checked.ex:51
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:56
 msgid "The content has changed. Refresh and try again."
 msgstr "O conteúdo foi alterado. Atualize a página e tente novamente."
 
@@ -20984,7 +20984,7 @@ msgid "The selected reviewer doesn't have access to the selected space"
 msgstr "O reviewer selecionado não tem acesso ao espaço selecionado"
 
 #.elixir
-#: lib/operately_web/api/rich_content/set_task_item_checked.ex:52
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:57
 msgid "The selected task item no longer exists"
 msgstr "O item de tarefa selecionado não existe mais"
 
@@ -21785,9 +21785,9 @@ msgid "This tab is out of date. Reloading to get the latest version..."
 msgstr "Esta aba está desatualizada. Recarregando para obter a versão mais recente..."
 
 #.elixir
-#: lib/operately_web/api/tasks/board_scope.ex:47
+#: lib/operately/tasks/task_board.ex:40
 #: lib/operately_web/api/tasks/move.ex:93
-#: lib/operately_web/api/tasks/set_default_board.ex:27
+#: lib/operately_web/api/tasks/set_default_board.ex:28
 msgid "This task board is archived. Restore it before making changes."
 msgstr "Este quadro de tarefas está arquivado. Restaure-o antes de fazer alterações."
 
@@ -24647,7 +24647,7 @@ msgid "commented on the project retrospective"
 msgstr "comentou na retrospectiva do projeto"
 
 #.elixir
-#: lib/operately_email/emails/project_task_commented_email.ex:49
+#: lib/operately_email/emails/project_task_commented_email.ex:57
 #: lib/operately_email/emails/space_task_commented_email.ex:49
 msgid "commented on the task \"%{task_name}\""
 msgstr "comentou na tarefa \"%{task_name}\""

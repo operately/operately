@@ -9,6 +9,9 @@ defmodule Operately.Operations.TaskBoardRenaming do
     Multi.new()
     |> Multi.run(:space, fn repo, _ -> Locking.lock_for_update(repo, %Group{id: board.space_id}) end)
     |> Multi.run(:locked_board, fn repo, _ -> Locking.lock_for_update(repo, board) end)
+    |> Multi.run(:writable, fn _, %{locked_board: board} ->
+      with :ok <- TaskBoard.check_writable(board), do: {:ok, :allowed}
+    end)
     |> Multi.merge(fn %{space: space, locked_board: current} -> rename(author, space, current, String.trim(name)) end)
     |> Repo.transaction()
     |> case do

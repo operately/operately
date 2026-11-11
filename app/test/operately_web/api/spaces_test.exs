@@ -1198,6 +1198,22 @@ defmodule OperatelyWeb.Api.SpacesTest do
       assert task.board_id == Operately.ShortUuid.encode!(ctx.board.id)
     end
 
+    test "archived boards remain listable but reject status and ordering updates", ctx do
+      ctx.board |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00]) |> Repo.update!()
+      assert {200, %{tasks: [task]}} = query(ctx.conn, [:spaces, :list_tasks], %{space_id: ctx.space.id, board_id: ctx.board.id})
+      assert task.id == Paths.task_id(ctx.other_task)
+      statuses = Enum.map(ctx.board.task_statuses, fn status ->
+        status |> Map.from_struct() |> Map.update!(:color, &to_string/1)
+      end)
+      assert {400, %{details: %{code: "task_board_archived"}}} = mutation(ctx.conn, [:spaces, :update_task_statuses], %{
+        space_id: ctx.space.id, board_id: ctx.board.id, task_statuses: statuses
+      })
+      assert {400, %{details: %{code: "task_board_archived"}}} = mutation(ctx.conn, [:spaces, :update_kanban], %{
+        space_id: ctx.space.id, board_id: ctx.board.id, task_id: ctx.other_task.id,
+        status: hd(statuses), kanban_state: Jason.encode!(%{})
+      })
+    end
+
     test "updates only the explicit board's statuses and ordering", ctx do
       default_before = board_for(ctx.space)
       statuses = Enum.map(ctx.board.task_statuses, fn status ->

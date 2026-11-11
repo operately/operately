@@ -1859,12 +1859,12 @@ msgid "%{author} joined the space"
 msgstr "%{author} ist dem Arbeitsbereich beigetreten"
 
 #.frontend
-#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:23
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:24
 msgid "%{author} made %{boardName} the default task board in the <space>%{spaceName}</space> space."
 msgstr "%{author} hat %{boardName} im Arbeitsbereich <space>%{spaceName}</space> als Standardboard festgelegt."
 
 #.frontend
-#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:22
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:23
 msgid "%{author} made %{boardName} the default task board."
 msgstr "%{author} hat %{boardName} als Standardboard festgelegt."
 
@@ -3358,7 +3358,7 @@ msgid "(%{location}) %{author} commented on: %{link_name}"
 msgstr "(%{location}) %{author} hat kommentiert: %{link_name}"
 
 #.elixir
-#: lib/operately_email/emails/project_task_commented_email.ex:22
+#: lib/operately_email/emails/project_task_commented_email.ex:28
 #: lib/operately_email/emails/space_task_commented_email.ex:22
 msgid "(%{location}) %{author} commented on: %{task_name}"
 msgstr "(%{location}) %{author} hat kommentiert: %{task_name}"
@@ -7336,7 +7336,7 @@ msgstr "Übergeordnetes Ziel eines Ziels geändert"
 #.frontend
 #: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:10
 #: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:15
-#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:37
+#: assets/js/features/activities/TaskBoardDefaultChanged/index.tsx:38
 msgid "Changed default task board"
 msgstr "Standardboard geändert"
 
@@ -12455,8 +12455,8 @@ msgid "Invalid profile update"
 msgstr "Ungültige Profilaktualisierung"
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:785
-#: lib/operately_web/api/tasks.ex:791
+#: lib/operately_web/api/tasks.ex:798
+#: lib/operately_web/api/tasks.ex:804
 msgid "Invalid reminders"
 msgstr "Ungültige Erinnerungen"
 
@@ -12478,17 +12478,17 @@ msgid "Invalid site message parameters"
 msgstr "Ungültige Systemmitteilungsparameter"
 
 #.elixir
-#: lib/operately/operations/kanban_state_updating.ex:89
-#: lib/operately/operations/kanban_state_updating.ex:101
+#: lib/operately/operations/kanban_state_updating.ex:93
+#: lib/operately/operations/kanban_state_updating.ex:105
 #: lib/operately_web/api/spaces.ex:522
-#: lib/operately_web/api/tasks.ex:760
-#: lib/operately_web/api/tasks.ex:1164
-#: lib/operately_web/api/tasks.ex:1171
+#: lib/operately_web/api/tasks.ex:773
+#: lib/operately_web/api/tasks.ex:1175
+#: lib/operately_web/api/tasks.ex:1182
 msgid "Invalid status"
 msgstr "Ungültiger Status"
 
 #.elixir
-#: lib/operately/operations/kanban_state_updating.ex:218
+#: lib/operately/operations/kanban_state_updating.ex:222
 msgid "Invalid status %{status}"
 msgstr "Ungültiger Status %{status}"
 
@@ -13640,8 +13640,8 @@ msgstr "Meilenstein ist nicht %{name}"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:55
-#: lib/operately_web/api/tasks.ex:941
-#: lib/operately_web/api/tasks.ex:961
+#: lib/operately_web/api/tasks.ex:952
+#: lib/operately_web/api/tasks.ex:972
 msgid "Milestone must belong to the same project as the task"
 msgstr "Der Meilenstein muss zum selben Projekt wie die Aufgabe gehören"
 
@@ -13672,7 +13672,7 @@ msgstr "Meilenstein nicht gelöscht"
 #: lib/operately_web/api/projects.ex:647
 #: lib/operately_web/api/projects.ex:662
 #: lib/operately_web/api/projects/milestones.ex:291
-#: lib/operately_web/api/tasks.ex:691
+#: lib/operately_web/api/tasks.ex:700
 msgid "Milestone not found"
 msgstr "Meilenstein nicht gefunden"
 
@@ -13994,7 +13994,7 @@ msgstr "Name darf nicht leer sein"
 #: lib/operately_web/api/resource_hubs/create.ex:27
 #: lib/operately_web/api/resource_hubs/rename.ex:37
 #: lib/operately_web/api/tasks/create_board.ex:26
-#: lib/operately_web/api/tasks/rename_board.ex:26
+#: lib/operately_web/api/tasks/rename_board.ex:27
 msgid "Name is required"
 msgstr "Name ist erforderlich"
 
@@ -16447,9 +16447,9 @@ msgstr "Projektname darf nicht leer sein"
 #: lib/operately_web/api/projects.ex:688
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:282
-#: lib/operately_web/api/tasks.ex:643
-#: lib/operately_web/api/tasks.ex:682
-#: lib/operately_web/api/tasks.ex:697
+#: lib/operately_web/api/tasks.ex:652
+#: lib/operately_web/api/tasks.ex:691
+#: lib/operately_web/api/tasks.ex:706
 msgid "Project not found"
 msgstr "Projekt nicht gefunden"
 
@@ -19111,7 +19111,7 @@ msgid "Space members will have full access."
 msgstr "Mitglieder des Arbeitsbereichs werden Vollzugriff haben."
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:652
+#: lib/operately_web/api/tasks.ex:661
 msgid "Space not found"
 msgstr "Arbeitsbereich nicht gefunden"
 
@@ -19749,8 +19749,8 @@ msgstr "Aufgabe nicht gelöscht"
 #: lib/operately_web/api/projects.ex:632
 #: lib/operately_web/api/projects/milestones.ex:303
 #: lib/operately_web/api/spaces.ex:321
-#: lib/operately_web/api/tasks.ex:664
-#: lib/operately_web/api/tasks.ex:676
+#: lib/operately_web/api/tasks.ex:673
+#: lib/operately_web/api/tasks.ex:685
 msgid "Task not found"
 msgstr "Aufgabe nicht gefunden"
 
@@ -20160,7 +20160,7 @@ msgid "The company is being imported in the background."
 msgstr "Das Unternehmen wird im Hintergrund importiert."
 
 #.elixir
-#: lib/operately_web/api/rich_content/set_task_item_checked.ex:51
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:56
 msgid "The content has changed. Refresh and try again."
 msgstr "Der Inhalt hat sich geändert. Aktualisiere die Seite und versuche es erneut."
 
@@ -20499,7 +20499,7 @@ msgid "The selected reviewer doesn't have access to the selected space"
 msgstr "Der ausgewählte Reviewer hat keinen Zugriff auf den ausgewählten Arbeitsbereich"
 
 #.elixir
-#: lib/operately_web/api/rich_content/set_task_item_checked.ex:52
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:57
 msgid "The selected task item no longer exists"
 msgstr "Der ausgewählte Aufgabeneintrag existiert nicht mehr"
 
@@ -21258,9 +21258,9 @@ msgid "This tab is out of date. Reloading to get the latest version..."
 msgstr "Dieser Tab ist nicht aktuell. Die neueste Version wird geladen …"
 
 #.elixir
-#: lib/operately_web/api/tasks/board_scope.ex:47
+#: lib/operately/tasks/task_board.ex:40
 #: lib/operately_web/api/tasks/move.ex:93
-#: lib/operately_web/api/tasks/set_default_board.ex:27
+#: lib/operately_web/api/tasks/set_default_board.ex:28
 msgid "This task board is archived. Restore it before making changes."
 msgstr "Dieses Aufgabenboard ist archiviert. Stelle es wieder her, bevor du Änderungen vornimmst."
 
@@ -24025,7 +24025,7 @@ msgid "commented on the project retrospective"
 msgstr "hat den Projektrückblick kommentiert"
 
 #.elixir
-#: lib/operately_email/emails/project_task_commented_email.ex:49
+#: lib/operately_email/emails/project_task_commented_email.ex:57
 #: lib/operately_email/emails/space_task_commented_email.ex:49
 msgid "commented on the task \"%{task_name}\""
 msgstr "hat die Aufgabe „%{task_name}“ kommentiert"

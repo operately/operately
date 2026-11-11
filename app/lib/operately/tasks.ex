@@ -8,7 +8,16 @@ defmodule Operately.Tasks do
 
   def get_task!(id), do: Repo.get!(Task, id)
 
-  def update_task(task, attrs \\ %{}), do: Task.changeset(task, attrs) |> Repo.update()
+  def update_task(task, attrs \\ %{}) do
+    Multi.new()
+    |> Multi.run(:locked_task, fn _, _ -> Operately.Tasks.BoardSync.lock_task(task) end)
+    |> Multi.update(:task, fn %{locked_task: task} -> Task.changeset(task, attrs) end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{task: task}} -> {:ok, task}
+      {:error, _step, reason, _changes} -> {:error, reason}
+    end
+  end
 
   def create_assignee(attrs \\ %{}) do
     Multi.new()

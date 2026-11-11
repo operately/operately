@@ -570,6 +570,17 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
       assert response.task.status.id == "review"
     end
 
+    test "rejects moves out of an archived board without changing either ordering", ctx do
+      source = Repo.get!(Operately.Tasks.TaskBoard, ctx.board_task.board_id)
+      source = source |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00]) |> Repo.update!()
+      assert {400, %{details: %{code: "task_board_archived"}}} = mutation(ctx.conn, [:tasks, :move], %{
+        task_id: ctx.board_task.id, destination_type: "space", destination_id: ctx.board_space.id, destination_board_id: ctx.board.id
+      })
+      assert Repo.reload!(ctx.board_task).board_id == source.id
+      assert Repo.reload!(source).tasks_kanban_state == source.tasks_kanban_state
+      assert Repo.reload!(ctx.board).tasks_kanban_state == ctx.board.tasks_kanban_state
+    end
+
     test "rejects current-board, mismatched-space, and archived destinations", ctx do
       inputs = %{task_id: Paths.task_id(ctx.board_task), destination_type: "space", destination_id: Paths.space_id(ctx.board_space)}
       assert {400, _} = mutation(ctx.conn, [:tasks, :move], Map.put(inputs, :destination_board_id, ctx.board_space.default_task_board_id))
