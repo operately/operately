@@ -217,8 +217,14 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     end)
   end
 
-  step :assert_space_kanban_page_open, ctx do
-    UI.assert_page(ctx, Paths.space_kanban_path(ctx.company, ctx.space))
+  step :assert_task_open_from_activity, ctx, task_key do
+    task = Map.fetch!(ctx, task_key) |> Repo.reload!()
+    path = Paths.create_path([Paths.company_id(ctx.company), "spaces", Paths.space_id(task.space_id), "boards", Operately.ShortUuid.encode!(task.board_id)])
+
+    ctx
+    |> UI.assert_location(path <> "?taskId=#{Paths.task_id(task)}")
+    |> UI.assert_has(testid: "task-slide-in")
+    |> UI.assert_text(task.name, testid: "task-name")
   end
 
   step :assert_task_renamed, ctx, opts do
