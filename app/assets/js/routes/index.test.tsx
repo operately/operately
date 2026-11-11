@@ -36,6 +36,7 @@ it.each([
   "/acme/admin/billing",
   "/acme/admin/billing/plans",
   "/acme/admin/billing/cancel",
+  "/acme/spaces/space/kanban",
 ])("excludes %s from speculative loading without removing its navigation loader", (url) => {
   const matches = matchRoutes(routes(), url);
   expect(matches).not.toBeNull();
