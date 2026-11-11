@@ -110,6 +110,7 @@ export namespace TaskPage {
     // Permissions
     permissions: ProjectPermissions;
     canEdit: boolean;
+    boardArchived?: boolean;
     canComment?: boolean;
 
     updateProjectName: (name: string) => Promise<boolean>;
@@ -167,6 +168,7 @@ export namespace TaskPage {
     | "richTextHandlers"
     | "localDraftKeyBase"
     | "canEdit"
+    | "boardArchived"
     | "timelineItems"
     | "timelineIsLoading"
     | "currentUser"

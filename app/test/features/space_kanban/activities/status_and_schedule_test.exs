@@ -64,7 +64,7 @@ defmodule Operately.Features.SpaceKanban.Activities.StatusAndScheduleTest do
       long_title: "marked #{ctx.task.name} as #{new_status_label} in #{ctx.space.name}"
     )
     |> Steps.click_task_link_in_space_feed(task_name: ctx.task.name)
-    |> Steps.assert_space_kanban_page_open()
+    |> Steps.assert_task_open_from_activity(:task)
   end
 
   feature "changing a task due date creates an activity", ctx do

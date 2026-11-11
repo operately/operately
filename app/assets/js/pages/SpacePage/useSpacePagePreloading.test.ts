@@ -10,7 +10,7 @@ jest.mock("@/routes/paths", () => ({
     spaceWorkMapPath: (id: string) => `/spaces/${id}/work-map`,
     discussionsPath: (id: string) => `/spaces/${id}/discussions`,
     resourceHubPath: (id: string) => `/hubs/${id}`,
-    spaceKanbanPath: (id: string) => `/spaces/${id}/kanban`,
+    spaceKanbanPath: (id: string, boardId: string) => `/spaces/${id}/boards/${boardId}`,
     spaceKpisPath: (id: string) => `/spaces/${id}/kpis`,
     spaceProjectTemplatesPath: (id: string) => `/spaces/${id}/templates`,
   }),
@@ -26,6 +26,9 @@ const tools: SpaceTools = {
   projects: [],
   goals: [],
   tasks: [],
+  taskBoards: [
+    { __typename: "task_board_summary", id: "board-1", name: "Tasks", position: 0, isDefault: true, archivedAt: null },
+  ],
   kpis: [],
   templates: [],
   messagesBoards: [{ __typename: "messages_board", id: "board" }],
@@ -43,7 +46,7 @@ it("queues all enabled tool landing pages, including each resource hub", () => {
     "/spaces/one/discussions",
     "/hubs/docs",
     "/hubs/files",
-    "/spaces/one/kanban",
+    "/spaces/one/boards/board-1",
     "/spaces/one/kpis",
     "/spaces/one/templates",
   ]);
@@ -71,7 +74,7 @@ it("does not invent missing discussion boards or resource hubs", () => {
 
   expect(usePredictivePreloading).toHaveBeenLastCalledWith([
     "/spaces/one/work-map",
-    "/spaces/one/kanban",
+    "/spaces/one/boards/board-1",
     "/spaces/one/kpis",
     "/spaces/one/templates",
   ]);

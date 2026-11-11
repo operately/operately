@@ -418,11 +418,11 @@
         "goal",
         "milestone",
         "document",
+        "kpi",
         "project_check_in",
         "project_retrospective",
         "project_discussion",
         "goal_discussion",
-        "kpi",
         "goal_check_in",
         "space_discussion",
         "comment",
@@ -9064,6 +9064,17 @@
             },
             "optional": false,
             "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
             "has_default": false
           },
           {
@@ -25061,6 +25072,79 @@
             "has_default": false
           }
         ]
+      },
+      "task_board": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "archived_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "task_statuses",
+            "type": {
+              "item": {
+                "name": "task_status",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "tasks_kanban_state",
+            "type": {
+              "name": "json",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
       }
     }
   },
@@ -25082,7 +25166,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 266,
+  "endpoint_count": 267,
   "endpoints": [
     {
       "name": "create",
@@ -41894,6 +41978,53 @@
       "docstring": "Retrieves a task by ID with optional related data."
     },
     {
+      "name": "get_board",
+      "type": "query",
+      "path": "/api/external/v1/tasks/get_board",
+      "handler": "OperatelyWeb.Api.Tasks.GetBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "board",
+          "type": {
+            "name": "task_board",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/get_board",
+      "method": "GET",
+      "namespace": "tasks",
+      "docstring": "Returns a task board's name, archive state, statuses, and kanban ordering. Archived boards remain readable."
+    },
+    {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/tasks/list",
@@ -42915,7 +43046,7 @@
       "docstring": "Updates the status of a task."
     }
   ],
-  "query_count": 79,
+  "query_count": 80,
   "mutation_count": 187,
   "schema_version": 1
 }

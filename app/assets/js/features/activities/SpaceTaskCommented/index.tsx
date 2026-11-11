@@ -7,7 +7,7 @@ import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Link, Summary } from "turboui";
 import { Trans } from "../i18n";
 import i18n from "@/i18n";
-import { activityAuthorName, commentPath, commentedLink, spaceLink } from "./../feedItemLinks";
+import { activityAuthorName, commentPath, commentedLink, spaceLink, taskActivityPath } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -20,9 +20,9 @@ const SpaceTaskCommented: ActivityHandler = {
     const { comment, task, space } = content(activity);
 
     if (task) {
-      return commentPath(paths.spaceKanbanPath(space.id, { taskId: task.id }), comment);
+      return commentPath(taskActivityPath(paths, task, space.id), comment);
     }
-    return paths.spaceKanbanPath(space.id);
+    return paths.spacePath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -40,7 +40,7 @@ const SpaceTaskCommented: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { comment, space, task } = content(activity);
 
-    const taskPath = task ? paths.spaceKanbanPath(space.id, { taskId: task.id }) : paths.spaceKanbanPath(space.id);
+    const taskPath = taskActivityPath(paths, task, space.id);
     const action = task ? commentedLink(taskPath, comment) : "commented";
     const taskLink = task ? <Link to={taskPath}>{null}</Link> : <React.Fragment />;
     const components = {

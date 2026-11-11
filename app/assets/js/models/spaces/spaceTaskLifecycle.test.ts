@@ -30,15 +30,17 @@ describe("space task lifecycle queries", () => {
     const spaceTasksKey = Api.spaces.listTasksQueryKey({ spaceId: "space-1" });
     const nextKanbanState = '{"pending":["task-1"]}';
 
-    queryClient.setQueryData(spaceKey, { space: { id: "space-1", tasksKanbanState: "old" } });
+    queryClient.setQueryData(spaceKey, {
+      space: { id: "space-1", defaultTaskBoardId: "board-1", tasksKanbanState: "old" },
+    });
     queryClient.setQueryData(otherSpaceKey, { space: { id: "space-2", tasksKanbanState: "old" } });
     queryClient.setQueryData(spaceTasksKey, { tasks: [{ id: "task-1" }] });
 
-    writeCachedSpaceKanbanState(queryClient, "space-1", nextKanbanState);
+    writeCachedSpaceKanbanState(queryClient, "space-1", nextKanbanState, "board-1");
     await invalidateSpaceTaskQueries(queryClient, "none");
 
     expect(queryClient.getQueryData(spaceKey)).toEqual({
-      space: { id: "space-1", tasksKanbanState: nextKanbanState },
+      space: { id: "space-1", defaultTaskBoardId: "board-1", tasksKanbanState: nextKanbanState },
     });
     expect(queryClient.getQueryData(otherSpaceKey)).toEqual({
       space: { id: "space-2", tasksKanbanState: "old" },
@@ -48,6 +50,23 @@ describe("space task lifecycle queries", () => {
     expect(queryClient.getQueryState(spaceTasksKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(spaceKey)?.fetchStatus).toBe("idle");
     expect(queryClient.getQueryState(spaceTasksKey)?.fetchStatus).toBe("idle");
+  });
+
+  it("updates another board without overwriting the default board's cached ordering", () => {
+    const queryClient = createQueryClient();
+    const spaceKey = Api.spaces.getQueryKey({ id: "space-1" });
+    const defaultKey = Api.tasks.getBoardQueryKey({ spaceId: "space-1", boardId: "default" });
+    const otherKey = Api.tasks.getBoardQueryKey({ spaceId: "space-1", boardId: "other" });
+    const space = { id: "space-1", defaultTaskBoardId: "default", tasksKanbanState: "old" };
+    queryClient.setQueryData(spaceKey, { space });
+    queryClient.setQueryData(defaultKey, { board: { id: "default", tasksKanbanState: "old" } });
+    queryClient.setQueryData(otherKey, { board: { id: "other", tasksKanbanState: "old" } });
+
+    writeCachedSpaceKanbanState(queryClient, "space-1", "new", "other");
+
+    expect(queryClient.getQueryData(spaceKey)).toEqual({ space });
+    expect(queryClient.getQueryData(defaultKey)).toEqual({ board: { id: "default", tasksKanbanState: "old" } });
+    expect(queryClient.getQueryData(otherKey)).toEqual({ board: { id: "other", tasksKanbanState: "new" } });
   });
 });
 

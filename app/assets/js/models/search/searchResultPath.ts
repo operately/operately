@@ -22,7 +22,8 @@ export function searchResultPath(paths: Paths, result: SearchResult): string | n
     case "task":
       if (!target.taskId) return null;
       if (target.projectId) return paths.taskPath(target.taskId);
-      if (target.spaceId) return paths.spaceKanbanPath(target.spaceId, { taskId: target.taskId });
+      if (target.spaceId && target.boardId)
+        return paths.spaceKanbanPath(target.spaceId, target.boardId, { taskId: target.taskId });
       return paths.taskPath(target.taskId);
     case "person":
       return target.personId ? paths.profilePath(target.personId) : null;
