@@ -170,7 +170,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:52
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:62
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:55
 msgid "%{author} <action>commented</action> on <task>%{taskName}</task>"
 msgstr ""
 
@@ -180,7 +180,7 @@ msgid "%{author} <action>commented</action> on <task>%{taskName}</task> in the <
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:72
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:65
 msgid "%{author} <action>commented</action> on <task>%{taskName}</task> in the <space>%{spaceName}</space> space"
 msgstr ""
 
@@ -595,12 +595,12 @@ msgid "%{author} added new contributors to the project"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:69
+#: assets/js/features/activities/TaskAdding/index.tsx:64
 msgid "%{author} added tasks <tasks/>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:61
+#: assets/js/features/activities/TaskAdding/index.tsx:56
 msgid "%{author} added tasks <tasks/> in <location>%{locationName}</location>"
 msgstr ""
 
@@ -645,22 +645,22 @@ msgid "%{author} added the <goal>%{goalName}</goal> goal"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:86
+#: assets/js/features/activities/TaskAdding/index.tsx:81
 msgid "%{author} added the task \"%{taskName}\""
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:78
+#: assets/js/features/activities/TaskAdding/index.tsx:73
 msgid "%{author} added the task \"%{taskName}\" in <location>%{locationName}</location>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:100
+#: assets/js/features/activities/TaskAdding/index.tsx:95
 msgid "%{author} added the task <task>%{taskName}</task>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:91
+#: assets/js/features/activities/TaskAdding/index.tsx:86
 msgid "%{author} added the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr ""
 
@@ -763,14 +763,14 @@ msgid "%{author} assigned %{champion} as the champion on %{project_name}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:199
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:193
 msgid "%{author} assigned %{count} person to the task <task>%{taskName}</task>"
 msgid_plural "%{author} assigned %{count} people to the task <task>%{taskName}</task>"
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:194
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:188
 msgid "%{author} assigned %{count} person to the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgid_plural "%{author} assigned %{count} people to the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr[0] ""
@@ -824,12 +824,12 @@ msgid "%{author} assigned <task>%{taskName}</task> to milestone <new>%{newName}<
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:179
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:173
 msgid "%{author} assigned to %{personName} the task <task>%{taskName}</task>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:176
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:170
 msgid "%{author} assigned to %{personName} the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr ""
 
@@ -884,12 +884,12 @@ msgid "%{author} assinged you as the champion on %{goal_name}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:191
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:185
 msgid "%{author} changed assignees on the task <task>%{taskName}</task>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:188
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:182
 msgid "%{author} changed assignees on the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr ""
 
@@ -937,12 +937,12 @@ msgid "%{author} changed the due date to <date/>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:86
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:80
 msgid "%{author} changed the due date to <date/> on <task>%{taskName}</task>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:79
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:73
 msgid "%{author} changed the due date to <date/> on <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr ""
 
@@ -1019,12 +1019,12 @@ msgid "%{author} cleared the due date"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:87
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:81
 msgid "%{author} cleared the due date on <task>%{taskName}</task>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:82
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:76
 msgid "%{author} cleared the due date on <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr ""
 
@@ -1126,7 +1126,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:58
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:68
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:61
 msgid "%{author} commented on a task"
 msgstr ""
 
@@ -1136,7 +1136,7 @@ msgid "%{author} commented on a task in the <project>%{projectName}</project> pr
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:78
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:71
 msgid "%{author} commented on a task in the <space>%{spaceName}</space> space"
 msgstr ""
 
@@ -1457,18 +1457,18 @@ msgid "%{author} deleted a KPI update in the <space>%{spaceName}</space> space"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskCommentDeleting/index.tsx:59
-#: assets/js/features/activities/TaskCommentDeleting/index.tsx:69
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:57
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:67
 msgid "%{author} deleted a comment on <task>%{taskName}</task>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskCommentDeleting/index.tsx:79
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:77
 msgid "%{author} deleted a comment on <task>%{taskName}</task> in the <project>%{projectName}</project> project"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskCommentDeleting/index.tsx:88
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:86
 msgid "%{author} deleted a comment on <task>%{taskName}</task> in the <space>%{spaceName}</space> space"
 msgstr ""
 
@@ -1898,12 +1898,12 @@ msgid "%{author} made a copy of the <original>%{originalName}</original> folder 
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:80
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:74
 msgid "%{author} marked <task>%{taskName}</task> as %{status}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:77
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:71
 msgid "%{author} marked <task>%{taskName}</task> as %{status} in <location>%{locationName}</location>"
 msgstr ""
 
@@ -1928,12 +1928,12 @@ msgid "%{author} marked a checklist item as pending on <goal>%{goalName}</goal>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:81
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:75
 msgid "%{author} marked the \"%{taskName}\" task as %{status}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:78
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:72
 msgid "%{author} marked the \"%{taskName}\" task as %{status} in <location>%{locationName}</location>"
 msgstr ""
 
@@ -1983,12 +1983,12 @@ msgid "%{author} moved the project"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:72
+#: assets/js/features/activities/TaskMoving/index.tsx:69
 msgid "%{author} moved the task \"%{taskName}\" to <destination>%{destinationName}</destination>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:66
+#: assets/js/features/activities/TaskMoving/index.tsx:63
 msgid "%{author} moved the task <task>%{taskName}</task> to <destination>%{destinationName}</destination>"
 msgstr ""
 
@@ -2283,12 +2283,12 @@ msgid "%{author} renamed <goal>%{goalName}</goal>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:59
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:53
 msgid "%{author} renamed <tasks/>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:67
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:61
 msgid "%{author} renamed <tasks/> in <location>%{locationName}</location>"
 msgstr ""
 
@@ -2303,12 +2303,12 @@ msgid "%{author} renamed milestone to <milestone>%{title}</milestone> in <projec
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:82
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:76
 msgid "%{author} renamed task to <task>%{newName}</task>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:90
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:84
 msgid "%{author} renamed task to <task>%{newName}</task> in <location>%{locationName}</location>"
 msgstr ""
 
@@ -2491,26 +2491,26 @@ msgid "%{author} submitted a check-in"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:211
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:205
 msgid "%{author} unassigned %{count} person from the task <task>%{taskName}</task>"
 msgid_plural "%{author} unassigned %{count} people from the task <task>%{taskName}</task>"
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:206
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:200
 msgid "%{author} unassigned %{count} person from the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgid_plural "%{author} unassigned %{count} people from the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:185
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:179
 msgid "%{author} unassigned %{personName} from the task <task>%{taskName}</task>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:182
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:176
 msgid "%{author} unassigned %{personName} from the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr ""
 
@@ -2540,33 +2540,33 @@ msgid "%{author} updated <task>%{taskName}</task> milestone in <project>%{projec
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:70
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:64
 msgid "%{author} updated assignees on <tasks/>"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/ActivityTaskList/index.stories.tsx:89
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:64
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:58
 msgid "%{author} updated assignees on <tasks/> in <location>%{locationName}</location>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:221
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:215
 msgid "%{author} updated assignees on the task <task>%{taskName}</task>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:218
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:212
 msgid "%{author} updated assignees on the task <task>%{taskName}</task> in <location>%{locationName}</location>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:72
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:66
 msgid "%{author} updated due dates on <tasks/>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:66
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:60
 msgid "%{author} updated due dates on <tasks/> in <location>%{locationName}</location>"
 msgstr ""
 
@@ -2646,22 +2646,22 @@ msgid "%{author} updated the description for \"%{task_name}\"."
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:82
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:72
 msgid "%{author} updated the description of <task>%{taskName}</task>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:76
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:66
 msgid "%{author} updated the description of <task>%{taskName}</task> in %{context}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:68
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:58
 msgid "%{author} updated the description of a task"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:63
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:53
 msgid "%{author} updated the description of a task in %{context}"
 msgstr ""
 
@@ -2707,12 +2707,12 @@ msgid "%{author} updated the project description"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:70
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:64
 msgid "%{author} updated the status of <tasks/>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:64
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:58
 msgid "%{author} updated the status of <tasks/> in <location>%{locationName}</location>"
 msgstr ""
 
@@ -5110,7 +5110,7 @@ msgid "A place to share rich text documents, images, videos, and other files"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:62
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:89
 msgid "A place to share rich text documents, images, videos, and other files."
 msgstr ""
 
@@ -5120,23 +5120,23 @@ msgid "A second update is needed to plot a trend line."
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:236
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:253
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:230
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:247
 msgid "A task was assigned to %{personName}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:242
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:236
 msgid "A task was no longer assigned to %{personName}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:255
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:249
 msgid "A task was unassigned"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:247
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:241
 msgid "A task was updated with new assignees"
 msgstr ""
 
@@ -5308,6 +5308,11 @@ msgstr ""
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:317
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:127
 msgid "Actions"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:217
+msgid "Actions for %{name}"
 msgstr ""
 
 #.elixir
@@ -5519,7 +5524,7 @@ msgid "Add a new goal"
 msgstr ""
 
 #.frontend
-#: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:26
+#: ../turboui/src/SpaceTaskBoardCard/ZeroState.tsx:27
 msgid "Add a new task"
 msgstr ""
 
@@ -6203,6 +6208,8 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:44
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:144
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:235
 #: ../turboui/src/TaskPage/PageOptions.tsx:21
 #: ../turboui/src/TaskPage/Sidebar.tsx:449
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:109
@@ -6211,6 +6218,11 @@ msgstr ""
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:456
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:491
 msgid "Archive"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:132
+msgid "Archive %{name}?"
 msgstr ""
 
 #.frontend
@@ -6226,7 +6238,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:499
 #: ../turboui/src/TaskPage/Sidebar.tsx:501
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:76
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:74
 msgid "Archive task"
 msgstr ""
 
@@ -6254,6 +6266,11 @@ msgstr ""
 #: lib/operately/md/goal.ex:43
 #: lib/operately/md/project.ex:346
 msgid "Archived At"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:100
+msgid "Archived boards"
 msgstr ""
 
 #.elixir
@@ -6362,7 +6379,7 @@ msgid "As an owner, you can:"
 msgstr ""
 
 #.frontend
-#: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:36
+#: ../turboui/src/SpaceTaskBoardCard/ZeroState.tsx:37
 msgid "Assign an owner"
 msgstr ""
 
@@ -6608,11 +6625,6 @@ msgid "Back to Company Admin"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ResourceHubDraftsPage/index.tsx:28
-msgid "Back to Docs & Files"
-msgstr ""
-
-#.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:59
 msgid "Back to Home"
 msgstr ""
@@ -6625,6 +6637,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/SuccessStep.tsx:28
 msgid "Back to Password & Security"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ResourceHubDraftsPage/index.tsx:28
+msgid "Back to Resource Hub"
 msgstr ""
 
 #.frontend
@@ -7049,7 +7066,7 @@ msgstr ""
 #: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:114
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:194
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:104
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:98
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:105
 #: ../turboui/src/StatusCustomization/index.tsx:205
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:135
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:276
@@ -7171,7 +7188,7 @@ msgid "Caution"
 msgstr ""
 
 #.frontend
-#: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:37
+#: ../turboui/src/SpaceTaskBoardCard/ZeroState.tsx:38
 msgid "Celebrate the win..."
 msgstr ""
 
@@ -7631,6 +7648,11 @@ msgid "Choose which parts of this project to copy into the template."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:50
+msgid "Choose which tools appear on the space page."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/DateField/index.tsx:499
 msgid "Clear"
 msgstr ""
@@ -7695,7 +7717,7 @@ msgid "Cleared due date for %{projectName}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:149
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:143
 msgid "Cleared due date for %{taskName}"
 msgstr ""
 
@@ -8242,7 +8264,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/pages/SpacePage/page.tsx:236
-#: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:56
+#: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:83
 msgid "Configure tools"
 msgstr ""
 
@@ -8604,7 +8626,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:55
-msgid "Could not rename Docs & Files. Try again."
+msgid "Could not rename Resource Hub. Try again."
 msgstr ""
 
 #.frontend
@@ -8619,7 +8641,7 @@ msgid "Could not save task order. Please try again."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:46
+#: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:73
 msgid "Could not save tool settings"
 msgstr ""
 
@@ -8637,6 +8659,11 @@ msgstr ""
 #: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:32
 #: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:43
 msgid "Could not update setting"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:51
+msgid "Could not update space tools"
 msgstr ""
 
 #.frontend
@@ -8678,6 +8705,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/InfiniteScroll/index.tsx:114
 msgid "Couldn’t load more activities."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:357
+msgid "Create"
 msgstr ""
 
 #.frontend
@@ -9152,6 +9184,11 @@ msgid "Deactivate Account"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:210
+msgid "Default"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:398
 #: ../turboui/src/AccountApiTokensPage/index.tsx:524
 #: ../turboui/src/Checklist/index.tsx:530
@@ -9170,6 +9207,8 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:67
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:291
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:517
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:144
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:248
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:339
 #: ../turboui/src/TaskPage/PageOptions.tsx:28
 #: ../turboui/src/TaskPage/Sidebar.tsx:465
@@ -9207,6 +9246,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalTargetList/index.tsx:435
 msgid "Delete %{name} target?"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:133
+msgid "Delete %{name}?"
 msgstr ""
 
 #.frontend
@@ -9644,7 +9688,7 @@ msgstr ""
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:137
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:263
 #: ../turboui/src/SearchPage/filterOptions.ts:15
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:53
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:54
 #: ../turboui/src/TemplateProjectPage/Discussions.tsx:16
 #: ../turboui/src/TemplateProjectPage/index.tsx:34
 #: assets/js/features/SpaceTools/Discussions/RegularState.tsx:21
@@ -9726,7 +9770,6 @@ msgstr ""
 #: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:62
 #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:62
 #: assets/js/models/projectTemplates/pageNavigation.ts:19
-#: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
 #: assets/js/pages/ResourceHubPage/page.tsx:37
 msgid "Docs & Files"
 msgstr ""
@@ -9780,7 +9823,6 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DocsAndFiles/PageDocsAndFiles.tsx:112
 #: ../turboui/src/ResourceHub/displayName.ts:6
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:61
 #: ../turboui/src/TemplateProjectPage/DocsAndFiles.tsx:135
 #: ../turboui/src/TemplateProjectPage/DocsAndFiles.tsx:145
 #: ../turboui/src/TemplateProjectPage/TemplateMoveResourceModal.tsx:92
@@ -9852,7 +9894,7 @@ msgid "Draft discarded"
 msgstr ""
 
 #.frontend
-#: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:35
+#: ../turboui/src/SpaceTaskBoardCard/ZeroState.tsx:36
 msgid "Draft the plan"
 msgstr ""
 
@@ -12716,7 +12758,7 @@ msgstr ""
 #: ../turboui/src/SpaceKpisPage/index.tsx:193
 #: ../turboui/src/SpaceKpisPage/index.tsx:230
 #: ../turboui/src/SpaceKpisPage/index.tsx:233
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:85
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:70
 msgid "KPIs"
 msgstr ""
 
@@ -13401,7 +13443,7 @@ msgid "Mark complete"
 msgstr ""
 
 #.frontend
-#: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:37
+#: ../turboui/src/SpaceTaskBoardCard/ZeroState.tsx:38
 msgid "Mark it done"
 msgstr ""
 
@@ -13766,7 +13808,7 @@ msgid "Move up"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:111
+#: assets/js/features/activities/TaskMoving/index.tsx:108
 msgid "Moved task \"%{taskName}\" to %{destinationName}"
 msgstr ""
 
@@ -13855,6 +13897,7 @@ msgstr ""
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:53
 #: ../turboui/src/SortControl/index.tsx:18
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:71
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:354
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:120
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:201
@@ -13874,6 +13917,7 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:154
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:25
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:39
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:331
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
 #: lib/operately_web/api/resource_hubs/create.ex:27
 #: lib/operately_web/api/resource_hubs/rename.ex:37
@@ -14017,8 +14061,20 @@ msgid "New Project"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:114
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:349
+msgid "New Resource Hub"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/GoalTargetList/index.tsx:321
 msgid "New Value"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:114
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:346
+msgid "New board"
 msgstr ""
 
 #.frontend
@@ -14105,7 +14161,7 @@ msgid "New task"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAdding/index.tsx:126
+#: assets/js/features/activities/TaskAdding/index.tsx:121
 msgid "New task \"%{taskName}\" was created"
 msgstr ""
 
@@ -14963,6 +15019,8 @@ msgid "Only company admins can see and share this link. You can also <button>gen
 msgstr ""
 
 #.elixir
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:140
 #: lib/operately_web/api/resource_hubs/delete.ex:27
 msgid "Only empty Resource Hubs can be deleted. Remove all documents, drafts, files, links, and folders first."
 msgstr ""
@@ -15284,7 +15342,7 @@ msgid "Org Chart"
 msgstr ""
 
 #.frontend
-#: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:23
+#: ../turboui/src/SpaceTaskBoardCard/ZeroState.tsx:24
 msgid "Organize tasks on a Kanban board with status columns."
 msgstr ""
 
@@ -15699,7 +15757,7 @@ msgid "Pick a status…"
 msgstr ""
 
 #.frontend
-#: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:36
+#: ../turboui/src/SpaceTaskBoardCard/ZeroState.tsx:37
 msgid "Pick who will do it..."
 msgstr ""
 
@@ -15848,7 +15906,8 @@ msgstr ""
 #: assets/js/pages/CompanyExportPage/index.tsx:31
 #: assets/js/pages/HomePage/index.tsx:69
 #: assets/js/pages/SpacePage/page.tsx:186
-#: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:46
+#: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:51
+#: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:73
 #: ee/assets/js/pages/SaasAdminCompanyPage/FeatureFlagsSection.tsx:43
 #: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:32
 #: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:43
@@ -15889,7 +15948,7 @@ msgid "Post a check-in to keep the team updated on the project's latest progress
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:54
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:55
 #: assets/js/features/SpaceTools/Discussions/ZeroState.tsx:24
 msgid "Post announcements, pitch ideas, and discuss ideas with your team."
 msgstr ""
@@ -16019,21 +16078,21 @@ msgid "Previously %{personName} was a %{oldRole}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:98
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:92
 msgid "Previously assigned to %{count} person"
 msgid_plural "Previously assigned to %{count} people"
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:103
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:97
 msgid "Previously assigned to:"
 msgstr ""
 
 #.frontend
 #: assets/js/features/activities/GoalDueDateUpdating/index.tsx:71
 #: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:70
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:116
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:110
 msgid "Previously had no due date"
 msgstr ""
 
@@ -16049,14 +16108,14 @@ msgid "Previously it was %{oldName}, now it is %{newName}."
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:111
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:105
 msgid "Previously it was unassigned"
 msgstr ""
 
 #.frontend
 #: assets/js/features/activities/GoalDueDateUpdating/index.tsx:69
 #: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:68
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:109
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:103
 msgid "Previously the due date was <date/>"
 msgstr ""
 
@@ -16084,7 +16143,7 @@ msgid "Previously, %{personName} was the reviewer."
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:84
+#: assets/js/features/activities/TaskMoving/index.tsx:81
 msgid "Previously, it was in <origin>%{originName}</origin>"
 msgstr ""
 
@@ -16099,12 +16158,12 @@ msgid "Previously, the milestone was called <name>\"%{oldTitle}\"</name>."
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:91
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:85
 msgid "Previously, the task was %{oldStatus}. Now it's %{newStatus}."
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:104
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:98
 msgid "Previously, the task was named \"%{oldName}\"."
 msgstr ""
 
@@ -16581,8 +16640,8 @@ msgstr ""
 #: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:118
 #: assets/js/features/activities/ResourceHubFileCommented/index.tsx:113
 #: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:111
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:118
-#: assets/js/features/activities/TaskCommentDeleting/index.tsx:114
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:111
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:112
 msgid "Re: %{title}"
 msgstr ""
 
@@ -16608,7 +16667,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:108
-#: assets/js/features/activities/SpaceTaskCommented/index.tsx:118
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:111
 msgid "Re: a task"
 msgstr ""
 
@@ -17015,6 +17074,7 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:99
 #: ../turboui/src/ResourceHubFolderPage/index.tsx:34
 #: ../turboui/src/ResourceHubPage/index.tsx:45
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:222
 #: ../turboui/src/TemplateProjectPage/TemplateResourceMenu.tsx:55
 msgid "Rename"
 msgstr ""
@@ -17026,7 +17086,13 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:50
-msgid "Rename Docs & Files"
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:348
+msgid "Rename Resource Hub"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:345
+msgid "Rename board"
 msgstr ""
 
 #.frontend
@@ -17103,6 +17169,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/GoalReopenPage/index.tsx:34
 msgid "Reopening Goal"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:301
+msgid "Reorder %{name}"
 msgstr ""
 
 #.frontend
@@ -17218,6 +17289,16 @@ msgid "Resource"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
+msgid "Resource Hub"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:88
+msgid "Resource Hubs"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/ProjectTemplateDocumentPage/index.tsx:49
 #: assets/js/pages/ProjectTemplateFilePage/index.tsx:52
 #: assets/js/pages/ProjectTemplateLinkPage/index.tsx:49
@@ -17249,6 +17330,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:142
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:47
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:243
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:92
 msgid "Restore"
 msgstr ""
@@ -17302,7 +17384,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:457
-#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:76
+#: assets/js/features/activities/TaskArchiveUpdating/index.tsx:74
 msgid "Restore to board"
 msgstr ""
 
@@ -17719,7 +17801,7 @@ msgstr ""
 #: ../turboui/src/PageDescription/index.tsx:195
 #: ../turboui/src/PrivacyField/index.tsx:118
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:97
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:95
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:357
 #: ../turboui/src/TitleSetupPrompt/index.tsx:63
 #: assets/js/features/ProjectRetrospective/Form.tsx:82
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:173
@@ -17803,7 +17885,7 @@ msgid "Save project as template"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:78
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:63
 msgid "Save reusable project structures and use them for recurring work."
 msgstr ""
 
@@ -17815,6 +17897,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:110
 msgid "Save selection"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:102
+msgid "Save visibility"
 msgstr ""
 
 #.frontend
@@ -18377,6 +18464,11 @@ msgid "Set active"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:230
+msgid "Set as default"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:167
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:191
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:200
@@ -18572,6 +18664,11 @@ msgstr ""
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:96
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:100
 msgid "Show closed statuses"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:136
+msgid "Show on space page"
 msgstr ""
 
 #.frontend
@@ -19471,13 +19568,13 @@ msgid "Task"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskNameUpdating/index.tsx:121
+#: assets/js/features/activities/TaskNameUpdating/index.tsx:115
 msgid "Task \"%{oldName}\" was renamed to \"%{newName}\""
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:235
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:252
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:229
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:246
 msgid "Task \"%{taskName}\" was assigned to %{personName}"
 msgstr ""
 
@@ -19487,22 +19584,22 @@ msgid "Task \"%{taskName}\" was deleted"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskStatusUpdating/index.tsx:113
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:107
 msgid "Task \"%{taskName}\" was marked as %{status}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:241
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:235
 msgid "Task \"%{taskName}\" was no longer assigned to %{personName}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:255
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:249
 msgid "Task \"%{taskName}\" was unassigned"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:246
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:240
 msgid "Task \"%{taskName}\" was updated with new assignees"
 msgstr ""
 
@@ -19630,12 +19727,10 @@ msgstr ""
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:261
 #: ../turboui/src/SearchPage/filterOptions.ts:13
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:69
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:78
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:124
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:128
 #: ../turboui/src/TemplateProjectPage/index.tsx:31
-#: assets/js/features/SpaceTools/Tasks/RegularState.tsx:24
-#: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:20
 #: lib/operately/md/milestone.ex:57
 #: lib/operately/md/milestone.ex:65
 #: lib/operately/md/project.ex:144
@@ -19759,7 +19854,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:37
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:72
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:77
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:62
 msgid "Templates"
 msgstr ""
 
@@ -20603,6 +20698,11 @@ msgstr ""
 msgid "This board is archived."
 msgstr ""
 
+#.frontend
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:137
+msgid "This board will be hidden from the space. Its tasks will remain readable, and you can restore it here."
+msgstr ""
+
 #.elixir
 #: lib/operately_email/templates/email_changed.html.eex:5
 #: lib/operately_email/templates/email_changed.text.eex:2
@@ -21382,7 +21482,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:119
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:86
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:71
 msgid "Track the numbers this space cares about and log updates on a weekly or monthly cadence."
 msgstr ""
 
@@ -21908,7 +22008,7 @@ msgid "Updated due date for %{projectName} to <date/>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:139
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:133
 msgid "Updated due date for %{taskName} to <date/>"
 msgstr ""
 
@@ -21918,12 +22018,12 @@ msgid "Updated the %{spaceName} space"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:119
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:109
 msgid "Updated the description of: %{taskName}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskDescriptionChange/index.tsx:120
+#: assets/js/features/activities/TaskDescriptionChange/index.tsx:110
 msgid "Updated the description of: a task"
 msgstr ""
 
@@ -22915,7 +23015,7 @@ msgid "Work map view"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:70
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:79
 msgid "Work together on tasks that don’t belong to a specific project."
 msgstr ""
 
@@ -22946,7 +23046,7 @@ msgid "Write access lets this client create, update, delete, and archive content
 msgstr ""
 
 #.frontend
-#: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:35
+#: ../turboui/src/SpaceTaskBoardCard/ZeroState.tsx:36
 msgid "Write down the next steps..."
 msgstr ""
 
@@ -23107,7 +23207,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ResourceHubDraftsPage/index.tsx:26
-msgid "You don’t have any drafts in these Docs & Files."
+msgid "You don’t have any drafts in this Resource Hub."
 msgstr ""
 
 #.elixir
@@ -23574,21 +23674,21 @@ msgid "a milestone"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:62
-#: assets/js/features/activities/TaskMoving/index.tsx:90
+#: assets/js/features/activities/TaskMoving/index.tsx:59
+#: assets/js/features/activities/TaskMoving/index.tsx:87
 msgid "a project"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:62
-#: assets/js/features/activities/TaskMoving/index.tsx:90
+#: assets/js/features/activities/TaskMoving/index.tsx:59
+#: assets/js/features/activities/TaskMoving/index.tsx:87
 msgid "a space"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:56
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:58
-#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:134
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:50
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:52
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:128
 #: assets/js/models/activities/feed.tsx:163
 #: assets/js/models/activities/feed.tsx:214
 #: assets/js/models/activities/feed.tsx:243
@@ -23626,7 +23726,7 @@ msgid "added the link \"%{link_name}\""
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/TaskMoving/index.tsx:139
+#: assets/js/features/activities/TaskMoving/index.tsx:136
 msgid "another destination"
 msgstr ""
 
