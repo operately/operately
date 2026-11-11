@@ -35,16 +35,9 @@ defmodule OperatelyWeb.Api.Tasks.BoardScope do
   end
 
   def lock(board) do
-    with {:ok, boards} <- BoardSync.lock_boards([board.id]),
-         locked = Map.fetch!(boards, board.id),
-         :ok <- ensure_active(locked) do
-      {:ok, locked}
+    with {:ok, boards} <- BoardSync.lock_boards([board.id]) do
+      {:ok, Map.fetch!(boards, board.id)}
     end
-  end
-
-  defp ensure_active(%TaskBoard{archived_at: nil}), do: :ok
-  defp ensure_active(_board) do
-    {:error, {:bad_request, gettext("This task board is archived. Restore it before making changes."), %{code: "task_board_archived"}}}
   end
 
   defp validate_space(board, space) do

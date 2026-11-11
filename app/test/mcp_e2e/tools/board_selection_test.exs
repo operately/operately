@@ -17,6 +17,15 @@ defmodule Operately.McpE2E.Tools.BoardSelectionTest do
     |> Steps.assert_unavailable_default_details()
   end
 
+  test "returns restore guidance when updating a task on an archived board", ctx do
+    ctx
+    |> Steps.given_another_board()
+    |> Steps.discover_boards()
+    |> Steps.create_task_on_selected_board()
+    |> Steps.archive_selected_board()
+    |> Steps.assert_archived_task_write_rejected()
+  end
+
   test "changes the default and uses it for space-only task creation", ctx do
     ctx
     |> Steps.given_another_board()
