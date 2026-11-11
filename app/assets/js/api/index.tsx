@@ -563,8 +563,9 @@ export interface ActivityContentKpiEntryEdited {
 
 export interface ActivityContentKpiEntryLogged {
   __typename: "activity_content_kpi_entry_logged";
-  space: Space | null;
+  space: Space;
   kpi: Kpi | null;
+  entry: KpiEntry | null;
   value: number;
   period: string;
 }
