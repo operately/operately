@@ -1,29 +1,23 @@
 import React from "react";
+import { SpaceTaskBoardCard } from "turboui";
+import type { Task, TaskBoardSummary } from "@/api";
+import { usePaths, compareIds } from "@/routes/paths";
 
-import { Task } from "@/models/tasks";
-import { Space } from "@/models/spaces";
-import { Container } from "./components";
-import { RegularState } from "./Tasks/RegularState";
-import { ZeroState } from "./Tasks/ZeroState";
-
-import { usePaths } from "@/routes/paths";
-
-interface Props {
-  space: Space;
-  tasks: Task[];
-}
-
-export function Tasks(props: Props) {
+export function Tasks({ spaceId, boards, tasks }: { spaceId: string; boards: TaskBoardSummary[]; tasks: Task[] }) {
   const paths = usePaths();
-  const boardId = props.space.defaultTaskBoardId;
-  if (!boardId) return null;
-
-  const path = paths.spaceKanbanPath(props.space.id, boardId);
-  const isZeroState = props.tasks.length < 1;
 
   return (
-    <Container path={path} testId="tasks-tool">
-      {isZeroState ? <ZeroState /> : <RegularState {...props} />}
-    </Container>
+    <>
+      {boards
+        .filter((board) => !board.archivedAt)
+        .map((board) => (
+          <SpaceTaskBoardCard
+            key={board.id}
+            board={board}
+            to={paths.spaceKanbanPath(spaceId, board.id)}
+            tasks={tasks.filter((task) => compareIds(task.boardId, board.id) && !task.archivedAt)}
+          />
+        ))}
+    </>
   );
 }

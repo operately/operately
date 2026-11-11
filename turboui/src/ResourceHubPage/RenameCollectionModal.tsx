@@ -47,12 +47,12 @@ export function RenameCollectionModal({ resourceHub, onRename, onClose }: Props)
   });
 
   return (
-    <Modal title={t("Rename Docs & Files")} isOpen onClose={close}>
+    <Modal title={t("Rename Resource Hub")} isOpen onClose={close}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
           <Forms.TextInput label={t("Name")} field="name" testId="new-collection-name" autoFocus />
         </Forms.FieldGroup>
-        <Forms.FormError when={saveFailed} message={t("Could not rename Docs & Files. Try again.")} className="mt-4" />
+        <Forms.FormError when={saveFailed} message={t("Could not rename Resource Hub. Try again.")} className="mt-4" />
         <Forms.Submit
           cancelText={t("Cancel")}
           testId="save-collection-name"

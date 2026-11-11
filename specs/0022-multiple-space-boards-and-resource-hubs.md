@@ -126,10 +126,10 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 - Show archive state separately from access permissions and disable protected task actions. Keep description edits, comments, reactions, and rich-text checklist toggles available.
 - Verify explicit/default board navigation and archived-board action availability.
 
-### PR 6B — Combined Space Tools redesign for boards and hubs
+### PR 6B — Combined Space Tools redesign for boards and hubs ✅
 
-- Redesign configuration once for both categories, with ordered instances and create, rename, and reorder controls. Show each active instance as a separate named space card.
-- Save instance actions immediately, separately from category Save/Cancel. Keep management and archived-board links available when a category is disabled.
+- Group visibility and instance management in one section per category, with ordered instances, create/rename controls, and drag handles for reordering. Show each active instance as a separate named space card.
+- Save instance actions immediately, separately from category Save/Cancel. Keep management and archived boards available when a category is disabled. Display instance names as plain text on this page.
 - Boards expose archive/restore and default selection; prevent archiving the default. Hubs expose confirmed deletion only when empty and non-default; hide deletion for the fixed default hub.
 - Apply Resource Hub terminology across management, drafts, and rename dialogs. Invalidate configuration, cards, discovery, and affected content after mutations.
 - Verify management with two boards and two hubs, defaults, archive/restore, deletion, and disabled categories.

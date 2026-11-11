@@ -1,5 +1,5 @@
 import * as React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 import { createInstance } from "i18next";
@@ -91,7 +91,7 @@ it.each([
   [
     "en",
     "Templates",
-    "Save",
+    "Save visibility",
     "Configure tools for this space",
     "Save reusable project structures and use them for recurring work.",
   ],
@@ -105,7 +105,7 @@ it.each([
   [
     "pt-BR",
     "Templates",
-    "Save",
+    "Save visibility",
     "Configure tools for this space",
     "Save reusable project structures and use them for recurring work.",
   ],
@@ -120,7 +120,7 @@ it.each([
         en: {
           translation: {
             Templates: templates,
-            Save: save,
+            "Save visibility": save,
             "Configure tools for this space": heading,
             "Save reusable project structures and use them for recurring work.": description,
           },
@@ -161,3 +161,36 @@ it.each([
     expect(onSave).toHaveBeenCalledTimes(1);
   },
 );
+
+it("keeps each category's visibility switch and instances together under one heading", () => {
+  renderPage({
+    management: {
+      boards: [
+        {
+          __typename: "task_board_summary",
+          id: "board",
+          name: "Campaigns",
+          position: 0,
+          isDefault: true,
+          archivedAt: null,
+        },
+      ],
+      hubs: [{ __typename: "resource_hub_summary", id: "hub", name: "Brand assets", position: 0, isDefault: true }],
+      canEdit: true,
+      onAction: async () => true,
+    },
+  });
+
+  const tasks = within(screen.getByRole("region", { name: "Tasks" }));
+  expect(screen.getAllByRole("heading", { name: "Tasks" })).toHaveLength(1);
+  expect(tasks.getByRole("switch", { name: "Tasks" })).not.toBeChecked();
+  expect(tasks.getByText("Campaigns")).toBeInTheDocument();
+  expect(tasks.queryByRole("link")).not.toBeInTheDocument();
+  expect(tasks.getByRole("button", { name: "New board" })).toBeEnabled();
+
+  const hubs = within(screen.getByRole("region", { name: "Resource Hubs" }));
+  expect(screen.getAllByRole("heading", { name: "Resource Hubs" })).toHaveLength(1);
+  expect(hubs.getByRole("switch", { name: "Resource Hubs" })).toBeChecked();
+  expect(hubs.getByText("Brand assets")).toBeInTheDocument();
+  expect(hubs.queryByRole("link")).not.toBeInTheDocument();
+});
