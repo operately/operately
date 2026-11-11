@@ -4,7 +4,7 @@ import { Paths } from "@/routes/paths";
 import React from "react";
 import { Link } from "turboui";
 import { Trans } from "../i18n";
-import { activityAuthorName, projectLink, spaceLink, spaceTaskPath } from "../feedItemLinks";
+import { activityAuthorName, projectLink, spaceLink, taskActivityPath } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const TaskCommentDeleting: ActivityHandler = {
@@ -16,11 +16,11 @@ const TaskCommentDeleting: ActivityHandler = {
     const { project, space, task } = content(activity);
 
     if (task && project) {
-      return paths.taskPath(task.id);
+      return taskActivityPath(paths, task);
     }
 
     if (task) {
-      return spaceTaskPath(paths, space.id, task);
+      return taskActivityPath(paths, task, space.id);
     }
 
     if (project) {
@@ -131,11 +131,11 @@ function taskPath(paths: Paths, activity: Activity) {
   const { project, space, task } = content(activity);
 
   if (task && project) {
-    return paths.taskPath(task.id);
+    return taskActivityPath(paths, task);
   }
 
   if (task) {
-    return spaceTaskPath(paths, space.id, task);
+    return taskActivityPath(paths, task, space.id);
   }
 
   if (project) {

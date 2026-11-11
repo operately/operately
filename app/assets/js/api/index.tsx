@@ -2836,6 +2836,7 @@ export interface Target {
 
 export interface Task {
   __typename: "task";
+  spaceId?: Id | null;
   boardId?: Id | null;
   id: string;
   url?: string;

@@ -63,6 +63,7 @@ function activity(id: string, inProject: boolean, hasTask = true): Activity {
         ? {
             __typename: "task",
             boardId: inProject ? null : "board-1",
+            spaceId: inProject ? null : "space",
             id,
             name: id,
             type: inProject ? "project" : "space",

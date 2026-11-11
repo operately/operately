@@ -2198,6 +2198,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :task, for: Operately.Tasks.Task do
+    field? :space_id, :id, null: true
     field? :board_id, :id, null: true
     field :id, :string
     field? :url, :string

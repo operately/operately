@@ -95,13 +95,17 @@ describe("comment activity paths", () => {
 
     expect(
       ProjectTaskCommented.pagePath(paths, {
-        content: { task: { id: "task-1" }, project: { id: "project-1" }, comment },
+        content: { task: { id: "task-1", type: "project" }, project: { id: "project-1" }, comment },
       } as any),
     ).toEqual("/tasks/task-1#comment-1");
 
     expect(
       SpaceTaskCommented.pagePath(paths, {
-        content: { task: { id: "task-1", boardId: "board-1" }, space: { id: "space-1" }, comment },
+        content: {
+          task: { id: "task-1", boardId: "board-1", spaceId: "space-1", type: "space" },
+          space: { id: "space-1" },
+          comment,
+        },
       } as any),
     ).toEqual("/spaces/space-1/boards/board-1?taskId=task-1#comment-1");
   });

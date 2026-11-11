@@ -139,15 +139,24 @@ export const milestoneCommentLink = (
   return <Link to={path}>{i18n.t("commented")}</Link>;
 };
 
-export const spaceTaskPath = (paths: Paths, spaceId: string, task?: Pick<api.Task, "id" | "boardId"> | null) => {
-  if (!task?.boardId) return paths.spacePath(spaceId);
-  return paths.spaceKanbanPath(spaceId, task.boardId, { taskId: task.id });
+export const taskActivityPath = (
+  paths: Paths,
+  task?: Pick<api.Task, "id" | "boardId" | "spaceId" | "type"> | null,
+  fallbackSpaceId?: string,
+) => {
+  if (task?.spaceId && task.boardId) {
+    return paths.spaceKanbanPath(task.spaceId, task.boardId, { taskId: task.id });
+  }
+  if (task?.type === "project") return paths.taskPath(task.id);
+
+  const spaceId = task?.spaceId ?? fallbackSpaceId;
+  return spaceId ? paths.spacePath(spaceId) : paths.homePath();
 };
 
 export const taskLink = (paths: Paths, task: api.Task, attrs?: { taskName?: string; spaceId?: string }) => {
   const { taskName, spaceId } = attrs || {};
 
-  const path = spaceId ? spaceTaskPath(paths, spaceId, task) : paths.taskPath(task.id);
+  const path = taskActivityPath(paths, task, spaceId);
   const name = taskName || task.name;
 
   return <Link to={path}>{name}</Link>;

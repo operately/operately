@@ -41,7 +41,14 @@ test("wires compact aggregated due-date updates while retaining the location rul
         oldDueDate: { __typename: "contextual_date", dateType: "day", value: "2026-10-28", date: "2026-10-28" },
         newDueDate: { __typename: "contextual_date", dateType: "day", value: "2026-11-02", date: "2026-11-02" },
         space: { __typename: "space", id: "space", name: "Custom automations" },
-        task: { __typename: "task", boardId: "board-1", id: `task-${index}`, name: `Task ${index}`, type: "space" },
+        task: {
+          __typename: "task",
+          boardId: "board-1",
+          spaceId: "space",
+          id: `task-${index}`,
+          name: `Task ${index}`,
+          type: "space",
+        },
       },
     }),
   );
