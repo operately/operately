@@ -17,8 +17,12 @@ import { loader, useLoadedData, useRefresh } from "./loader";
 export default { name: "SpaceKanbanPage", loader, Page } as PageModule;
 
 function Page() {
+  const data = useLoadedData();
+  return <BoardPage key={data.board.id} {...data} />;
+}
+
+function BoardPage({ space, board, tasks: backendTasks }: ReturnType<typeof useLoadedData>) {
   const paths = usePaths();
-  const { space, board, tasks: backendTasks } = useLoadedData();
   const refreshPageData = useRefresh();
   const currentUser = useMe();
   const { mutateAsync: updateKanban } = Spaces.useUpdateSpaceKanban();
@@ -128,5 +132,5 @@ function Page() {
     onStatusesChange: handleStatusesChange,
   };
 
-  return <SpaceKanbanPage key={board.id} {...props} />;
+  return <SpaceKanbanPage {...props} />;
 }
