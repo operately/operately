@@ -56,6 +56,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.update_task_status(inputs.status)
       |> Steps.save_activity(:task_status_updating, &build_activity_content/1)
       |> Steps.commit()
@@ -184,6 +185,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type)
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.update_task_name(inputs.name)
       |> Steps.save_activity(:task_name_updating, &build_activity_content/1)
       |> Steps.commit()
@@ -242,6 +244,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type)
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.update_task_due_date(inputs.due_date)
       |> Steps.save_activity(:task_due_date_updating, &build_activity_content/1)
       |> Steps.commit()
@@ -301,6 +304,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type)
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.update_task_reminders(inputs.reminders)
       |> Steps.commit()
       |> Steps.broadcast_project_update()
@@ -336,6 +340,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.validate_assignees(assignee_ids)
       |> Steps.update_task_assignees(assignee_ids)
       |> Steps.save_activity(:task_assignee_updating, &build_activity_content(inputs, &1))
@@ -409,6 +414,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, :project)
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.update_milestone_and_ordering(inputs.milestone_id, inputs.index)
       |> Steps.commit()
       |> Steps.broadcast_project_update()
@@ -443,6 +449,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, :project)
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.validate_milestone_if_changed(inputs.milestone_id)
       |> Steps.update_task_milestone_if_changed(inputs.milestone_id)
       |> Steps.save_activity(:task_milestone_updating, fn changes ->
@@ -580,6 +587,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.delete_task()
       |> Steps.save_activity(:task_deleting, &build_activity_content/1)
       |> Steps.commit()
@@ -734,6 +742,12 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
+    def lock_task(multi) do
+      multi
+      |> Ecto.Multi.run(:boards, fn _repo, %{task: task} -> Operately.Tasks.BoardSync.lock_boards([task.board_id]) end)
+      |> Ecto.Multi.run(:locked_task, fn _repo, %{task: task, boards: boards} -> Operately.Tasks.BoardSync.lock_task(task, boards) end)
+    end
+
     def check_milestone_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone, company_read_only: company_read_only} ->
         Operately.Projects.Permissions.check(milestone.request_info.access_level, permission, company_read_only: company_read_only)
@@ -742,8 +756,6 @@ defmodule OperatelyWeb.Api.Tasks do
 
     def update_task_status(multi, new_status) do
       multi
-      |> Ecto.Multi.run(:boards, fn _repo, %{task: task} -> Operately.Tasks.BoardSync.lock_boards([task.board_id]) end)
-      |> Ecto.Multi.run(:locked_task, fn _repo, %{task: task, boards: boards} -> Operately.Tasks.BoardSync.lock_task(task, boards) end)
       |> Ecto.Multi.run(:updated_task, fn _repo, %{locked_task: task, boards: boards} ->
         with {:ok, status} <- validate_task_status(task, new_status),
              {:ok, updated} <- task |> Operately.Tasks.Task.changeset(Operately.Tasks.Task.status_change_attrs(task, status)) |> Repo.update(),
@@ -771,13 +783,13 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     def update_task_due_date(multi, new_due_date) do
-      Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
+      Ecto.Multi.update(multi, :updated_task, fn %{locked_task: task} ->
         Operately.Tasks.Task.changeset(task, update_due_date_attrs(task, new_due_date))
       end)
     end
 
     def update_task_reminders(multi, reminders) do
-      Ecto.Multi.run(multi, :updated_task, fn _repo, %{task: task} ->
+      Ecto.Multi.run(multi, :updated_task, fn _repo, %{locked_task: task} ->
         changeset = Operately.Tasks.Task.changeset(task, %{reminders: reminders})
 
         cond do
@@ -817,7 +829,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
     def update_task_name(multi, new_name) do
       multi
-      |> Ecto.Multi.update(:updated_task, fn %{task: task} ->
+      |> Ecto.Multi.update(:updated_task, fn %{locked_task: task} ->
         Operately.Tasks.Task.changeset(task, %{name: new_name})
       end)
       |> Operately.Search.IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.updated_task.id end)
@@ -874,7 +886,7 @@ defmodule OperatelyWeb.Api.Tasks do
       new_assignee_ids = new_assignee_ids |> Enum.reject(&is_nil/1) |> Enum.uniq()
 
       multi
-      |> Ecto.Multi.run(:clear_existing_assignees, fn _repo, %{task: task} ->
+      |> Ecto.Multi.run(:clear_existing_assignees, fn _repo, %{locked_task: task} ->
         current_assignees = Operately.Tasks.list_task_assignees(task)
         new_assignee_set = MapSet.new(new_assignee_ids)
 
@@ -888,7 +900,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
         {:ok, :cleared}
       end)
-      |> Ecto.Multi.run(:updated_task, fn _repo, %{task: task} ->
+      |> Ecto.Multi.run(:updated_task, fn _repo, %{locked_task: task} ->
         current_assignee_ids =
           Operately.Tasks.list_task_assignees(task)
           |> MapSet.new(& &1.person_id)
@@ -908,7 +920,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
         {:ok, updated_task}
       end)
-      |> Ecto.Multi.run(:assignee_subscription, fn _repo, %{task: task} ->
+      |> Ecto.Multi.run(:assignee_subscription, fn _repo, %{locked_task: task} ->
         ensure_subscriptions(task.subscription_list_id, new_assignee_ids, :invited)
       end)
       |> maybe_add_assignee_contributors(new_assignee_ids)
@@ -917,10 +929,8 @@ defmodule OperatelyWeb.Api.Tasks do
     def delete_task(multi) do
       multi
       |> Operately.Search.IndexUpdates.delete(:search_task, "task", fn changes -> changes.task.id end)
-      |> Ecto.Multi.run(:delete_task, fn repo, %{task: task} ->
-        with {:ok, boards} <- Operately.Tasks.BoardSync.lock_boards([task.board_id]),
-             {:ok, task} <- Operately.Tasks.BoardSync.lock_task(task, boards),
-             {:ok, _} <- Operately.Tasks.BoardSync.remove_task(boards[task.board_id], task) do
+      |> Ecto.Multi.run(:delete_task, fn repo, %{locked_task: task, boards: boards} ->
+        with {:ok, _} <- Operately.Tasks.BoardSync.remove_task(boards[task.board_id], task) do
           repo.delete(task)
         end
       end)

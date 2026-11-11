@@ -1,5 +1,5 @@
 defmodule Operately.Tasks.BoardSync do
-  @moduledoc "Locks boards before tasks and updates ordering using those locked boards."
+  @moduledoc "Locks writable boards before tasks and updates ordering using those locked boards."
   import Ecto.Query
   alias Operately.Repo
   alias Operately.Tasks.{Task, TaskBoard, KanbanState}
@@ -8,7 +8,26 @@ defmodule Operately.Tasks.BoardSync do
     ids = ids |> Enum.reject(&is_nil/1) |> Enum.uniq() |> Enum.sort()
     boards = Repo.all(from b in TaskBoard, where: b.id in ^ids, order_by: b.id, lock: "FOR UPDATE")
 
-    if length(boards) == length(ids), do: {:ok, Map.new(boards, &{&1.id, &1})}, else: {:error, :not_found}
+    with true <- length(boards) == length(ids),
+         :ok <- check_writable(boards) do
+      {:ok, Map.new(boards, &{&1.id, &1})}
+    else
+      false -> {:error, :not_found}
+      error -> error
+    end
+  end
+
+  defp check_writable(boards) do
+    case Enum.find(boards, & &1.archived_at) do
+      nil -> :ok
+      _board -> TaskBoard.archived_error()
+    end
+  end
+
+  def lock_task(task) do
+    with {:ok, boards} <- lock_boards([task.board_id]) do
+      lock_task(task, boards)
+    end
   end
 
   # Authorize first, then lock boards. Reject a task that moved since authorization.
@@ -16,7 +35,7 @@ defmodule Operately.Tasks.BoardSync do
     with current when not is_nil(current) <- Repo.one(from t in Task, where: t.id == ^task.id, lock: "FOR UPDATE"),
          true <- {current.space_id, current.project_id, current.board_id} == {task.space_id, task.project_id, task.board_id},
          true <- valid_board?(current, boards) do
-      {:ok, current}
+      {:ok, Operately.Repo.Locking.restore_loaded_associations(current, task)}
     else
       _ -> {:error, :not_found}
     end

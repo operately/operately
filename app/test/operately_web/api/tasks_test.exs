@@ -20,6 +20,56 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     |> Factory.add_project_task(:task, :milestone)
   end
 
+  test "archived boards reject task writes without side effects", ctx do
+    ctx = ctx |> Factory.create_space_task(:space_task, :engineering) |> Factory.log_in_person(:creator)
+    board = Repo.get!(Operately.Tasks.TaskBoard, ctx.space_task.board_id)
+    board = board |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00]) |> Repo.update!()
+    activity_count = Repo.aggregate(Operately.Activities.Activity, :count)
+    inputs = %{task_id: ctx.space_task.id, type: "space"}
+    status = ctx.space_task.task_status |> Map.from_struct() |> Map.update!(:color, &to_string/1)
+
+    for {endpoint, fields} <- [
+      {:update_name, %{name: "Changed"}},
+      {:update_due_date, %{due_date: nil}},
+      {:update_reminders, %{reminders: []}},
+      {:update_assignee, %{assignee_id: ctx.creator.id}},
+      {:update_status, %{status: status}},
+      {:delete, %{}}
+    ] do
+      assert {400, %{details: %{code: "task_board_archived"}}} = mutation(ctx.conn, [:tasks, endpoint], Map.merge(inputs, fields))
+    end
+
+    assert Repo.reload!(ctx.space_task).name == ctx.space_task.name
+    assert Repo.reload!(board) == board
+    assert Repo.aggregate(Operately.Activities.Activity, :count) == activity_count
+  end
+
+  test "archived boards allow task description updates", ctx do
+    ctx = ctx |> Factory.create_space_task(:space_task, :engineering) |> Factory.log_in_person(:creator)
+    Repo.get!(Operately.Tasks.TaskBoard, ctx.space_task.board_id)
+    |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00])
+    |> Repo.update!()
+
+    description = RichText.rich_text("Changed")
+
+    assert {200, _} = mutation(ctx.conn, [:tasks, :update_description], %{
+      task_id: ctx.space_task.id, type: "space", description: Jason.encode!(description)
+    })
+
+    assert Repo.reload!(ctx.space_task).description == description
+  end
+
+  test "rejects explicit creation on an archived board", ctx do
+    ctx = Factory.log_in_person(ctx, :creator)
+    {:ok, board} = Operately.Operations.TaskBoardCreating.run(ctx.creator, ctx.engineering, "Archived")
+    board |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00]) |> Repo.update!()
+    count = Repo.aggregate(Operately.Tasks.Task, :count)
+    assert {400, %{details: %{code: "task_board_archived"}}} = mutation(ctx.conn, [:tasks, :create], %{
+      type: "space", id: ctx.engineering.id, board_id: board.id, name: "Blocked", due_date: nil
+    })
+    assert Repo.aggregate(Operately.Tasks.Task, :count) == count
+  end
+
   describe "board storage compatibility" do
     setup ctx do
       Factory.log_in_person(ctx, :creator)

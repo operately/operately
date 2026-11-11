@@ -90,6 +90,22 @@ defmodule Operately.Support.McpE2E.Tools.BoardSelectionSteps do
     ctx
   end
 
+  step :archive_selected_board, ctx do
+    ctx.board |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00]) |> Repo.update!()
+    ctx
+  end
+
+  step :assert_archived_task_write_rejected, ctx do
+    conn = call_tool(ctx.access_token, ctx.session_id, "update_task_name", %{"task_id" => ctx.task_id, "name" => "Blocked"})
+    result = json_body(conn)["result"]
+    assert result["isError"]
+    error = result["structuredContent"]
+    assert error["details"]["code"] == "task_board_archived"
+    {:ok, task_id} = OperatelyWeb.Api.Types.Id.decode(ctx.task_id)
+    assert Repo.get!(Operately.Tasks.Task, task_id).name == "Selected"
+    ctx
+  end
+
   step :assert_unavailable_default_details, ctx do
     ctx.space |> Ecto.Changeset.change(default_task_board_id: nil) |> Repo.update!()
     conn = call_tool(ctx.access_token, ctx.session_id, "create_task", %{"space_id" => ctx.space.id, "name" => "Missing"})
