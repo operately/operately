@@ -17,8 +17,12 @@ import { loader, useLoadedData, useRefresh } from "./loader";
 export default { name: "SpaceKanbanPage", loader, Page } as PageModule;
 
 function Page() {
+  const data = useLoadedData();
+  return <BoardPage key={data.board.id} {...data} />;
+}
+
+function BoardPage({ space, board, tasks: backendTasks }: ReturnType<typeof useLoadedData>) {
   const paths = usePaths();
-  const { space, tasks: backendTasks } = useLoadedData();
   const refreshPageData = useRefresh();
   const currentUser = useMe();
   const { mutateAsync: updateKanban } = Spaces.useUpdateSpaceKanban();
@@ -30,10 +34,7 @@ function Page() {
     transformResult: transformPerson,
   });
 
-  const statuses = React.useMemo(
-    () => Tasks.parseTaskStatusesForTurboUi(space.taskStatuses ?? []),
-    [space.taskStatuses],
-  );
+  const statuses = React.useMemo(() => Tasks.parseTaskStatusesForTurboUi(board.taskStatuses), [board.taskStatuses]);
 
   const {
     tasks,
@@ -49,14 +50,16 @@ function Page() {
   } = Tasks.useSpaceTasksForTurboUi({
     backendTasks,
     space,
+    boardId: board.id,
   });
 
   const richTextHandlers = useRichTextHandlers({ taskList: null, scope: { type: "space", id: space.id } });
 
   const { kanbanState, handleTaskKanbanChange, handleTaskStatusChange } = Tasks.useKanbanState({
-    initialRawState: space.tasksKanbanState,
+    initialRawState: board.tasksKanbanState,
     statuses,
     spaceId: space.id,
+    boardId: board.id,
     type: "space",
     tasks,
     setTasks,
@@ -65,6 +68,7 @@ function Page() {
 
   const { handleStatusesChange } = useSpaceTaskStatuses({
     spaceId: space.id,
+    boardId: board.id,
     tasks,
     setTasks,
   });
@@ -85,6 +89,7 @@ function Page() {
     onRefresh: refreshPageData,
     canEdit: Boolean(space.permissions?.canEdit),
     canComment: Boolean(space.permissions?.canComment),
+    boardArchived: Boolean(board.archivedAt),
     variant: "space-task",
     onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
@@ -97,6 +102,7 @@ function Page() {
   });
 
   const props: SpaceKanbanPage.Props = {
+    board,
     space: {
       id: space.id,
       name: space.name ?? "",
@@ -126,5 +132,5 @@ function Page() {
     onStatusesChange: handleStatusesChange,
   };
 
-  return <SpaceKanbanPage key={space.id} {...props} />;
+  return <SpaceKanbanPage {...props} />;
 }

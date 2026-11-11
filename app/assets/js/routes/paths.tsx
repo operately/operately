@@ -493,11 +493,11 @@ export class Paths {
     return this.createCompanyPath(["project-templates", templateId, "files", fileId, "edit"]);
   }
 
-  spaceKanbanPath(spaceId: string, opts?: { taskId?: string }) {
+  spaceKanbanPath(spaceId: string, boardId: string, opts?: { taskId?: string }) {
     if (opts?.taskId) {
-      return this.createCompanyPath(["spaces", spaceId, "kanban"]) + "?taskId=" + opts.taskId;
+      return this.createCompanyPath(["spaces", spaceId, "boards", boardId]) + "?taskId=" + opts.taskId;
     }
-    return this.createCompanyPath(["spaces", spaceId, "kanban"]);
+    return this.createCompanyPath(["spaces", spaceId, "boards", boardId]);
   }
 
   spaceEditPath(spaceId: string) {

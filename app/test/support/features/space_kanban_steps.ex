@@ -33,6 +33,58 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.assert_has(testid: page_testid(ctx.space))
   end
 
+  step :add_second_board, ctx do
+    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Support", position: 1, task_statuses: single_status("Support queue")})
+    Map.put(ctx, :board, board)
+  end
+
+  step :visit_second_board, ctx do
+    ctx
+    |> UI.visit(Paths.space_kanban_path(ctx.company, ctx.space, ctx.board.id))
+    |> UI.assert_has(testid: page_testid(ctx.space))
+    |> UI.assert_text(ctx.board.name, testid: "board-name")
+  end
+
+  step :assert_default_board_tasks_hidden, ctx do
+    ctx
+    |> UI.refute_has(testid: card_testid(ctx.task))
+    |> UI.refute_has(testid: card_testid(ctx.second_task))
+  end
+
+  step :assert_task_on_second_board, ctx, task_key do
+    task = Map.fetch!(ctx, task_key) |> Repo.reload!()
+    assert task.board_id == ctx.board.id
+    ctx
+  end
+
+  step :archive_second_board, ctx do
+    {:ok, board} = Operately.Operations.TaskBoardArchiving.run(ctx.creator, ctx.space, ctx.board)
+    Map.put(ctx, :board, board)
+  end
+
+  step :assert_board_read_only, ctx do
+    ctx
+    |> UI.assert_has(testid: "archived-board-notice")
+    |> UI.refute_has(css: "[data-test-id^='add-task-button-'], [data-test-id='add-status'], [data-test-id^='status-menu-trigger-']")
+  end
+
+  step :assert_task_controls_read_only, ctx do
+    ctx
+    |> UI.find([testid: "task-slide-in"], fn ctx ->
+      ctx
+      |> UI.assert_has(testid: "archived-board-notice")
+      |> UI.refute_has(css: "[data-test-id='move-task'], [data-test-id='delete-task'], [data-test-id='archive-task'], [data-test-id='restore-task']")
+      |> UI.click(testid: "task-name")
+      |> UI.refute_has(testid: "task-name-input")
+    end)
+  end
+
+  step :assert_task_description_saved, ctx, task_key: task_key, content: content do
+    task = Map.fetch!(ctx, task_key) |> Repo.reload!()
+    assert Jason.encode!(task.description) =~ content
+    ctx
+  end
+
   step :visit_kanban_page, ctx, task_id: task_id do
     path = Paths.space_kanban_path(ctx.company, ctx.space) <> "?taskId=#{task_id}"
 
@@ -165,8 +217,14 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     end)
   end
 
-  step :assert_space_kanban_page_open, ctx do
-    UI.assert_page(ctx, Paths.space_kanban_path(ctx.company, ctx.space))
+  step :assert_task_open_from_activity, ctx, task_key do
+    task = Map.fetch!(ctx, task_key) |> Repo.reload!()
+    path = Paths.create_path([Paths.company_id(ctx.company), "spaces", Paths.space_id(task.space_id), "boards", Operately.ShortUuid.encode!(task.board_id)])
+
+    ctx
+    |> UI.assert_location(path <> "?taskId=#{Paths.task_id(task)}")
+    |> UI.assert_has(testid: "task-slide-in")
+    |> UI.assert_text(task.name, testid: "task-name")
   end
 
   step :assert_task_renamed, ctx, opts do

@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import React from "react";
 
+import type { TaskBoard } from "../ApiTypes";
+import { InfoCallout } from "../Callouts";
 import { DateField } from "../DateField";
 import { PersonField } from "../PersonField";
 import { PageNew } from "../Page";
@@ -25,6 +27,7 @@ export namespace SpaceKanbanPage {
 
   export interface Props {
     space: Space;
+    board: Pick<TaskBoard, "name" | "archivedAt">;
 
     navigation: Navigation.Item[];
 
@@ -61,14 +64,15 @@ export namespace SpaceKanbanPage {
 }
 
 export function SpaceKanbanPage(props: SpaceKanbanPage.Props) {
-  const { t } = useTranslation();
-  const title = t("{{space}} Tasks", { space: props.space.name });
+  const title = `${props.space.name} · ${props.board.name}`;
 
   return (
     <PageNew title={title} size="fullwidth" testId={createTestId("space-kanban-page", props.space.id)} fillHeight>
       <KanbanBoard
         fillHeight
-        renderHeader={(actions) => <SpaceKanbanPageHeader navigation={props.navigation} actions={actions} />}
+        renderHeader={(actions) => (
+          <SpaceKanbanPageHeader navigation={props.navigation} actions={actions} board={props.board} />
+        )}
         tasks={props.tasks}
         statuses={props.statuses}
         kanbanState={props.kanbanState}
@@ -85,7 +89,7 @@ export function SpaceKanbanPage(props: SpaceKanbanPage.Props) {
         richTextHandlers={props.richTextHandlers}
         assigneePersonSearch={props.assigneePersonSearch}
         getTaskPageProps={props.getTaskPageProps}
-        canEdit={props.canEdit}
+        canEdit={props.canEdit && !props.board.archivedAt}
         onStatusesChange={props.onStatusesChange}
         unstyled
       />
@@ -95,25 +99,31 @@ export function SpaceKanbanPage(props: SpaceKanbanPage.Props) {
 
 interface SpaceKanbanPageHeaderProps {
   navigation: Navigation.Item[];
+  board: SpaceKanbanPage.Props["board"];
   actions: React.ReactNode;
 }
 
-function SpaceKanbanPageHeader({ navigation, actions }: SpaceKanbanPageHeaderProps) {
+function SpaceKanbanPageHeader({ navigation, actions, board }: SpaceKanbanPageHeaderProps) {
   const { t } = useTranslation();
   return (
-    <header className="mt-4 px-4 border-b border-surface-outline pb-3 flex shrink-0 items-center gap-3">
-      <IconLayoutKanban size={38} className="rounded-lg bg-blue-50 dark:bg-blue-900 p-1" />
+    <>
+      {board.archivedAt && <InfoCallout testId="archived-board-notice" message={t("This board is archived.")} />}
+      <header className="mt-4 px-4 border-b border-surface-outline pb-3 flex shrink-0 items-center gap-3">
+        <IconLayoutKanban size={38} className="rounded-lg bg-blue-50 dark:bg-blue-900 p-1" />
 
-      <div className="min-w-0 flex-1">
-        <Breadcrumbs navigation={navigation} />
+        <div className="min-w-0 flex-1">
+          <Breadcrumbs navigation={navigation} />
 
-        <div className="flex items-center gap-2 mt-1">
-          <h1 className="text-sm sm:text-base font-semibold text-content-accent truncate">{t("Tasks")}</h1>
+          <div className="flex items-center gap-2 mt-1">
+            <h1 data-test-id="board-name" className="text-sm sm:text-base font-semibold text-content-accent truncate">
+              {board.name}
+            </h1>
+          </div>
         </div>
-      </div>
 
-      <div className="shrink-0">{actions}</div>
-    </header>
+        <div className="shrink-0">{actions}</div>
+      </header>
+    </>
   );
 }
 
