@@ -31,7 +31,7 @@ defmodule Operately.Tasks.TaskBoardTest do
     assert Repo.reload!(ctx.project).tasks_kanban_state == original.tasks_kanban_state
     assert Operately.Projects.Project.task_statuses(updated) |> hd() |> Map.fetch!(:label) == "Review"
     assert Operately.Projects.Project.tasks_kanban_state(Repo.reload!(ctx.project)) == attrs.tasks_kanban_state
-    serialized = OperatelyWeb.Api.Serializer.serialize(Repo.reload!(ctx.project), level: :full)
+    serialized = ctx.project |> Repo.reload!() |> Repo.preload(:task_board) |> OperatelyWeb.Api.Serializer.serialize(level: :full)
     assert hd(serialized.task_statuses).label == "Review"
     ctx = Factory.add_project_task(ctx, :project_task, nil, project_id: ctx.project.id)
     assert hd(Operately.Tasks.Task.available_statuses(ctx.project_task)).label == "Review"

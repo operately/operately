@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.MoveTest do
     assert Repo.reload!(ctx.task).space_id == ctx.destination.id
   end
 
-  test "decodes project destinations and returns a null board ID", ctx do
+  test "decodes project destinations and returns the project board ID", ctx do
     ctx = Factory.add_project(ctx, :project, :space)
 
     assert {:ok, response} =
@@ -62,7 +62,7 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.MoveTest do
                "destination_id" => Paths.project_id(ctx.project)
              })
 
-    assert response.board_id == nil
+    assert response.board_id == ShortUuid.encode!(Operately.Projects.Project.task_board(ctx.project).id)
     assert Repo.reload!(ctx.task).project_id == ctx.project.id
   end
 

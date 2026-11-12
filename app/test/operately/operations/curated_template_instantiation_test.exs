@@ -93,7 +93,7 @@ defmodule Operately.Operations.CuratedTemplateInstantiationTest do
     assert first.tasks_ordering_state == [Paths.task_id(tasks["Z task"]), Paths.task_id(tasks["A task"])]
     assert first.tasks_kanban_state["pending"] == first.tasks_ordering_state
     assert second.tasks_ordering_state == []
-    assert project.tasks_kanban_state["pending"] == [Paths.task_id(tasks["Unassigned Z"]), Paths.task_id(tasks["Unassigned A"])]
+    assert Operately.Projects.Project.tasks_kanban_state(project)["pending"] == [Paths.task_id(tasks["Unassigned Z"]), Paths.task_id(tasks["Unassigned A"])]
 
     for task <- project.tasks do
       assert task.project_id == project.id
