@@ -142,7 +142,7 @@ export function MoveModal(props: Props) {
                 space={space}
                 setSpace={(value) => {
                   setSpace(value);
-                  selectBoard("");
+                  if (value?.id !== space?.id) selectBoard("");
                 }}
                 search={props.spaceSearch}
                 variant="form-field"

@@ -1,5 +1,5 @@
 import React from "react";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, configure, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MoveModal } from "./MoveModal";
@@ -38,6 +38,8 @@ const boards: TaskBoardSummary[] = [
   },
 ];
 
+configure({ testIdAttribute: "data-test-id" });
+
 beforeEach(() => {
   Element.prototype.scrollIntoView = jest.fn();
 });
@@ -58,10 +60,10 @@ function setup(overrides: Partial<React.ComponentProps<typeof MoveModal>> = {}) 
 }
 
 async function selectSpace(user: ReturnType<typeof userEvent.setup>, name = "Marketing") {
-  await user.click(screen.getByRole("button", { name: "Project" }));
-  await user.click(screen.getByRole("button", { name: "Space" }));
+  await user.click(screen.getByTestId("move-task-destination-type"));
+  await user.click(screen.getByTestId("move-task-destination-space"));
   await user.click(screen.getByRole("button", { name }));
-  await screen.findByRole("button", { name: "Destination board" });
+  await screen.findByTestId("move-task-board");
 }
 
 it("moves within the current space, excluding the current and archived boards, and requests a status only when required", async () => {
@@ -72,16 +74,16 @@ it("moves within the current space, excluding the current and archived boards, a
     .mockResolvedValueOnce(true);
   const props = setup({ onMoveTask });
   await selectSpace(user);
-  expect(screen.getByRole("button", { name: "Move" })).toBeDisabled();
-  await user.click(screen.getByRole("button", { name: "Destination board" }));
+  expect(screen.getByTestId("confirm-move-task")).toBeDisabled();
+  await user.click(screen.getByTestId("move-task-board"));
   expect(screen.queryByRole("button", { name: "Tasks" })).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "Archived" })).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Support" }));
-  await user.click(screen.getByRole("button", { name: "Move" }));
+  await user.click(screen.getByTestId("confirm-move-task"));
   expect(props.closeMoveModal).not.toHaveBeenCalled();
-  await user.click(await screen.findByRole("button", { name: "Destination status" }));
+  await user.click(await screen.findByTestId("move-task-status"));
   await user.click(screen.getByRole("button", { name: "Review" }));
-  await user.click(screen.getByRole("button", { name: "Move" }));
+  await user.click(screen.getByTestId("confirm-move-task"));
   expect(onMoveTask).toHaveBeenLastCalledWith({
     destinationType: "space",
     destinationId: "marketing",
@@ -95,11 +97,11 @@ it("preselects the destination default and clears board selectors for a project 
   const user = userEvent.setup();
   const props = setup({ currentBoardId: undefined });
   await selectSpace(user);
-  expect(screen.getByRole("button", { name: "Destination board" })).toHaveTextContent("Tasks");
-  await user.click(screen.getByRole("button", { name: "Space" }));
-  await user.click(screen.getByRole("button", { name: "Project" }));
+  expect(screen.getByTestId("move-task-board")).toHaveTextContent("Tasks");
+  await user.click(screen.getByTestId("move-task-destination-type"));
+  await user.click(screen.getByTestId("move-task-destination-project"));
   await user.click(screen.getByRole("button", { name: "Website" }));
-  await user.click(screen.getByRole("button", { name: "Move" }));
+  await user.click(screen.getByTestId("confirm-move-task"));
   expect(props.onMoveTask).toHaveBeenCalledWith({ destinationType: "project", destinationId: "project" });
 });
 
@@ -116,14 +118,14 @@ it("ignores a late board response from the previously selected space", async () 
     )
     .mockResolvedValueOnce([]);
   setup({ loadMoveBoards });
-  await user.click(screen.getByRole("button", { name: "Project" }));
-  await user.click(screen.getByRole("button", { name: "Space" }));
+  await user.click(screen.getByTestId("move-task-destination-type"));
+  await user.click(screen.getByTestId("move-task-destination-space"));
   await user.click(screen.getByRole("button", { name: "Marketing" }));
   await user.click(screen.getByRole("button", { name: "Sales" }));
   await waitFor(() => expect(loadMoveBoards).toHaveBeenCalledWith("sales"));
   await act(async () => finish(boards));
-  expect(screen.queryByRole("button", { name: "Destination board" })).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Move" })).toBeDisabled();
+  expect(screen.queryByTestId("move-task-board")).not.toBeInTheDocument();
+  expect(screen.getByTestId("confirm-move-task")).toBeDisabled();
 });
 
 it("keeps the dialog open and reloads destinations if a board was archived after selection", async () => {
@@ -135,8 +137,40 @@ it("keeps the dialog open and reloads destinations if a board was archived after
     onMoveTask: jest.fn().mockResolvedValue({ status: "board_unavailable" }),
   });
   await selectSpace(user);
-  await user.click(screen.getByRole("button", { name: "Move" }));
+  await user.click(screen.getByTestId("confirm-move-task"));
   await waitFor(() => expect(loadMoveBoards).toHaveBeenCalledTimes(2));
   expect(props.closeMoveModal).not.toHaveBeenCalled();
-  expect(screen.getByRole("button", { name: "Move" })).toBeDisabled();
+  expect(screen.getByTestId("confirm-move-task")).toBeDisabled();
+});
+
+it("preserves the board and status selection when reselecting the same space", async () => {
+  const user = userEvent.setup();
+  const onMoveTask = jest
+    .fn()
+    .mockResolvedValueOnce({ status: "status_mapping_required", statuses: [{ id: "review", label: "Review" }] })
+    .mockResolvedValueOnce(true);
+  setup({ currentBoardId: undefined, onMoveTask });
+  await selectSpace(user);
+
+  await user.click(screen.getByRole("button", { name: "Marketing" }));
+  expect(screen.getByTestId("move-task-board")).toHaveTextContent("Tasks");
+  expect(screen.getByTestId("confirm-move-task")).toBeEnabled();
+
+  await user.click(screen.getByTestId("move-task-board"));
+  await user.click(screen.getByTestId("move-task-board-support"));
+  await user.click(screen.getByTestId("confirm-move-task"));
+  await user.click(await screen.findByTestId("move-task-status"));
+  await user.click(screen.getByTestId("move-task-status-review"));
+
+  await user.click(screen.getByRole("button", { name: "Marketing" }));
+  expect(screen.getByTestId("move-task-board")).toHaveTextContent("Support");
+  expect(screen.getByTestId("move-task-status")).toHaveTextContent("Review");
+  expect(screen.getByTestId("confirm-move-task")).toBeEnabled();
+  await user.click(screen.getByTestId("confirm-move-task"));
+  expect(onMoveTask).toHaveBeenLastCalledWith({
+    destinationType: "space",
+    destinationId: "marketing",
+    destinationBoardId: "support",
+    destinationStatusId: "review",
+  });
 });
