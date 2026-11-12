@@ -26,6 +26,7 @@ defmodule Operately.Data.Change122BackfillProjectTaskBoardsTest do
     from(t in Task, where: t.project_id == ^ctx.project.id) |> Repo.update_all(set: timestamps)
     ctx.milestone |> change(tasks_ordering_state: [Paths.task_id(ctx.task)], tasks_kanban_state: %{"todo" => [Paths.task_id(ctx.archived_task)]}) |> Repo.update!()
 
+    remove_project_boards()
     project_before = Repo.reload!(ctx.project)
     milestone_before = Repo.reload!(ctx.milestone)
     tasks_before = Repo.all(from t in Task, where: t.project_id == ^ctx.project.id)
@@ -64,6 +65,7 @@ defmodule Operately.Data.Change122BackfillProjectTaskBoardsTest do
     space_boards = Repo.all(from b in Change.Board, where: not is_nil(b.space_id), order_by: b.id)
     space_task = Repo.reload!(ctx.space_task)
 
+    remove_project_boards()
     assert :ok = Change.run()
 
     for project <- [ctx.project, ctx.closed, ctx.deleted] do
@@ -77,6 +79,7 @@ defmodule Operately.Data.Change122BackfillProjectTaskBoardsTest do
 
   test "reruns preserve existing boards and assignments and fill missing assignments", ctx do
     ctx = ctx |> Factory.add_project_task(:assigned, nil, project_id: ctx.project.id) |> Factory.add_project_task(:unassigned, nil, project_id: ctx.project.id)
+    remove_project_boards()
     board = Repo.insert!(%Change.Board{project_id: ctx.project.id, name: "Existing", position: 0, task_statuses: [], tasks_kanban_state: %{"custom" => []}})
     ctx.assigned |> change(board_id: board.id) |> Repo.update!()
 
@@ -93,6 +96,7 @@ defmodule Operately.Data.Change122BackfillProjectTaskBoardsTest do
   test "preserves null legacy workflow and ordering", ctx do
     from(p in Change.Project, where: p.id == ^ctx.project.id) |> Repo.update_all(set: [task_statuses: nil, tasks_kanban_state: nil])
 
+    remove_project_boards()
     assert :ok = Change.run()
     board = Repo.get_by!(Change.Board, project_id: ctx.project.id)
     assert board.task_statuses == nil
@@ -100,15 +104,17 @@ defmodule Operately.Data.Change122BackfillProjectTaskBoardsTest do
   end
 
   test "validation rejects missing project boards and missing project task assignments", ctx do
+    remove_project_boards()
     assert_raise RuntimeError, ~r/Project task board cutover failed/, fn -> Change.validate!() end
     assert :ok = Change.run()
     ctx = Factory.add_project_task(ctx, :task, nil, project_id: ctx.project.id)
-    assert ctx.task.board_id == nil
+    ctx.task |> change(board_id: nil) |> Repo.update!()
     assert_raise RuntimeError, ~r/Project task board cutover failed/, fn -> Change.validate!() end
   end
 
   test "rejects cross-project task assignments and rolls back the entire backfill", ctx do
     ctx = ctx |> Factory.add_project(:other, :space) |> Factory.add_project_task(:task, nil, project_id: ctx.project.id)
+    remove_project_boards()
     board = Repo.insert!(%Change.Board{project_id: ctx.other.id, name: "Other", position: 0})
     ctx.task |> change(board_id: board.id) |> Repo.update!()
     before = snapshot()
@@ -141,13 +147,12 @@ defmodule Operately.Data.Change122BackfillProjectTaskBoardsTest do
     assert_board_constraint(%{}, "task_boards_requires_owner")
     assert_board_constraint(%{space_id: ctx.space.id, project_id: ctx.project.id}, "task_boards_requires_owner")
     assert_board_constraint(%{project_id: Ecto.UUID.generate()}, "task_boards_project_id_fkey")
-    Repo.insert!(%Change.Board{project_id: ctx.project.id, name: "Tasks", position: 0})
     assert_board_constraint(%{project_id: ctx.project.id}, "task_boards_project_id_index")
   end
 
   test "task board references allow either owner type but reject ambiguous or missing owners", ctx do
     ctx = Factory.add_project_task(ctx, :task, nil, project_id: ctx.project.id)
-    board = Repo.insert!(%Change.Board{project_id: ctx.project.id, name: "Tasks", position: 0})
+    board = Repo.get_by!(Change.Board, project_id: ctx.project.id)
     task = ctx.task |> change(board_id: board.id) |> Repo.update!()
 
     for attrs <- [%{space_id: ctx.space.id}, %{project_id: nil}] do
@@ -159,6 +164,7 @@ defmodule Operately.Data.Change122BackfillProjectTaskBoardsTest do
 
   test "schema upgrade and rollback preserve populated data and do not invoke the backfill", ctx do
     ctx = Factory.add_project_task(ctx, :task, nil, project_id: ctx.project.id)
+    remove_project_boards()
     before = snapshot()
     run_schema_migration(:down)
 
@@ -183,6 +189,20 @@ defmodule Operately.Data.Change122BackfillProjectTaskBoardsTest do
     assert snapshot() == before
   end
 
+  test "cutover migration invokes the backfill and its rollback preserves board data", ctx do
+    ctx = Factory.add_project_task(ctx, :task, nil, project_id: ctx.project.id)
+    remove_project_boards()
+    migration = Operately.Repo.Migrations.BackfillProjectTaskBoards
+
+    unless Code.ensure_loaded?(migration), do: Code.require_file("priv/repo/migrations/20261112190103_backfill_project_task_boards.exs")
+
+    Ecto.Migration.Runner.run(Repo, Repo.config(), 20_261_112_190_103, migration, :forward, :up, :up, log: false)
+    assert Repo.reload!(ctx.task).board_id == Repo.get_by!(Change.Board, project_id: ctx.project.id).id
+    before = snapshot()
+    Ecto.Migration.Runner.run(Repo, Repo.config(), 20_261_112_190_103, migration, :forward, :down, :down, log: false)
+    assert snapshot() == before
+  end
+
   defp run_schema_migration(direction) do
     migration = Operately.Repo.Migrations.PrepareProjectTaskBoards
 
@@ -196,6 +216,11 @@ defmodule Operately.Data.Change122BackfillProjectTaskBoardsTest do
   defp assert_board_constraint(attrs, constraint) do
     board = struct!(Change.Board, Map.merge(%{name: "Tasks", position: 0}, attrs))
     assert_raise Ecto.ConstraintError, ~r/#{constraint}/, fn -> Repo.insert!(board, mode: :savepoint) end
+  end
+
+  defp remove_project_boards do
+    from(t in Task, where: not is_nil(t.project_id)) |> Repo.update_all(set: [board_id: nil])
+    from(b in Change.Board, where: not is_nil(b.project_id)) |> Repo.delete_all()
   end
 
   defp snapshot do
