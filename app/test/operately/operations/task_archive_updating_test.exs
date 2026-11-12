@@ -116,6 +116,7 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
       {:ok, moved} =
         Operately.Tasks.update_task(task, %{
           project_id: ctx.destination_project.id,
+          board_id: Operately.Projects.Project.task_board(ctx.destination_project).id,
           milestone_id: nil,
           name: "Moved task"
         })
@@ -142,6 +143,7 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
       {:ok, _} =
         Operately.Tasks.update_task(task, %{
           project_id: nil,
+          board_id: ctx.destination_space.default_task_board_id,
           milestone_id: nil,
           space_id: ctx.destination_space.id
         })
