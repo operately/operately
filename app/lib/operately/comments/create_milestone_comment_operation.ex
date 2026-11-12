@@ -26,6 +26,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     |> ensure_subscription_step(author, milestone, action)
     |> insert_milestone_comment(milestone, action)
     |> load_project(milestone)
+    |> lock_project_board(action)
     |> load_open_tasks(milestone, action)
     |> validate_open_tasks_resolution(action, open_tasks_resolution)
     |> resolve_open_tasks(action)
@@ -57,6 +58,16 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     end)
   end
 
+  defp lock_project_board(multi, "complete") do
+    Multi.run(multi, :board, fn _, %{project: project} ->
+      with {:ok, board} <- Operately.Tasks.TaskBoard.for_project(project) do
+        Operately.Tasks.BoardSync.lock_board(board.id)
+      end
+    end)
+  end
+
+  defp lock_project_board(multi, _action), do: multi
+
   defp load_open_tasks(multi, _milestone, action) when action != "complete" do
     Multi.put(multi, :open_tasks, [])
   end
@@ -68,6 +79,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
           where: t.milestone_id == ^milestone.id,
           where: is_nil(t.closed_at),
           where: fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status),
+          order_by: t.id,
           lock: "FOR UPDATE"
         )
         |> repo.all()
@@ -98,7 +110,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
   end
 
   defp validate_resolution(project, _open_tasks, %{action: action} = resolution) when action in [:set_status, "set_status"] do
-    status = Enum.find(project.task_statuses || [], &(&1.id == resolution[:status_id]))
+    status = Enum.find(Project.task_statuses(project), &(&1.id == resolution[:status_id]))
 
     if status && status.closed do
       {:ok, %{action: :set_status, status: status}}
@@ -284,17 +296,15 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
   defp maybe_update_project_kanban(multi, action) when action != "complete", do: multi
 
   defp maybe_update_project_kanban(multi, "complete") do
-    Multi.run(multi, :updated_project_task_state, fn repo, changes ->
+    Multi.run(multi, :updated_project_task_state, fn _repo, changes ->
       resolution = changes.open_tasks_resolution
 
       if resolution && resolution.action == :set_status && changes.open_tasks != [] do
         task_ids = Enum.map(changes.open_tasks, &Paths.task_id/1)
         status_values = Project.task_status_values(changes.project)
-        kanban_state = resolve_kanban_state(changes.project.tasks_kanban_state, status_values, task_ids, resolution)
+        kanban_state = resolve_kanban_state(Project.tasks_kanban_state(changes.project), status_values, task_ids, resolution)
 
-        changes.project
-        |> Project.changeset(%{tasks_kanban_state: kanban_state})
-        |> repo.update()
+        Operately.Projects.update_project(changes.project, %{tasks_kanban_state: kanban_state})
       else
         {:ok, changes.project}
       end

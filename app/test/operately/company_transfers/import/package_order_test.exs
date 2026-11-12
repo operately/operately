@@ -4,6 +4,34 @@ defmodule Operately.CompanyTransfers.Import.PackageOrderTest do
   alias Operately.CompanyTransfers.Export.Relational.SchemaSnapshot
   alias Operately.CompanyTransfers.Import.{Package, PackageOrder}
 
+  test "orders board owners before boards even when another table requires boards first" do
+    # Force traversal into boards before the owner tables, independent of their alphabetical order.
+    package = package(Enum.map(["board_references", "task_boards", "groups", "projects"], &table/1))
+
+    schema =
+      schema_snapshot(
+        %{
+          "board_references" => [column("board_id", "uuid", false)],
+          "task_boards" => [column("space_id", "uuid", true), column("project_id", "uuid", true)],
+          "groups" => [column("default_task_board_id", "uuid", true)],
+          "projects" => [column("id", "uuid", false)]
+        },
+        %{
+          "board_references" => [fk("board_id", "task_boards")],
+          "task_boards" => [fk("space_id", "groups"), fk("project_id", "projects")],
+          "groups" => [fk("default_task_board_id", "task_boards")],
+          "projects" => []
+        }
+      )
+
+    names = PackageOrder.reorder_for_insert(package, schema).tables |> Enum.map(& &1["name"])
+    positions = names |> Enum.with_index() |> Map.new()
+
+    assert positions["groups"] < positions["task_boards"]
+    assert positions["projects"] < positions["task_boards"]
+    assert positions["task_boards"] < positions["board_references"]
+  end
+
   test "orders tables using only non-nullable foreign keys" do
     package =
       package([

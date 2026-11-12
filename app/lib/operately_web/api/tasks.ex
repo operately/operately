@@ -504,6 +504,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.id)
       |> Steps.check_permissions(:can_edit)
+      |> Steps.find_project_board()
       |> Steps.validate_milestone_belongs_to_project(inputs[:milestone_id])
       |> Steps.validate_assignees(Steps.assignee_ids(inputs))
       |> Steps.create_task(inputs)
@@ -757,7 +758,7 @@ defmodule OperatelyWeb.Api.Tasks do
     def update_task_status(multi, new_status) do
       multi
       |> Ecto.Multi.run(:updated_task, fn _repo, %{locked_task: task, boards: boards} ->
-        with {:ok, status} <- validate_task_status(task, new_status),
+        with {:ok, status} <- validate_task_status(boards[task.board_id], new_status),
              {:ok, updated} <- task |> Operately.Tasks.Task.changeset(Operately.Tasks.Task.status_change_attrs(task, status)) |> Repo.update(),
              {:ok, _} <- Operately.Tasks.BoardSync.add_task(boards[task.board_id], updated) do
           {:ok, Repo.preload(updated, [:assigned_people, :space, :project])}
@@ -766,18 +767,25 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Operately.Search.IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.updated_task.id end)
     end
 
-    defp validate_task_status(%{space_id: nil}, status), do: {:ok, status}
-    defp validate_task_status(task, status) do
-      case Enum.find(Operately.Tasks.Task.available_statuses(task), &(status && &1.id == status.id)) do
+    defp validate_task_status(board, status) do
+      case Enum.find(board.task_statuses || [], &(status && &1.id == status.id)) do
         nil -> {:error, {:bad_request, gettext("Invalid status")}}
         current -> {:ok, current}
       end
     end
 
+    def find_project_board(multi) do
+      Ecto.Multi.run(multi, :board, fn _, %{project: project} ->
+        with {:ok, board} <- Operately.Tasks.TaskBoard.for_project(project) do
+          Operately.Tasks.BoardSync.lock_board(board.id)
+        end
+      end)
+    end
+
     def find_board(multi, board_id) do
       Ecto.Multi.run(multi, :board, fn _repo, %{me: me, space: space} ->
         with {:ok, board} <- OperatelyWeb.Api.Tasks.BoardScope.resolve(me, space, board_id) do
-          OperatelyWeb.Api.Tasks.BoardScope.lock(board)
+          Operately.Tasks.BoardSync.lock_board(board.id)
         end
       end)
     end
@@ -1000,7 +1008,7 @@ defmodule OperatelyWeb.Api.Tasks do
     def sync_created_task(multi) do
       Ecto.Multi.run(multi, :updated_space, fn _repo, changes ->
         with {:ok, board} <- Operately.Tasks.BoardSync.add_task(changes[:board], changes.task) do
-          if board do
+          if board && changes[:space] do
             space = if board.id == changes.space.default_task_board_id, do: %{changes.space | default_task_board: board}, else: Repo.preload(changes.space, :default_task_board)
             {:ok, space}
           else
@@ -1150,8 +1158,8 @@ defmodule OperatelyWeb.Api.Tasks do
 
     defp get_context_from_changes(changes) do
       cond do
-        Map.has_key?(changes, :project) -> changes.project
         Map.has_key?(changes, :board) -> changes.board
+        Map.has_key?(changes, :project) -> changes.project
         true -> nil
       end
     end
@@ -1175,10 +1183,8 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     defp validate_or_get_default_status(context, status) when not is_nil(context) do
-      if Enum.any?(context.task_statuses || [], fn s -> s.id == status.id end) do
-        {:ok, status}
-      else
-        {:error, {:bad_request, gettext("Invalid status")}}
+      with {:ok, current} <- validate_task_status(context, status) do
+        {:ok, Map.from_struct(current)}
       end
     end
 

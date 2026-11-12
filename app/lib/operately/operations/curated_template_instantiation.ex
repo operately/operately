@@ -101,7 +101,7 @@ defmodule Operately.Operations.CuratedTemplateInstantiation do
 
   defmodule ProjectChildren do
     alias Ecto.Multi
-    alias Operately.Projects.{Milestone, Project}
+    alias Operately.Projects.Milestone
     alias Operately.Tasks.Task
     alias OperatelyWeb.Paths
     alias Operately.Operations.ProjectTemplateMaterialization.ChildrenCreator
@@ -136,13 +136,12 @@ defmodule Operately.Operations.CuratedTemplateInstantiation do
 
       Multi.new()
       |> Multi.run(:children, fn repo, _ -> ChildrenCreator.insert_work_items(repo, plan, project) end)
-      |> Multi.update(
-        :project_ordering,
-        Project.changeset(project, %{
+      |> Multi.run(:project_ordering, fn _, _ ->
+        Operately.Projects.update_project(project, %{
           milestones_ordering_state: Enum.map(milestones, &Paths.milestone_id(&1.target)),
           tasks_kanban_state: tasks |> Enum.filter(&is_nil(&1.target.milestone_id)) |> kanban()
         })
-      )
+      end)
     end
 
     defp kanban(tasks) do

@@ -33,7 +33,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
     source =
       ctx.source
-      |> Project.changeset(%{
+      |> update_project!(%{
         description: %{"type" => "doc", "content" => []},
         timeframe: timeframe(start_date, ~D[2028-03-16]),
         task_statuses: status_attrs([queued, done]),
@@ -42,7 +42,6 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
         closed_at: ~U[2028-03-20 12:00:00Z],
         success_status: :achieved
       })
-      |> Repo.update!()
 
     ctx =
       ctx
@@ -124,13 +123,12 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
     source =
       ctx.source
-      |> Project.changeset(%{
+      |> update_project!(%{
         timeframe: %{
           contextual_start_date: ContextualDate.create_month_date(start_date),
           contextual_end_date: ContextualDate.create_quarter_date(~D[2028-03-31])
         }
       })
-      |> Repo.update!()
 
     task_status = source.task_statuses |> List.first() |> Map.from_struct()
 
@@ -238,19 +236,19 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   end
 
   test "supports an unscheduled project end and year-boundary offsets", ctx do
-    source = ctx.source |> Project.changeset(%{timeframe: timeframe(~D[2028-12-31], nil)}) |> Repo.update!()
+    source = ctx.source |> update_project!(%{timeframe: timeframe(~D[2028-12-31], nil)})
 
     assert {:ok, unscheduled} = create_template(%{ctx | source: source})
     assert unscheduled.duration_days == nil
 
-    source = source |> Project.changeset(%{timeframe: timeframe(~D[2028-12-31], ~D[2029-01-01])}) |> Repo.update!()
+    source = source |> update_project!(%{timeframe: timeframe(~D[2028-12-31], ~D[2029-01-01])})
 
     assert {:ok, scheduled} = create_template(%{ctx | source: source}, name: "Year boundary")
     assert scheduled.duration_days == 1
   end
 
   test "copies people and assignments only when selected", ctx do
-    source = ctx.source |> Project.changeset(%{timeframe: timeframe(~D[2028-01-01], nil)}) |> Repo.update!()
+    source = ctx.source |> update_project!(%{timeframe: timeframe(~D[2028-01-01], nil)})
 
     ctx =
       ctx
@@ -316,7 +314,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   end
 
   test "copies comments onto included discussions and resources and skips milestone and task comments", ctx do
-    source = ctx.source |> Project.changeset(%{timeframe: timeframe(~D[2028-01-01], nil)}) |> Repo.update!()
+    source = ctx.source |> update_project!(%{timeframe: timeframe(~D[2028-01-01], nil)})
     task_status = source.task_statuses |> List.first() |> Map.from_struct()
     closed_task_status = Enum.find(source.task_statuses, & &1.closed)
 
@@ -410,8 +408,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
     source =
       ctx.source
-      |> Project.changeset(%{timeframe: timeframe(start_date, ~D[2028-01-09])})
-      |> Repo.update!()
+      |> update_project!(%{timeframe: timeframe(start_date, ~D[2028-01-09])})
 
     task_status = source.task_statuses |> List.first() |> Map.from_struct()
 
@@ -437,7 +434,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
   test "clears task due dates and reminders that fall before the project start", ctx do
     start_date = ~D[2028-01-10]
-    source = ctx.source |> Project.changeset(%{timeframe: timeframe(start_date, ~D[2028-01-20])}) |> Repo.update!()
+    source = ctx.source |> update_project!(%{timeframe: timeframe(start_date, ~D[2028-01-20])})
     task_status = source.task_statuses |> List.first() |> Map.from_struct()
 
     ctx =
@@ -471,7 +468,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   end
 
   test "returns a structured missing-start issue", ctx do
-    source = ctx.source |> Project.changeset(%{timeframe: timeframe(nil, ~D[2028-01-10])}) |> Repo.update!()
+    source = ctx.source |> update_project!(%{timeframe: timeframe(nil, ~D[2028-01-10])})
     ctx = Map.put(ctx, :source, source)
 
     assert {:error, {:invalid_schedule, %{issues: issues}}} = create_template(ctx)
@@ -493,11 +490,10 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   test "rejects malformed source state and rolls back every template row", ctx do
     source =
       ctx.source
-      |> Project.changeset(%{
+      |> update_project!(%{
         timeframe: timeframe(~D[2028-01-01], nil),
         milestones_ordering_state: ["foreign-milestone"]
       })
-      |> Repo.update!()
 
     ctx = Map.put(ctx, :source, source)
 
@@ -515,11 +511,10 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
     source =
       ctx.source
-      |> Project.changeset(%{
+      |> update_project!(%{
         timeframe: timeframe(~D[2028-01-01], ~D[2028-01-31]),
         task_statuses: status_attrs([queued, done])
       })
-      |> Repo.update!()
 
     ctx =
       ctx
@@ -530,14 +525,13 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
     source =
       source
-      |> Project.changeset(%{
+      |> update_project!(%{
         milestones_ordering_state: [Paths.milestone_id(ctx.launch)],
         tasks_kanban_state: %{
           queued.value => [Paths.task_id(ctx.second_task)],
           done.value => [Paths.task_id(ctx.first_task)]
         }
       })
-      |> Repo.update!()
 
     assert {:ok, template} = create_template(%{ctx | source: source}, name: "From board order")
     template = Repo.preload(template, [:milestones, :tasks])
@@ -556,18 +550,17 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
     all_closed =
       ctx.source
-      |> Project.changeset(%{
+      |> update_project!(%{
         timeframe: timeframe(~D[2028-01-01], nil),
         task_statuses: status_attrs([%{queued | closed: true}, done])
       })
-      |> Repo.update!()
 
     assert {:error, {:invalid_source, :no_open_task_status}} = create_template(%{ctx | source: all_closed})
     assert Repo.aggregate(ProjectTemplate, :count) == 0
   end
 
   test "rejects foreign milestone and task status references", ctx do
-    source = ctx.source |> Project.changeset(%{timeframe: timeframe(~D[2028-01-01], nil)}) |> Repo.update!()
+    source = ctx.source |> update_project!(%{timeframe: timeframe(~D[2028-01-01], nil)})
     valid_status = source.task_statuses |> List.first() |> Map.from_struct()
 
     ctx =
@@ -577,7 +570,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
       |> Factory.add_project_milestone(:other_milestone, :other_project)
       |> Factory.add_project_task(:task, nil, project_id: source.id, task_status: valid_status)
 
-    task = ctx.task |> Operately.Tasks.Task.changeset(%{milestone_id: ctx.other_milestone.id}) |> Repo.update!()
+    task = ctx.task |> Ecto.Changeset.change(%{milestone_id: ctx.other_milestone.id}) |> Repo.update!()
 
     assert {:error, {:invalid_source, :foreign_milestone}} = create_template(ctx)
 
@@ -588,7 +581,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   end
 
   test "rejects invalid source children and rolls back a root insert failure", ctx do
-    source = ctx.source |> Project.changeset(%{timeframe: timeframe(~D[2028-01-01], nil)}) |> Repo.update!()
+    source = ctx.source |> update_project!(%{timeframe: timeframe(~D[2028-01-01], nil)})
     task_status = source.task_statuses |> List.first() |> Map.from_struct()
 
     ctx =
@@ -611,13 +604,13 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   end
 
   test "rejects deleted projects and creators from another company", ctx do
-    source = ctx.source |> Project.changeset(%{timeframe: timeframe(~D[2028-01-01], nil)}) |> Repo.update!()
+    source = ctx.source |> update_project!(%{timeframe: timeframe(~D[2028-01-01], nil)})
     other_company = Operately.CompaniesFixtures.company_fixture()
     other_creator = Operately.PeopleFixtures.person_fixture_with_account(%{company_id: other_company.id})
 
     assert {:error, :creator_scope_mismatch} = create_template(%{ctx | source: source}, creator_id: other_creator.id)
 
-    deleted = source |> Project.changeset(%{deleted_at: DateTime.utc_now()}) |> Repo.update!()
+    deleted = source |> update_project!(%{deleted_at: DateTime.utc_now()})
 
     assert {:error, :project_not_active} = create_template(%{ctx | source: deleted})
     assert Repo.aggregate(ProjectTemplate, :count) == 0
@@ -643,17 +636,21 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     })
   end
 
+  defp update_project!(project, attrs) do
+    {:ok, project} = Operately.Projects.update_project(project, attrs)
+    project
+  end
+
   defp put_source_states(ctx, queued, done) do
     source =
       ctx.source
-      |> Project.changeset(%{
+      |> update_project!(%{
         milestones_ordering_state: [Paths.milestone_id(ctx.launch)],
         tasks_kanban_state: %{
           queued.value => [Paths.task_id(ctx.milestone_task)],
           done.value => [Paths.task_id(ctx.root_task)]
         }
       })
-      |> Repo.update!()
 
     launch =
       ctx.launch

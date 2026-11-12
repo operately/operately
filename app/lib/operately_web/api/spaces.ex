@@ -332,7 +332,7 @@ defmodule OperatelyWeb.Api.Spaces do
     def find_board(multi, board_id) do
       Multi.run(multi, :board, fn _repo, %{me: me, space: space} ->
         with {:ok, board} <- OperatelyWeb.Api.Tasks.BoardScope.resolve(me, space, board_id) do
-          OperatelyWeb.Api.Tasks.BoardScope.lock(board)
+          Operately.Tasks.BoardSync.lock_board(board.id)
         end
       end)
     end
