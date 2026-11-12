@@ -6,7 +6,7 @@ import { PrimaryButton, SecondaryButton } from "../Button";
 import { SwitchToggle } from "../SwitchToggle";
 import { Navigation } from "../Page/Navigation";
 
-import { ToolManagement, type ToolManagementProps } from "./ToolManagement";
+import { ToolManagement, type ToolManagementProps, type ToolKind } from "./ToolManagement";
 export type { ToolAction } from "./ToolManagement";
 
 export namespace SpaceToolsConfigurationPage {
@@ -81,9 +81,8 @@ export function SpaceToolsConfigurationPage(props: SpaceToolsConfigurationPage.P
             onChange={(value) => props.onToolsChange({ ...props.tools, tasksEnabled: value })}
             disabled={visibilityDisabled}
             testId="task-board"
-          >
-            {props.management && <ToolManagement {...props.management} kind="board" />}
-          </ToolSection>
+            management={props.management && { ...props.management, kind: "board" }}
+          />
           <ToolSection
             title={t("Resource Hubs")}
             description={t("A place to share rich text documents, images, videos, and other files.")}
@@ -91,9 +90,8 @@ export function SpaceToolsConfigurationPage(props: SpaceToolsConfigurationPage.P
             onChange={(value) => props.onToolsChange({ ...props.tools, resourceHubEnabled: value })}
             disabled={visibilityDisabled}
             testId="documents-and-files"
-          >
-            {props.management && <ToolManagement {...props.management} kind="hub" />}
-          </ToolSection>
+            management={props.management && { ...props.management, kind: "hub" }}
+          />
         </div>
 
         <form onSubmit={handleSave} className="mt-6 pt-6 border-t border-stroke-base">
@@ -118,18 +116,21 @@ function ToolSection(props: {
   onChange: (value: boolean) => void;
   disabled?: boolean;
   testId: string;
-  children?: React.ReactNode;
+  management?: ToolManagementProps & { kind: ToolKind };
 }) {
   const { t } = useTranslation();
   const headingId = React.useId();
 
-  return (
+  const renderSection = (content?: React.ReactNode, createAction?: React.ReactNode) => (
     <section className="py-6 first:pt-0" aria-labelledby={headingId}>
       <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-3">
         <div className="flex-1 min-w-[200px]">
-          <h2 id={headingId} className="text-lg font-bold">
-            {props.title}
-          </h2>
+          <div className="flex items-center gap-1">
+            <h2 id={headingId} className="text-lg font-bold">
+              {props.title}
+            </h2>
+            {createAction}
+          </div>
           <p className="text-sm text-content-dimmed mt-1">{props.description}</p>
         </div>
         <fieldset disabled={props.disabled} className="flex items-center gap-3 pt-1">
@@ -143,7 +144,9 @@ function ToolSection(props: {
           />
         </fieldset>
       </div>
-      {props.children && <div className="mt-5">{props.children}</div>}
+      {content && <div className="mt-5">{content}</div>}
     </section>
   );
+
+  return props.management ? <ToolManagement {...props.management} render={renderSection} /> : renderSection();
 }

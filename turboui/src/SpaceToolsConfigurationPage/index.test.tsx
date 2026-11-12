@@ -1,5 +1,5 @@
 import * as React from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 import { createInstance } from "i18next";
@@ -183,7 +183,8 @@ it.each([
   },
 );
 
-it("keeps each category's visibility switch and instances together under one heading", () => {
+it("keeps each category's visibility, instances, and creation action under its heading", async () => {
+  const onAction = jest.fn(async () => true);
   renderPage({
     management: {
       boards: [
@@ -198,7 +199,7 @@ it("keeps each category's visibility switch and instances together under one hea
       ],
       hubs: [{ __typename: "resource_hub_summary", id: "hub", name: "Brand assets", position: 0, isDefault: true }],
       canEdit: true,
-      onAction: async () => true,
+      onAction,
     },
   });
 
@@ -214,4 +215,18 @@ it("keeps each category's visibility switch and instances together under one hea
   expect(hubs.getByRole("switch", { name: "Resource Hubs" })).toBeChecked();
   expect(hubs.getByText("Brand assets")).toBeInTheDocument();
   expect(hubs.queryByRole("link")).not.toBeInTheDocument();
+
+  for (const [title, label, kind] of [
+    ["Tasks", "New board", "board"],
+    ["Resource Hubs", "New Resource Hub", "hub"],
+  ]) {
+    const action = screen.getByRole("button", { name: label });
+    expect(screen.getByRole("heading", { name: title }).parentElement).toContainElement(action);
+    fireEvent.click(action);
+    const dialog = within(screen.getByRole("dialog"));
+    fireEvent.change(dialog.getByRole("textbox"), { target: { value: "Planning" } });
+    fireEvent.click(dialog.getByRole("button", { name: "Create" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(onAction).toHaveBeenLastCalledWith({ kind, type: "create", name: "Planning" });
+  }
 });
