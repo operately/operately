@@ -7,6 +7,7 @@ defmodule Operately.Notifications.BufferedEmailWorker do
   alias Operately.Notifications.DigestItems
   alias Operately.Notifications.EmailWorker
   alias Operately.Notifications.Notification
+  alias Operately.People.Person
   alias Operately.Repo
   alias OperatelyEmail.Mailers.DigestMailer
 
@@ -21,6 +22,17 @@ defmodule Operately.Notifications.BufferedEmailWorker do
   end
 
   defp deliver_batch(batch) do
+    batch = Repo.preload(batch, person: :company)
+
+    if Person.active?(batch.person) do
+      deliver_active_batch(batch)
+    else
+      mark_batch(batch, %{status: :skipped, sent_at: nil, error: nil})
+      :ok
+    end
+  end
+
+  defp deliver_active_batch(batch) do
     mark_batch(batch, %{status: :sending, error: nil})
 
     notifications =
@@ -61,8 +73,6 @@ defmodule Operately.Notifications.BufferedEmailWorker do
   end
 
   defp deliver_digest(notifications, batch) do
-    batch = Repo.preload(batch, person: :company)
-
     Operately.I18n.EffectiveLanguage.with_locale(batch.person, fn ->
       {digest_items, sent_notifications} = DigestItems.build(notifications, batch.person)
 

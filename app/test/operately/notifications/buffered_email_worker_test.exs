@@ -120,6 +120,33 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     refute is_nil(updated_notification.email_sent_at)
   end
 
+  for count <- [1, 2] do
+    test "skips a queued #{count}-item batch after the recipient is removed", ctx do
+      ctx = ctx |> Factory.add_project(:project, :space) |> Factory.add_company_member(:admin)
+      account = Operately.People.get_account!(ctx.creator.account_id)
+      Operately.People.mark_account_first_login(account)
+      notifications = Enum.map(1..unquote(count), fn _ -> project_created_notification(ctx) end)
+
+      assert {:ok, %{suspended: true}} = Operately.Operations.CompanyMemberRemoving.run(ctx.admin, ctx.creator)
+      flush_emails()
+
+      assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+      batch = Notifications.get_email_batch!(ctx.batch.id)
+      assert batch.status == :skipped
+      assert is_nil(batch.sent_at)
+      assert is_nil(batch.error)
+
+      for notification <- notifications do
+        notification = Notifications.get_notification!(notification.id)
+        refute notification.email_sent
+        assert is_nil(notification.email_sent_at)
+      end
+
+      assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+      refute_email_sent()
+    end
+  end
+
   test "multi-item batch renders digest email", ctx do
     ctx = Factory.add_project(ctx, :project, :space)
     activity_one = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
