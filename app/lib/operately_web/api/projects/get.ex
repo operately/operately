@@ -73,6 +73,7 @@ defmodule OperatelyWeb.Api.Projects.Get do
 
   def preload(inputs) do
     Inputs.parse_includes(inputs,
+      always_include: :task_board,
       include_contributors: [contributors: [:person]],
       include_champion: [:champion],
       include_reviewer: [:reviewer],

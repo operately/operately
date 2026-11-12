@@ -26,6 +26,8 @@ defmodule Operately.Projects.Project do
     has_many :check_ins, CheckIn, foreign_key: :project_id
     has_many :tasks, Operately.Tasks.Task, foreign_key: :project_id
 
+    has_one :task_board, Operately.Tasks.TaskBoard
+
     has_one :champion_contributor, Contributor, foreign_key: :project_id, where: [role: "champion"]
     has_one :reviewer_contributor, Contributor, foreign_key: :project_id, where: [role: "reviewer"]
     has_one :resource_hub, Operately.ResourceHubs.ResourceHub, foreign_key: :project_id
@@ -136,7 +138,7 @@ defmodule Operately.Projects.Project do
   def valid_tasks_views, do: @valid_tasks_views
 
   def task_status_values(project = %__MODULE__{}) do
-    project.task_statuses
+    task_statuses(project)
     |> Elixir.List.wrap()
     |> Enum.map(& &1.value)
     |> Enum.filter(& &1)
@@ -144,11 +146,19 @@ defmodule Operately.Projects.Project do
   end
 
   def get_default_task_status(project = %__MODULE__{}) do
-    statuses = project.task_statuses
+    statuses = task_statuses(project)
 
     Enum.find(statuses, fn s -> s.color == :gray end) ||
       Enum.find(statuses, fn s -> s.color == :blue end) ||
       List.first(statuses)
+  end
+
+  def task_board(project), do: Repo.preload(project, :task_board).task_board
+  def task_statuses(project), do: task_board(project).task_statuses || []
+  def tasks_kanban_state(project), do: task_board(project).tasks_kanban_state || %{}
+
+  def with_task_board(project, board) do
+    %{project | task_board: board, task_statuses: board.task_statuses, tasks_kanban_state: board.tasks_kanban_state}
   end
 
   @impl WorkMapItem

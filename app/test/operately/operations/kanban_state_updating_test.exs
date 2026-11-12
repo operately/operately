@@ -18,13 +18,17 @@ defmodule Operately.Operations.KanbanStateUpdatingTest do
   test "project Kanban uses the canonical task status metadata", ctx do
     scope = %{type: :project, project: ctx.project}
 
-    assert_canonical_status_transitions(ctx.creator, scope, ctx.project_task, ctx.project.task_statuses)
+    assert_canonical_status_transitions(ctx.creator, scope, ctx.project_task, Operately.Projects.Project.task_statuses(ctx.project))
   end
 
   test "milestone Kanban uses the canonical task status metadata", ctx do
     scope = %{type: :milestone, project: ctx.project, milestone: ctx.milestone}
 
-    assert_canonical_status_transitions(ctx.creator, scope, ctx.project_task, ctx.project.task_statuses)
+    assert_canonical_status_transitions(ctx.creator, scope, ctx.project_task, Operately.Projects.Project.task_statuses(ctx.project))
+
+    board = Operately.Projects.Project.task_board(ctx.project)
+    task = Repo.reload!(ctx.project_task)
+    assert board.tasks_kanban_state[task.task_status.value] == [OperatelyWeb.Paths.task_id(task)]
   end
 
   test "space Kanban uses the canonical task status metadata", ctx do
@@ -37,7 +41,8 @@ defmodule Operately.Operations.KanbanStateUpdatingTest do
     closed_status = Enum.find(statuses, & &1.closed)
     open_status = Enum.find(statuses, &(!&1.closed))
 
-    assert {:ok, _} = run(author, scope, task, Map.from_struct(closed_status))
+    stale_status = closed_status |> Map.from_struct() |> Map.merge(%{closed: false, value: "outdated"})
+    assert {:ok, _} = run(author, scope, task, stale_status)
 
     closed_task = Repo.reload!(task)
     assert closed_task.task_status.id == closed_status.id

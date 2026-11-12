@@ -41,6 +41,7 @@ defmodule Operately.Operations.ProjectCreation do
   def build(params) do
     Multi.new()
     |> insert_project(params)
+    |> Operately.Tasks.TaskBoard.insert_for_project()
     |> insert_default_resource_hub()
     |> insert_access_context(params)
     |> insert_champion_as_contributor(params)

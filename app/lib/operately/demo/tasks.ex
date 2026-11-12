@@ -38,8 +38,12 @@ defmodule Operately.Demo.Tasks do
   def resolve_assignee(resources, assignee_key), do: Resources.get(resources, assignee_key)
 
   def resolve_task_status(%Operately.Groups.Group{} = space, status) do
-    {:ok, board} = Operately.Tasks.TaskBoard.default_for_space(space)
+    {:ok, board} = Operately.Tasks.TaskBoard.for_space(space)
     resolve_task_status(board, status)
+  end
+
+  def resolve_task_status(%Operately.Projects.Project{} = project, status) do
+    resolve_task_status(Operately.Projects.Project.task_board(project), status)
   end
 
   def resolve_task_status(scope, nil), do: default_status(scope)

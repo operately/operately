@@ -4,6 +4,12 @@ defmodule Operately.Tasks.BoardSync do
   alias Operately.Repo
   alias Operately.Tasks.{Task, TaskBoard, KanbanState}
 
+  def lock_board(id) do
+    with {:ok, boards} <- lock_boards([id]) do
+      {:ok, Map.fetch!(boards, id)}
+    end
+  end
+
   def lock_boards(ids) do
     ids = ids |> Enum.reject(&is_nil/1) |> Enum.uniq() |> Enum.sort()
     boards = Repo.all(from b in TaskBoard, where: b.id in ^ids, order_by: b.id, lock: "FOR UPDATE")
@@ -41,23 +47,19 @@ defmodule Operately.Tasks.BoardSync do
     end
   end
 
-  defp valid_board?(%{space_id: nil, board_id: nil}, _boards), do: true
-
   defp valid_board?(task, boards) do
     case boards[task.board_id] do
-      %TaskBoard{space_id: space_id} -> space_id == task.space_id and is_nil(task.project_id)
+      %TaskBoard{} = board -> TaskBoard.owns_task?(board, task)
       _ -> false
     end
   end
 
-  def add_task(nil, %{space_id: nil}), do: {:ok, nil}
   def add_task(nil, _task), do: {:error, :bad_request}
 
   def add_task(board, task) do
     update_ordering(board, KanbanState.append(board.tasks_kanban_state || %{}, task))
   end
 
-  def remove_task(nil, %{space_id: nil}), do: {:ok, nil}
   def remove_task(nil, _task), do: {:error, :bad_request}
 
   def remove_task(board, task) do

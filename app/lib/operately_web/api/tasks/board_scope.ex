@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.Tasks.BoardScope do
   @moduledoc false
   use Gettext, backend: OperatelyWeb.Gettext
 
-  alias Operately.Tasks.{TaskBoard, BoardSummary, BoardSync}
+  alias Operately.Tasks.{TaskBoard, BoardSummary}
   alias OperatelyWeb.Api.Serializer
 
   def list(me, space, archive_status \\ :active) do
@@ -31,12 +31,6 @@ defmodule OperatelyWeb.Api.Tasks.BoardScope do
     with {:ok, board} <- TaskBoard.get(me, id: board_id),
          :ok <- validate_space(board, space) do
       {:ok, board}
-    end
-  end
-
-  def lock(board) do
-    with {:ok, boards} <- BoardSync.lock_boards([board.id]) do
-      {:ok, Map.fetch!(boards, board.id)}
     end
   end
 
