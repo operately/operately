@@ -409,7 +409,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.select(testid: "move-task-destination-type", option: "Space")
     |> UI.click(testid: "move-task-space-field")
     |> UI.click(testid: destination_space_result)
-    |> UI.click(testid: "confirm-move-task")
+    |> UI.click(css: "[data-test-id='confirm-move-task']:not([disabled])")
     |> UI.sleep(400)
   end
 

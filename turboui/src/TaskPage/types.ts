@@ -1,3 +1,4 @@
+import type { TaskBoardSummary, TaskStatus } from "../ApiTypes";
 import { Status } from "../TaskBoard/types";
 import { RichTextHandlers } from "../RichContent/types";
 import { PersonField } from "../PersonField";
@@ -21,7 +22,14 @@ export namespace TaskPage {
   export interface MoveTaskInput {
     destinationType: MoveDestinationType;
     destinationId: string;
+    destinationBoardId?: string;
+    destinationStatusId?: string;
   }
+
+  export type MoveTaskResult =
+    | boolean
+    | { status: "status_mapping_required"; statuses: Pick<TaskStatus, "id" | "label">[] }
+    | { status: "board_unavailable" };
 
   export interface Space {
     id: string;
@@ -98,7 +106,9 @@ export namespace TaskPage {
     onDuplicate?: () => void;
     onArchive?: () => void | Promise<void>;
     onRestore?: () => void | Promise<void>;
-    onMoveTask?: (input: MoveTaskInput) => Promise<boolean>;
+    onMoveTask?: (input: MoveTaskInput) => Promise<MoveTaskResult>;
+    loadMoveBoards?: (spaceId: string) => Promise<TaskBoardSummary[]>;
+    currentBoardId?: string | null;
     spaceSearch?: SpaceField.SearchSpaceFn;
     projectSearch?: ProjectField.SearchProjectFn;
 
@@ -162,6 +172,8 @@ export namespace TaskPage {
     | "onArchive"
     | "onRestore"
     | "onMoveTask"
+    | "loadMoveBoards"
+    | "currentBoardId"
     | "spaceSearch"
     | "projectSearch"
     | "assigneePersonSearch"
