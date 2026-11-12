@@ -3,7 +3,7 @@ defmodule OperatelyWeb.Api.Tasks.UpdateArchiveTest do
 
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
-  alias Operately.Tasks.Task
+  alias Operately.Tasks.{Task, TaskBoard}
 
   @project_permissions_table [
     %{company: :no_access, space: :no_access, project: :no_access, expected: 404},
@@ -176,7 +176,7 @@ defmodule OperatelyWeb.Api.Tasks.UpdateArchiveTest do
   end
 
   defp prepare_task(ctx, archived) do
-    board = if ctx.task.project_id, do: ctx.project, else: ctx.space
+    board = if ctx.task.project_id, do: ctx.project, else: Repo.get!(TaskBoard, ctx.task.board_id)
     status = Enum.find(board.task_statuses, & &1.closed)
     archived_at = if archived, do: nil, else: ~N[2026-01-01 12:00:00]
     attrs = ctx.task |> Task.status_change_attrs(status) |> Map.put(:archived_at, archived_at)

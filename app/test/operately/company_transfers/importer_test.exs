@@ -92,7 +92,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
            }
   end
 
-  test "run/1 preserves board ownership, defaults, statuses, and remapped task ordering", ctx do
+  test "run/1 preserves board state when a transitional package also contains legacy group fields", ctx do
     alias Operately.Groups.Group
     alias Operately.Tasks.{Task, TaskBoard}
 
@@ -102,7 +102,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
         space_id: ctx.space.id,
         name: "Team board",
         position: 3,
-        task_statuses: ctx.space.task_statuses,
+        task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses,
         tasks_kanban_state: %{"pending" => [WebPaths.task_id(ctx.task)]}
       })
     ctx.space |> change(default_task_board_id: board.id) |> Repo.update!()
@@ -117,7 +117,21 @@ defmodule Operately.CompanyTransfers.ImporterTest do
              export_and_stage_import(ctx, fn package ->
                boards = Enum.find(package["tables"], &(&1["name"] == "task_boards"))
                assert board.id in Enum.map(boards["rows"], & &1["id"])
-               package
+               Map.update!(package, "tables", fn tables ->
+                 Enum.map(tables, fn table ->
+                   if table["name"] == "groups" do
+                     Map.update!(table, "rows", fn rows ->
+                       Enum.map(rows, fn row ->
+                         refute Map.has_key?(row, "task_statuses")
+                         refute Map.has_key?(row, "tasks_kanban_state")
+                         Map.merge(row, %{"task_statuses" => [], "tasks_kanban_state" => %{}})
+                       end)
+                     end)
+                   else
+                     table
+                   end
+                 end)
+               end)
              end)
 
     assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
@@ -154,12 +168,16 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     alias Operately.Tasks.{Task, TaskBoard}
     ctx = ctx |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space)
     ordering = %{"pending" => [WebPaths.task_id(ctx.task)]}
-    ctx.space |> change(tasks_kanban_state: ordering) |> Repo.update!()
+    Repo.get!(TaskBoard, ctx.space.default_task_board_id) |> change(tasks_kanban_state: ordering) |> Repo.update!()
 
     assert {:ok, import_run} = export_and_stage_import(ctx, fn package ->
+      boards = package["tables"] |> Enum.find(&(&1["name"] == "task_boards")) |> Map.fetch!("rows") |> Map.new(&{&1["id"], &1})
       tables = package["tables"] |> Enum.reject(&(&1["name"] == "task_boards")) |> Enum.map(fn table ->
         case table["name"] do
-          "groups" -> Map.update!(table, "rows", &Enum.map(&1, fn row -> Map.delete(row, "default_task_board_id") end))
+          "groups" -> Map.update!(table, "rows", &Enum.map(&1, fn row ->
+            board = Map.fetch!(boards, row["default_task_board_id"])
+            row |> Map.merge(Map.take(board, ["task_statuses", "tasks_kanban_state"])) |> Map.delete("default_task_board_id")
+          end))
           "tasks" -> Map.update!(table, "rows", &Enum.map(&1, fn row -> Map.delete(row, "board_id") end))
           _ -> table
         end
@@ -172,7 +190,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     task = Repo.get_by!(Task, space_id: space.id, name: ctx.task.name)
     board = Repo.get!(TaskBoard, space.default_task_board_id)
     assert task.board_id == board.id
-    assert board.task_statuses == ctx.space.task_statuses
+    assert board.task_statuses == Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses
     assert board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(task)]}
     assert board.inserted_at == ctx.space.inserted_at
   end

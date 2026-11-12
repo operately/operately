@@ -6,6 +6,10 @@ defmodule Operately.Data.Change121BackfillTaskBoardsTest do
   alias Operately.Tasks.{Task, TaskBoard}
 
   setup ctx do
+    # Recreate the legacy columns required by this historical migration.
+    # The sandbox transaction rolls back these schema changes after each test.
+    Repo.query!("ALTER TABLE groups ADD COLUMN task_statuses jsonb[] DEFAULT '{}', ADD COLUMN tasks_kanban_state jsonb DEFAULT '{}'")
+
     ctx |> Factory.setup() |> Factory.add_space(:space)
   end
 
@@ -78,7 +82,7 @@ defmodule Operately.Data.Change121BackfillTaskBoardsTest do
     Change.run()
     boards = Repo.all(TaskBoard)
     tasks = Repo.all(Task)
-    ctx.space |> change(tasks_kanban_state: %{"changed" => []}) |> Repo.update!()
+    from(s in Change.Space, where: s.id == ^ctx.space.id) |> Repo.update_all(set: [tasks_kanban_state: %{"changed" => []}])
     Change.run()
 
     assert Repo.reload!(ctx.space).default_task_board_id == default.id

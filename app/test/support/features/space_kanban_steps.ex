@@ -22,9 +22,10 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
       |> Factory.add_space_member(:teammate, :space, name: "Taylor Teammate")
       |> UI.login_based_on_tag()
 
-    status_values = Enum.map(ctx.space.task_statuses, & &1.value)
+    board = Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id)
+    status_values = Enum.map(board.task_statuses, & &1.value)
 
-    Map.put(ctx, :status_values, status_values)
+    ctx |> Map.put(:status_values, status_values) |> Map.put(:default_board, board)
   end
 
   step :visit_kanban_page, ctx do

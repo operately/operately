@@ -528,7 +528,8 @@ defmodule OperatelyWeb.Api.SpacesTest do
 
     test "deletes an unused status without a replacement", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
-      [removed | remaining] = ctx.space.task_statuses
+      statuses = board_for(ctx.space).task_statuses
+      [removed | remaining] = statuses
 
       assert {200, _} =
                mutation(ctx.conn, [:spaces, :update_task_statuses], %{
@@ -543,7 +544,8 @@ defmodule OperatelyWeb.Api.SpacesTest do
       @archived archived
       test "requires a replacement for an occupied status (archived=#{@archived})", ctx do
         ctx = Factory.log_in_person(ctx, :creator)
-        [removed | remaining] = ctx.space.task_statuses
+        statuses = board_for(ctx.space).task_statuses
+        [removed | remaining] = statuses
         task_status = Map.from_struct(removed)
         ctx = Factory.create_space_task(ctx, :task, :space, task_status: task_status)
 
@@ -558,7 +560,7 @@ defmodule OperatelyWeb.Api.SpacesTest do
                    deleted_status_replacements: []
                  })
 
-        assert board_for(ctx.space).task_statuses == ctx.space.task_statuses
+        assert board_for(ctx.space).task_statuses == statuses
         assert Repo.reload!(ctx.task).task_status == ctx.task.task_status
       end
     end
@@ -1174,10 +1176,9 @@ defmodule OperatelyWeb.Api.SpacesTest do
       task_statuses: updated_statuses
     })
 
-    # Status changes leave the other board and legacy space fields untouched.
+    # Status changes leave the other board untouched.
     assert Repo.reload!(other_board).task_statuses == other_board.task_statuses
     assert Repo.reload!(ctx.other_task).task_status == ctx.other_task.task_status
-    assert Repo.reload!(ctx.space).task_statuses == ctx.space.task_statuses
 
     assert {200, response} = query(ctx.conn, [:spaces, :get], %{id: space_id})
     assert Enum.all?(response.space.task_statuses, &(&1.label == "Updated"))
@@ -1186,7 +1187,7 @@ defmodule OperatelyWeb.Api.SpacesTest do
   describe "explicit board task operations" do
     setup ctx do
       ctx = ctx |> Factory.add_space(:space) |> Factory.log_in_person(:creator)
-      board = Repo.insert!(%TaskBoard{space_id: ctx.space.id, name: "Other", task_statuses: ctx.space.task_statuses})
+      board = Repo.insert!(%TaskBoard{space_id: ctx.space.id, name: "Other", task_statuses: board_for(ctx.space).task_statuses})
       ctx |> Map.put(:board, board) |> Factory.create_space_task(:default_task, :space) |> Factory.create_space_task(:other_task, :space, board_id: board.id)
     end
 
