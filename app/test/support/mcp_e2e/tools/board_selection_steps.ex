@@ -8,7 +8,7 @@ defmodule Operately.Support.McpE2E.Tools.BoardSelectionSteps do
   end
 
   step :given_another_board, ctx do
-    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Other", position: 1, task_statuses: ctx.space.task_statuses})
+    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Other", position: 1, task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses})
     Map.put(ctx, :board, board)
   end
 

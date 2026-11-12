@@ -435,8 +435,9 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
     end
 
     test "get pending space tasks", ctx do
-      pending = Enum.find(ctx.space.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
-      in_progress = Enum.find(ctx.space.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
+      statuses = Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses
+      pending = Enum.find(statuses, &(&1.color == :gray)) |> Map.from_struct()
+      in_progress = Enum.find(statuses, &(&1.color == :blue)) |> Map.from_struct()
 
       task1 =
         create_space_task(ctx.space, ctx.person, %{

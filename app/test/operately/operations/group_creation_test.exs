@@ -37,7 +37,8 @@ defmodule Operately.Operations.GroupCreationTest do
     assert board.space_id == group.id
     assert board.name == "Tasks"
     assert board.position == 0
-    assert board.task_statuses == group.task_statuses
+    assert Enum.map(board.task_statuses, & &1.value) == ["pending", "in_progress", "done", "canceled"]
+    assert board.tasks_kanban_state == %{"pending" => [], "in_progress" => [], "done" => [], "canceled" => []}
     refute group.tools.tasks_enabled
   end
 

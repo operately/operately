@@ -30,7 +30,7 @@ defmodule Operately.Operations.KanbanStateUpdatingTest do
   test "space Kanban uses the canonical task status metadata", ctx do
     scope = %{type: :space, space: ctx.space}
 
-    assert_canonical_status_transitions(ctx.creator, scope, ctx.space_task, ctx.space.task_statuses)
+    assert_canonical_status_transitions(ctx.creator, scope, ctx.space_task, Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses)
   end
 
   defp assert_canonical_status_transitions(author, scope, task, statuses) do

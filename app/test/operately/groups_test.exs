@@ -47,9 +47,10 @@ defmodule Operately.GroupsTest do
 
       assert {:ok, %Group{} = group} = Groups.create_group(ctx.creator, valid_attrs)
 
-      assert length(group.task_statuses) == 4
+      board = Repo.get!(Operately.Tasks.TaskBoard, group.default_task_board_id)
+      assert length(board.task_statuses) == 4
 
-      statuses_by_value = Enum.group_by(group.task_statuses, & &1.value)
+      statuses_by_value = Enum.group_by(board.task_statuses, & &1.value)
       assert Map.has_key?(statuses_by_value, "pending")
       assert Map.has_key?(statuses_by_value, "in_progress")
       assert Map.has_key?(statuses_by_value, "done")
@@ -135,7 +136,6 @@ defmodule Operately.GroupsTest do
       assert {:ok, %Group{} = updated_group} = Groups.update_group(ctx.group, %{name: "some updated name", task_statuses: []})
       assert updated_group.name == "some updated name"
       assert Repo.reload!(board).task_statuses == board.task_statuses
-      assert updated_group.task_statuses == ctx.group.task_statuses
 
     end
 
