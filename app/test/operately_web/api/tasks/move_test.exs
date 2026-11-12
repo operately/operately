@@ -232,7 +232,7 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
       })
 
       task = Repo.reload(origin.task)
-      default = Operately.Groups.Group.get_default_task_status(destination_space)
+      default = Operately.Tasks.TaskBoard.get_default_task_status(Repo.get!(Operately.Tasks.TaskBoard, destination_space.default_task_board_id))
 
       assert task.project_id == nil
       assert task.space_id == destination_space.id
@@ -284,7 +284,7 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
       })
 
       task = Repo.reload(origin.task)
-      default = Operately.Groups.Group.get_default_task_status(destination_space)
+      default = Operately.Tasks.TaskBoard.get_default_task_status(Repo.get!(Operately.Tasks.TaskBoard, destination_space.default_task_board_id))
 
       assert task.project_id == nil
       assert task.space_id == destination_space.id
@@ -461,7 +461,7 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
 
     test "preserves an equivalent closed status and closure timestamps when moving to the project's space", ctx do
       source_status = Enum.find(ctx.project.task_statuses, &(&1.value == "done"))
-      destination_status = Enum.find(ctx.space.task_statuses, &(&1.value == "done"))
+      destination_status = Enum.find(Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses, &(&1.value == "done"))
       {:ok, task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, source_status))
       origin_topic = "api:project_updated:#{ctx.project.id}"
       OperatelyWeb.Endpoint.subscribe(origin_topic)
@@ -521,7 +521,7 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
   describe "explicit board destinations" do
     setup ctx do
       ctx = ctx |> Factory.setup() |> Factory.add_space(:board_space) |> Factory.set_space_tools(:board_space, tasks_enabled: true) |> Factory.create_space_task(:board_task, :board_space) |> Factory.log_in_person(:creator)
-      board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.board_space.id, name: "Other", task_statuses: ctx.board_space.task_statuses})
+      board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.board_space.id, name: "Other", task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.board_space.default_task_board_id).task_statuses})
       Map.put(ctx, :board, board)
     end
 

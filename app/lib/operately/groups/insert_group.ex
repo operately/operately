@@ -93,11 +93,13 @@ defmodule Operately.Groups.InsertGroup do
   defp insert_default_task_board(multi) do
     multi
     |> Multi.insert(:task_board, fn %{group: group} ->
+      statuses = Operately.Tasks.Status.default_task_statuses()
+
       Operately.Tasks.TaskBoard.changeset(%{
         space_id: group.id,
         name: "Tasks",
-        task_statuses: Enum.map(group.task_statuses, &Map.from_struct/1),
-        tasks_kanban_state: group.tasks_kanban_state,
+        task_statuses: Enum.map(statuses, &Map.from_struct/1),
+        tasks_kanban_state: Operately.Tasks.KanbanState.initialize(Enum.map(statuses, & &1.value)),
         position: 0
       })
     end)
