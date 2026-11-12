@@ -83,7 +83,7 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
 
   step :select_replacement_for_deleted_status, ctx, deleted_label: deleted_label, replacement_value: replacement_value do
     project = reload_project(ctx)
-    deleted_status = Enum.find(project.task_statuses, &(&1.label == deleted_label))
+    deleted_status = Enum.find(project.task_board.task_statuses, &(&1.label == deleted_label))
 
     assert deleted_status, "Expected to find status #{deleted_label} but none matched"
 
@@ -105,7 +105,7 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
   end
 
   step :assert_status_absent, ctx, label: label do
-    project = wait_until_project(ctx, fn project -> !Enum.any?(project.task_statuses, &(&1.label == label)) end)
+    project = wait_until_project(ctx, fn project -> !Enum.any?(project.task_board.task_statuses, &(&1.label == label)) end)
 
     Map.put(ctx, :project, project)
   end
@@ -203,15 +203,16 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
 
   defp reload_project(ctx) do
     Operately.Repo.get!(Operately.Projects.Project, ctx.project.id)
+    |> Operately.Repo.preload(:task_board)
   end
 
   defp assert_status(ctx, label, color) do
     project =
       wait_until_project(ctx, fn project ->
-        Enum.any?(project.task_statuses, &(&1.label == label && (is_nil(color) || &1.color == color)))
+        Enum.any?(project.task_board.task_statuses, &(&1.label == label && (is_nil(color) || &1.color == color)))
       end)
 
-    status = Enum.find(project.task_statuses, &(&1.label == label))
+    status = Enum.find(project.task_board.task_statuses, &(&1.label == label))
     assert status, "Expected to find status #{label} but none matched"
     if color, do: assert(status.color == color)
 
