@@ -425,7 +425,7 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.click(testid: "move-task-destination-space")
     |> UI.click(testid: "move-task-space-field")
     |> UI.click(testid: destination_space_result)
-    |> UI.click(testid: "confirm-move-task")
+    |> UI.click(css: "[data-test-id='confirm-move-task']:not([disabled])")
     |> UI.sleep(400)
   end
 
@@ -435,16 +435,56 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.assert_has(testid: "move-task-modal")
   end
 
-  step :assert_only_destination_space_shown, ctx do
-    destination_space_result = UI.testid(["move-task-space-field-search-result", ctx.destination_space.name])
-    original_space_result = UI.testid(["move-task-space-field-search-result", ctx.space.name])
+  step :select_move_space, ctx, space_key do
+    space = Map.fetch!(ctx, space_key)
 
     ctx
     |> UI.click(testid: "move-task-destination-type")
     |> UI.click(testid: "move-task-destination-space")
     |> UI.click(testid: "move-task-space-field")
-    |> UI.assert_has(testid: destination_space_result)
-    |> UI.refute_has(testid: original_space_result)
+    |> UI.click(testid: UI.testid(["move-task-space-field-search-result", space.name]))
+  end
+
+  step :select_move_board, ctx, board_key do
+    board = Map.fetch!(ctx, board_key)
+
+    ctx
+    |> UI.click(testid: "move-task-board")
+    |> UI.click(testid: "move-task-board-#{Operately.ShortUuid.encode!(board.id)}")
+  end
+
+  step :submit_move, ctx do
+    UI.click(ctx, css: "[data-test-id='confirm-move-task']:not([disabled])")
+  end
+
+  step :assert_move_requires_status, ctx, task_key do
+    ctx = UI.assert_has(ctx, testid: "move-task-status-mapping")
+    task = Map.fetch!(ctx, task_key) |> Repo.reload!()
+    assert task.board_id == ctx.space.default_task_board_id
+    ctx
+  end
+
+  step :select_move_status, ctx, board_key do
+    status = Map.fetch!(ctx, board_key).task_statuses |> hd()
+
+    ctx
+    |> UI.click(testid: "move-task-status")
+    |> UI.click(testid: "move-task-status-#{status.id}")
+  end
+
+  step :assert_redirected_to_second_board_task, ctx, task_key do
+    task = Map.fetch!(ctx, task_key)
+    path = Paths.space_kanban_path(ctx.company, ctx.space, ctx.board.id) <> "?taskId=#{Paths.task_id(task)}"
+
+    ctx
+    |> UI.assert_location(path)
+    |> UI.assert_has(testid: "task-slide-in")
+  end
+
+  step :assert_no_available_move_boards, ctx do
+    ctx
+    |> UI.assert_has(testid: "move-task-no-boards")
+    |> UI.assert_has(css: "[data-test-id='confirm-move-task'][disabled]")
   end
 
   step :visit_destination_space_kanban_page, ctx do
