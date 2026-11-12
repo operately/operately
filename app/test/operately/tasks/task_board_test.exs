@@ -35,12 +35,11 @@ defmodule Operately.Tasks.TaskBoardTest do
     end
   end
 
-  test "project tasks cannot reference a space board", ctx do
+  test "runtime still rejects project board assignments before the cutover", ctx do
     ctx = ctx |> Factory.add_project(:project, :space) |> Factory.add_project_milestone(:milestone, :project) |> Factory.add_project_task(:project_task, :milestone)
 
-    assert_raise Ecto.ConstraintError, ~r/tasks_board_requires_space/, fn ->
-      ctx.project_task |> change(board_id: ctx.board.id) |> Repo.update!()
-    end
+    assert {:error, changeset} = ctx.project_task |> Operately.Tasks.Task.changeset(%{board_id: ctx.board.id}) |> Repo.update()
+    assert "is invalid" in errors_on(changeset).board_id
   end
 
   test "cannot delete a board referenced by a task", ctx do
