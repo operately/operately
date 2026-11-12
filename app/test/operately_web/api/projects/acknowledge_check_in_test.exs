@@ -185,6 +185,8 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeCheckInTest do
     end)
   end
 
+  defp normalize_tasks_kanban_state(nil), do: nil
+
   defp normalize_tasks_kanban_state(state) when is_map(state) do
     Enum.into(state, %{}, fn {key, ids} ->
       {normalize_tasks_kanban_state_key(key), ids}

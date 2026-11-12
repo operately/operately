@@ -12,22 +12,23 @@ defmodule Operately.Operations.MilestoneOrderingStateUpdating do
 
   def run(author, project, task, milestone_id, index) do
     Multi.new()
+    |> Multi.run(:ordering_task, fn _, _ -> Operately.Tasks.BoardSync.lock_task(task) end)
     |> Multi.run(:validate_index, fn _repo, _changes ->
       validate_index(index)
     end)
-    |> Multi.run(:validate_task_parent, fn _repo, _changes ->
+    |> Multi.run(:validate_task_parent, fn _repo, %{ordering_task: task} ->
       validate_task_parent(project, task)
     end)
     |> Multi.run(:validated_milestone, fn _repo, _changes ->
       validate_milestone(project, milestone_id)
     end)
-    |> Multi.run(:updated_task, fn _repo, %{validated_milestone: milestone} ->
+    |> Multi.run(:updated_task, fn _repo, %{validated_milestone: milestone, ordering_task: task} ->
       update_task_milestone(task, milestone_id, milestone)
     end)
-    |> Multi.run(:updated_milestones, fn _repo, %{updated_task: updated_task} ->
+    |> Multi.run(:updated_milestones, fn _repo, %{updated_task: updated_task, ordering_task: task} ->
       apply_list_move(project, task, updated_task, index)
     end)
-    |> maybe_save_task_milestone_activity(author, project, task)
+    |> maybe_save_task_milestone_activity(author, project)
   end
 
   defp validate_index(index) when is_integer(index) and index >= 0, do: {:ok, index}
@@ -132,8 +133,9 @@ defmodule Operately.Operations.MilestoneOrderingStateUpdating do
   defp task_visible?(%Task{status: status}) when status in ["done", "canceled"], do: false
   defp task_visible?(_task), do: true
 
-  defp maybe_save_task_milestone_activity(multi, author, project, task) do
+  defp maybe_save_task_milestone_activity(multi, author, project) do
     Multi.merge(multi, fn changes ->
+      task = changes.ordering_task
       if task.milestone_id != changes.updated_task.milestone_id do
         Activities.insert_sync(Multi.new(), author.id, :task_milestone_updating, fn _ ->
           %{

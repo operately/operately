@@ -43,6 +43,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
             tasks: from(t in Operately.Tasks.Task, order_by: [asc: t.inserted_at, asc: t.id], preload: [:assignees])
           )
 
+        project = Project.with_task_board(project, Project.task_board(project))
         {:ok, %{project | contributors: Contributor.load_project_access_levels(project.contributors)}}
     end
   end

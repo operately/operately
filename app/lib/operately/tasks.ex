@@ -67,14 +67,23 @@ defmodule Operately.Tasks do
     case Repo.get(Operately.Groups.Group, space_id) do
       nil -> {:error, :not_found}
       space ->
-        with {:ok, board} <- Operately.Tasks.TaskBoard.default_for_space(space),
-             {:ok, boards} <- Operately.Tasks.BoardSync.lock_boards([attrs[:board_id] || board.id]) do
-          {:ok, Map.fetch!(boards, attrs[:board_id] || board.id)}
+        with {:ok, board} <- Operately.Tasks.TaskBoard.for_space(space) do
+          Operately.Tasks.BoardSync.lock_board(attrs[:board_id] || board.id)
         end
     end
   end
 
-  defp creation_board(_attrs), do: {:ok, nil}
+  defp creation_board(%{project_id: project_id} = attrs) when not is_nil(project_id) do
+    with {:ok, board} <- Operately.Tasks.TaskBoard.for_project(%{id: project_id}),
+         true <- is_nil(attrs[:board_id]) or attrs[:board_id] == board.id do
+      Operately.Tasks.BoardSync.lock_board(board.id)
+    else
+      false -> {:error, :bad_request}
+      error -> error
+    end
+  end
+
+  defp creation_board(_attrs), do: {:error, :bad_request}
 
   defp creation_attrs(attrs, nil), do: {:ok, attrs}
   defp creation_attrs(attrs, board) do

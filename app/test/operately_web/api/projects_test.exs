@@ -925,7 +925,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
   describe "update task statuses" do
     test "deletes an unused status without a replacement", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
-      [removed | remaining] = ctx.project.task_statuses
+      [removed | remaining] = Operately.Projects.Project.task_statuses(ctx.project)
 
       assert {200, _} =
                mutation(ctx.conn, [:projects, :update_task_statuses], %{
@@ -933,14 +933,14 @@ defmodule OperatelyWeb.Api.ProjectsTest do
                  task_statuses: Enum.map(remaining, &(&1 |> Map.from_struct() |> Map.update!(:color, fn color -> to_string(color) end)))
                })
 
-      refute Enum.any?(Repo.reload!(ctx.project).task_statuses, &(&1.id == removed.id))
+      refute Enum.any?(Operately.Projects.Project.task_statuses(Repo.reload!(ctx.project)), &(&1.id == removed.id))
     end
 
     for archived <- [false, true] do
       @archived archived
       test "requires a replacement for an occupied status (archived=#{@archived})", ctx do
         ctx = Factory.log_in_person(ctx, :creator)
-        [removed | remaining] = ctx.project.task_statuses
+        [removed | remaining] = Operately.Projects.Project.task_statuses(ctx.project)
         task_status = Map.from_struct(removed)
         ctx = Factory.add_project_task(ctx, :task, :milestone, task_status: task_status)
 
@@ -955,7 +955,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
                    deleted_status_replacements: []
                  })
 
-        assert Repo.reload!(ctx.project).task_statuses == ctx.project.task_statuses
+        assert Operately.Projects.Project.task_statuses(Repo.reload!(ctx.project)) == Operately.Projects.Project.task_statuses(ctx.project)
         assert Repo.reload!(ctx.task).task_status == ctx.task.task_status
       end
     end
@@ -1005,8 +1005,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       project = Repo.reload(ctx.project)
 
-      assert length(project.task_statuses) == 3
-      assert Enum.map(project.task_statuses, & &1.label) == ["Todo", "In progress", "Done"]
+      assert length(Operately.Projects.Project.task_statuses(project)) == 3
+      assert Enum.map(Operately.Projects.Project.task_statuses(project), & &1.label) == ["Todo", "In progress", "Done"]
     end
 
     test "validation fails when replacement status does not exist in new statuses", ctx do
@@ -1067,9 +1067,9 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       # Create tasks with statuses, then delete two of the statuses.
       project = Repo.reload(ctx.project)
-      in_review_status = Enum.find(project.task_statuses, & &1.id == "in_review")
-      blocked_status = Enum.find(project.task_statuses, & &1.id == "blocked")
-      done_status = Enum.find(project.task_statuses, & &1.id == "done")
+      in_review_status = Enum.find(Operately.Projects.Project.task_statuses(project), & &1.id == "in_review")
+      blocked_status = Enum.find(Operately.Projects.Project.task_statuses(project), & &1.id == "blocked")
+      done_status = Enum.find(Operately.Projects.Project.task_statuses(project), & &1.id == "done")
 
       ctx = Factory.add_project_task(ctx, :task_in_review, :milestone, [
         name: "Task in review",
@@ -1144,7 +1144,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       })
 
       project = Repo.reload(ctx.project)
-      in_review_status = Enum.find(project.task_statuses, & &1.id == "in_review")
+      in_review_status = Enum.find(Operately.Projects.Project.task_statuses(project), & &1.id == "in_review")
 
       ctx = Factory.add_project_task(ctx, :task_in_review, :milestone, [
         name: "Task in review",
@@ -1172,7 +1172,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert res.success == true
 
       project = Repo.reload(ctx.project)
-      assert Enum.any?(project.task_statuses, &(&1.id == "triage"))
+      assert Enum.any?(Operately.Projects.Project.task_statuses(project), &(&1.id == "triage"))
 
       task_in_review = Repo.reload(ctx.task_in_review)
       assert task_in_review.task_status.id == "triage"
@@ -2029,7 +2029,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:creator)
 
       status_input =
-        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(Operately.Projects.Project.task_statuses(ctx.project) || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -2056,7 +2056,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert res1.task.id == Paths.task_id(ctx.task)
 
       project = Repo.reload(ctx.project)
-      assert project.tasks_kanban_state["in_progress"] == kanban_state.in_progress
+      assert Operately.Projects.Project.tasks_kanban_state(project)["in_progress"] == kanban_state.in_progress
       assert count_task_activities(ctx.task, "task_status_updating") == before_count + 1
 
       assert {200, _res2} = mutation(ctx.conn, [:projects, :update_kanban], %{
@@ -2077,7 +2077,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:creator)
 
       status_input =
-        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(Operately.Projects.Project.task_statuses(ctx.project) || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -2117,7 +2117,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       })
 
       project = Repo.reload(ctx.project)
-      assert project.tasks_kanban_state["in_progress"] == kanban_state_2.in_progress
+      assert Operately.Projects.Project.tasks_kanban_state(project)["in_progress"] == kanban_state_2.in_progress
       assert count_task_activities(ctx.task1, "task_status_updating") == before_count + 1
     end
 
@@ -2131,7 +2131,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:creator)
 
       status_input =
-        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(Operately.Projects.Project.task_statuses(ctx.project) || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -2167,7 +2167,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:creator)
 
       status_input =
-        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(Operately.Projects.Project.task_statuses(ctx.project) || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -2187,7 +2187,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       status_input =
-        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(Operately.Projects.Project.task_statuses(ctx.project) || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -2225,7 +2225,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:creator)
 
       status_input =
-        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(Operately.Projects.Project.task_statuses(ctx.project) || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()
@@ -2298,7 +2298,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:space_member)
 
       status_input =
-        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        Enum.find(Operately.Projects.Project.task_statuses(ctx.project) || [], fn s -> s.value == "in_progress" end)
         |> then(fn status ->
           status
           |> Map.from_struct()

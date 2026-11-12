@@ -2,7 +2,7 @@ defmodule Operately.Data.Change087PopulateDefaultTaskStatusesTest do
   use Operately.DataCase
   import Ecto.Query
 
-  alias Operately.{Repo, Projects}
+  alias Operately.Repo
   alias Operately.Projects.Project
   alias Operately.Data.Change087PopulateDefaultTaskStatuses
   alias Operately.Support.Factory
@@ -35,7 +35,7 @@ defmodule Operately.Data.Change087PopulateDefaultTaskStatusesTest do
     ctx = Factory.add_project(ctx, :project, :space)
 
     # Manually set to a custom status to verify migration doesn't overwrite
-    Projects.update_project(ctx.project, %{task_statuses: [
+    set_legacy_task_statuses(ctx.project, %{task_statuses: [
       %{id: Ecto.UUID.generate(), label: "My Custom Status", color: "blue", value: "custom_pending", index: 0, closed: false}
     ]})
 
@@ -60,16 +60,16 @@ defmodule Operately.Data.Change087PopulateDefaultTaskStatusesTest do
     ctx = Factory.add_project(ctx, :project_partial, :space)
 
     # Set first project to empty array
-    Projects.update_project(ctx.project_empty, %{task_statuses: []})
+    set_legacy_task_statuses(ctx.project_empty, %{task_statuses: []})
 
     # Set second project to custom statuses
-    Projects.update_project(ctx.project_custom, %{task_statuses: [
+    set_legacy_task_statuses(ctx.project_custom, %{task_statuses: [
       %{id: Ecto.UUID.generate(), label: "Backlog", color: "gray", value: "backlog", index: 0, closed: false},
       %{id: Ecto.UUID.generate(), label: "Completed", color: "green", value: "completed", index: 1, closed: true}
     ]})
 
     # Set third project to partial statuses (only 1 instead of 4)
-    Projects.update_project(ctx.project_partial, %{task_statuses: [
+    set_legacy_task_statuses(ctx.project_partial, %{task_statuses: [
       %{id: Ecto.UUID.generate(), label: "Todo", color: "gray", value: "todo", index: 0, closed: false}
     ]})
 
@@ -89,6 +89,13 @@ defmodule Operately.Data.Change087PopulateDefaultTaskStatusesTest do
     updated_partial = Repo.get!(Project, ctx.project_partial.id)
     assert length(updated_partial.task_statuses) == 1
     assert hd(updated_partial.task_statuses).label == "Todo"
+  end
+
+  # This migration operates on the legacy project column, before task boards existed.
+  defp set_legacy_task_statuses(project, attrs) do
+    project
+    |> Project.changeset(attrs)
+    |> Repo.update!()
   end
 
   defp assert_default_task_statuses(task_statuses) do

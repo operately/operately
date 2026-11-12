@@ -22,14 +22,14 @@ defmodule Operately.Operations.TaskMoving do
     Multi.new()
     |> Multi.run(:destination_board, fn _repo, _ ->
       case {destination_type, opts[:board]} do
-        {:space, nil} -> TaskBoard.default_for_space(destination)
+        {:space, nil} -> TaskBoard.for_space(destination)
         {:space, board} -> {:ok, board}
-        {:project, nil} -> {:ok, nil}
+        {:project, nil} -> TaskBoard.for_project(destination)
         _ -> {:error, :bad_request}
       end
     end)
     |> Multi.run(:boards, fn _repo, %{destination_board: board} ->
-      Operately.Tasks.BoardSync.lock_boards([task.board_id, board && board.id])
+      Operately.Tasks.BoardSync.lock_boards([task.board_id, board.id])
     end)
     |> Multi.run(:locked_task, fn _repo, %{boards: boards} ->
       with {:ok, current} <- Operately.Tasks.BoardSync.lock_task(task, boards) do
@@ -37,13 +37,13 @@ defmodule Operately.Operations.TaskMoving do
       end
     end)
     |> Multi.run(:validate_destination, fn _repo, %{destination_board: board, boards: boards} ->
-      with :ok <- ensure_different_destination(task, destination_type, if(board, do: board.id, else: destination.id)),
-           :ok <- validate_board_destination(board && boards[board.id], destination) do
+      with :ok <- ensure_different_destination(task, destination_type, if(destination_type == :space, do: board.id, else: destination.id)),
+           :ok <- validate_board_destination(Map.fetch!(boards, board.id), destination) do
         {:ok, nil}
       end
     end)
     |> Multi.run(:status, fn _repo, %{locked_task: current, destination_board: board, boards: boards} ->
-      status_scope = if board, do: Map.fetch!(boards, board.id), else: destination
+      status_scope = Map.fetch!(boards, board.id)
 
       with {:ok, status, selection} <- select_destination_status(current, destination_type, status_scope, opts) do
         {:ok, %{status: status, selection: selection}}
@@ -55,7 +55,7 @@ defmodule Operately.Operations.TaskMoving do
     |> Multi.update(:task, fn %{locked_task: current, destination_board: board, status: status} ->
       attrs =
         move_attrs(destination_type, destination)
-        |> Map.put(:board_id, board && board.id)
+        |> Map.put(:board_id, board.id)
         |> Map.merge(status_attrs(current, status.status, status.selection))
 
       Task.changeset(current, attrs)
@@ -88,7 +88,7 @@ defmodule Operately.Operations.TaskMoving do
   end
 
 
-  defp validate_board_destination(nil, %Project{}), do: :ok
+  defp validate_board_destination(%TaskBoard{project_id: project_id, archived_at: nil}, %Project{id: project_id}), do: :ok
   defp validate_board_destination(%TaskBoard{space_id: space_id, archived_at: nil}, %Group{id: space_id}), do: :ok
   defp validate_board_destination(%TaskBoard{archived_at: archived_at}, _) when not is_nil(archived_at), do: {:error, :task_board_archived}
   defp validate_board_destination(_, _), do: {:error, :bad_request}
@@ -145,13 +145,7 @@ defmodule Operately.Operations.TaskMoving do
     destination_status.value == source_status.value && destination_status.closed == source_status.closed
   end
 
-  defp destination_default_status(:project, project = %Project{}) do
-    project
-    |> Project.get_default_task_status()
-    |> status_to_map()
-  end
-
-  defp destination_default_status(:space, board = %TaskBoard{}) do
+  defp destination_default_status(_type, board = %TaskBoard{}) do
     board
     |> TaskBoard.get_default_task_status()
     |> status_to_map()

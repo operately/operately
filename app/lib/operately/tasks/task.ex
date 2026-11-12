@@ -250,13 +250,8 @@ defmodule Operately.Tasks.Task do
   end
 
   def available_statuses(task = %__MODULE__{}) do
-    task = Operately.Repo.preload(task, [:project, :board])
-
-    cond do
-      task.project -> task.project.task_statuses || []
-      task.board && task.board.space_id == task.space_id -> task.board.task_statuses || []
-      true -> []
-    end
+    task = Operately.Repo.preload(task, :board)
+    if task.board && Operately.Tasks.TaskBoard.owns_task?(task.board, task), do: task.board.task_statuses || [], else: []
   end
 
   defp assign_and_validate_board(changeset) do
@@ -264,15 +259,29 @@ defmodule Operately.Tasks.Task do
     project_id = get_field(changeset, :project_id)
     board_id = get_field(changeset, :board_id)
 
-    cond do
-      project_id && board_id -> add_error(changeset, :board_id, "is invalid")
-      is_nil(space_id) -> changeset
-      true ->
-        board_id = board_id || changeset.repo.one(from s in Operately.Groups.Group, where: s.id == ^space_id, select: s.default_task_board_id)
-        board = board_id && changeset.repo.one(from b in Operately.Tasks.TaskBoard, where: b.id == ^board_id and b.space_id == ^space_id)
-        if board, do: put_change(changeset, :board_id, board.id), else: add_error(changeset, :board_id, "is invalid")
+    board_id = board_id || default_board_id(changeset.repo, project_id, space_id)
+    board = board_id && changeset.repo.get(Operately.Tasks.TaskBoard, board_id)
+
+    changeset =
+      if board && {board.project_id, board.space_id} == {project_id, space_id},
+        do: put_change(changeset, :board_id, board.id),
+        else: add_error(changeset, :board_id, "is invalid")
+
+    case get_field(changeset, :milestone_id) do
+      nil -> changeset
+      id ->
+        milestone = changeset.repo.get(Operately.Projects.Milestone, id)
+        if milestone && milestone.project_id == project_id, do: changeset, else: add_error(changeset, :milestone_id, "is invalid")
     end
   end
+
+  defp default_board_id(repo, project_id, nil) when not is_nil(project_id),
+    do: repo.one(from b in Operately.Tasks.TaskBoard, where: b.project_id == ^project_id, select: b.id)
+
+  defp default_board_id(repo, nil, space_id) when not is_nil(space_id),
+    do: repo.one(from s in Operately.Groups.Group, where: s.id == ^space_id, select: s.default_task_board_id)
+
+  defp default_board_id(_repo, _project_id, _space_id), do: nil
 
   def preload_available_statuses(task = %__MODULE__{}) do
     Map.put(task, :available_statuses, available_statuses(task))
