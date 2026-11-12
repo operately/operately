@@ -1,6 +1,9 @@
+/** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
+import React from "react";
+import { renderHook } from "@/__tests__/renderHook";
 import Api from "@/api";
-import { QueryClient } from "@tanstack/react-query";
-import { invalidateTaskLifecycleQueries } from "./taskLifecycle";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { invalidateTaskLifecycleQueries, taskMoveErrorResult, useTaskMoveBoards } from "./taskLifecycle";
 
 describe("task lifecycle queries", () => {
   beforeAll(() => {
@@ -64,3 +67,35 @@ describe("task lifecycle queries", () => {
 function createQueryClient(): QueryClient {
   return new QueryClient({ defaultOptions: { queries: { retry: false } } });
 }
+
+it("loads fresh active boards through the generated query for each destination selection", async () => {
+  const client = new QueryClient();
+  const queryFn = jest.fn().mockResolvedValue({ boards: [] });
+  Api.default.setBasePath("/api/v2");
+  Api.default.setHeaders({ "x-company-id": "company" });
+  const options = Api.tasks.listBoardsQueryOptions;
+  const spy = jest
+    .spyOn(Api.tasks, "listBoardsQueryOptions")
+    .mockImplementation((input) => ({ ...options(input), queryFn }));
+  const { result } = renderHook(useTaskMoveBoards, {
+    initialProps: undefined,
+    wrapper: ({ children }) => React.createElement(QueryClientProvider, { client }, children),
+  });
+  await result.current("space");
+  await result.current("space");
+  expect(Api.tasks.listBoardsQueryOptions).toHaveBeenCalledWith({ spaceId: "space", archiveStatus: "active" });
+  expect(queryFn).toHaveBeenCalledTimes(2);
+  client.clear();
+  spy.mockRestore();
+});
+
+it("preserves the API's status mapping and archive errors for the move dialog", () => {
+  const statuses = [{ id: "review", label: "Review" }];
+  const error = (details: unknown) => ({ isAxiosError: true, response: { data: { details } } });
+  expect(taskMoveErrorResult(error({ code: "task_board_status_mapping_required", task_statuses: statuses }))).toEqual({
+    status: "status_mapping_required",
+    statuses,
+  });
+  expect(taskMoveErrorResult(error({ code: "task_board_archived" }))).toEqual({ status: "board_unavailable" });
+  expect(taskMoveErrorResult(new Error("Network error"))).toBe(false);
+});

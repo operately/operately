@@ -134,10 +134,11 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 - Apply Resource Hub terminology across management, drafts, and rename dialogs. Invalidate configuration, cards, discovery, and affected content after mutations.
 - Verify management with two boards and two hubs, defaults, archive/restore, deletion, and disabled categories.
 
-### PR 6C — Board selection in task workflows
+### PR 6C — Board selection when moving tasks ✅
 
-- Add board selection when creating or moving tasks, preserving default selection for legacy requests and supporting destination status mapping.
-- Verify complete two-board/two-hub workflows and compatibility with existing task requests, including moves between boards and unavailable archived destinations.
+- Task creation stays on the current board, with no board selector. Existing API/MCP/CLI explicit selectors and space-only default behavior remain unchanged.
+- Add destination board selection when moving tasks, including moves between boards in the same space. Preselect an available default and exclude the current and archived boards. Ask for a destination status when the API reports no equivalent; preserve legacy move behavior.
+- Verify complete two-board/two-hub workflows, status mapping, archived destination rejection, and compatibility with existing task requests.
 
 All three PRs reuse TurboUI controls and generated TanStack queries/mutations, include translations and regenerated resources, and add focused feature tests.
 

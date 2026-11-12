@@ -198,6 +198,7 @@ function Page() {
   });
   const spaceSearch = useSpaceSearch({ accessLevel: "edit_access", withTasksEnabledOnly: true });
   const moveTask = useMoveTaskHandler(task);
+  const loadMoveBoards = Tasks.useTaskMoveBoards();
 
   const subscriptions = useSubscription({
     subscriptionList: task.subscriptionList,
@@ -258,6 +259,8 @@ function Page() {
 
     onDelete: handleDelete,
     onMoveTask: moveTask,
+    loadMoveBoards,
+    currentBoardId: task.boardId,
     projectSearch,
     spaceSearch,
 
@@ -354,9 +357,9 @@ function useMoveTaskHandler(task: Tasks.Task) {
   const moveTask = Tasks.useMoveTask();
 
   return useCallback(
-    async ({ destinationType, destinationId }: TaskPage.MoveTaskInput) => {
+    async (input: TaskPage.MoveTaskInput) => {
       try {
-        const request = { taskId: task.id, destinationType, destinationId };
+        const request = { taskId: task.id, ...input };
         const result = await moveTask.mutateAsync(request);
         const destination = Tasks.resolveTaskMoveDestination(result, request);
 
@@ -372,11 +375,12 @@ function useMoveTaskHandler(task: Tasks.Task) {
 
         return true;
       } catch (error) {
-        console.error("Failed to move task", error);
-        showErrorToast(i18n.t("Error"), i18n.t("Failed to move task."));
-        return false;
+        const result = Tasks.taskMoveErrorResult(error);
+        if (result === false) console.error("Failed to move task", error);
+
+        return result;
       }
     },
-    [moveTask, navigate, paths, task.id, task.project?.id],
+    [moveTask, navigate, paths, task.id, task.project?.id, invalidateProjectPage],
   );
 }

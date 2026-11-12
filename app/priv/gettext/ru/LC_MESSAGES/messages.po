@@ -2808,7 +2808,7 @@ msgid "%{company_name} is using %{usage} of %{limit} on the Free plan."
 msgstr "Компания «%{company_name}» использует %{usage} из %{limit}, доступных на бесплатном тарифе."
 
 #.elixir
-#: lib/operately_email/emails/assignments_email.ex:31
+#: lib/operately_email/emails/assignments_email.ex:42
 #: lib/operately_web/email_preview/previews/assignments.ex:34
 msgid "%{company_name}: Your work for today"
 msgstr "%{company_name}: ваши дела на сегодня"
@@ -7321,7 +7321,7 @@ msgstr "Куратор и ответственный не могут быть о
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:596
 #: ../turboui/src/TaskCreationModal/index.tsx:387
 #: ../turboui/src/TaskPage/DeleteModal.tsx:75
-#: ../turboui/src/TaskPage/MoveModal.tsx:109
+#: ../turboui/src/TaskPage/MoveModal.tsx:197
 #: ../turboui/src/TemplateDiscussionForm/index.tsx:75
 #: ../turboui/src/TemplateProjectPage/MilestoneFormModal.tsx:82
 #: ../turboui/src/TemplateProjectPage/TemplateMoveResourceModal.tsx:63
@@ -7836,6 +7836,11 @@ msgstr "Выбрать тариф"
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:24
 msgid "Choose a plan with more member capacity."
 msgstr "Выберите тариф с большим лимитом участников."
+
+#.frontend
+#: ../turboui/src/TaskPage/MoveModal.tsx:167
+msgid "Choose a status for the destination board."
+msgstr "Выберите статус для доски назначения."
 
 #~ #.frontend
 #~ #: ../turboui/src/DocumentPage/InlineComments/useInlineComments.tsx:142
@@ -8898,6 +8903,11 @@ msgstr "Исправьте значение за <date/>. Предыдущее �
 msgid "Could not delete feed item"
 msgstr "Не удалось удалить элемент истории действий"
 
+#.frontend
+#: ../turboui/src/TaskPage/MoveModal.tsx:251
+msgid "Could not load boards."
+msgstr "Не удалось загрузить доски."
+
 #~ #.frontend
 #~ #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:55
 #~ msgid "Could not rename Docs & Files. Try again."
@@ -9860,7 +9870,17 @@ msgid "Description is required"
 msgstr "Описание требуется"
 
 #.frontend
-#: ../turboui/src/TaskPage/MoveModal.tsx:62
+#: ../turboui/src/TaskPage/MoveModal.tsx:269
+msgid "Destination board"
+msgstr "Доска назначения"
+
+#.frontend
+#: ../turboui/src/TaskPage/MoveModal.tsx:169
+msgid "Destination status"
+msgstr "Статус на новой доске"
+
+#.frontend
+#: ../turboui/src/TaskPage/MoveModal.tsx:109
 msgid "Destination type"
 msgstr "Тип назначения"
 
@@ -10285,8 +10305,8 @@ msgid "Due date was updated."
 msgstr "Срок выполнения обновлён."
 
 #.elixir
-#: lib/operately_email/emails/assignments_email.ex:217
-#: lib/operately_email/emails/assignments_email.ex:220
+#: lib/operately_email/emails/assignments_email.ex:228
+#: lib/operately_email/emails/assignments_email.ex:231
 msgid "Due in 1 day"
 msgid_plural "Due in %{count} days"
 msgstr[0] "Срок выполнения через %{count} день"
@@ -10297,14 +10317,14 @@ msgstr[3] "Срок выполнения через %{count} дня"
 #.elixir
 #.frontend
 #: ../turboui/src/ReviewPage/AssignmentsList.tsx:163
-#: lib/operately_email/emails/assignments_email.ex:211
+#: lib/operately_email/emails/assignments_email.ex:222
 msgid "Due today"
 msgstr "Срок — сегодня"
 
 #.elixir
 #.frontend
 #: ../turboui/src/ReviewPage/AssignmentsList.tsx:165
-#: lib/operately_email/emails/assignments_email.ex:214
+#: lib/operately_email/emails/assignments_email.ex:225
 msgid "Due tomorrow"
 msgstr "Срок — завтра"
 
@@ -10892,7 +10912,6 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:263
 #: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:288
 #: assets/js/models/tasks/useTaskArchiveChange.ts:25
-#: assets/js/models/tasks/useTaskSlideInProps.tsx:217
 #: assets/js/pages/AccountNotificationSettingsPage/index.tsx:73
 #: assets/js/pages/CompanyAdminPage/page.tsx:27
 #: assets/js/pages/HomePage/index.tsx:74
@@ -10913,7 +10932,6 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/pages/TaskPage/index.tsx:132
 #: assets/js/pages/TaskPage/index.tsx:140
 #: assets/js/pages/TaskPage/index.tsx:170
-#: assets/js/pages/TaskPage/index.tsx:376
 msgid "Error"
 msgstr "Ошибка"
 
@@ -11439,16 +11457,17 @@ msgid "Failed to load companies"
 msgstr "Не удалось загрузить компании"
 
 #.frontend
-#: ../turboui/src/TaskPage/MoveModal.tsx:49
-#: ../turboui/src/TaskPage/MoveModal.tsx:52
+#: ../turboui/src/TaskPage/MoveModal.tsx:84
+#: ../turboui/src/TaskPage/MoveModal.tsx:88
+#: ../turboui/src/TaskPage/MoveModal.tsx:91
 msgid "Failed to move task"
 msgstr "Не удалось переместить задачу"
 
-#.frontend
-#: assets/js/models/tasks/useTaskSlideInProps.tsx:217
-#: assets/js/pages/TaskPage/index.tsx:376
-msgid "Failed to move task."
-msgstr "Не удалось переместить задачу."
+#~ #.frontend
+#~ #: assets/js/models/tasks/useTaskSlideInProps.tsx:217
+#~ #: assets/js/pages/TaskPage/index.tsx:376
+#~ msgid "Failed to move task."
+#~ msgstr "Не удалось переместить задачу."
 
 #.frontend
 #: assets/js/models/comments/useOptimisticComments.tsx:133
@@ -13547,6 +13566,7 @@ msgstr "Загрузка задач"
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:129
 #: ../turboui/src/SelectLocalization/index.ts:56
+#: ../turboui/src/TaskPage/MoveModal.tsx:260
 #: assets/js/pages/GoalPage/index.tsx:452
 #: assets/js/pages/ProfilePage/index.tsx:88
 #: assets/js/pages/SpacePage/page.tsx:118
@@ -13591,7 +13611,7 @@ msgstr "Записать значение"
 #.elixir
 #.frontend
 #: ../turboui/src/ReviewPage/AssignmentsList.tsx:220
-#: lib/operately_email/emails/assignments_email.ex:108
+#: lib/operately_email/emails/assignments_email.ex:119
 msgid "Log update for %{name}"
 msgstr "Записать значение для «%{name}»"
 
@@ -14094,7 +14114,7 @@ msgstr "Последний"
 #.frontend
 #: ../turboui/src/Modal/MoveModal.tsx:70
 #: ../turboui/src/ResourceHub/nodeMenus/MoveResource.tsx:24
-#: ../turboui/src/TaskPage/MoveModal.tsx:106
+#: ../turboui/src/TaskPage/MoveModal.tsx:194
 #: ../turboui/src/TemplateProjectPage/TemplateResourceMenu.tsx:60
 msgid "Move"
 msgstr "Переместить"
@@ -14122,7 +14142,7 @@ msgid "Move goal to another space"
 msgstr "Переместить цель в другое пространство"
 
 #.frontend
-#: ../turboui/src/TaskPage/MoveModal.tsx:59
+#: ../turboui/src/TaskPage/MoveModal.tsx:104
 #: ../turboui/src/TaskPage/Sidebar.tsx:440
 msgid "Move task"
 msgstr "Переместить задачу"
@@ -14639,6 +14659,11 @@ msgid "No assignments, check-ins, milestones, or reviews need your attention rig
 msgstr "Сейчас нет назначений, отчётов, вех или проверок, требующих вашего внимания."
 
 #.frontend
+#: ../turboui/src/TaskPage/MoveModal.tsx:264
+msgid "No available boards in this space."
+msgstr "В этом пространстве нет доступных досок."
+
+#.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:168
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:192
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:201
@@ -14757,7 +14782,7 @@ msgid "No discussions yet."
 msgstr "Никаких обсуждений."
 
 #.elixir
-#: lib/operately_email/emails/assignments_email.ex:198
+#: lib/operately_email/emails/assignments_email.ex:209
 msgid "No due date"
 msgstr "Без срока выполнения"
 
@@ -15756,7 +15781,7 @@ msgid "Overdue by %{duration}."
 msgstr "Просрочено на %{duration}."
 
 #.elixir
-#: lib/operately_email/emails/assignments_email.ex:207
+#: lib/operately_email/emails/assignments_email.ex:218
 msgid "Overdue by 1 day"
 msgid_plural "Overdue by %{count} days"
 msgstr[0] "Просрочено на %{count} день"
@@ -16243,8 +16268,8 @@ msgid "Please select a space"
 msgstr "Пожалуйста, выберите пространство"
 
 #.frontend
-#: ../turboui/src/TaskPage/MoveModal.tsx:49
-#: ../turboui/src/TaskPage/MoveModal.tsx:52
+#: ../turboui/src/TaskPage/MoveModal.tsx:88
+#: ../turboui/src/TaskPage/MoveModal.tsx:91
 msgid "Please try again"
 msgstr "Пожалуйста, попробуйте ещё раз."
 
@@ -16631,7 +16656,7 @@ msgstr "Всё идёт по плану. Препятствий нет."
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:18
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:166
 #: ../turboui/src/SearchPage/index.tsx:315
-#: ../turboui/src/TaskPage/MoveModal.tsx:66
+#: ../turboui/src/TaskPage/MoveModal.tsx:113
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:222
 #: assets/js/features/activities/ProjectContributorsAddition/index.tsx:87
@@ -17292,7 +17317,7 @@ msgid "Reminder date"
 msgstr "Дата напоминания"
 
 #.elixir
-#: lib/operately_email/emails/assignments_email.ex:244
+#: lib/operately_email/emails/assignments_email.ex:255
 msgid "Reminder for today"
 msgstr "Напоминание на сегодня"
 
@@ -17860,6 +17885,7 @@ msgstr "Заметки к итогам:"
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:146
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
 #: ../turboui/src/InlineComments/CommentsPanel.tsx:140
+#: ../turboui/src/TaskPage/MoveModal.tsx:253
 msgid "Retry"
 msgstr "Повторить"
 
@@ -17987,14 +18013,14 @@ msgstr "Проверить отмену подписки"
 #.elixir
 #.frontend
 #: ../turboui/src/ReviewPage/AssignmentsList.tsx:214
-#: lib/operately_email/emails/assignments_email.ex:105
+#: lib/operately_email/emails/assignments_email.ex:116
 msgid "Review goal progress update"
 msgstr "Проверить отчёт по цели"
 
 #.elixir
 #.frontend
 #: ../turboui/src/ReviewPage/AssignmentsList.tsx:218
-#: lib/operately_email/emails/assignments_email.ex:107
+#: lib/operately_email/emails/assignments_email.ex:118
 msgid "Review goal retrospective"
 msgstr "Проверить итоги работы над целью"
 
@@ -18006,14 +18032,14 @@ msgstr "Просмотрите платные тарифы и перейдите
 #.elixir
 #.frontend
 #: ../turboui/src/ReviewPage/AssignmentsList.tsx:216
-#: lib/operately_email/emails/assignments_email.ex:106
+#: lib/operately_email/emails/assignments_email.ex:117
 msgid "Review project retrospective"
 msgstr "Проверить итоги проекта"
 
 #.elixir
 #.frontend
 #: ../turboui/src/ReviewPage/AssignmentsList.tsx:212
-#: lib/operately_email/emails/assignments_email.ex:103
+#: lib/operately_email/emails/assignments_email.ex:114
 msgid "Review weekly check-in"
 msgstr "Проверить еженедельный отчёт"
 
@@ -18664,13 +18690,13 @@ msgid "Select destination"
 msgstr "Выбрать пункт назначения"
 
 #.frontend
-#: ../turboui/src/TaskPage/MoveModal.tsx:76
+#: ../turboui/src/TaskPage/MoveModal.tsx:128
 msgid "Select destination project"
 msgstr "Выберите проект назначения"
 
 #.frontend
 #: ../turboui/src/Modal/MoveModal.tsx:58
-#: ../turboui/src/TaskPage/MoveModal.tsx:76
+#: ../turboui/src/TaskPage/MoveModal.tsx:128
 msgid "Select destination space"
 msgstr "Выберите пространство назначения"
 
@@ -19379,7 +19405,7 @@ msgstr "Сканирование источника"
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:89
 #: ../turboui/src/GoalAddForm/index.tsx:103
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:424
-#: ../turboui/src/TaskPage/MoveModal.tsx:67
+#: ../turboui/src/TaskPage/MoveModal.tsx:114
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:132
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:219
 #: assets/js/pages/ProjectAddPage/page.tsx:147
@@ -19830,14 +19856,14 @@ msgstr "Опубликовать отчёт"
 #.elixir
 #.frontend
 #: ../turboui/src/ReviewPage/AssignmentsList.tsx:214
-#: lib/operately_email/emails/assignments_email.ex:104
+#: lib/operately_email/emails/assignments_email.ex:115
 msgid "Submit goal progress update"
 msgstr "Опубликовать отчёт по цели"
 
 #.elixir
 #.frontend
 #: ../turboui/src/ReviewPage/AssignmentsList.tsx:212
-#: lib/operately_email/emails/assignments_email.ex:102
+#: lib/operately_email/emails/assignments_email.ex:113
 msgid "Submit weekly check-in"
 msgstr "Опубликовать еженедельный отчёт"
 
@@ -21165,7 +21191,7 @@ msgstr "Эта периодичность оплаты сейчас недост
 
 #.frontend
 #: ../turboui/src/SpaceKanbanPage/index.tsx:110
-#: ../turboui/src/TaskPage/index.tsx:145
+#: ../turboui/src/TaskPage/index.tsx:148
 msgid "This board is archived."
 msgstr "Эта доска в архиве."
 
@@ -21656,6 +21682,8 @@ msgid "This tab is out of date. Reloading to get the latest version..."
 msgstr "Эта вкладка устарела. Перезагрузка, чтобы получить последнюю версию..."
 
 #.elixir
+#.frontend
+#: ../turboui/src/TaskPage/MoveModal.tsx:84
 #: lib/operately/tasks/task_board.ex:42
 #: lib/operately_web/api/tasks/move.ex:93
 #: lib/operately_web/api/tasks/set_default_board.ex:28
@@ -22396,7 +22424,7 @@ msgstr "Настройка уведомления о новой версии с�
 
 #.frontend
 #: assets/js/pages/ProjectPage/index.tsx:637
-#: assets/js/pages/TaskPage/index.tsx:329
+#: assets/js/pages/TaskPage/index.tsx:332
 msgid "Update failed"
 msgstr "Не удалось обновить"
 

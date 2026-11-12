@@ -76,7 +76,6 @@ function BoardPage({ space, board, tasks: backendTasks }: ReturnType<typeof useL
   const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access", activeOnly: true });
   const spaceSearch = Spaces.useSpaceSearch({
     accessLevel: "edit_access",
-    ignoreIds: [space.id],
     withTasksEnabledOnly: true,
   });
 

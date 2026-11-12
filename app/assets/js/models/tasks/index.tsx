@@ -23,6 +23,8 @@ export {
   useCreateTask,
   useDeleteTask,
   useMoveTask,
+  useTaskMoveBoards,
+  taskMoveErrorResult,
   useUpdateTaskAssignee,
   useUpdateTaskDescription,
   useUpdateTaskDueDate,
