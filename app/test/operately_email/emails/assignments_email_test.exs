@@ -56,6 +56,20 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
     end)
   end
 
+  test "skips a member removed after assignment recipients were loaded", ctx do
+    account = Operately.People.get_account!(ctx.first_assignee.account_id)
+    Operately.People.mark_account_first_login(account)
+    assert Enum.any?(OperatelyEmail.Cron.Assignments.people_who_want_assignment_emails(), &(&1.id == ctx.first_assignee.id))
+    assert {:ok, %{suspended: true}} = Operately.Operations.CompanyMemberRemoving.run(ctx.creator, ctx.first_assignee)
+    flush_emails()
+
+    assert :skip = AssignmentsEmail.send(ctx.first_assignee)
+    refute_email_sent()
+
+    AssignmentsEmail.send(ctx.second_assignee)
+    assert_email_sent(to: ctx.second_assignee.email)
+  end
+
   test "includes pending KPI updates for the champion", ctx do
     flush_emails()
 

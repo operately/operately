@@ -43,6 +43,24 @@ defmodule Operately.Notifications.EmailWorkerTest do
     refute is_nil(notification.email_sent_at)
   end
 
+  for suspension <- [%{suspended: true}, %{suspended_at: ~U[2026-04-08 18:00:00Z]}] do
+    test "skips queued delivery when the recipient has #{inspect(suspension)}" do
+      ctx = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:project, :space)
+      activity = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
+      notification = notification_fixture(activity_id: activity.id, person_id: ctx.creator.id, email_sent: false, email_sent_at: nil)
+      assert {:ok, _} = Operately.People.update_person(ctx.creator, unquote(Macro.escape(suspension)))
+      flush_emails()
+
+      assert {:ok, :skipped} = EmailWorker.deliver(notification)
+      assert :ok = EmailWorker.perform(%{args: %{"notification_id" => notification.id}})
+      refute_email_sent()
+
+      notification = Notifications.get_notification!(notification.id)
+      refute notification.email_sent
+      assert is_nil(notification.email_sent_at)
+    end
+  end
+
   test "does not mark notification as sent when delivery returns an error", ctx do
     with_mocks([
       {Operately.People, [:passthrough], [get_person!: fn _id -> ctx.person end]},

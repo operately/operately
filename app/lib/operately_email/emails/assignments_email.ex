@@ -3,6 +3,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   import OperatelyEmail.Mailers.NotificationMailer
 
   alias Operately.Assignments.{Loader, Assignment}
+  alias Operately.People.Person
   alias Operately.Tasks.Reminder
   alias Operately.Repo
   alias OperatelyWeb.Paths
@@ -19,6 +20,16 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   #
 
   def send(person, opts \\ []) do
+    person = Repo.reload(person)
+
+    if Person.active?(person) do
+      send_assignments(person, opts)
+    else
+      :skip
+    end
+  end
+
+  defp send_assignments(person, opts) do
     company = Repo.preload(person, [:company]).company
 
     case load_assignments_payload(person, company, opts) do
