@@ -26,6 +26,7 @@ defmodule Operately.CompanyTransfers.Import.DefaultTaskBoards do
         end
       end)
 
+    spaces = Enum.map(spaces, &Map.drop(&1, ["task_statuses", "tasks_kanban_state"]))
     defaults = Map.new(spaces, &{&1["id"], &1["default_task_board_id"]})
 
     tasks =

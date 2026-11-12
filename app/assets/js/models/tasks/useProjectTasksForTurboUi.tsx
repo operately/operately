@@ -73,7 +73,7 @@ export function useProjectTasksForTurboUi({
 
     const normalized = normalizeMilestonesOrderingState(milestones, tasks);
     if (normalized !== milestones) {
-      setMilestones(normalized);
+      setMilestones((current) => normalizeMilestonesOrderingState(current, tasks));
     }
   }, [milestones, setMilestones, tasks, tasksLoaded, parsedBackendTasks, backendTasks]);
 

@@ -84,14 +84,13 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       task = Repo.get!(Operately.Tasks.Task, id)
       assert task.board_id == before.default_task_board_id
       assert Repo.reload!(other).tasks_kanban_state == %{}
-      assert Repo.reload!(ctx.engineering).tasks_kanban_state == before.tasks_kanban_state
       board = Repo.get!(TaskBoard, task.board_id)
       assert Paths.task_id(task) in board.tasks_kanban_state[task.task_status.value]
     end
 
     test "task-specific status changes and deletion synchronize only its own board", ctx do
       alias Operately.Tasks.TaskBoard
-      board = Repo.insert!(%TaskBoard{space_id: ctx.engineering.id, name: "Other", task_statuses: ctx.engineering.task_statuses})
+      board = Repo.insert!(%TaskBoard{space_id: ctx.engineering.id, name: "Other", task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.engineering.default_task_board_id).task_statuses})
       ctx = Factory.create_space_task(ctx, :board_task, :engineering, board_id: board.id)
       default = Repo.get!(TaskBoard, ctx.engineering.default_task_board_id)
       status = Enum.find(board.task_statuses, & &1.closed) |> Map.from_struct() |> Map.update!(:color, &to_string/1)
@@ -166,7 +165,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "explicit board selection" do
     setup ctx do
-      board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.engineering.id, name: "Other", task_statuses: ctx.engineering.task_statuses})
+      board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.engineering.id, name: "Other", task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.engineering.default_task_board_id).task_statuses})
       ctx |> Factory.log_in_person(:creator) |> Map.put(:board, board)
     end
 
@@ -1324,7 +1323,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.space_task),
-        status: Enum.find(ctx.engineering.task_statuses, & &1.closed) |> Map.from_struct() |> Map.update!(:color, &to_string/1),
+        status: Enum.find(Repo.get!(Operately.Tasks.TaskBoard, ctx.engineering.default_task_board_id).task_statuses, & &1.closed) |> Map.from_struct() |> Map.update!(:color, &to_string/1),
         type: "space"
       })
 

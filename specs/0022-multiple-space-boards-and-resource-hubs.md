@@ -142,11 +142,13 @@ Rollback: the data migration's `down` preserves boards. Once new writes have occ
 
 All three PRs reuse TurboUI controls and generated TanStack queries/mutations, include translations and regenerated resources, and add focused feature tests.
 
-### PR 7 — Remove legacy space task storage (upcoming)
+### PR 7 — Remove legacy space task storage ✅
 
-- Initialize statuses and ordering directly on the default board during space creation. Remove the corresponding initialization and compatibility helpers from `Group`.
-- After the board cutover is deployed and no runtime code depends on the old fields, remove `Group.task_statuses` and `Group.tasks_kanban_state` and drop their database columns in a new migration.
-- Keep legacy API response fields as projections of the default board. Continue reading old package fields during import normalization, converting them to board data before inserting rows.
-- Verify new-space creation, upgrades and fresh installs, older-package imports, export/import round trips, and legacy API responses. Document that rollback to legacy writers requires restoring and repopulating the removed columns.
+- Initialize the standard statuses and empty ordering directly on the default board during space creation. Remove legacy fields and task-state helpers from `Group`.
+- Drop `groups.task_statuses` and `groups.tasks_kanban_state` in a new migration. Preserve historical backfills for fresh installations.
+- Keep legacy API response fields as projections of the default board. Convert older package fields to board data before ID remapping, then remove those fields from all imported group rows; existing boards remain authoritative.
+- Verify new-space creation, migration upgrade/rollback and fresh installs, old/transitional/current package imports, legacy API responses, and CLI/MCP/browser task workflows.
+
+Deployment: deploy only after the board cutover. Stop application processes and workers before migrating, then start the new release. Migration rollback restores columns with empty defaults only; returning to legacy writers also requires repopulating them from default boards and reconciling multiple-board state.
 
 For every API contract PR, regenerate clients and the CLI catalog, update MCP schemas/examples/catalog tests, run `make test.cli.catalog.sync`, and extend backward-compatibility coverage. Preserve one-instance behavior throughout rollout.

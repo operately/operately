@@ -471,8 +471,9 @@ defmodule Operately.Assignments.LoaderTest do
 
   describe "space tasks" do
     test "returns assignments for tasks owned by the person", ctx do
-      pending = Enum.find(ctx.space.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
-      in_progress = Enum.find(ctx.space.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
+      statuses = Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses
+      pending = Enum.find(statuses, &(&1.color == :gray)) |> Map.from_struct()
+      in_progress = Enum.find(statuses, &(&1.color == :blue)) |> Map.from_struct()
 
       ctx =
         ctx

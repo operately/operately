@@ -144,7 +144,7 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
   end
 
   test "returns the owning board URL for non-default board tasks", ctx do
-    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Support", task_statuses: ctx.space.task_statuses})
+    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Support", task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses})
 
     ctx =
       ctx
