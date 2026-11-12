@@ -61,9 +61,29 @@ defmodule Operately.Projects do
   defdelegate list_projects(person, filters), to: Operately.Projects.ListOperation, as: :run
 
   def update_project(%Project{} = project, attrs) do
-    project
-    |> Project.changeset(attrs)
-    |> Repo.update()
+    board_attrs = Map.take(attrs, [:task_statuses, :tasks_kanban_state])
+
+    if map_size(board_attrs) == 0 do
+      project |> Project.changeset(attrs) |> Repo.update()
+    else
+      update_project_and_board(project, Map.drop(attrs, Map.keys(board_attrs)), board_attrs)
+    end
+  end
+
+  defp update_project_and_board(project, attrs, board_attrs) do
+    alias Operately.Tasks.TaskBoard
+
+    Multi.new()
+    |> Multi.run(:board, fn _, _ ->
+      with {:ok, board} <- TaskBoard.for_project(project) do
+        Operately.Tasks.BoardSync.lock_board(board.id)
+      end
+    end)
+    |> Multi.update(:updated_board, fn %{board: board} -> TaskBoard.changeset(board, board_attrs) end)
+    |> Multi.update(:project, Project.changeset(project, attrs))
+    |> Multi.run(:result, fn _, %{project: project, updated_board: board} -> {:ok, Project.with_task_board(project, board)} end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:result)
   end
 
   def rename_project(author, project, new_name) do
