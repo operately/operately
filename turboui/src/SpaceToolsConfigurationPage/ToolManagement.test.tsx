@@ -42,6 +42,20 @@ function setup(overrides: Partial<ToolManagementProps> = {}) {
   return { onAction, user: userEvent.setup() };
 }
 
+it.each([false, true])("uses labeled creation actions only for empty lists: %s", (empty) => {
+  setup(empty ? { boards: [], hubs: [] } : {});
+
+  for (const name of ["New board", "New Resource Hub"]) {
+    const action = screen.getByRole("button", { name });
+    expect(action).toBeEnabled();
+    if (empty) {
+      expect(action).toHaveTextContent(name);
+    } else {
+      expect(action.textContent).toBe("");
+    }
+  }
+});
+
 it("keeps the entered name after a failed creation and closes after retry", async () => {
   const onAction = jest.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(true);
   const { user } = setup({ onAction });

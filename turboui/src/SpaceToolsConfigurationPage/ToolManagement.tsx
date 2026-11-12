@@ -7,6 +7,7 @@ import { ConfirmDialog } from "../ConfirmDialog";
 import * as Forms from "../Forms";
 import { Menu, MenuActionItem } from "../Menu";
 import { Modal } from "../Modal";
+import { Tooltip } from "../Tooltip";
 import { UnstyledButton } from "../Button/UnstalyedButton";
 import { DragHandle, DropIndicator, useSortableItem, useSortableList } from "../utils/PragmaticDragAndDrop";
 
@@ -29,7 +30,12 @@ type Item = ResourceHubSummary | TaskBoardSummary;
 type Editing = { kind: ToolKind; item?: Item };
 type Confirmation = { type: "archive" | "delete"; item: Item };
 
-export function ToolManagement(props: ToolManagementProps & { kind: ToolKind }) {
+export function ToolManagement(
+  props: ToolManagementProps & {
+    kind: ToolKind;
+    render?: (content: React.ReactNode, createAction: React.ReactNode) => React.ReactNode;
+  },
+) {
   const { t } = useTranslation();
   const [editing, setEditing] = React.useState<Editing | null>(null);
   const [confirmation, setConfirmation] = React.useState<Confirmation | null>(null);
@@ -91,9 +97,45 @@ export function ToolManagement(props: ToolManagementProps & { kind: ToolKind }) 
     onAction: perform,
   };
 
-  return (
+  const createLabel = props.kind === "board" ? t("New board") : t("New Resource Hub");
+  const createAction =
+    props.canEdit && items.length > 0 ? (
+      <Tooltip content={createLabel} size="sm">
+        <span className="inline-flex">
+          <UnstyledButton
+            ariaLabel={createLabel}
+            className="flex items-center justify-center size-8 rounded-md text-content-dimmed hover:text-content-base hover:bg-surface-dimmed focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-1"
+            onClick={() => setEditing({ kind: props.kind })}
+            disabled={pending}
+            testId={`create-${props.kind}`}
+          >
+            <IconPlus size={18} aria-hidden />
+          </UnstyledButton>
+        </span>
+      </Tooltip>
+    ) : null;
+
+  const content = (
     <div data-test-id={`${props.kind}-management`}>
-      {items.length > 0 && <ToolList {...listProps} items={items} />}
+      {(items.length > 0 || props.canEdit) && (
+        <>
+          {items.length > 0 && <ToolList {...listProps} items={items} />}
+          {props.canEdit && items.length === 0 && (
+            <div className="py-2 pl-12 pr-3">
+              <ActionLink
+                underline="hover"
+                className="inline-flex items-center gap-1 py-1 text-sm font-medium"
+                onClick={() => setEditing({ kind: props.kind })}
+                disabled={pending}
+                testId={`create-${props.kind}`}
+              >
+                <IconPlus size={16} aria-hidden />
+                {createLabel}
+              </ActionLink>
+            </div>
+          )}
+        </>
+      )}
       {props.kind === "board" && archivedBoards.length > 0 && (
         <details className="mt-3" data-test-id="archived-boards-section">
           <summary className="cursor-pointer text-sm font-semibold text-content-dimmed py-2">
@@ -101,18 +143,6 @@ export function ToolManagement(props: ToolManagementProps & { kind: ToolKind }) 
           </summary>
           <ToolList {...listProps} items={archivedBoards} archived />
         </details>
-      )}
-      {props.canEdit && (
-        <ActionLink
-          underline="hover"
-          className="mt-3 inline-flex items-center gap-1 text-sm font-medium"
-          onClick={() => setEditing({ kind: props.kind })}
-          disabled={pending}
-          testId={`create-${props.kind}`}
-        >
-          <IconPlus size={16} aria-hidden />
-          {props.kind === "board" ? t("New board") : t("New Resource Hub")}
-        </ActionLink>
       )}
       {editing && (
         <NameForm
@@ -159,6 +189,15 @@ export function ToolManagement(props: ToolManagementProps & { kind: ToolKind }) 
       )}
     </div>
   );
+
+  return props.render ? (
+    props.render(content, createAction)
+  ) : (
+    <>
+      {createAction}
+      {content}
+    </>
+  );
 }
 
 function ToolList({
@@ -187,10 +226,7 @@ function ToolList({
   const { t } = useTranslation();
 
   return (
-    <div
-      className="divide-y divide-stroke-base border-y border-stroke-base"
-      data-test-id={archived ? "archived-boards" : `${kind}-list`}
-    >
+    <div className="divide-y divide-stroke-dimmed" data-test-id={archived ? "archived-boards" : `${kind}-list`}>
       {items.map((item, index) => (
         <SortableToolRow
           key={item.id}
@@ -201,15 +237,17 @@ function ToolList({
           pending={pending}
           onReorder={onReorder}
         >
-          <span className="font-semibold min-w-0 break-words flex-1">{item.name}</span>
-          {item.isDefault && (
-            <span
-              className="text-xs text-content-dimmed bg-surface-dimmed rounded px-2 py-1"
-              data-test-id="default-tool"
-            >
-              {t("Default")}
-            </span>
-          )}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0 flex-1">
+            <span className="text-sm font-medium min-w-0 break-words">{item.name}</span>
+            {item.isDefault && (
+              <span
+                className="text-xs text-content-dimmed bg-surface-dimmed rounded px-2 py-0.5 shrink-0"
+                data-test-id="default-tool"
+              >
+                {t("Default")}
+              </span>
+            )}
+          </div>
           {canEdit && (
             <Menu
               size="medium"
@@ -286,10 +324,11 @@ function SortableToolRow({
     <div
       ref={ref}
       data-test-id={`tool-instance-${item.id}`}
-      className={`group relative flex items-center gap-3 py-3 min-w-0 bg-surface-base ${isDragging ? "opacity-50" : ""}`}
+      className={`group relative flex items-center gap-3 px-0 py-1.5 min-h-11 min-w-0 ${isDragging ? "opacity-50" : ""}`}
     >
       {canReorder && (
         <span
+          className="w-6 shrink-0"
           ref={dragHandleRef as React.RefObject<HTMLSpanElement>}
           onKeyDown={(event) => {
             if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;

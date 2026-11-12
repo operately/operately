@@ -5151,7 +5151,7 @@ msgid "A place to share rich text documents, images, videos, and other files"
 msgstr "Un lugar para compartir documentos con formato, imágenes, videos y otros archivos"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:89
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:88
 msgid "A place to share rich text documents, images, videos, and other files."
 msgstr "Un lugar para compartir documentos con formato, imágenes, videos y otros archivos."
 
@@ -5357,7 +5357,7 @@ msgid "Actions"
 msgstr "Acciones"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:217
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:257
 msgid "Actions for %{name}"
 msgstr "Acciones para %{name}"
 
@@ -6269,8 +6269,8 @@ msgstr "Aplicar filtro"
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:44
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:144
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:235
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:176
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:275
 #: ../turboui/src/TaskPage/PageOptions.tsx:21
 #: ../turboui/src/TaskPage/Sidebar.tsx:449
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:109
@@ -6282,7 +6282,7 @@ msgid "Archive"
 msgstr "Archivar"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:132
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:164
 msgid "Archive %{name}?"
 msgstr "¿Archivar %{name}?"
 
@@ -6330,7 +6330,7 @@ msgid "Archived At"
 msgstr "Fecha de archivo"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:100
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:142
 msgid "Archived boards"
 msgstr "Tableros archivados"
 
@@ -7142,7 +7142,7 @@ msgstr "No puede ser la misma persona que el responsable"
 #: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:114
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:194
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:104
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:105
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:103
 #: ../turboui/src/StatusCustomization/index.tsx:205
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:135
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:276
@@ -8824,7 +8824,7 @@ msgid "Couldn’t load more activities."
 msgstr "No se pudieron cargar más actividades."
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:357
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:400
 msgid "Create"
 msgstr "Crear"
 
@@ -9300,7 +9300,7 @@ msgid "Deactivate Account"
 msgstr "Desactivar cuenta"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:210
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:249
 msgid "Default"
 msgstr "Predeterminado"
 
@@ -9323,8 +9323,8 @@ msgstr "Predeterminado"
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:67
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:291
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:517
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:144
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:248
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:176
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:288
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:339
 #: ../turboui/src/TaskPage/PageOptions.tsx:28
 #: ../turboui/src/TaskPage/Sidebar.tsx:465
@@ -9365,7 +9365,7 @@ msgid "Delete %{name} target?"
 msgstr "¿Eliminar el indicador %{name}?"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:133
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:165
 msgid "Delete %{name}?"
 msgstr "¿Eliminar %{name}?"
 
@@ -14079,7 +14079,7 @@ msgstr "Puntuación NPS"
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:53
 #: ../turboui/src/SortControl/index.tsx:18
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:71
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:354
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:397
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:120
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:201
@@ -14099,7 +14099,7 @@ msgstr "El nombre no puede estar en blanco"
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:154
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:25
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:39
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:331
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:374
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
 #: lib/operately_web/api/resource_hubs/create.ex:27
 #: lib/operately_web/api/resource_hubs/rename.ex:37
@@ -14243,8 +14243,8 @@ msgid "New Project"
 msgstr "Nuevo proyecto"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:114
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:349
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:100
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:392
 msgid "New Resource Hub"
 msgstr "Nuevo centro de recursos"
 
@@ -14254,8 +14254,8 @@ msgid "New Value"
 msgstr "Nuevo valor"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:114
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:346
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:100
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:389
 msgid "New board"
 msgstr "Nuevo tablero"
 
@@ -15217,7 +15217,7 @@ msgstr "Sólo los administradores de la empresa pueden ver y compartir este enla
 
 #.elixir
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:140
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:172
 #: lib/operately_web/api/resource_hubs/delete.ex:27
 msgid "Only empty Resource Hubs can be deleted. Remove all documents, drafts, files, links, and folders first."
 msgstr "Solo se pueden eliminar centros de recursos vacíos. Elimina primero todos los documentos, borradores, archivos, enlaces y carpetas."
@@ -17284,7 +17284,7 @@ msgstr "Eliminar un hito mantiene sus tareas a nivel de proyecto."
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:99
 #: ../turboui/src/ResourceHubFolderPage/index.tsx:34
 #: ../turboui/src/ResourceHubPage/index.tsx:45
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:222
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:262
 #: ../turboui/src/TemplateProjectPage/TemplateResourceMenu.tsx:55
 msgid "Rename"
 msgstr "Cambiar nombre"
@@ -17301,12 +17301,12 @@ msgstr "Cambiar nombre de empresa"
 
 #.frontend
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:50
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:348
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:391
 msgid "Rename Resource Hub"
 msgstr "Cambiar nombre del centro de recursos"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:345
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:388
 msgid "Rename board"
 msgstr "Cambiar nombre del tablero"
 
@@ -17394,7 +17394,7 @@ msgid "Reopening Goal"
 msgstr "Reapertura del objetivo"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:301
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:342
 msgid "Reorder %{name}"
 msgstr "Reordenar %{name}"
 
@@ -17526,7 +17526,7 @@ msgid "Resource Hub"
 msgstr "Centro de recursos"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:88
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:87
 msgid "Resource Hubs"
 msgstr "Centros de recursos"
 
@@ -17562,7 +17562,7 @@ msgstr "Reiniciar notificaciones para miembros del equipo"
 #.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:142
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:47
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:243
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:283
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:92
 msgid "Restore"
 msgstr "Restaurar"
@@ -18039,7 +18039,7 @@ msgstr "Igual que el sistema"
 #: ../turboui/src/PageDescription/index.tsx:195
 #: ../turboui/src/PrivacyField/index.tsx:118
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:97
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:357
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:400
 #: ../turboui/src/TitleSetupPrompt/index.tsx:63
 #: assets/js/features/ProjectRetrospective/Form.tsx:82
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:173
@@ -18143,7 +18143,7 @@ msgid "Save selection"
 msgstr "Guardar selección"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:102
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:100
 msgid "Save visibility"
 msgstr "Guardar visibilidad"
 
@@ -18722,7 +18722,7 @@ msgid "Set active"
 msgstr "Establecer activo"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:230
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:270
 msgid "Set as default"
 msgstr "Establecer como predeterminado"
 
@@ -18930,7 +18930,7 @@ msgid "Show closed statuses"
 msgstr "Mostrar estados cerrados"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:136
+#: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:137
 msgid "Show on space page"
 msgstr "Mostrar en la página del espacio"
 
@@ -20988,7 +20988,7 @@ msgid "This board is archived."
 msgstr "Este tablero está archivado."
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:137
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:169
 msgid "This board will be hidden from the space. Its tasks will remain readable, and you can restore it here."
 msgstr "Este tablero se ocultará del espacio. Sus tareas seguirán siendo visibles y podrás restaurarlo aquí."
 
