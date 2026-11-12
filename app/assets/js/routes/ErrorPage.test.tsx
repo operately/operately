@@ -30,6 +30,7 @@ jest.mock("turboui", () => ({
 
 beforeEach(() => {
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+  jest.mocked(captureException).mockClear();
 });
 
 it.each([
@@ -51,6 +52,7 @@ it.each([
       ),
     );
     expect(element.querySelector("a")?.getAttribute("href")).toBe(href);
+    expect(captureException).not.toHaveBeenCalled();
   } finally {
     await act(async () => root.unmount());
     log.mockRestore();
@@ -108,7 +110,6 @@ it.each([
     expect(element.textContent).toContain(expected);
     expect(element.querySelector("pre")?.textContent ?? null).toBe(environment === "prod" ? null : error.stack);
     expect(element.querySelector("script")).toBeNull();
-    expect(captureException).toHaveBeenCalledWith(error, { level: "fatal" });
   } finally {
     await act(async () => root.unmount());
     log.mockRestore();
