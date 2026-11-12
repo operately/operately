@@ -15,6 +15,7 @@ export namespace TaskPage {
   export type MoveDestinationType = TaskPageTypes.MoveDestinationType;
   export type Variant = TaskPageTypes.Variant;
   export type VariantFeatures = TaskPageTypes.VariantFeatures;
+  export type MoveTaskResult = TaskPageTypes.MoveTaskResult;
   export type MoveTaskInput = TaskPageTypes.MoveTaskInput;
   export type Space = TaskPageTypes.Space;
   export type SpaceProps = TaskPageTypes.SpaceProps;
@@ -70,6 +71,8 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     onArchive: props.onArchive,
     onRestore: props.onRestore,
     onMoveTask: props.onMoveTask,
+    loadMoveBoards: props.loadMoveBoards,
+    currentBoardId: props.currentBoardId,
     projectSearch: props.projectSearch,
     spaceSearch: props.spaceSearch,
     assigneePersonSearch: props.assigneePersonSearch,

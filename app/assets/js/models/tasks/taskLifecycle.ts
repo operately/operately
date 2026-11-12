@@ -1,4 +1,7 @@
-import Api from "@/api";
+import { useCallback } from "react";
+import axios from "axios";
+import Api, { type TaskStatus } from "@/api";
+import type { TaskPage } from "turboui";
 import { QueryClient, type UseMutationOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 
 type RefetchType = "active" | "none";
@@ -69,6 +72,41 @@ export function useDeleteTask(refetchType: RefetchType = "none") {
 
 export function useMoveTask() {
   return useTaskMutation(Api.tasks.moveMutationOptions(), "none");
+}
+
+export function useTaskMoveBoards() {
+  const queryClient = useQueryClient();
+
+  return useCallback(
+    async (spaceId: string) => {
+      const result = await queryClient.fetchQuery({
+        ...Api.tasks.listBoardsQueryOptions({ spaceId, archiveStatus: "active" }),
+        staleTime: 0,
+        retry: false,
+      });
+      return result.boards;
+    },
+    [queryClient],
+  );
+}
+
+type MoveError = {
+  details?: {
+    code?: string;
+    task_statuses?: Pick<TaskStatus, "id" | "label">[];
+  };
+};
+
+export function taskMoveErrorResult(error: unknown): TaskPage.MoveTaskResult {
+  if (!axios.isAxiosError<MoveError>(error)) return false;
+
+  const details = error.response?.data?.details;
+  if (details?.code === "task_board_status_mapping_required" && Array.isArray(details.task_statuses)) {
+    return { status: "status_mapping_required", statuses: details.task_statuses };
+  }
+  if (details?.code === "task_board_archived") return { status: "board_unavailable" };
+
+  return false;
 }
 
 function useTaskMutation<TData, TError, TVariables, TContext>(

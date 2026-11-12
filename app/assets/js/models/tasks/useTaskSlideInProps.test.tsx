@@ -17,7 +17,10 @@ jest.mock("@/models/people", () => ({}));
 jest.mock("@/routes/paths", () => ({ compareIds: (a: string, b: string) => a === b }));
 jest.mock("@/hooks/useFormattedTimePreferences", () => ({ useFormattedTimePreferences: () => ({}) }));
 jest.mock("react-router", () => ({ useNavigate: () => mockNavigate }));
-jest.mock("./taskLifecycle", () => ({ useMoveTask: () => ({ mutateAsync: mockMoveTask }) }));
+jest.mock("./taskLifecycle", () => ({
+  ...jest.requireActual("./taskLifecycle"),
+  useMoveTask: () => ({ mutateAsync: mockMoveTask }),
+}));
 jest.mock("./prepareTaskTimelineItems", () => ({ prepareTaskTimelineItems: () => [] }));
 
 describe("task slide-in field changes", () => {
@@ -136,6 +139,24 @@ describe("task slide-in field changes", () => {
     expect(mockNavigate).toHaveBeenCalledWith(destination.expectedPath);
   });
 
+  it("passes explicit board/status selectors and returns mapping errors without navigating", async () => {
+    const statuses = [{ id: "review", label: "Review" }];
+    mockMoveTask.mockRejectedValue({
+      isAxiosError: true,
+      response: { data: { details: { code: "task_board_status_mapping_required", task_statuses: statuses } } },
+    });
+    const input = {
+      destinationType: "space" as const,
+      destinationId: "requested-space",
+      destinationBoardId: "other-board",
+      destinationStatusId: "review",
+    };
+    const result = await moveSlideInTask(hook, input);
+    expect(mockMoveTask).toHaveBeenCalledWith({ taskId: "source-task", ...input });
+    expect(result).toEqual({ status: "status_mapping_required", statuses });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   it("stays on the source page when the move is rejected", async () => {
     mockMoveTask.mockRejectedValue(new Error("Move rejected"));
 
@@ -147,7 +168,10 @@ describe("task slide-in field changes", () => {
   });
 });
 
-async function moveSlideInTask(hook: ReturnType<typeof useTaskSlideInProps>) {
+async function moveSlideInTask(
+  hook: ReturnType<typeof useTaskSlideInProps>,
+  input: import("turboui").TaskPage.MoveTaskInput = { destinationType: "space", destinationId: "requested-space" },
+) {
   const taskPageProps = hook.getTaskPageProps("source-task", {
     tasks: [
       {
@@ -168,5 +192,5 @@ async function moveSlideInTask(hook: ReturnType<typeof useTaskSlideInProps>) {
   if (!taskPageProps) throw new Error("Expected slide-in props for source task");
   if (!taskPageProps.onMoveTask) throw new Error("Expected move handler for source task");
 
-  return taskPageProps.onMoveTask({ destinationType: "space", destinationId: "requested-space" });
+  return taskPageProps.onMoveTask(input);
 }

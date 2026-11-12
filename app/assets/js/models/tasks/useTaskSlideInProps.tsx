@@ -1,10 +1,9 @@
-import i18n from "@/i18n";
 import { useSetTaskItemChecked } from "@/models/richContent/taskListLifecycle";
 import { useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
 import { useNavigate } from "react-router";
 
-import { DateField, TaskBoard, TaskPage, showErrorToast } from "turboui";
+import { DateField, TaskBoard, TaskPage } from "turboui";
 import { useOptimisticComments } from "@/models/comments/useOptimisticComments";
 import * as People from "@/models/people";
 import { compareIds, Paths } from "@/routes/paths";
@@ -14,7 +13,7 @@ import { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 import { type Person as ApiPerson, type Task as BackendTask } from "@/api";
 import { useSubscription } from "@/models/subscriptions";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useMoveTask } from "./taskLifecycle";
+import { useMoveTask, useTaskMoveBoards, taskMoveErrorResult } from "./taskLifecycle";
 import { resolveTaskMoveDestination, taskMoveDestinationPath, type TaskMoveDestination } from "./taskMoveNavigation";
 
 export function useTaskSlideInProps(opts: {
@@ -46,6 +45,7 @@ export function useTaskSlideInProps(opts: {
   const setTaskItemChecked = useSetTaskItemChecked();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mutateAsync: moveTask } = useMoveTask();
+  const loadMoveBoards = useTaskMoveBoards();
   const navigate = useNavigate();
 
   const parsedCurrentUser = currentUser ? (People.parsePersonForTurboUi(paths, currentUser) ?? undefined) : undefined;
@@ -202,9 +202,9 @@ export function useTaskSlideInProps(opts: {
         onDelete: async () => {
           await ctx.onTaskDelete?.(taskId);
         },
-        onMoveTask: async ({ destinationType, destinationId }) => {
+        onMoveTask: async (input) => {
           try {
-            const request = { taskId, destinationType, destinationId };
+            const request = { taskId, ...input };
             const result = await moveTask(request);
             const destination = resolveTaskMoveDestination(result, request);
 
@@ -213,11 +213,13 @@ export function useTaskSlideInProps(opts: {
 
             return true;
           } catch (error) {
-            console.error("Failed to move task", error);
-            showErrorToast(i18n.t("Error"), i18n.t("Failed to move task."));
-            return false;
+            const result = taskMoveErrorResult(error);
+            if (result === false) console.error("Failed to move task", error);
+            return result;
           }
         },
+        loadMoveBoards,
+        currentBoardId: backendTask?.boardId,
         projectSearch: opts.projectSearch,
         spaceSearch: opts.spaceSearch,
 
@@ -283,6 +285,7 @@ export function useTaskSlideInProps(opts: {
       comments,
       opts.onMoveTaskSuccess,
       moveTask,
+      loadMoveBoards,
       navigate,
       subscriptions,
       opts.projectSearch,
