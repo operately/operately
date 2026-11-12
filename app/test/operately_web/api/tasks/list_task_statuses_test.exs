@@ -121,7 +121,7 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
 
   test "reads an empty board and rejects conflicting task and board selectors", ctx do
     ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space) |> Factory.log_in_person(:creator)
-    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Empty", task_statuses: ctx.space.task_statuses})
+    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Empty", task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses})
     assert {200, response} = query(ctx.conn, [:tasks, :list_task_statuses], %{board_id: board.id})
     assert response.board_id == Operately.ShortUuid.encode!(board.id)
     assert length(response.task_statuses) == length(board.task_statuses)

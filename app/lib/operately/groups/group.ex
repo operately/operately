@@ -21,8 +21,6 @@ defmodule Operately.Groups.Group do
     has_many :tasks, Operately.Tasks.Task, foreign_key: :space_id
     has_many :task_boards, Operately.Tasks.TaskBoard, foreign_key: :space_id
     embeds_one :tools, Operately.Groups.SpaceTools, on_replace: :delete
-    embeds_many :task_statuses, Operately.Tasks.Status, on_replace: :delete
-    field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
 
     # populated by after load hooks
     field :is_member, :boolean, virtual: true
@@ -45,17 +43,9 @@ defmodule Operately.Groups.Group do
     group
     |> cast(attrs, [:company_id, :name, :mission, :deleted_at])
     |> cast_embed(:tools)
-    |> cast_initial_task_state(attrs)
     |> put_default_tools()
-    |> put_default_task_statuses()
     |> validate_required([:company_id, :name, :mission])
   end
-
-  defp cast_initial_task_state(%Ecto.Changeset{data: %{id: nil}} = changeset, attrs) do
-    changeset |> cast(attrs, [:tasks_kanban_state]) |> cast_embed(:task_statuses)
-  end
-
-  defp cast_initial_task_state(changeset, _attrs), do: changeset
 
   defp put_default_tools(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
     case Ecto.Changeset.get_field(changeset, :tools) do
@@ -66,30 +56,9 @@ defmodule Operately.Groups.Group do
 
   defp put_default_tools(changeset), do: changeset
 
-  defp put_default_task_statuses(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
-    # Only set defaults for new spaces, and only if task_statuses is empty or not provided
-    case Ecto.Changeset.get_field(changeset, :task_statuses) do
-      [] -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
-      nil -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
-      _ -> changeset
-    end
-  end
-
-  defp put_default_task_statuses(changeset), do: changeset
-
   def default_task_board_changeset(space, board) do
     changeset = change(space, default_task_board_id: board.id)
     if board.space_id == space.id and is_nil(board.archived_at), do: changeset, else: add_error(changeset, :default_task_board_id, "is invalid")
-  end
-
-  def task_status_values(space = %__MODULE__{}) do
-    {:ok, board} = Operately.Tasks.TaskBoard.default_for_space(space)
-    Operately.Tasks.TaskBoard.task_status_values(board)
-  end
-
-  def get_default_task_status(space = %__MODULE__{}) do
-    {:ok, board} = Operately.Tasks.TaskBoard.default_for_space(space)
-    Operately.Tasks.TaskBoard.get_default_task_status(board)
   end
 
   #
