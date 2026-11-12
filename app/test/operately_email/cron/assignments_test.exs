@@ -21,6 +21,8 @@ defmodule OperatelyEmail.Cron.AssignmentsTest do
         |> Factory.setup()
         |> Factory.add_company_member(:enabled_member)
         |> Factory.add_company_member(:disabled_member, preferences: %{notifications: %{notify_about_assignments: false}})
+        |> Factory.add_company_member(:suspended_member, suspended: true)
+        |> Factory.add_company_member(:removed_member, suspended_at: DateTime.utc_now())
 
       {:ok, no_account_member} =
         Operately.People.create_person(%{
