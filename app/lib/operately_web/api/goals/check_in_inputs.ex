@@ -20,9 +20,11 @@ defmodule OperatelyWeb.Api.Goals.CheckInInputs do
 
   defp decode_values(values) do
     Enum.reduce_while(values, {:ok, []}, fn
-      %{"id" => id, "value" => value}, {:ok, acc} when is_binary(id) and is_number(value) ->
-        case Helpers.decode_id(id) do
-          {:ok, id} -> {:cont, {:ok, [%{"id" => id, "value" => value} | acc]}}
+      %{"id" => id, "value" => value}, {:ok, acc} when is_binary(id) ->
+        with {:ok, id} <- Helpers.decode_id(id),
+             {:ok, value} when is_number(value) <- Ecto.Type.cast(:float, value) do
+          {:cont, {:ok, [%{"id" => id, "value" => value} | acc]}}
+        else
           _ -> {:halt, {:error, :bad_request}}
         end
 
