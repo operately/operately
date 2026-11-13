@@ -5,6 +5,26 @@ defmodule OperatelyWeb.Mcp.Tools.People.UpdatePersonTest do
   alias OperatelyWeb.Mcp.Tools.People.UpdatePerson, as: Tool
   alias OperatelyWeb.Paths
 
+  test "advertises the allowed notification preference values" do
+    properties = Tool.definition().input_schema["properties"]
+    assert properties["email_window_minutes"]["enum"] == Operately.People.Preferences.Notifications.email_window_minutes()
+    assert properties["daily_summary_delivery_time"]["enum"] == Operately.People.Preferences.Notifications.daily_summary_delivery_times()
+  end
+
+  test "saves allowed notification preferences and rejects unsupported values" do
+    ctx = Factory.setup(%{})
+    arguments = %{"person_id" => Paths.person_id(ctx.creator), "email_window_minutes" => 30, "daily_summary_delivery_time" => "09:00"}
+
+    assert {:ok, _} = Tool.call(ToolConnHelper.conn(ctx), arguments)
+    person = Repo.reload!(ctx.creator)
+    assert Operately.People.Person.email_window_minutes(person) == 30
+    assert Operately.People.Person.daily_summary_delivery_time(person) == "09:00"
+
+    for {field, value} <- [{"email_window_minutes", 20}, {"daily_summary_delivery_time", "09:30"}] do
+      assert {:error, :invalid_arguments} = Tool.call(ToolConnHelper.conn_as(ctx, person), Map.put(arguments, field, value))
+    end
+  end
+
   test "maps partial profile changes and preserves omitted preferences" do
     ctx = Factory.setup(%{})
     conn = ToolConnHelper.conn(ctx)

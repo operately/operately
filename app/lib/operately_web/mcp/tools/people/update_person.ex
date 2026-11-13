@@ -4,6 +4,10 @@ defmodule OperatelyWeb.Mcp.Tools.People.UpdatePerson do
   alias OperatelyWeb.Api.People.Update, as: Api
   alias OperatelyWeb.Mcp.Helpers
   alias OperatelyWeb.Mcp.CollaborationInputs, as: Inputs
+  alias Operately.People.Preferences.Notifications, as: NotificationPreferences
+
+  @email_windows NotificationPreferences.email_window_minutes()
+  @delivery_times NotificationPreferences.daily_summary_delivery_times()
 
   @impl true
   def definition do
@@ -32,8 +36,8 @@ defmodule OperatelyWeb.Mcp.Tools.People.UpdatePerson do
             "notify_about_assignments" => JsonSchema.boolean("Notify about assignments."),
             "notify_on_mention" => JsonSchema.boolean("Notify on mention."),
             "send_daily_summary" => JsonSchema.boolean("Send daily summary."),
-            "email_window_minutes" => JsonSchema.integer("Email window minutes.", minimum: 0),
-            "daily_summary_delivery_time" => JsonSchema.string("Local daily-summary delivery time, HH:MM.")
+            "email_window_minutes" => JsonSchema.integer("Email batching window in minutes: #{Enum.join(@email_windows, ", ")}.", enum: @email_windows),
+            "daily_summary_delivery_time" => JsonSchema.string("Local daily-summary delivery time, on the hour from 00:00 through 23:00.", enum: @delivery_times)
           },
           required: ["person_id"]
         ),
@@ -57,9 +61,13 @@ defmodule OperatelyWeb.Mcp.Tools.People.UpdatePerson do
          {:ok, inputs} <- Helpers.put_present(inputs, arguments, "notify_about_assignments", :notify_about_assignments, &Inputs.boolean(&1)),
          {:ok, inputs} <- Helpers.put_present(inputs, arguments, "notify_on_mention", :notify_on_mention, &Inputs.boolean(&1)),
          {:ok, inputs} <- Helpers.put_present(inputs, arguments, "send_daily_summary", :send_daily_summary, &Inputs.boolean(&1)),
-         {:ok, inputs} <- Helpers.put_present(inputs, arguments, "email_window_minutes", :email_window_minutes, &Inputs.nonnegative(&1)),
-         {:ok, inputs} <- Helpers.put_present(inputs, arguments, "daily_summary_delivery_time", :daily_summary_delivery_time, &Inputs.string(&1)) do
+         {:ok, inputs} <- Helpers.put_present(inputs, arguments, "email_window_minutes", :email_window_minutes, &decode_preference(&1, @email_windows)),
+         {:ok, inputs} <- Helpers.put_present(inputs, arguments, "daily_summary_delivery_time", :daily_summary_delivery_time, &decode_preference(&1, @delivery_times)) do
       {:ok, inputs}
     end
+  end
+
+  defp decode_preference(value, allowed) do
+    if value in allowed, do: {:ok, value}, else: {:error, :invalid_arguments}
   end
 end
