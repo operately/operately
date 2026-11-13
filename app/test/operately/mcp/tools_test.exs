@@ -36,6 +36,8 @@ defmodule Operately.Mcp.ToolsTest do
     "get_space_discussion",
     "get_task_board",
     "list_task_boards",
+    "list_kpis",
+    "get_kpi",
     "search",
     "list_resource_hubs",
     "search_full_text",
@@ -180,7 +182,16 @@ defmodule Operately.Mcp.ToolsTest do
     "create_project_template_link",
     "update_project_template_link",
     "delete_project_template_resource",
-    "move_project_template_resource"
+    "move_project_template_resource",
+    "create_kpi",
+    "edit_kpi",
+    "delete_kpi",
+    "log_kpi_entry",
+    "edit_kpi_entry",
+    "delete_kpi_entry",
+    "add_kpi_annotation",
+    "edit_kpi_annotation",
+    "delete_kpi_annotation"
   ]
   @company_modes [:none, :authenticated, :resource_derived]
   @safety_classifications [:read_only, :write, :destructive]
