@@ -800,11 +800,11 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert res.task.status.id == status.id
     end
 
-    test "it sets completion timestamp when creating a task with closed status", ctx do
+    test "it uses the board's current closed status when creating a task", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      closed_status = Enum.find(ctx.project.task_statuses, & &1.closed)
-      status = Map.from_struct(closed_status) |> Map.put(:color, Atom.to_string(closed_status.color))
+      closed_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), & &1.closed)
+      status = Map.from_struct(closed_status) |> Map.merge(%{color: Atom.to_string(closed_status.color), closed: false, value: "outdated"})
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         id: Paths.project_id(ctx.project),
@@ -821,6 +821,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert task.closed_at
       assert res.task.closed_at
+      assert task.task_status == closed_status
     end
 
     test "it rejects invalid status", ctx do
@@ -1225,6 +1226,11 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       value: "pending",
       closed: false
     }
+
+    setup ctx do
+      {:ok, project} = Operately.Projects.update_project(ctx.project, %{task_statuses: [@pending_status, @done_status]})
+      %{project: project}
+    end
 
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:tasks, :update_status], %{})

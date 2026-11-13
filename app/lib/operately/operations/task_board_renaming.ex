@@ -5,6 +5,9 @@ defmodule Operately.Operations.TaskBoardRenaming do
   alias Operately.Repo.Locking
   alias Operately.Tasks.TaskBoard
 
+  # Allow only space boards to be renamed
+  def run(_author, %TaskBoard{space_id: nil}, _name), do: {:error, :bad_request}
+
   def run(author, board, name) do
     Multi.new()
     |> Multi.run(:space, fn repo, _ -> Locking.lock_for_update(repo, %Group{id: board.space_id}) end)

@@ -44,6 +44,11 @@ defmodule Operately.CompanyTransfers.ImporterTest do
       ctx
       |> Factory.add_subscription(:subscription, :project, person: ctx.member)
 
+    ctx = Factory.add_project_task(ctx, :project_task, nil, project_id: ctx.project.id)
+    source_board = Project.task_board(ctx.project)
+    # The board is authoritative even when the package contains stale project fields.
+    source_board |> change(tasks_kanban_state: %{"pending" => [WebPaths.task_id(ctx.project_task)]}) |> Repo.update!()
+
     short_id = unique_short_id()
 
     assert {:ok, import_run} =
@@ -74,6 +79,14 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert imported_company.short_id == short_id
     assert imported_project.id != ctx.project.id
     assert imported_project.company_id == imported_company.id
+
+    imported_board = Project.task_board(imported_project)
+    imported_task = Repo.get_by!(Operately.Tasks.Task, project_id: imported_project.id, name: ctx.project_task.name)
+
+    assert imported_task.board_id == imported_board.id
+    assert imported_board.id != source_board.id
+    assert imported_board.task_statuses == source_board.task_statuses
+    assert imported_board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(imported_task)]}
 
     assert imported_creator.account_id == ctx.creator.account_id
     assert imported_member.account_id == ctx.member.account_id
@@ -166,8 +179,14 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   test "run/1 initializes board ownership and ordering for older packages", ctx do
     alias Operately.Groups.Group
     alias Operately.Tasks.{Task, TaskBoard}
+
     ctx = ctx |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space)
+    ctx = Factory.add_project(ctx, :project, :space)
+    ctx = Factory.add_project_task(ctx, :project_task, nil, project_id: ctx.project.id)
+    project_board = Project.task_board(ctx.project)
+    project_board |> change(tasks_kanban_state: %{"pending" => [WebPaths.task_id(ctx.project_task)]}) |> Repo.update!()
     ordering = %{"pending" => [WebPaths.task_id(ctx.task)]}
+
     Repo.get!(TaskBoard, ctx.space.default_task_board_id) |> change(tasks_kanban_state: ordering) |> Repo.update!()
 
     assert {:ok, import_run} = export_and_stage_import(ctx, fn package ->
@@ -177,6 +196,10 @@ defmodule Operately.CompanyTransfers.ImporterTest do
           "groups" -> Map.update!(table, "rows", &Enum.map(&1, fn row ->
             board = Map.fetch!(boards, row["default_task_board_id"])
             row |> Map.merge(Map.take(board, ["task_statuses", "tasks_kanban_state"])) |> Map.delete("default_task_board_id")
+          end))
+          "projects" -> Map.update!(table, "rows", &Enum.map(&1, fn row ->
+            board = Enum.find(Map.values(boards), fn board -> board["project_id"] == row["id"] end)
+            Map.merge(row, Map.take(board, ["task_statuses", "tasks_kanban_state"]))
           end))
           "tasks" -> Map.update!(table, "rows", &Enum.map(&1, fn row -> Map.delete(row, "board_id") end))
           _ -> table
@@ -193,6 +216,15 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert board.task_statuses == Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses
     assert board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(task)]}
     assert board.inserted_at == ctx.space.inserted_at
+
+    project = Repo.get_by!(Project, company_id: completed.company_id, name: ctx.project.name)
+    task = Repo.get_by!(Task, project_id: project.id, name: ctx.project_task.name)
+    board = Project.task_board(project)
+
+    assert task.board_id == board.id
+    assert board.task_statuses == project_board.task_statuses
+    assert board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(task)]}
+    assert board.inserted_at == ctx.project.inserted_at
   end
 
   test "run/1 round-trips the core project template graph and provenance", ctx do

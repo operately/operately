@@ -242,6 +242,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
 
       Multi.new()
       |> insert_project(params, plan)
+      |> Operately.Tasks.TaskBoard.insert_for_project()
       |> insert_default_resource_hub()
       |> insert_access_context()
       |> insert_champion_as_contributor(params)

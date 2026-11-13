@@ -59,7 +59,7 @@ defmodule OperatelyWeb.Api.CuratedTemplates.InstantiateTest do
 
     ctx = Factory.add_curated_template(ctx, :template, type: :project, published: true, definition: definition)
     assert {200, result} = mutation(ctx.conn, [:curated_templates, :instantiate], inputs(ctx))
-    project = Repo.get!(Operately.Projects.Project, Operately.ShortUuid.decode!(result.resource_id)) |> Repo.preload([:milestones, :tasks])
+    project = Repo.get!(Operately.Projects.Project, Operately.ShortUuid.decode!(result.resource_id)) |> Repo.preload([:milestones, :tasks, :task_board])
     assert project.goal_id == nil
     assert Operately.ContextualDates.Timeframe.end_date(project.timeframe) == ~D[2026-11-11]
     milestones = Enum.sort_by(project.milestones, & &1.title)
@@ -74,9 +74,9 @@ defmodule OperatelyWeb.Api.CuratedTemplates.InstantiateTest do
     assert a.description == description
     assert a.due_date.date == ~D[2026-10-13]
     assert b.due_date == nil
-    assert a.task_status.id == hd(project.task_statuses).id
+    assert a.task_status.id == hd(project.task_board.task_statuses).id
     assert first.tasks_ordering_state == [Paths.task_id(a), Paths.task_id(b)]
-    assert project.tasks_kanban_state["pending"] == [Paths.task_id(c)]
+    assert project.task_board.tasks_kanban_state["pending"] == [Paths.task_id(c)]
     assert Enum.all?(project.tasks, & &1.subscription_list_id)
   end
 

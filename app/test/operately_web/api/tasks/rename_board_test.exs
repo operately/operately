@@ -19,6 +19,13 @@ defmodule OperatelyWeb.Api.Tasks.RenameBoardTest do
     assert {401, _} = mutation(Phoenix.ConnTest.build_conn(), [:tasks, :rename_board], inputs(ctx))
   end
 
+  test "rejects independent project board management", ctx do
+    ctx = Factory.add_project(ctx, :project, :space)
+    board = Operately.Projects.Project.task_board(ctx.project)
+    assert {400, _} = mutation(ctx.conn, [:tasks, :rename_board], %{board_id: board.id, new_name: "Renamed"})
+    assert Repo.reload!(board).name == board.name
+  end
+
   for {level, expected} <- [{:no_access, 404}, {:view_access, 403}, {:comment_access, 403}, {:edit_access, 200}] do
     test "requires space edit access: #{level}", ctx do
       ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:member)

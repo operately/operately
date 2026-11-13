@@ -260,7 +260,7 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
 
       assert task.project_id == destination_project.id
       assert task.space_id == nil
-      assert task.board_id == nil
+      assert task.board_id == Operately.Projects.Project.task_board(destination_project).id
 
       board = Repo.get!(Operately.Tasks.TaskBoard, origin.task.board_id)
 

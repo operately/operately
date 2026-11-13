@@ -15,6 +15,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
   end
 
   def serialize(project, level: :full) do
+    board = get_board(project)
+
     serialize(project, level: :essential)
     |> Map.merge(%{
       next_check_in_scheduled_at: OperatelyWeb.Api.Serializer.serialize(project.next_check_in_scheduled_at),
@@ -42,8 +44,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       notifications: OperatelyWeb.Api.Serializer.serialize(project.notifications),
       state: Operately.Projects.Project.state(project) |> Atom.to_string(),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(project.subscription_list),
-      task_statuses: OperatelyWeb.Api.Serializer.serialize(project.task_statuses),
-      tasks_kanban_state: OperatelyWeb.Api.Serializer.serialize(%Operately.Tasks.KanbanState{state: project.tasks_kanban_state}),
+      task_statuses: OperatelyWeb.Api.Serializer.serialize(board && board.task_statuses),
+      tasks_kanban_state: board && OperatelyWeb.Api.Serializer.serialize(%Operately.Tasks.KanbanState{state: board.tasks_kanban_state}),
       tasks_view: Atom.to_string(project.tasks_view),
     })
   end
@@ -77,4 +79,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       end
     end)
   end
+
+  defp get_board(%{task_board: board = %Operately.Tasks.TaskBoard{}}), do: board
+  defp get_board(_project), do: nil
 end

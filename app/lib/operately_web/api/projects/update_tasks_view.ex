@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateTasksView do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Projects
-  alias Operately.Projects.Permissions
+  alias Operately.Projects.{Permissions, Project}
 
   inputs do
     field :project_id, :id, null: false
@@ -21,8 +21,10 @@ defmodule OperatelyWeb.Api.Projects.UpdateTasksView do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:project, fn ctx -> Projects.get_project_with_access_level(inputs.project_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :can_edit, company_read_only: company_read_only(conn)) end)
+    |> run(:project, fn ctx ->
+      Project.get(ctx.me, id: inputs.project_id, opts: [preload: [:task_board]])
+    end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> Projects.update_project(ctx.project, %{tasks_view: inputs.tasks_view}) end)
     |> run(:broadcast, fn ctx ->
       OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result({:ok, ctx.operation}, ctx.project.id)

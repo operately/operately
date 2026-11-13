@@ -20,17 +20,22 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Tasks.UpdateStatus do
     %{
       task_id: Paths.task_id(ctx.task),
       type: "project",
-      status: done_status()
+      status: done_status(ctx.task)
     }
   end
 
   @impl true
-  def assert(response, _ctx) do
-    assert response.task.id
+  def assert(response, ctx) do
+    assert response.task.id == Paths.task_id(ctx.task)
+    assert response.task.status.id == done_status(ctx.task).id
     refute Map.has_key?(response, :error)
   end
 
-  defp done_status do
-    %{id: "done", label: "Done", color: "green", index: 0, value: "done", closed: true}
+  defp done_status(task) do
+    task
+    |> Operately.Tasks.Task.available_statuses()
+    |> Enum.find(&(&1.value == "done"))
+    |> Map.from_struct()
+    |> Map.update!(:color, &to_string/1)
   end
 end

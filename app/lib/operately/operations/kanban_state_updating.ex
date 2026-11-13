@@ -12,13 +12,20 @@ defmodule Operately.Operations.KanbanStateUpdating do
     |> Multi.run(:scope, fn _repo, _changes -> resolve_scope(scope) end)
     |> Multi.run(:locked_task, fn _repo, %{scope: scope} ->
       with {:ok, :ok} <- validate_task_parent(scope, task) do
-        boards = if scope[:board], do: %{scope.board.id => scope.board}, else: %{}
+        boards = %{scope.board.id => scope.board}
         Operately.Tasks.BoardSync.lock_task(task, boards)
       end
     end)
     |> Multi.run(:status, fn _repo, %{scope: scope} -> validate_status(scope, status) end)
     |> Multi.update(:updated_task, fn %{status: status, locked_task: task} ->
       Task.changeset(task, Task.status_change_attrs(task, status))
+    end)
+    |> Multi.run(:sync_project_board, fn _, %{scope: scope, locked_task: original, updated_task: updated} ->
+      if scope.type == :milestone && task_status_changed?(original, updated) do
+        Operately.Tasks.BoardSync.add_task(scope.board, updated)
+      else
+        {:ok, nil}
+      end
     end)
     |> Multi.run(:updated_task_with_preloads, fn _repo, %{updated_task: task} ->
       {:ok, Repo.preload(task, :assigned_people)}
@@ -37,21 +44,26 @@ defmodule Operately.Operations.KanbanStateUpdating do
   end
 
   defp resolve_scope(%{type: :space, board: board} = scope) do
-    with {:ok, boards} <- Operately.Tasks.BoardSync.lock_boards([board.id]) do
-      {:ok, %{scope | board: Map.fetch!(boards, board.id)}}
+    with {:ok, board} <- Operately.Tasks.BoardSync.lock_board(board.id) do
+      {:ok, %{scope | board: board}}
     end
   end
 
   defp resolve_scope(%{type: :space, space: space} = scope) do
-    with {:ok, board} <- Operately.Tasks.TaskBoard.default_for_space(space),
-         {:ok, boards} <- Operately.Tasks.BoardSync.lock_boards([board.id]) do
-      {:ok, Map.put(scope, :board, Map.fetch!(boards, board.id))}
+    with {:ok, board} <- Operately.Tasks.TaskBoard.for_space(space),
+         {:ok, board} <- Operately.Tasks.BoardSync.lock_board(board.id) do
+      {:ok, Map.put(scope, :board, board)}
     end
   end
 
-  defp resolve_scope(scope), do: {:ok, scope}
+  defp resolve_scope(%{project: project} = scope) do
+    with {:ok, board} <- Operately.Tasks.TaskBoard.for_project(project),
+         {:ok, board} <- Operately.Tasks.BoardSync.lock_board(board.id) do
+      {:ok, Map.put(scope, :board, board)}
+    end
+  end
 
-  defp validate_board_tasks(%{type: :space, board: board}, state) do
+  defp validate_board_tasks(%{board: board}, state) do
     ids = state |> Map.values() |> List.flatten()
     allowed = Repo.all(from t in Task, where: t.board_id == ^board.id, select: t.id) |> MapSet.new()
     valid = Enum.all?(ids, fn id ->
@@ -63,8 +75,6 @@ defmodule Operately.Operations.KanbanStateUpdating do
 
     if valid, do: :ok, else: {:error, :not_found}
   end
-
-  defp validate_board_tasks(_, _), do: :ok
 
   defp validate_task_parent(%{type: :project, project: project}, task) do
     if task.project_id == project.id do
@@ -93,28 +103,13 @@ defmodule Operately.Operations.KanbanStateUpdating do
   defp validate_status(_scope, status) when is_nil(status), do: {:error, {:bad_request, gettext("Invalid status")}}
 
   defp validate_status(scope, status) do
-    statuses = case scope do
-      %{type: :project, project: project} -> project.task_statuses
-      %{type: :milestone, project: project} -> project.task_statuses
-      %{type: :space, board: board} -> board.task_statuses
-    end
-
-    if Enum.any?(statuses || [], fn s -> s.id == status.id end) do
-      {:ok, status}
-    else
-      {:error, {:bad_request, gettext("Invalid status")}}
+    case Enum.find(scope.board.task_statuses || [], &(&1.id == status.id)) do
+      nil -> {:error, {:bad_request, gettext("Invalid status")}}
+      current -> {:ok, current}
     end
   end
 
-  defp allowed_statuses(%{type: :project, project: project}) do
-    Operately.Projects.Project.task_status_values(project)
-  end
-
-  defp allowed_statuses(%{type: :milestone, project: project}) do
-    Operately.Projects.Project.task_status_values(project)
-  end
-
-  defp allowed_statuses(%{type: :space, board: board}) do
+  defp allowed_statuses(%{board: board}) do
     Operately.Tasks.TaskBoard.task_status_values(board)
   end
 

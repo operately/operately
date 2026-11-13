@@ -43,12 +43,12 @@ defmodule Operately.Data.Change072PopulateProjectIdInTasksTest do
       project_id: project.id
     })
 
-    # Use raw query to set project_id to NULL to simulate pre-migration state
+    # Simulate the legacy state before project ownership and task boards existed.
     task1_binary = Ecto.UUID.dump!(task1.id)
     task2_binary = Ecto.UUID.dump!(task2.id)
     task3_binary = Ecto.UUID.dump!(task3.id)
 
-    Operately.Repo.query!("UPDATE tasks SET project_id = NULL WHERE id IN ($1, $2, $3)", [task1_binary, task2_binary, task3_binary])
+    Operately.Repo.query!("UPDATE tasks SET project_id = NULL, board_id = NULL WHERE id IN ($1, $2, $3)", [task1_binary, task2_binary, task3_binary])
 
     # Verify initial state
     assert Tasks.get_task!(task1.id).project_id == nil
@@ -71,9 +71,13 @@ defmodule Operately.Data.Change072PopulateProjectIdInTasksTest do
 
     task = task_fixture(%{
       creator_id: creator.id,
-      milestone_id: milestone.id,
       project_id: project2.id
     })
+
+    # Legacy data could reference another project's milestone, which current validation rejects.
+    task
+    |> Ecto.Changeset.change(milestone_id: milestone.id, board_id: nil)
+    |> Operately.Repo.update!()
 
     # Verify initial state
     assert Tasks.get_task!(task.id).project_id == project2.id
