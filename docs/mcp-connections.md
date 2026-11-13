@@ -53,3 +53,7 @@ The page lists each connected client, granted scopes, when the connection was cr
 MCP supports KPI management, discussion and check-in drafts/scheduling, check-in and retrospective editing, milestone discovery, and task reminders. Tool metadata describes inputs, examples, and edit restrictions.
 
 Scheduled goal check-ins publish their saved snapshot without applying target, checklist, or due-date changes to the goal. Use immediate publication through `update_goal_check_in` when those changes must be applied.
+
+## Collaboration tools
+
+MCP supports inviting members and guests, resource access, notification read state, subscribing/unsubscribing, and profile preferences. Existing company roles and resource permissions apply. `get_space` includes enabled tools; `list_goal_access_members` lists direct goal access. Use subscription-list IDs returned by resource reads such as `get_project` to subscribe or unsubscribe.
