@@ -176,7 +176,7 @@ defmodule OperatelyWeb.Api.Tasks.UpdateArchiveTest do
   end
 
   defp prepare_task(ctx, archived) do
-    board = if ctx.task.project_id, do: ctx.project, else: Repo.get!(TaskBoard, ctx.task.board_id)
+    board = Repo.get!(TaskBoard, ctx.task.board_id)
     status = Enum.find(board.task_statuses, & &1.closed)
     archived_at = if archived, do: nil, else: ~N[2026-01-01 12:00:00]
     attrs = ctx.task |> Task.status_change_attrs(status) |> Map.put(:archived_at, archived_at)
