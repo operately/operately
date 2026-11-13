@@ -108,8 +108,8 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert [%{type: :before_due, days: 2}] = root_task.reminders
     assert milestone_task.due_date.date == ~D[2028-03-02]
 
-    copied_not_started = Enum.find(project.task_statuses, &(&1.value == not_started.value))
-    copied_done = Enum.find(project.task_statuses, &(&1.value == done.value))
+    copied_not_started = Enum.find(Operately.Projects.Project.task_statuses(project), &(&1.value == not_started.value))
+    copied_done = Enum.find(Operately.Projects.Project.task_statuses(project), &(&1.value == done.value))
     refute copied_not_started.id in Enum.map(ctx.template.task_statuses, & &1.id)
     assert root_task.task_status.id == copied_done.id
     assert root_open_task.task_status.id == copied_not_started.id
@@ -118,11 +118,11 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert Enum.all?(project.tasks, &(is_nil(&1.closed_at) and is_nil(&1.reopened_at)))
 
     assert project.milestones_ordering_state == [Paths.milestone_id(milestone)]
-    assert project.tasks_kanban_state[copied_not_started.value] == [
+    assert Operately.Projects.Project.tasks_kanban_state(project)[copied_not_started.value] == [
              Paths.task_id(root_open_task),
              Paths.task_id(milestone_open_task)
            ]
-    assert project.tasks_kanban_state[copied_done.value] == [Paths.task_id(root_task), Paths.task_id(milestone_task)]
+    assert Operately.Projects.Project.tasks_kanban_state(project)[copied_done.value] == [Paths.task_id(root_task), Paths.task_id(milestone_task)]
     assert milestone.tasks_ordering_state == [Paths.task_id(milestone_task), Paths.task_id(milestone_open_task)]
     assert milestone.tasks_kanban_state[copied_not_started.value] == [Paths.task_id(milestone_open_task)]
     assert milestone.tasks_kanban_state[copied_done.value] == [Paths.task_id(milestone_task)]

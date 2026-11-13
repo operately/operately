@@ -7,6 +7,9 @@ defmodule Operately.Data.Change073PopulateTasksOrderingStateTest do
   alias Operately.Data.Change073PopulateTasksOrderingState
 
   setup ctx do
+    # This migration predates required task boards.
+    Repo.query!("ALTER TABLE tasks ALTER COLUMN board_id DROP NOT NULL")
+
     ctx
     |> Factory.setup()
   end

@@ -89,6 +89,8 @@ defmodule Operately.CompanyTransfers.Import.DefaultTaskBoards do
     valid_projects =
       length(project_boards) == MapSet.size(projects) && MapSet.new(project_boards, & &1["project_id"]) == projects
 
+    milestones = Map.new(Package.table_rows(package, "project_milestones"), &{&1["id"], &1["project_id"]})
+
     valid_tasks =
       Enum.all?(Package.table_rows(package, "tasks"), fn task ->
         cond do
@@ -101,10 +103,15 @@ defmodule Operately.CompanyTransfers.Import.DefaultTaskBoards do
             board && board["space_id"] == task["space_id"]
 
           true ->
-            is_nil(task["board_id"])
+            false
         end
       end)
 
-    if valid_spaces && valid_projects && valid_boards && valid_tasks, do: :ok, else: {:error, :invalid_task_board_ownership}
+    valid_milestones =
+      Enum.all?(Package.table_rows(package, "tasks"), fn task ->
+        is_nil(task["milestone_id"]) || (not is_nil(task["project_id"]) && milestones[task["milestone_id"]] == task["project_id"])
+      end)
+
+    if valid_spaces && valid_projects && valid_boards && valid_tasks && valid_milestones, do: :ok, else: {:error, :invalid_task_board_ownership}
   end
 end

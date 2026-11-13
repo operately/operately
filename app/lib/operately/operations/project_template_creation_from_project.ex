@@ -38,12 +38,12 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
       project ->
         project =
           repo.preload(project,
+            task_board: [],
             contributors: from(c in Contributor, order_by: [asc: c.inserted_at, asc: c.id]),
             milestones: from(m in Operately.Projects.Milestone, order_by: [asc: m.inserted_at, asc: m.id]),
             tasks: from(t in Operately.Tasks.Task, order_by: [asc: t.inserted_at, asc: t.id], preload: [:assignees])
           )
 
-        project = Project.with_task_board(project, Project.task_board(project))
         {:ok, %{project | contributors: Contributor.load_project_access_levels(project.contributors)}}
     end
   end
@@ -78,7 +78,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     alias OperatelyWeb.Paths
 
     def build(project, creator, %ProjectTemplateCreationFromProject{} = params, discussions) do
-      with {:ok, workflow} <- copy_workflow(project.task_statuses),
+      with {:ok, workflow} <- copy_workflow(project.task_board.task_statuses),
            {:ok, graph} <- plan_graph(project, workflow),
            {:ok, people_graph} <- PeoplePlanner.build(project, graph.tasks, params.include_people_and_assignments) do
         {:ok,
@@ -110,8 +110,8 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
 
       with {:ok, milestone_ordering} <-
              Copy.map_ordering(project.milestones_ordering_state, milestones, &source_milestone_path/1, &target_milestone_path/1),
-           {:ok, root_kanban} <- plan_kanban(project.tasks_kanban_state, tasks, workflow),
-           {:ok, milestones} <- plan_milestone_states(milestones, tasks, project.tasks_kanban_state, workflow) do
+           {:ok, root_kanban} <- plan_kanban(project.task_board.tasks_kanban_state, tasks, workflow),
+           {:ok, milestones} <- plan_milestone_states(milestones, tasks, project.task_board.tasks_kanban_state, workflow) do
         {:ok,
          %{
            milestones: milestones,
@@ -382,7 +382,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     end
 
     defp validate_task_status_references(project) do
-      status_ids = MapSet.new(project.task_statuses, & &1.id)
+      status_ids = MapSet.new(project.task_board.task_statuses, & &1.id)
 
       if Enum.all?(project.tasks, &(&1.task_status && MapSet.member?(status_ids, &1.task_status.id))) do
         :ok

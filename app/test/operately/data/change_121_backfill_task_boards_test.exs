@@ -6,6 +6,8 @@ defmodule Operately.Data.Change121BackfillTaskBoardsTest do
   alias Operately.Tasks.{Task, TaskBoard}
 
   setup ctx do
+    Repo.query!("ALTER TABLE tasks ALTER COLUMN board_id DROP NOT NULL")
+
     # Recreate the legacy columns required by this historical migration.
     # The sandbox transaction rolls back these schema changes after each test.
     Repo.query!("ALTER TABLE groups ADD COLUMN task_statuses jsonb[] DEFAULT '{}', ADD COLUMN tasks_kanban_state jsonb DEFAULT '{}'")
