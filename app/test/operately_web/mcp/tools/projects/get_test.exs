@@ -24,6 +24,8 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.GetTest do
 
       assert serialized_project.id == Paths.project_id(project)
       assert serialized_project.name == project.name
+      assert is_map(serialized_project.access_levels)
+      assert is_map(serialized_project.subscription_list)
     end
 
     test "returns not_found for a project outside the authenticated company" do
