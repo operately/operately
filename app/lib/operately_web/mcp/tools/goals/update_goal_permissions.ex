@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateGoalPermissions do
     Definition.new!(
       name: "update_goal_permissions",
       title: "Update Goal Permissions",
-      description: "Replaces resource access levels. Requires full access. Supply every level; use no_access to remove access.",
+      description: "Updates company and space access to a goal. Requires full access. Supply both levels; use no_access to remove access. Public access is not supported.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,
@@ -19,13 +19,13 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateGoalPermissions do
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "goals"},
       examples: [
-        %{"title" => "Update goal permissions", "arguments" => %{"goal_id" => "goal_123", "access_levels" => %{"public" => "no_access", "company" => "comment_access", "space" => "edit_access"}}}
+        %{"title" => "Update goal permissions", "arguments" => %{"goal_id" => "goal_123", "access_levels" => %{"company" => "comment_access", "space" => "edit_access"}}}
       ],
       input_schema:
         JsonSchema.object(
           %{
             "goal_id" => JsonSchema.string("Goal id."),
-            "access_levels" => Inputs.levels_schema(true)
+            "access_levels" => JsonSchema.object(%{"company" => Inputs.level_schema(), "space" => Inputs.level_schema()}, required: ["company", "space"])
           },
           required: ["goal_id", "access_levels"]
         ),
@@ -40,8 +40,17 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateGoalPermissions do
 
   defp decode_inputs(arguments) do
     with {:ok, goal_id} <- Helpers.decode_id(arguments["goal_id"]),
-         {:ok, access_levels} <- Inputs.levels(arguments["access_levels"], true) do
+         {:ok, access_levels} <- decode_access_levels(arguments["access_levels"]) do
       {:ok, %{goal_id: goal_id, access_levels: access_levels}}
     end
   end
+
+  defp decode_access_levels(%{"company" => company, "space" => space} = levels) when map_size(levels) == 2 do
+    with {:ok, company} <- Inputs.level(company),
+         {:ok, space} <- Inputs.level(space) do
+      {:ok, %{company: company, space: space}}
+    end
+  end
+
+  defp decode_access_levels(_), do: {:error, :invalid_arguments}
 end
