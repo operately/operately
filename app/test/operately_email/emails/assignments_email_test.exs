@@ -19,7 +19,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
       |> Factory.add_space_member(:second_assignee, :space, name: "Bob Assignee")
       |> Factory.add_project(:project, :space, name: "Shared Project")
 
-    pending = Enum.find(ctx.project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
+    pending = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.color == :gray)) |> Map.from_struct()
 
     ctx =
       ctx

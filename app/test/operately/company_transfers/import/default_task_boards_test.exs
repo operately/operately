@@ -2,6 +2,25 @@ defmodule Operately.CompanyTransfers.Import.DefaultTaskBoardsTest do
   use ExUnit.Case, async: true
   alias Operately.CompanyTransfers.Import.{Package, DefaultTaskBoards}
 
+  test "rejects ownerless tasks and milestones outside the task's project" do
+    for task <- [
+          %{"id" => "task"},
+          %{"id" => "task", "project_id" => "project", "milestone_id" => "foreign"},
+          %{"id" => "task", "project_id" => "project", "milestone_id" => "missing"},
+          %{"id" => "task", "space_id" => "space", "milestone_id" => "milestone"}
+        ] do
+      tables = [
+        %{"name" => "groups", "rows" => [%{"id" => "space"}]},
+        %{"name" => "projects", "rows" => [%{"id" => "project"}, %{"id" => "other"}]},
+        %{"name" => "project_milestones", "rows" => [%{"id" => "milestone", "project_id" => "project"}, %{"id" => "foreign", "project_id" => "other"}]},
+        %{"name" => "tasks", "rows" => [task]}
+      ]
+
+      package = %Package{tables: tables, table_map: Map.new(tables, &{&1["name"], &1})}
+      assert {:error, :invalid_task_board_ownership} = package |> DefaultTaskBoards.normalize() |> DefaultTaskBoards.validate()
+    end
+  end
+
   test "existing project boards remain authoritative and conflicting ownership is rejected" do
     project = %{"id" => "project", "task_statuses" => [], "tasks_kanban_state" => %{}}
     board = %{"id" => "board", "project_id" => "project", "task_statuses" => [%{"id" => "review"}], "tasks_kanban_state" => %{"review" => ["task"]}}

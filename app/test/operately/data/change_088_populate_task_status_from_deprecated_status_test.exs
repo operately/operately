@@ -7,6 +7,9 @@ defmodule Operately.Data.Change088PopulateTaskStatusFromDeprecatedStatusTest do
   alias Operately.Support.Factory
 
   setup ctx do
+    # This migration predates required task boards.
+    Repo.query!("ALTER TABLE tasks ALTER COLUMN board_id DROP NOT NULL")
+
     Factory.setup(ctx)
   end
 

@@ -38,8 +38,8 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
       # 3. Pending task
       project_for_task = create_project(ctx, gen_future_date(3))
 
-      todo = Enum.find(project_for_task.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
-      done = Enum.find(project_for_task.task_statuses, &(&1.color == :green)) |> Map.from_struct()
+      todo = Enum.find(Operately.Projects.Project.task_statuses(project_for_task), &(&1.color == :gray)) |> Map.from_struct()
+      done = Enum.find(Operately.Projects.Project.task_statuses(project_for_task), &(&1.color == :green)) |> Map.from_struct()
 
       create_task(project_for_task, ctx.person, %{
         task_status: todo,
@@ -189,8 +189,8 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
     test "doesn't include tasks with done and canceled status", ctx do
       project_for_task = create_project(ctx, gen_future_date(3))
 
-      done = Enum.find(project_for_task.task_statuses, &(&1.color == :green)) |> Map.from_struct()
-      canceled = Enum.find(project_for_task.task_statuses, &(&1.color == :red)) |> Map.from_struct()
+      done = Enum.find(Operately.Projects.Project.task_statuses(project_for_task), &(&1.color == :green)) |> Map.from_struct()
+      canceled = Enum.find(Operately.Projects.Project.task_statuses(project_for_task), &(&1.color == :red)) |> Map.from_struct()
 
       create_task(project_for_task, ctx.person, %{
         task_status: done,

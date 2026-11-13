@@ -43,7 +43,6 @@ defmodule Operately.Projects.Project do
     field :private, :boolean, default: false
 
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
-    embeds_many :task_statuses, Operately.Tasks.Status, on_replace: :delete
 
     belongs_to :last_check_in, CheckIn, foreign_key: :last_check_in_id
     field :last_check_in_status, Ecto.Enum, values: CheckIn.valid_status()
@@ -64,7 +63,6 @@ defmodule Operately.Projects.Project do
     field :success_status, Ecto.Enum, values: [:achieved, :missed]
 
     field :milestones_ordering_state, {:array, :string}, default: Operately.Projects.OrderingState.initialize()
-    field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
     field :tasks_view, Ecto.Enum, values: @valid_tasks_views, default: :list
 
     # populated with after load hooks
@@ -109,12 +107,9 @@ defmodule Operately.Projects.Project do
       :deadline,
       :milestones_ordering_state,
       :subscription_list_id,
-      :tasks_kanban_state,
       :tasks_view
     ])
     |> cast_embed(:timeframe)
-    |> cast_embed(:task_statuses)
-    |> put_default_task_statuses()
     |> validate_required([
       :name,
       :company_id,
@@ -123,17 +118,6 @@ defmodule Operately.Projects.Project do
       :subscription_list_id
     ])
   end
-
-  defp put_default_task_statuses(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
-    # Only set defaults for new projects, and only if task_statuses is empty or not provided
-    case Ecto.Changeset.get_field(changeset, :task_statuses) do
-      [] -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
-      nil -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
-      _ -> changeset
-    end
-  end
-
-  defp put_default_task_statuses(changeset), do: changeset
 
   def valid_tasks_views, do: @valid_tasks_views
 
@@ -156,10 +140,6 @@ defmodule Operately.Projects.Project do
   def task_board(project), do: Repo.preload(project, :task_board).task_board
   def task_statuses(project), do: task_board(project).task_statuses || []
   def tasks_kanban_state(project), do: task_board(project).tasks_kanban_state || %{}
-
-  def with_task_board(project, board) do
-    %{project | task_board: board, task_statuses: board.task_statuses, tasks_kanban_state: board.tasks_kanban_state}
-  end
 
   @impl WorkMapItem
   def status(project = %__MODULE__{}) do

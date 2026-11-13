@@ -81,7 +81,7 @@ defmodule Operately.Projects do
     end)
     |> Multi.update(:updated_board, fn %{board: board} -> TaskBoard.changeset(board, board_attrs) end)
     |> Multi.update(:project, Project.changeset(project, attrs))
-    |> Multi.run(:result, fn _, %{project: project, updated_board: board} -> {:ok, Project.with_task_board(project, board)} end)
+    |> Multi.run(:result, fn _, %{project: project, updated_board: board} -> {:ok, %{project | task_board: board}} end)
     |> Repo.transaction()
     |> Repo.extract_result(:result)
   end

@@ -20,15 +20,14 @@ defmodule Operately.Tasks.TaskBoardTest do
     assert authorized.request_info.access_level == Operately.Access.Binding.full_access()
   end
 
-  test "project workflow writes use the board and ignore stale legacy project fields", ctx do
+  test "project workflow writes use the board and preserve legacy API projections", ctx do
     ctx = Factory.add_project(ctx, :project, :space)
     original = Repo.reload!(ctx.project)
-    [status | _] = original.task_statuses
+    [status | _] = Operately.Projects.Project.task_statuses(original)
     attrs = %{task_statuses: [%{Map.from_struct(status) | label: "Review"}], tasks_kanban_state: %{status.value => ["legacy-order"]}}
 
     assert {:ok, updated} = Operately.Projects.update_project(ctx.project, attrs)
-    assert Repo.reload!(ctx.project).task_statuses == original.task_statuses
-    assert Repo.reload!(ctx.project).tasks_kanban_state == original.tasks_kanban_state
+    assert Repo.reload!(ctx.project) == original
     assert Operately.Projects.Project.task_statuses(updated) |> hd() |> Map.fetch!(:label) == "Review"
     assert Operately.Projects.Project.tasks_kanban_state(Repo.reload!(ctx.project)) == attrs.tasks_kanban_state
     serialized = ctx.project |> Repo.reload!() |> Repo.preload(:task_board) |> OperatelyWeb.Api.Serializer.serialize(level: :full)

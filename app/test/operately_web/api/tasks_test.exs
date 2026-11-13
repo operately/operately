@@ -783,7 +783,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # Pick a status from the project
-      status_struct = List.first(ctx.project.task_statuses)
+      status_struct = List.first(Operately.Projects.Project.task_statuses(ctx.project))
       status = Map.from_struct(status_struct) |> Map.put(:color, Atom.to_string(status_struct.color))
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{

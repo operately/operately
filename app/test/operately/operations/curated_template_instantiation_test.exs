@@ -68,7 +68,7 @@ defmodule Operately.Operations.CuratedTemplateInstantiationTest do
     assert project.goal_id == nil
     assert Timeframe.start_date(project.timeframe) == ~D[2028-02-28]
     assert Timeframe.end_date(project.timeframe) == ~D[2028-03-03]
-    assert Enum.map(project.task_statuses, & &1.value) == ["pending", "in_progress", "done", "canceled"]
+    assert Enum.map(Operately.Projects.Project.task_statuses(project), & &1.value) == ["pending", "in_progress", "done", "canceled"]
 
     roles = Map.new(project.contributors, &{&1.person_id, &1.role})
     assert roles == %{ctx.creator.id => :contributor, ctx.champion.id => :champion, ctx.reviewer.id => :reviewer}
@@ -97,7 +97,7 @@ defmodule Operately.Operations.CuratedTemplateInstantiationTest do
 
     for task <- project.tasks do
       assert task.project_id == project.id
-      assert task.task_status.id == hd(project.task_statuses).id
+      assert task.task_status.id == hd(Operately.Projects.Project.task_statuses(project)).id
       assert task.closed_at == nil
       assert Repo.get!(SubscriptionList, task.subscription_list_id).parent_id == task.id
       assert Repo.get_by!(Subscription, subscription_list_id: task.subscription_list_id, person_id: ctx.creator.id)

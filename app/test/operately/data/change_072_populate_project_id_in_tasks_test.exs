@@ -10,6 +10,8 @@ defmodule Operately.Data.Change072PopulateProjectIdInTasksTest do
   import Operately.TasksFixtures
 
   setup do
+    Repo.query!("ALTER TABLE tasks ALTER COLUMN board_id DROP NOT NULL")
+
     company = company_fixture()
     creator = person_fixture_with_account(%{company_id: company.id})
     group = group_fixture(creator)

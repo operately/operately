@@ -522,8 +522,8 @@ defmodule Operately.Assignments.LoaderTest do
     test "returns assignments for tasks owned by the person", ctx do
       ctx = Factory.add_project(ctx, :project, :space, champion: :champion, reviewer: :reviewer)
 
-      pending = Enum.find(ctx.project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
-      in_progress = Enum.find(ctx.project.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
+      pending = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.color == :gray)) |> Map.from_struct()
+      in_progress = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.color == :blue)) |> Map.from_struct()
 
       ctx =
         ctx
@@ -576,7 +576,7 @@ defmodule Operately.Assignments.LoaderTest do
         |> Factory.add_space_member(:second_assignee, :space)
         |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
 
-      pending = Enum.find(ctx.project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
+      pending = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.color == :gray)) |> Map.from_struct()
 
       ctx =
         ctx
@@ -598,7 +598,7 @@ defmodule Operately.Assignments.LoaderTest do
 
     test "ignores tasks from deleted projects", ctx do
       ctx = Factory.add_project(ctx, :project, :space, champion: :champion, reviewer: :reviewer)
-      pending = Enum.find(ctx.project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
+      pending = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.color == :gray)) |> Map.from_struct()
 
       ctx =
         ctx
@@ -617,7 +617,7 @@ defmodule Operately.Assignments.LoaderTest do
 
     test "ignores tasks from closed projects", ctx do
       ctx = Factory.add_project(ctx, :project, :space, champion: :champion, reviewer: :reviewer)
-      pending = Enum.find(ctx.project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
+      pending = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.color == :gray)) |> Map.from_struct()
 
       ctx =
         ctx
