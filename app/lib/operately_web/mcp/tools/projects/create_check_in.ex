@@ -45,6 +45,8 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.CreateCheckIn do
           %{
             "project_id" => JsonSchema.string("The project identifier."),
             "status" => JsonSchema.string("The project status for this check-in.", enum: @valid_statuses),
+            "post_as_draft" => JsonSchema.boolean("Save as a draft instead of publishing. Defaults to false."),
+            "scheduled_at" => JsonSchema.string("Schedule publication at an ISO 8601 instant with an explicit timezone offset.", format: "date-time"),
             "content" => JsonSchema.string("Plain text or simple markdown content for the check-in."),
             "notify_person_ids" =>
               JsonSchema.array(
@@ -72,6 +74,7 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.CreateCheckIn do
   def call(conn, %{"project_id" => project_id, "status" => status, "content" => content} = arguments) do
     with {:ok, project_id} <- Helpers.decode_id(project_id),
          {:ok, rich_content} <- FromMarkdown.to_rich_text(content),
+         {:ok, publishing_inputs} <- Helpers.decode_creation_publishing_inputs(arguments),
          {:ok, notification_inputs} <- Helpers.decode_notification_inputs(arguments) do
       ProjectCreateCheckIn.call(
         conn,
@@ -79,10 +82,9 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.CreateCheckIn do
           %{
             project_id: project_id,
             status: status,
-            description: rich_content,
-            post_as_draft: false
+            description: rich_content
           },
-          notification_inputs
+          Map.merge(notification_inputs, publishing_inputs)
         )
       )
     end

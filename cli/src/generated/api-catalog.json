@@ -31342,7 +31342,7 @@
             "name": "contextual_date",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
           "nullable": true,
           "has_default": false
         },
@@ -31353,7 +31353,7 @@
             "name": "goal_check_in_status",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
           "nullable": false,
           "has_default": false
         },

@@ -218,6 +218,25 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckInTest do
     end
   end
 
+  test "content edits preserve omitted progress, timeframe, and publication fields", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+    ctx = ctx |> Factory.add_goal_update(:update, :goal, :creator) |> Factory.log_in_person(:creator)
+    before = Repo.reload!(ctx.update)
+    goal_before = Repo.reload!(ctx.goal)
+
+    assert {200, _} = mutation(ctx.conn, [:goals, :update_check_in], %{
+      id: Paths.goal_update_id(before), content: RichText.rich_text("Revised", :as_string)
+    })
+
+    after_edit = Repo.reload!(before)
+    assert after_edit.status == before.status
+    assert after_edit.targets == before.targets
+    assert after_edit.checks == before.checks
+    assert after_edit.timeframe == before.timeframe
+    assert after_edit.state == before.state
+    assert Repo.reload!(ctx.goal).timeframe == goal_before.timeframe
+  end
+
   #
   # Helpers
   #

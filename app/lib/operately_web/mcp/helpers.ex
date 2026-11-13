@@ -108,6 +108,20 @@ defmodule OperatelyWeb.Mcp.Helpers do
 
   def decode_access_level(_value, _allowed_values), do: {:error, :invalid_arguments}
 
+  def decode_creation_publishing_inputs(arguments) do
+    with {:ok, draft?} <- decode_optional_boolean(arguments["post_as_draft"]),
+         {:ok, scheduled_at} <- parse_datetime(arguments["scheduled_at"]) do
+      {:ok, %{post_as_draft: draft?, scheduled_at: scheduled_at}}
+    end
+  end
+
+  def decode_update_publishing_inputs(arguments) do
+    with {:ok, state} <- decode_optional_enum(arguments["state"], ["draft", "published"]),
+         {:ok, scheduled_at} <- parse_datetime(arguments["scheduled_at"]) do
+      {:ok, %{} |> put_optional(:state, state) |> put_optional(:scheduled_at, scheduled_at)}
+    end
+  end
+
   def parse_datetime(nil), do: {:ok, nil}
 
   def parse_datetime(value) when is_binary(value) do
@@ -342,6 +356,10 @@ defmodule OperatelyWeb.Mcp.Helpers do
 
   defp decode_task_reminder(%{"type" => type}) when type in ["due_day", "overdue"] do
     {:ok, %{type: String.to_atom(type)}}
+  end
+
+  defp decode_task_reminder(%{"type" => "on_date", "date" => date}) do
+    with {:ok, date} <- parse_iso_date(date), do: {:ok, %{type: :on_date, date: date}}
   end
 
   defp decode_task_reminder(_reminder), do: {:error, :invalid_arguments}

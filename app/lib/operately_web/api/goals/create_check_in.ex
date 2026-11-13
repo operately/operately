@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
   require Logger
   use OperatelyWeb.Api.Helpers
 
+  alias OperatelyWeb.Api.Goals.CheckInInputs
   alias Operately.Goals.Goal
   alias Operately.Goals.Permissions
   alias Operately.Operations.GoalCheckIn
@@ -33,9 +34,9 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:attrs, fn -> parse_inputs(inputs) end)
-    |> run(:goal, fn ctx -> Goal.get(ctx.me, id: inputs.goal_id) end)
+    |> run(:goal, fn ctx -> Goal.get(ctx.me, id: inputs.goal_id, opts: [preload: [:targets, :checks]]) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
+    |> run(:attrs, fn ctx -> parse_inputs(inputs, ctx.goal) end)
     |> run(:operation, fn ctx -> GoalCheckIn.run(ctx.me, ctx.goal, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{update: Serializer.serialize(ctx.operation, level: :full)}} end)
     |> respond()
@@ -66,31 +67,23 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
     end
   end
 
-  defp parse_inputs(inputs) do
-    target_values =
-      if inputs[:new_target_values] do
-        Jason.decode!(inputs.new_target_values)
-        |> Enum.map(fn t ->
-          {:ok, id} = decode_id(t["id"])
-          %{"id" => id, "value" => t["value"]}
-        end)
-      else
-        nil
-      end
-
-    {:ok,
-     %{
-       target_values: target_values,
-       content: inputs.content,
-       status: inputs.status,
-       checklist: inputs[:checklist],
-       post_as_draft: inputs[:post_as_draft],
-       send_to_everyone: inputs[:send_notifications_to_everyone],
-       subscription_parent_type: :goal_update,
-       subscriber_ids: inputs[:subscriber_ids],
-       scheduled_at: inputs[:scheduled_at]
-     }
-     |> maybe_put_due_date(inputs)}
+  defp parse_inputs(inputs, goal) do
+    with {:ok, target_values} <- CheckInInputs.decode_target_values(inputs[:new_target_values], goal.targets),
+         :ok <- CheckInInputs.validate_checklist(inputs[:checklist], goal.checks) do
+      {:ok,
+       %{
+         target_values: target_values,
+         content: inputs.content,
+         status: inputs.status,
+         checklist: inputs[:checklist],
+         post_as_draft: inputs[:post_as_draft],
+         send_to_everyone: inputs[:send_notifications_to_everyone],
+         subscription_parent_type: :goal_update,
+         subscriber_ids: inputs[:subscriber_ids],
+         scheduled_at: inputs[:scheduled_at]
+       }
+       |> maybe_put_due_date(inputs)}
+    end
   end
 
   defp maybe_put_due_date(attrs, inputs) do

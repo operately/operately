@@ -47,3 +47,9 @@ The page lists each connected client, granted scopes, when the connection was cr
 - Write and destructive capabilities require an explicit `mcp:write` grant.
 - Server-side rate limits apply to OAuth, CIMD metadata fetch, and tool calls.
 - For architecture and tool development, see `specs/0012-operately-mcp.md` and `specs/0016-mcp-security-hardening.md`.
+
+## Work management tools
+
+MCP supports KPI management, discussion and check-in drafts/scheduling, check-in and retrospective editing, milestone discovery, and task reminders. Tool metadata describes inputs, examples, and edit restrictions.
+
+Scheduled goal check-ins publish their saved snapshot without applying target, checklist, or due-date changes to the goal. Use immediate publication through `update_goal_check_in` when those changes must be applied.
