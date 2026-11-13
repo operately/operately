@@ -96,6 +96,7 @@ defmodule Operately.Mcp.ToolsTest do
     "create_task",
     "update_task_name",
     "update_task_description",
+    "update_task_board_statuses",
     "update_task_status",
     "update_task_due_date",
     "update_task_assignee",

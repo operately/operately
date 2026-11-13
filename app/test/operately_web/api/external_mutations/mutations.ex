@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
 
   def __spec_modules__ do
     [
+      Mutations.Tasks.UpdateBoardStatuses,
       Mutations.Tasks.CreateBoard,
       Mutations.Tasks.RenameBoard,
       Mutations.Tasks.SetDefaultBoard,

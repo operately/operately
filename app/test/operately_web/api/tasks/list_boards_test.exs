@@ -41,4 +41,27 @@ defmodule OperatelyWeb.Api.Tasks.ListBoardsTest do
     ctx = Factory.set_space_tools(ctx, :space, tasks_enabled: false)
     assert {200, %{boards: [_]}} = query(ctx.conn, [:tasks, :list_boards], %{space_id: ctx.space.id})
   end
+
+  test "discovers a project's board without including it in space discovery", ctx do
+    ctx = Factory.add_project(ctx, :project, :space)
+    board = Operately.Projects.Project.task_board(ctx.project)
+
+    assert {200, %{boards: [result]}} = query(ctx.conn, [:tasks, :list_boards], %{project_id: ctx.project.id})
+    assert result.id == Operately.ShortUuid.encode!(board.id)
+    assert result.project_id == Operately.ShortUuid.encode!(ctx.project.id)
+    assert result.space_id == nil
+    refute result.is_default
+
+    assert {200, %{boards: [space_board]}} = query(ctx.conn, [:tasks, :list_boards], %{space_id: ctx.space.id})
+    assert space_board.space_id == Operately.ShortUuid.encode!(ctx.space.id)
+    assert space_board.project_id == nil
+    assert {400, _} = query(ctx.conn, [:tasks, :list_boards], %{})
+    assert {400, _} = query(ctx.conn, [:tasks, :list_boards], %{project_id: ctx.project.id, space_id: ctx.space.id})
+  end
+
+  test "does not discover a private project's board through space access", ctx do
+    ctx = ctx |> Factory.add_project(:private, :space, company_access_level: 0, space_access_level: 0)
+      |> Factory.add_company_member(:reader) |> Factory.log_in_person(:reader)
+    assert {404, _} = query(ctx.conn, [:tasks, :list_boards], %{project_id: ctx.private.id})
+  end
 end

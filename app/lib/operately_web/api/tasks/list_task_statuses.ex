@@ -39,6 +39,6 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatuses do
   defp validate_selection(nil, _board), do: :ok
   defp validate_selection(_task, nil), do: :ok
   defp validate_selection(task, board) do
-    if task.board_id == board.id and task.space_id == board.space_id, do: :ok, else: {:error, :bad_request}
+    if task.board_id == board.id and Operately.Tasks.TaskBoard.owns_task?(board, task), do: :ok, else: {:error, :bad_request}
   end
 end

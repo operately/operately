@@ -2866,6 +2866,8 @@ export interface Task {
 
 export interface TaskBoard {
   __typename: "task_board";
+  spaceId?: Id | null;
+  projectId?: Id | null;
   id: Id;
   name: string;
   archivedAt: string | null;
@@ -2875,6 +2877,8 @@ export interface TaskBoard {
 
 export interface TaskBoardSummary {
   __typename: "task_board_summary";
+  spaceId?: Id | null;
+  projectId?: Id | null;
   id: Id;
   name: string;
   position: number;
@@ -4527,7 +4531,8 @@ export interface TasksGetResult {
 }
 
 export interface TasksGetBoardInput {
-  spaceId: Id;
+  spaceId?: Id | null;
+  projectId?: Id | null;
   boardId: Id;
 }
 
@@ -4536,7 +4541,9 @@ export interface TasksGetBoardResult {
 }
 
 export interface TasksListInput {
-  projectId: Id;
+  projectId?: Id | null;
+  spaceId?: Id | null;
+  boardId?: Id | null;
 }
 
 export interface TasksListResult {
@@ -4544,7 +4551,8 @@ export interface TasksListResult {
 }
 
 export interface TasksListBoardsInput {
-  spaceId: Id;
+  spaceId?: Id | null;
+  projectId?: Id | null;
   archiveStatus?: TaskBoardArchiveStatus;
 }
 
@@ -7052,6 +7060,29 @@ export interface TasksUpdateAssigneeResult {
   task: Task;
 }
 
+export interface TasksUpdateBoardKanbanInput {
+  boardId: Id;
+  taskId: Id;
+  status: TaskStatus;
+  kanbanState: Json;
+}
+
+export interface TasksUpdateBoardKanbanResult {
+  boardId: Id;
+  task: Task;
+}
+
+export interface TasksUpdateBoardStatusesInput {
+  boardId: Id;
+  taskStatuses: TaskStatus[];
+  deletedStatusReplacements?: DeletedStatusReplacement[] | null;
+}
+
+export interface TasksUpdateBoardStatusesResult {
+  boardId: Id;
+  success: boolean;
+}
+
 export interface TasksUpdateDescriptionInput {
   taskId: Id;
   description: Json;
@@ -7764,6 +7795,14 @@ class ApiNamespaceTasks {
 
   async updateAssignee(input: TasksUpdateAssigneeInput): Promise<TasksUpdateAssigneeResult> {
     return this.client.post("/tasks/update_assignee", input);
+  }
+
+  async updateBoardKanban(input: TasksUpdateBoardKanbanInput): Promise<TasksUpdateBoardKanbanResult> {
+    return this.client.post("/tasks/update_board_kanban", input);
+  }
+
+  async updateBoardStatuses(input: TasksUpdateBoardStatusesInput): Promise<TasksUpdateBoardStatusesResult> {
+    return this.client.post("/tasks/update_board_statuses", input);
   }
 
   async updateDescription(input: TasksUpdateDescriptionInput): Promise<TasksUpdateDescriptionResult> {
@@ -11119,6 +11158,17 @@ export default {
         staleTime: Infinity,
       }),
 
+    updateBoardKanban: (input: TasksUpdateBoardKanbanInput) =>
+      defaultApiClient.apiNamespaceTasks.updateBoardKanban(input),
+    useUpdateBoardKanban: () =>
+      useMutation<TasksUpdateBoardKanbanInput, TasksUpdateBoardKanbanResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.updateBoardKanban(input),
+      ),
+    updateBoardKanbanMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateBoardKanbanInput) => defaultApiClient.apiNamespaceTasks.updateBoardKanban(input),
+      }),
+
     updateReminders: (input: TasksUpdateRemindersInput) => defaultApiClient.apiNamespaceTasks.updateReminders(input),
     useUpdateReminders: () =>
       useMutation<TasksUpdateRemindersInput, TasksUpdateRemindersResult>((input) =>
@@ -11246,6 +11296,18 @@ export default {
     restoreBoardMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: TasksRestoreBoardInput) => defaultApiClient.apiNamespaceTasks.restoreBoard(input),
+      }),
+
+    updateBoardStatuses: (input: TasksUpdateBoardStatusesInput) =>
+      defaultApiClient.apiNamespaceTasks.updateBoardStatuses(input),
+    useUpdateBoardStatuses: () =>
+      useMutation<TasksUpdateBoardStatusesInput, TasksUpdateBoardStatusesResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.updateBoardStatuses(input),
+      ),
+    updateBoardStatusesMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateBoardStatusesInput) =>
+          defaultApiClient.apiNamespaceTasks.updateBoardStatuses(input),
       }),
 
     move: (input: TasksMoveInput) => defaultApiClient.apiNamespaceTasks.move(input),

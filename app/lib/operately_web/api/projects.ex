@@ -635,11 +635,7 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
-    def update_kanban(multi, status, kanban_state) do
-      Ecto.Multi.merge(multi, fn %{me: me, project: project, task: task} ->
-        Operately.Operations.KanbanStateUpdating.run(me, %{type: :project, project: project}, task, status, kanban_state)
-      end)
-    end
+    defdelegate update_kanban(multi, status, kanban_state), to: OperatelyWeb.Api.Tasks.BoardMultiSteps, as: :update_kanban
 
     def find_project_by_milestone(multi, milestone_id) do
       Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
@@ -787,93 +783,10 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
-    def update_task_statuses(multi, task_statuses) do
-      case task_statuses do
-        [] ->
-          Ecto.Multi.run(multi, :validate_task_statuses, fn _repo, _changes ->
-            {:error, gettext("At least one task status is required")}
-          end)
-
-        _ ->
-          Ecto.Multi.update(multi, :updated_board, fn %{board: board} ->
-            Operately.Tasks.TaskBoard.changeset(board, %{task_statuses: task_statuses})
-          end)
-      end
-    end
-
-    def require_status_replacements(multi, task_statuses, replacements) do
-      Ecto.Multi.run(multi, :require_status_replacements, fn _repo, %{board: board} ->
-        if Operately.Tasks.Status.replacement_required?(board, task_statuses, replacements) do
-          {:error, :replacement_required}
-        else
-          {:ok, :valid}
-        end
-      end)
-    end
-
-    def validate_status_replacements(multi, _task_statuses, []), do: multi
-
-    def validate_status_replacements(multi, task_statuses, replacements) do
-      Ecto.Multi.run(multi, :validate_replacements, fn _repo, _changes ->
-        new_status_ids = MapSet.new(task_statuses, & &1.id)
-        deleted_status_ids = MapSet.new(replacements, & &1.deleted_status_id)
-
-        invalid_replacements =
-          Enum.filter(replacements, fn r ->
-            replacement_is_deleted = MapSet.member?(deleted_status_ids, r.replacement_status_id)
-            replacement_not_in_new_statuses = not MapSet.member?(new_status_ids, r.replacement_status_id)
-
-            replacement_is_deleted or replacement_not_in_new_statuses
-          end)
-
-        if Enum.empty?(invalid_replacements) do
-          {:ok, :valid}
-        else
-          {:error, gettext("Replacement statuses must be existing statuses that are not being deleted")}
-        end
-      end)
-    end
-
-    def replace_deleted_task_statuses(multi, []), do: multi
-
-    def replace_deleted_task_statuses(multi, replacements) do
-      Ecto.Multi.run(multi, :replace_task_statuses, fn _repo, changes ->
-        board = changes.updated_board
-        replacement_map =
-          Map.new(replacements, fn r -> {r.deleted_status_id, r.replacement_status_id} end)
-
-        deleted_status_ids = Map.keys(replacement_map)
-
-        tasks =
-          from(t in Operately.Tasks.Task,
-            where: t.board_id == ^board.id,
-            order_by: t.id,
-            lock: "FOR UPDATE",
-            where: fragment("?->>'id' = ANY(?)", t.task_status, ^deleted_status_ids)
-          )
-          |> Repo.all()
-
-        new_statuses_by_id = Map.new(board.task_statuses, fn s -> {s.id, s} end)
-
-        Enum.reduce_while(tasks, {:ok, board}, fn task, {:ok, board} ->
-          replacement_id = Map.fetch!(replacement_map, task.task_status.id)
-          status = Map.fetch!(new_statuses_by_id, replacement_id)
-          attrs = Operately.Tasks.Task.status_change_attrs(task, status)
-
-          with {:ok, updated} <- task |> Operately.Tasks.Task.changeset(attrs) |> Repo.update(),
-               {:ok, board} <- Operately.Tasks.BoardSync.add_task(board, updated) do
-            {:cont, {:ok, board}}
-          else
-            error -> {:halt, error}
-          end
-        end)
-        |> case do
-          {:ok, _board} -> {:ok, Enum.map(tasks, & &1.id)}
-          error -> error
-        end
-      end)
-      |> Operately.Search.IndexUpdates.enqueue(:search_tasks_with_replaced_status, "task", fn changes -> changes.replace_task_statuses end)
-    end
+    defdelegate update_task_statuses(multi, statuses), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
+    defdelegate require_status_replacements(multi, statuses, replacements), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
+    defdelegate validate_status_replacements(multi, statuses, replacements), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
+    defdelegate replace_deleted_task_statuses(multi, replacements), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
 
     def update_project_start_date(multi, new_start_date) do
       Ecto.Multi.update(multi, :updated_project, fn %{project: project} ->

@@ -66,6 +66,19 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.MoveTest do
     assert Repo.reload!(ctx.task).project_id == ctx.project.id
   end
 
+  test "rejects board selectors for project destinations", ctx do
+    ctx = Factory.add_project(ctx, :project, :space)
+    board = Operately.Projects.Project.task_board(ctx.project)
+
+    assert {:error, :bad_request} = Move.call(ToolConnHelper.conn(ctx), %{
+      "task_id" => Paths.task_id(ctx.task),
+      "destination_type" => "project",
+      "destination_id" => Paths.project_id(ctx.project),
+      "destination_board_id" => ShortUuid.encode!(board.id)
+    })
+    assert Repo.reload!(ctx.task).space_id == ctx.space.id
+  end
+
   test "rejects malformed identifiers and destination types", ctx do
     arguments = %{
       "task_id" => Paths.task_id(ctx.task),
