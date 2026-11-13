@@ -31,6 +31,8 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.GetTest do
 
       assert serialized_goal.id == Paths.goal_id(goal)
       assert serialized_goal.name == goal.name
+      assert is_map(serialized_goal.access_levels)
+      refute Map.has_key?(serialized_goal, :access_members)
       assert Enum.map(serialized_goal.targets, & &1.name) == Enum.map(goal.targets, & &1.name)
       assert serialized_goal.space == nil
       assert serialized_goal.champion == nil
