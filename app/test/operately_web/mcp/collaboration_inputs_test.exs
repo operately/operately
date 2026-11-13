@@ -12,6 +12,18 @@ defmodule OperatelyWeb.Mcp.CollaborationInputsTest do
     assert {:error, :invalid_arguments} = Inputs.level("unknown")
   end
 
+  test "public access accepts only no access or view access" do
+    for nested? <- [false, true] do
+      assert Inputs.levels_schema(nested?)["properties"]["public"]["enum"] == ["no_access", "view_access"]
+      levels = %{"public" => "view_access", "company" => "full_access", "space" => "edit_access"}
+      assert {:ok, %{public: 10, company: 100}} = Inputs.levels(levels, nested?)
+
+      for unsupported <- ["comment_access", "edit_access", "full_access"] do
+        assert {:error, :invalid_arguments} = Inputs.levels(Map.put(levels, "public", unsupported), nested?)
+      end
+    end
+  end
+
   test "decodes member identifiers and rejects malformed entries" do
     id = Ecto.UUID.generate()
     assert {:ok, [%{id: ^id, access_level: 40}]} = Inputs.members([%{"id" => Operately.ShortUuid.encode!(id), "access_level" => "comment_access"}])

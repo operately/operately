@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Mcp.CollaborationInputs do
   alias OperatelyWeb.Mcp.Helpers
 
   @levels ~w(no_access view_access comment_access edit_access full_access)
+  @public_levels ~w(no_access view_access)
 
   def level_schema, do: JsonSchema.string("Resource access level.", enum: @levels)
 
@@ -13,7 +14,9 @@ defmodule OperatelyWeb.Mcp.CollaborationInputs do
 
   def levels_schema(nested?) do
     keys = if nested?, do: ["public", "company", "space"], else: ["public", "company"]
-    JsonSchema.object(Map.new(keys, &{&1, level_schema()}), required: keys)
+    properties = Map.new(keys, &{&1, level_schema()})
+    properties = Map.put(properties, "public", JsonSchema.string("Public access level.", enum: @public_levels))
+    JsonSchema.object(properties, required: keys)
   end
 
   def string(value) when is_binary(value), do: {:ok, value}
@@ -28,15 +31,15 @@ defmodule OperatelyWeb.Mcp.CollaborationInputs do
   def ids(values) when is_list(values), do: Helpers.decode_id_list(values)
   def ids(_), do: {:error, :invalid_arguments}
 
-  def level(value) do
-    with {:ok, level} <- Helpers.decode_enum(value, @levels), do: {:ok, Binding.from_atom(level)}
-  end
+  def level(value), do: decode_level(value, @levels)
 
   def levels(values, nested?) when is_map(values) do
     keys = if nested?, do: [:public, :company, :space], else: [:public, :company]
 
     Enum.reduce_while(keys, {:ok, %{}}, fn key, {:ok, acc} ->
-      case level(values[Atom.to_string(key)]) do
+      allowed = if key == :public, do: @public_levels, else: @levels
+
+      case decode_level(values[Atom.to_string(key)], allowed) do
         {:ok, value} -> {:cont, {:ok, Map.put(acc, key, value)}}
         error -> {:halt, error}
       end
@@ -47,6 +50,10 @@ defmodule OperatelyWeb.Mcp.CollaborationInputs do
 
   def members(values) when is_list(values), do: decode_items(values, &member/1)
   def members(_), do: {:error, :invalid_arguments}
+
+  defp decode_level(value, allowed) do
+    with {:ok, level} <- Helpers.decode_enum(value, allowed), do: {:ok, Binding.from_atom(level)}
+  end
 
   defp member(%{"id" => id, "access_level" => value}) do
     with {:ok, id} <- Helpers.decode_id(id),
