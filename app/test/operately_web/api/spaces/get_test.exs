@@ -285,6 +285,20 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
     end
   end
 
+  test "returns enabled tool settings without resource contents", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.log_in_person(:creator)
+    ctx.space |> Ecto.Changeset.change(tools: %Operately.Groups.SpaceTools{tasks_enabled: true, discussions_enabled: false}) |> Repo.update!()
+
+    assert {200, %{space: space}} = query(ctx.conn, [:spaces, :get], %{id: Paths.space_id(ctx.space)})
+    assert space.tools.tasks_enabled
+    refute space.tools.discussions_enabled
+    assert space.tools.resource_hub_enabled
+    assert space.tools.kpis_enabled
+    assert space.tools.templates_enabled
+    refute Map.has_key?(space.tools, :projects)
+    refute Map.has_key?(space.tools, :goals)
+  end
+
   #
   # Helpers
   #

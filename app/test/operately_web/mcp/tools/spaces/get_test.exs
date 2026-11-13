@@ -26,5 +26,7 @@ defmodule OperatelyWeb.Mcp.Tools.Spaces.GetTest do
     assert Enum.any?(serialized_space.members, &(&1.id == Paths.person_id(me)))
     assert is_boolean(serialized_space.tools.discussions_enabled)
     assert is_boolean(serialized_space.tools.resource_hub_enabled)
+    refute Map.has_key?(serialized_space.tools, :projects)
+    refute Map.has_key?(serialized_space.tools, :goals)
   end
 end
