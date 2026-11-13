@@ -16,20 +16,25 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.GetBoard do
       annotations: read_annotations(),
       security_schemes: read_security_schemes(),
       discovery_metadata: %{"category" => "tasks"},
-      examples: [%{"title" => "Inspect a task board", "arguments" => %{"space_id" => "space_123", "board_id" => "board_123"}}],
+      examples: [
+        %{"title" => "Inspect a space board", "arguments" => %{"space_id" => "space_123", "board_id" => "board_123"}},
+        %{"title" => "Inspect a project board", "arguments" => %{"project_id" => "project_123", "board_id" => "board_123"}}
+      ],
       input_schema: JsonSchema.object(%{
-        "space_id" => JsonSchema.string("The space identifier."),
-        "board_id" => JsonSchema.string("The task board identifier within that space.")
-      }, required: ["space_id", "board_id"]),
+        "space_id" => JsonSchema.string("Optional direct space owner identifier."),
+        "project_id" => JsonSchema.string("Optional project owner identifier."),
+        "board_id" => JsonSchema.string("The task board identifier.")
+      }, required: ["board_id"]),
       output_schema: JsonSchema.object(%{"board" => JsonSchema.any_object("The matching task board.")}, required: ["board"])
     )
   end
 
   @impl true
-  def call(conn, %{"space_id" => space_id, "board_id" => board_id}) when is_binary(space_id) and is_binary(board_id) do
-    with {:ok, space_id} <- Helpers.decode_id(space_id),
-         {:ok, board_id} <- Helpers.decode_id(board_id) do
-      Endpoint.call(conn, %{space_id: space_id, board_id: board_id})
+  def call(conn, %{"board_id" => board_id} = arguments) when is_binary(board_id) do
+    with {:ok, board_id} <- Helpers.decode_id(arguments["board_id"]),
+         {:ok, space_id} <- Helpers.decode_optional_id(arguments["space_id"]),
+         {:ok, project_id} <- Helpers.decode_optional_id(arguments["project_id"]) do
+      Endpoint.call(conn, %{space_id: space_id, project_id: project_id, board_id: board_id})
     end
   end
 

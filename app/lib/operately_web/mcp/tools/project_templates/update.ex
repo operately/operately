@@ -71,7 +71,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.Update do
          {:ok, inputs} <- Helpers.put_present(%{id: id}, arguments, "name", :name),
          {:ok, inputs} <- Helpers.put_present(inputs, arguments, "description", :description, &Helpers.markdown_to_rich_text_nullable/1),
          {:ok, inputs} <- Helpers.put_present(inputs, arguments, "duration_days", :duration_days),
-         {:ok, inputs} <- Helpers.put_present(inputs, arguments, "task_statuses", :task_statuses, &Helpers.decode_template_task_statuses/1),
+         {:ok, inputs} <- Helpers.put_present(inputs, arguments, "task_statuses", :task_statuses, &Helpers.decode_task_statuses/1),
          {:ok, inputs} <- Helpers.put_present(inputs, arguments, "deleted_status_replacements", :deleted_status_replacements, &Helpers.decode_status_replacements/1) do
       TemplateUpdate.call(conn, inputs)
     end

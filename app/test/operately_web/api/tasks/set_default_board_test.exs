@@ -99,6 +99,12 @@ defmodule OperatelyWeb.Api.Tasks.SetDefaultBoardTest do
     assert length(tasks) == 2
   end
 
+  test "rejects project boards", ctx do
+    ctx = Factory.add_project(ctx, :project, :space)
+    board = Operately.Projects.Project.task_board(ctx.project)
+    assert {400, _} = mutation(ctx.conn, [:tasks, :set_default_board], %{space_id: ctx.space.id, board_id: board.id})
+  end
+
   defp inputs(ctx), do: %{space_id: ctx.space.id, board_id: ctx.board.id}
 
   defp grant_access(_ctx, :no_access), do: :ok

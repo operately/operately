@@ -31,4 +31,24 @@ defmodule OperatelyWeb.Api.Tasks.GetBoardTest do
   test "requires authentication", ctx do
     assert {401, _} = query(Phoenix.ConnTest.build_conn(), [:tasks, :get_board], %{space_id: ctx.space.id, board_id: ctx.space.default_task_board_id})
   end
+
+  test "reads project boards by board ID and validates optional owner selectors", ctx do
+    ctx = Factory.add_project(ctx, :project, :space)
+    board = Operately.Projects.Project.task_board(ctx.project)
+    for inputs <- [%{board_id: board.id}, %{board_id: board.id, project_id: ctx.project.id}] do
+      assert {200, %{board: result}} = query(ctx.conn, [:tasks, :get_board], inputs)
+      assert result.project_id == Operately.ShortUuid.encode!(ctx.project.id)
+      assert result.space_id == nil
+    end
+    assert {400, _} = query(ctx.conn, [:tasks, :get_board], %{board_id: board.id, space_id: ctx.space.id})
+    assert {400, _} = query(ctx.conn, [:tasks, :get_board], %{board_id: board.id, space_id: ctx.space.id, project_id: ctx.project.id})
+  end
+
+  test "project boards inherit private project access even in a public space", ctx do
+    ctx = ctx |> Factory.add_project(:private, :space, company_access_level: 0, space_access_level: 0)
+      |> Factory.add_company_member(:outsider) |> Factory.log_in_person(:outsider)
+    board = Operately.Projects.Project.task_board(ctx.private)
+    assert {404, _} = query(ctx.conn, [:tasks, :get_board], %{board_id: board.id})
+    assert {404, _} = query(ctx.conn, [:tasks, :list_task_statuses], %{board_id: board.id})
+  end
 end

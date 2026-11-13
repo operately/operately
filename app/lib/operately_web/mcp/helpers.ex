@@ -195,11 +195,11 @@ defmodule OperatelyWeb.Mcp.Helpers do
   def decode_template_task_status(%{"id" => id}) when is_binary(id), do: {:ok, %{id: id}}
   def decode_template_task_status(_status), do: {:error, :invalid_arguments}
 
-  def decode_template_task_statuses(statuses) when is_list(statuses) do
+  def decode_task_statuses(statuses) when is_list(statuses) do
     {:ok, Enum.map(statuses, &atomize_known_keys(&1, ~w(id label color index value closed)))}
   end
 
-  def decode_template_task_statuses(_statuses), do: {:error, :invalid_arguments}
+  def decode_task_statuses(_statuses), do: {:error, :invalid_arguments}
 
   def decode_status_replacements(replacements) when is_list(replacements) do
     {:ok, Enum.map(replacements, &atomize_known_keys(&1, ~w(deleted_status_id replacement_status_id)))}

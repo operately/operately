@@ -43,4 +43,10 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.ListBoardsTest do
     assert {:error, :not_found} =
              ListBoards.call(ToolConnHelper.conn(ctx), %{"space_id" => Paths.space_id(foreign.space)})
   end
+
+  test "discovers boards by project ID", ctx do
+    ctx = Factory.add_project(ctx, :project, :space)
+    assert {:ok, %{boards: [board]}} = OperatelyWeb.Mcp.Tools.Tasks.ListBoards.call(ToolConnHelper.conn(ctx), %{"project_id" => OperatelyWeb.Paths.project_id(ctx.project)})
+    assert board.project_id == Operately.ShortUuid.encode!(ctx.project.id)
+  end
 end

@@ -2,35 +2,6 @@ defmodule OperatelyWeb.Api.Tasks do
   alias __MODULE__.SharedMultiSteps, as: Steps
 
   alias Operately.Repo
-  alias OperatelyWeb.Api.Serializer
-
-  defmodule List do
-    @moduledoc """
-    Lists all tasks for a project.
-    """
-
-    use TurboConnect.Query
-
-    inputs do
-      field :project_id, :id, null: false
-    end
-
-    outputs do
-      field :tasks, list_of(:task), null: false
-    end
-
-    def call(conn, inputs) do
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_view)
-      |> Steps.get_tasks()
-      |> Steps.commit()
-      |> Steps.respond(fn changes ->
-        %{tasks: Serializer.serialize(changes.tasks, level: :full)}
-      end)
-    end
-  end
 
   defmodule UpdateStatus do
     @moduledoc """
@@ -630,7 +601,6 @@ defmodule OperatelyWeb.Api.Tasks do
   defmodule SharedMultiSteps do
     use Gettext, backend: OperatelyWeb.Gettext
     require Logger
-    import Ecto.Query, only: [from: 2]
     use OperatelyWeb.Api.Helpers
     alias Operately.Operations.Notifications
     alias Operately.Notifications.Subscription
@@ -705,20 +675,6 @@ defmodule OperatelyWeb.Api.Tasks do
           %Operately.Projects.Project{} = project -> {:ok, project}
           _ -> {:error, {:not_found, gettext("Project not found")}}
         end
-      end)
-    end
-
-    def get_tasks(multi) do
-      Ecto.Multi.run(multi, :tasks, fn _repo, %{project: project} ->
-        tasks =
-          from(t in Operately.Tasks.Task,
-            where: t.project_id == ^project.id,
-            preload: [:assigned_people, :milestone, subscription_list: [subscriptions: :person]]
-          )
-          |> Repo.all()
-          |> Operately.Tasks.Task.load_comments_count()
-
-        {:ok, tasks}
       end)
     end
 

@@ -2770,6 +2770,8 @@ export interface Task {
 
 export interface TaskBoard {
   __typename: "task_board";
+  spaceId?: Id | null;
+  projectId?: Id | null;
   id: Id;
   name: string;
   archivedAt: string | null;
@@ -2779,6 +2781,8 @@ export interface TaskBoard {
 
 export interface TaskBoardSummary {
   __typename: "task_board_summary";
+  spaceId?: Id | null;
+  projectId?: Id | null;
   id: Id;
   name: string;
   position: number;

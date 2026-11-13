@@ -556,6 +556,10 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(annotation_id)
   end
 
+  def project_id(project_id) when is_binary(project_id) do
+    Operately.ShortUuid.encode!(project_id)
+  end
+
   def project_id(project) do
     id = Operately.ShortUuid.encode!(project.id)
     OperatelyWeb.Api.Helpers.id_with_comments(project.name, id)
