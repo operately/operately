@@ -8,7 +8,7 @@ export async function invalidateToolManagementQueries(client: QueryClient) {
     [
       Api.spaces.getQueryKeyPrefix(),
       Api.spaces.listToolsQueryKeyPrefix(),
-      Api.spaces.listTasksQueryKeyPrefix(),
+      Api.tasks.listQueryKeyPrefix(),
       Api.tasks.listBoardsQueryKeyPrefix(),
       Api.tasks.getBoardQueryKeyPrefix(),
       Api.resource_hubs.listQueryKeyPrefix(),

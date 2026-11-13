@@ -211,8 +211,8 @@ operately notifications mark_many_as_read --ids '["n1","n2"]'
 Nested objects and lists use dot-index notation:
 
 ```bash
-operately projects update_task_statuses \
-  --project-id p1 \
+operately tasks update_board_statuses \
+  --board-id b1 \
   --task-statuses.0.id todo \
   --task-statuses.0.label "To Do" \
   --task-statuses.0.color gray \
@@ -410,6 +410,12 @@ Use `tasks create_board --space-id <id> --name <name>` and `tasks rename_board -
 
 Use `operately tasks list_boards --space-id <space-id>` to discover boards. Task creation and move destinations use the space’s default board unless `--board-id` or `--destination-board-id` selects another board. Keep the space ID in these requests.
 
-`operately spaces list_tasks --space-id <space-id>` lists tasks across all boards; add `--board-id` to filter. Use `operately tasks list_task_statuses --board-id <board-id>` to inspect destination statuses, including on empty boards. Explicit board moves with incompatible statuses return available choices; retry with `--destination-status-id`.
+`operately tasks list --space-id <space-id>` lists tasks across all boards; add `--board-id` to filter. Use `operately tasks list_task_statuses --board-id <board-id>` to inspect destination statuses, including on empty boards. Explicit board moves with incompatible statuses return available choices; retry with `--destination-status-id`.
 
 Unavailable-default errors include accessible board candidates. Retry with an explicit board ID.
+
+Project tasks use the same board commands. Resolve the project's sole board with
+`operately tasks get_board --project-id <project-id>`, then use its `id` with
+`tasks update_board_statuses --board-id <board-id>`. List project tasks with
+`tasks list --project-id <project-id>`. Existing `projects update_task_statuses`,
+`spaces update_task_statuses`, and `spaces list_tasks` commands remain compatible.

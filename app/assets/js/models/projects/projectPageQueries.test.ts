@@ -50,6 +50,7 @@ it("invalidates all query variants for the changed project without touching othe
     Api.projects.getQueryKey({ id: "project-1", includeMilestones: true }),
     Api.projects.countChildrenQueryKey({ id: "project-1" }),
     Api.tasks.listQueryKey({ projectId: "project-1" }),
+    Api.tasks.getBoardQueryKey({ projectId: "project-1" }),
     Api.projects.listCheckInsQueryKey({ projectId: "project-1" }),
     Api.projects.listDiscussionsQueryKey({ projectId: "project-1" }),
   ];
