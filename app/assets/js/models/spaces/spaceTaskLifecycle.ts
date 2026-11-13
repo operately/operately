@@ -12,7 +12,7 @@ export async function invalidateSpaceTaskQueries(
     queryClient.invalidateQueries({ queryKey: Api.tasks.getBoardQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.spaces.getQueryKeyPrefix(), refetchType }),
-    queryClient.invalidateQueries({ queryKey: Api.spaces.listTasksQueryKeyPrefix(), refetchType }),
+    queryClient.invalidateQueries({ queryKey: Api.tasks.listQueryKeyPrefix(), refetchType }),
   ]);
 }
 
@@ -49,13 +49,13 @@ export function writeCachedSpaceKanbanState(
   });
 }
 
-export function useUpdateSpaceKanban() {
+export function useUpdateSpaceKanban(spaceId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    ...Api.spaces.updateKanbanMutationOptions(),
+    ...Api.tasks.updateBoardKanbanMutationOptions(),
     onSuccess: (data, variables) => {
-      writeCachedSpaceKanbanState(queryClient, variables.spaceId, variables.kanbanState, data.boardId);
+      writeCachedSpaceKanbanState(queryClient, spaceId, variables.kanbanState, data.boardId);
       void invalidateSpaceTaskQueries(queryClient, "none");
     },
   });
@@ -65,7 +65,7 @@ export function useUpdateSpaceTaskStatuses() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    ...Api.spaces.updateTaskStatusesMutationOptions(),
+    ...Api.tasks.updateBoardStatusesMutationOptions(),
     onSuccess: () => {
       void invalidateSpaceTaskQueries(queryClient);
     },

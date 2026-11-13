@@ -11,6 +11,7 @@ it("invalidates discovery, cards, default projections and task permissions witho
     Api.spaces.listToolsQueryKey({ spaceId: "space" }),
     Api.tasks.listBoardsQueryKey({ spaceId: "space", archiveStatus: "all" }),
     Api.tasks.getBoardQueryKey({ spaceId: "space", boardId: "board" }),
+    Api.tasks.listQueryKey({ spaceId: "space", boardId: "board" }),
     Api.resource_hubs.listQueryKey({ spaceId: "space" }),
   ];
   const unrelated = ["unrelated"];

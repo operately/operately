@@ -165,44 +165,6 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
-  defmodule UpdateKanban do
-    @moduledoc """
-    Updates the kanban state of a task in a project.
-    """
-
-    use TurboConnect.Mutation
-
-    inputs do
-      field :project_id, :id, null: false
-      field :task_id, :id, null: false
-      field :status, :task_status, null: false
-      field :kanban_state, :json, null: false
-    end
-
-    outputs do
-      field :project, :project, null: false
-      field :task, :task, null: false
-    end
-
-    def call(conn, inputs) do
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_project(inputs.project_id)
-      |> Steps.find_task(inputs.task_id)
-      |> Steps.check_task_permissions(:can_edit)
-      |> Steps.update_kanban(inputs.status, inputs.kanban_state)
-      |> Steps.commit()
-      |> Steps.broadcast_project_update()
-      |> Steps.broadcast_review_count_update()
-      |> Steps.respond(fn changes ->
-        %{
-          project: Serializer.serialize(changes.updated_project, level: :essential),
-          task: Serializer.serialize(changes.updated_task_with_preloads, level: :full)
-        }
-      end)
-    end
-  end
-
   defmodule UpdateStartDate do
     @moduledoc """
     Updates the start date of a project.
@@ -234,41 +196,6 @@ defmodule OperatelyWeb.Api.Projects do
           new_start_date: Operately.ContextualDates.Timeframe.start_date(changes.updated_project.timeframe)
         }
       end)
-      |> Steps.commit()
-      |> Steps.broadcast_project_update()
-      |> Steps.respond(fn _ -> %{success: true} end)
-    end
-  end
-
-  defmodule UpdateTaskStatuses do
-    @moduledoc """
-    Updates the available task statuses for a project.
-    """
-
-    use TurboConnect.Mutation
-
-    inputs do
-      field :project_id, :id, null: false
-      field :task_statuses, list_of(:task_status), null: false
-      field? :deleted_status_replacements, list_of(:deleted_status_replacement), null: true
-    end
-
-    outputs do
-      field :success, :boolean, null: true
-    end
-
-    def call(conn, inputs) do
-      replacements = inputs[:deleted_status_replacements] || []
-
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_edit)
-      |> OperatelyWeb.Api.Tasks.SharedMultiSteps.find_project_board()
-      |> Steps.validate_status_replacements(inputs.task_statuses, replacements)
-      |> Steps.require_status_replacements(inputs.task_statuses, replacements)
-      |> Steps.update_task_statuses(inputs.task_statuses)
-      |> Steps.replace_deleted_task_statuses(replacements)
       |> Steps.commit()
       |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
@@ -626,17 +553,6 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
-    def find_task(multi, task_id) do
-      Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
-        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:project]]) do
-          {:ok, task} -> {:ok, task}
-          {:error, _} -> {:error, {:not_found, gettext("Task not found")}}
-        end
-      end)
-    end
-
-    defdelegate update_kanban(multi, status, kanban_state), to: OperatelyWeb.Api.Tasks.BoardMultiSteps, as: :update_kanban
-
     def find_project_by_milestone(multi, milestone_id) do
       Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
         case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
@@ -782,11 +698,6 @@ defmodule OperatelyWeb.Api.Projects do
         end
       end)
     end
-
-    defdelegate update_task_statuses(multi, statuses), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
-    defdelegate require_status_replacements(multi, statuses, replacements), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
-    defdelegate validate_status_replacements(multi, statuses, replacements), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
-    defdelegate replace_deleted_task_statuses(multi, replacements), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
 
     def update_project_start_date(multi, new_start_date) do
       Ecto.Multi.update(multi, :updated_project, fn %{project: project} ->
@@ -1176,15 +1087,6 @@ defmodule OperatelyWeb.Api.Projects do
           {:error, :bad_request}
 
         {:error, :validate_milestone, message, _changes} ->
-          {:error, :bad_request, message}
-
-        {:error, :validate_task_statuses, message, _changes} ->
-          {:error, :bad_request, message}
-
-        {:error, :require_status_replacements, :replacement_required, _changes} ->
-          {:error, :bad_request, gettext("Every deleted task status in use requires a replacement")}
-
-        {:error, :validate_replacements, message, _changes} ->
           {:error, :bad_request, message}
 
         {:error, _failed_operation, reason, _changes} ->

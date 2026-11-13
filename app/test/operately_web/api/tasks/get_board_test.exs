@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Tasks.GetBoardTest do
   test "reads project boards by board ID and validates optional owner selectors", ctx do
     ctx = Factory.add_project(ctx, :project, :space)
     board = Operately.Projects.Project.task_board(ctx.project)
-    for inputs <- [%{board_id: board.id}, %{board_id: board.id, project_id: ctx.project.id}] do
+    for inputs <- [%{board_id: board.id}, %{board_id: board.id, project_id: ctx.project.id}, %{project_id: ctx.project.id}] do
       assert {200, %{board: result}} = query(ctx.conn, [:tasks, :get_board], inputs)
       assert result.project_id == Operately.ShortUuid.encode!(ctx.project.id)
       assert result.space_id == nil
@@ -49,6 +49,18 @@ defmodule OperatelyWeb.Api.Tasks.GetBoardTest do
       |> Factory.add_company_member(:outsider) |> Factory.log_in_person(:outsider)
     board = Operately.Projects.Project.task_board(ctx.private)
     assert {404, _} = query(ctx.conn, [:tasks, :get_board], %{board_id: board.id})
+    assert {404, _} = query(ctx.conn, [:tasks, :get_board], %{project_id: ctx.private.id})
     assert {404, _} = query(ctx.conn, [:tasks, :list_task_statuses], %{board_id: board.id})
+  end
+
+  test "keeps archived project boards readable", ctx do
+    ctx = Factory.add_project(ctx, :project, :space)
+    board = Operately.Projects.Project.task_board(ctx.project)
+    Repo.update!(Ecto.Changeset.change(ctx.project, deleted_at: DateTime.utc_now()))
+
+    for inputs <- [%{project_id: ctx.project.id}, %{board_id: board.id}] do
+      assert {200, %{board: result}} = query(ctx.conn, [:tasks, :get_board], inputs)
+      assert result.id == Operately.ShortUuid.encode!(board.id)
+    end
   end
 end

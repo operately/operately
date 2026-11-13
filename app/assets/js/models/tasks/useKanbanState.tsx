@@ -5,8 +5,7 @@ import * as React from "react";
 import {
   type ProjectTemplatesUpdateInput,
   type ProjectTemplatesUpdateTaskInput,
-  type ProjectsUpdateKanbanInput,
-  type SpacesUpdateKanbanInput,
+  type TasksUpdateBoardKanbanInput,
   type TaskStatus,
 } from "@/api";
 import { TaskBoard, showErrorToast } from "turboui";
@@ -36,14 +35,13 @@ interface BaseKanbanStateOptions {
 type UseKanbanStateOptions =
   | (BaseKanbanStateOptions & {
       type: "space";
-      spaceId: string;
       boardId: string;
-      updateKanban: (input: SpacesUpdateKanbanInput) => Promise<unknown>;
+      updateKanban: (input: TasksUpdateBoardKanbanInput) => Promise<unknown>;
     })
   | (BaseKanbanStateOptions & {
       type: "project";
-      projectId: string;
-      updateKanban: (input: ProjectsUpdateKanbanInput) => Promise<unknown>;
+      boardId: string;
+      updateKanban: (input: TasksUpdateBoardKanbanInput) => Promise<unknown>;
     })
   | (BaseKanbanStateOptions & {
       type: "template";
@@ -106,7 +104,6 @@ export function useKanbanState(options: UseKanbanStateOptions) {
           });
         } else if (options.type === "space") {
           await options.updateKanban({
-            spaceId: options.spaceId,
             boardId: options.boardId,
             taskId: event.taskId,
             status: backendStatus,

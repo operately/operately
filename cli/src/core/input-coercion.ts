@@ -191,7 +191,9 @@ function coerceObjectFields(
         continue;
       }
 
-      if (!field.optional) {
+      // TurboConnect includes response metadata in its object catalog, but
+      // callers do not need to supply it when using those objects as inputs.
+      if (!field.optional && field.name !== "__typename") {
         throw new UsageError(`Missing required field '${path}.${field.name}'.`);
       }
 

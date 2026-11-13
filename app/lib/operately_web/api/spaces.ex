@@ -80,43 +80,6 @@ defmodule OperatelyWeb.Api.Spaces do
     end
   end
 
-  defmodule UpdateKanban do
-    @moduledoc """
-    Updates ordering and task status on the selected board, or the space’s default board when board_id is omitted.
-    """
-
-    use TurboConnect.Mutation
-    use OperatelyWeb.Api.Helpers
-
-    inputs do
-      field :space_id, :id, null: false
-      field? :board_id, :id, null: true
-      field :task_id, :id, null: false
-      field :status, :task_status, null: false
-      field :kanban_state, :json, null: false
-    end
-
-    outputs do
-      field :board_id, :id, null: false
-      field :task, :task, null: false
-    end
-
-    def call(conn, inputs) do
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_space(inputs.space_id)
-      |> Steps.find_task(inputs.task_id)
-      |> Steps.check_task_permissions(:can_edit)
-      |> Steps.find_board(inputs[:board_id])
-      |> Steps.update_space_kanban_state(inputs.status, inputs.kanban_state)
-      |> Steps.commit()
-      |> Steps.broadcast_review_count_update()
-      |> Steps.respond(fn changes ->
-        %{task: Serializer.serialize(changes.updated_task_with_preloads, level: :full), board_id: Operately.ShortUuid.encode!(changes.board.id)}
-      end)
-    end
-  end
-
   defmodule ListMembers do
     @moduledoc """
     Lists members of a space.
@@ -214,43 +177,6 @@ defmodule OperatelyWeb.Api.Spaces do
     def call(conn, inputs), do: OperatelyWeb.Api.Tasks.List.call(conn, inputs)
   end
 
-  defmodule UpdateTaskStatuses do
-    @moduledoc """
-    Updates task statuses on the selected board, or the space’s default board when board_id is omitted.
-    """
-
-    use TurboConnect.Mutation
-    use OperatelyWeb.Api.Helpers
-
-    inputs do
-      field :space_id, :id, null: false
-      field? :board_id, :id, null: true
-      field :task_statuses, list_of(:task_status), null: false
-      field? :deleted_status_replacements, list_of(:deleted_status_replacement), null: true
-    end
-
-    outputs do
-      field :board_id, :id, null: false
-      field :success, :boolean, null: false
-    end
-
-    def call(conn, inputs) do
-      replacements = inputs[:deleted_status_replacements] || []
-
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_space(inputs.space_id)
-      |> Steps.check_permissions(:can_edit)
-      |> Steps.find_board(inputs[:board_id])
-      |> Steps.validate_status_replacements(inputs.task_statuses, replacements)
-      |> Steps.require_status_replacements(inputs.task_statuses, replacements)
-      |> Steps.update_task_statuses(inputs.task_statuses)
-      |> Steps.replace_deleted_task_statuses(replacements)
-      |> Steps.commit()
-      |> Steps.respond(fn changes -> %{success: true, board_id: Operately.ShortUuid.encode!(changes.board.id)} end)
-    end
-  end
-
   defmodule UpdateTools do
     @moduledoc """
     Updates the tools configuration for a space.
@@ -303,64 +229,11 @@ defmodule OperatelyWeb.Api.Spaces do
       end)
     end
 
-    def find_task(multi, task_id) do
-      Multi.run(multi, :task, fn _repo, %{me: me} ->
-        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:assigned_people]]) do
-          {:ok, task} -> {:ok, task}
-          {:error, _} -> {:error, {:not_found, gettext("Task not found")}}
-        end
-      end)
-    end
-
-    def check_task_permissions(multi, permission) do
-      Multi.run(multi, :permissions, fn _repo, %{task: task, company_read_only: company_read_only} ->
-        Operately.Groups.Permissions.check(task.request_info.access_level, permission, company_read_only: company_read_only)
-      end)
-    end
-
-    def find_board(multi, board_id) do
-      Multi.run(multi, :board, fn _repo, %{me: me, space: space} ->
-        with {:ok, board} <- OperatelyWeb.Api.Tasks.BoardScope.resolve(me, space, board_id) do
-          Operately.Tasks.BoardSync.lock_board(board.id)
-        end
-      end)
-    end
-
-    defdelegate update_space_kanban_state(multi, status, kanban_state), to: OperatelyWeb.Api.Tasks.BoardMultiSteps, as: :update_kanban
-
-    def broadcast_review_count_update(result) do
-      case result do
-        {:ok, changes} ->
-          broadcast(changes[:task])
-          broadcast(changes[:updated_task_with_preloads] || changes[:updated_task])
-
-        _result ->
-          :ok
-      end
-
-      result
-    end
-
-    defp broadcast(task = %Operately.Tasks.Task{}) do
-      if Ecto.assoc_loaded?(task.assigned_people) do
-        Enum.each(task.assigned_people, fn person ->
-          OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: person.id)
-        end)
-      end
-    end
-
-    defp broadcast(_), do: :ok
-
     def check_permissions(multi, permission) do
       Multi.run(multi, :permissions, fn _repo, %{space: space, company_read_only: company_read_only} ->
         Permissions.check(space.request_info.access_level, permission, company_read_only: company_read_only)
       end)
     end
-
-    defdelegate update_task_statuses(multi, statuses), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
-    defdelegate require_status_replacements(multi, statuses, replacements), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
-    defdelegate validate_status_replacements(multi, statuses, replacements), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
-    defdelegate replace_deleted_task_statuses(multi, replacements), to: OperatelyWeb.Api.Tasks.BoardMultiSteps
 
     def update_tools(multi, tools) do
       Multi.update(multi, :updated_space, fn %{space: space} ->
@@ -405,20 +278,8 @@ defmodule OperatelyWeb.Api.Spaces do
         {:error, _failed_operation, :bad_request, _changes} ->
           {:error, :bad_request}
 
-        {:error, :updated_board, %Ecto.Changeset{}, _changes} ->
-          {:error, :bad_request, gettext("Invalid status")}
-
         {:error, :updated_space, %Ecto.Changeset{}, _changes} ->
           {:error, :bad_request, gettext("Invalid tools")}
-
-        {:error, :validate_task_statuses, message, _changes} ->
-          {:error, :bad_request, message}
-
-        {:error, :require_status_replacements, :replacement_required, _changes} ->
-          {:error, :bad_request, gettext("Every deleted task status in use requires a replacement")}
-
-        {:error, :validate_replacements, message, _changes} ->
-          {:error, :bad_request, message}
 
         {:error, _failed_operation, _reason, _changes} ->
           {:error, :internal_server_error}

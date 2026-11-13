@@ -4,6 +4,10 @@ defmodule Operately.CliE2E.Tasks.BoardSelectionTest do
 
   setup ctx, do: {:ok, Steps.setup(ctx)}
 
+  test "edits and uses a project workflow through shared board commands", ctx do
+    Steps.edit_project_board_workflow(ctx)
+  end
+
   test "discovers boards, selects a board, and moves a task back to the default", ctx do
     ctx
     |> Steps.given_another_board()

@@ -11,7 +11,7 @@ export async function loader({ params }) {
   await Promise.all([
     Api.spaces.getQuery(spaceInput),
     Api.tasks.getBoardQuery(boardInput),
-    Api.spaces.listTasksQuery(tasksInput),
+    Api.tasks.listQuery(tasksInput),
   ]);
 
   return { spaceInput, boardInput, tasksInput };
@@ -23,7 +23,7 @@ export function useLoadedData(): { space: Space; board: TaskBoard; tasks: Task[]
   const { spaceInput, boardInput, tasksInput } = Pages.useLoadedData<LoaderResult>();
   const { data: spaceData } = useLoadedQuery(Api.spaces.getQueryOptions(spaceInput));
   const { data: boardData } = useLoadedQuery(Api.tasks.getBoardQueryOptions(boardInput));
-  const { data: tasksData } = useLoadedQuery(Api.spaces.listTasksQueryOptions(tasksInput));
+  const { data: tasksData } = useLoadedQuery(Api.tasks.listQueryOptions(tasksInput));
 
   if (!spaceData?.space || !boardData || !tasksData) {
     throw new Error(`Space Kanban data is unavailable for space "${spaceInput.id}"`);
@@ -39,7 +39,7 @@ export function useRefresh(): () => Promise<void> {
   return async () => {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: Api.spaces.getQueryKey(spaceInput) }),
-      queryClient.invalidateQueries({ queryKey: Api.spaces.listTasksQueryKey(tasksInput) }),
+      queryClient.invalidateQueries({ queryKey: Api.tasks.listQueryKey(tasksInput) }),
       queryClient.invalidateQueries({ queryKey: Api.tasks.getBoardQueryKey(boardInput) }),
     ]);
   };

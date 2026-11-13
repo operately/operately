@@ -25,7 +25,7 @@ function BoardPage({ space, board, tasks: backendTasks }: ReturnType<typeof useL
   const paths = usePaths();
   const refreshPageData = useRefresh();
   const currentUser = useMe();
-  const { mutateAsync: updateKanban } = Spaces.useUpdateSpaceKanban();
+  const { mutateAsync: updateKanban } = Spaces.useUpdateSpaceKanban(space.id);
 
   const transformPerson = React.useCallback((p: People.Person) => People.parsePersonForTurboUi(paths, p)!, [paths]);
   const assigneeSearch = Tasks.useTaskAssigneeSearch({
@@ -58,7 +58,6 @@ function BoardPage({ space, board, tasks: backendTasks }: ReturnType<typeof useL
   const { kanbanState, handleTaskKanbanChange, handleTaskStatusChange } = Tasks.useKanbanState({
     initialRawState: board.tasksKanbanState,
     statuses,
-    spaceId: space.id,
     boardId: board.id,
     type: "space",
     tasks,
@@ -67,7 +66,6 @@ function BoardPage({ space, board, tasks: backendTasks }: ReturnType<typeof useL
   });
 
   const { handleStatusesChange } = useSpaceTaskStatuses({
-    spaceId: space.id,
     boardId: board.id,
     tasks,
     setTasks,

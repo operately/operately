@@ -39851,7 +39851,7 @@
       "name": "update_task_statuses",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_task_statuses",
-      "handler": "OperatelyWeb.Api.Projects.UpdateTaskStatuses",
+      "handler": "OperatelyWeb.Api.Wrappers.Projects.UpdateTaskStatuses",
       "outputs": [
         {
           "default": null,
@@ -41423,7 +41423,7 @@
       "name": "update_task_statuses",
       "type": "mutation",
       "path": "/api/external/v1/spaces/update_task_statuses",
-      "handler": "OperatelyWeb.Api.Spaces.UpdateTaskStatuses",
+      "handler": "OperatelyWeb.Api.Wrappers.Spaces.UpdateTaskStatuses",
       "outputs": [
         {
           "default": null,
@@ -42069,15 +42069,15 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": false,
-          "nullable": false,
+          "optional": true,
+          "nullable": true,
           "has_default": false
         }
       ],
       "full_name": "tasks/get_board",
       "method": "GET",
       "namespace": "tasks",
-      "docstring": "Returns a project or space task board, including its owner, statuses, and kanban ordering. Archived boards remain readable. Optional owner selectors must match."
+      "docstring": "Returns a task board by board_id, or a project's sole board by project_id. Archived boards remain readable. Optional owner selectors must match."
     },
     {
       "name": "list",

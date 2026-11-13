@@ -70,7 +70,7 @@ defmodule Operately.Support.CliE2E.Tasks.BoardSelectionSteps do
   end
 
   step :list_selected_board, ctx do
-    payload = command!(ctx, ["spaces", "list_tasks", "--space-id", ctx.space.id, "--board-id", ctx.selected_board_id])
+    payload = command!(ctx, ["tasks", "list", "--space-id", ctx.space.id, "--board-id", ctx.selected_board_id])
     assert [%{"id" => task_id}] = payload["tasks"]
     assert task_id == ctx.task_id
     ctx
@@ -89,7 +89,10 @@ defmodule Operately.Support.CliE2E.Tasks.BoardSelectionSteps do
   end
 
   step :list_all_space_tasks, ctx do
-    assert length((command!(ctx, ["spaces", "list_tasks", "--space-id", ctx.space.id]))["tasks"]) == 2
+    shared = command!(ctx, ["tasks", "list", "--space-id", ctx.space.id])
+    legacy = command!(ctx, ["spaces", "list_tasks", "--space-id", ctx.space.id])
+    assert length(shared["tasks"]) == 2
+    assert MapSet.new(shared["tasks"], & &1["id"]) == MapSet.new(legacy["tasks"], & &1["id"])
     ctx
   end
 
@@ -149,6 +152,23 @@ defmodule Operately.Support.CliE2E.Tasks.BoardSelectionSteps do
     error = Jason.decode!(String.trim(json))
     assert error["details"]["code"] == "default_task_board_unavailable"
     assert Enum.any?(error["details"]["candidates"], &(&1["id"] == ctx.selected_board_id))
+    ctx
+  end
+
+  step :edit_project_board_workflow, ctx do
+    ctx = Factory.add_project(ctx, :project, :space)
+    board = command!(ctx, ["tasks", "get_board", "--project-id", ctx.project.id])["board"]
+    statuses = Enum.map(board["task_statuses"], &Map.take(&1, ["id", "label", "color", "index", "value", "closed"]))
+    statuses = List.update_at(statuses, 0, &Map.put(&1, "label", "Ready"))
+    updated = command!(ctx, ["tasks", "update_board_statuses", "--board-id", board["id"], "--task-statuses", Jason.encode!(statuses)])
+    assert updated["success"]
+    task = command!(ctx, ["tasks", "create", "--type", "project", "--id", ctx.project.id, "--name", "Project task", "--due-date", "null"])["task"]
+    assert task["board_id"] == board["id"]
+    assert task["status"]["label"] == "Ready"
+    assert [%{"id" => id}] = command!(ctx, ["tasks", "list", "--board-id", board["id"]])["tasks"]
+    assert id == task["id"]
+    legacy = command!(ctx, ["projects", "update_task_statuses", "--project-id", ctx.project.id, "--task-statuses", Jason.encode!(statuses)])
+    assert legacy == %{"success" => true}
     ctx
   end
 

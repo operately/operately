@@ -87,7 +87,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update_parent_goal, OperatelyWeb.Api.Projects.UpdateParentGoal)
         mutation(:create_milestone, OperatelyWeb.Api.Projects.CreateMilestone)
         mutation(:update_milestone, OperatelyWeb.Api.Projects.UpdateMilestone)
-        mutation(:update_task_statuses, OperatelyWeb.Api.Projects.UpdateTaskStatuses)
+        mutation(:update_task_statuses, OperatelyWeb.Api.Wrappers.Projects.UpdateTaskStatuses)
         mutation(:update_tasks_view, OperatelyWeb.Api.Projects.UpdateTasksView)
         mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
         mutation(:update_contributor, OperatelyWeb.Api.Projects.UpdateContributor)
@@ -209,7 +209,7 @@ defmodule OperatelyWeb.Api do
         mutation(:delete, OperatelyWeb.Api.Spaces.Delete)
         mutation(:delete_member, OperatelyWeb.Api.Spaces.DeleteMember)
         mutation(:join, OperatelyWeb.Api.Spaces.Join)
-        mutation(:update_task_statuses, OperatelyWeb.Api.Spaces.UpdateTaskStatuses)
+        mutation(:update_task_statuses, OperatelyWeb.Api.Wrappers.Spaces.UpdateTaskStatuses)
         mutation(:update, OperatelyWeb.Api.Spaces.Update)
         mutation(:update_members_permissions, OperatelyWeb.Api.Spaces.UpdateMembersPermissions)
         mutation(:update_permissions, OperatelyWeb.Api.Spaces.UpdatePermissions)
@@ -475,11 +475,11 @@ defmodule OperatelyWeb.Api do
       end
 
       namespace(:spaces) do
-        mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
+        mutation(:update_kanban, OperatelyWeb.Api.Wrappers.Spaces.UpdateKanban)
       end
 
       namespace(:projects) do
-        mutation(:update_kanban, OperatelyWeb.Api.Projects.UpdateKanban)
+        mutation(:update_kanban, OperatelyWeb.Api.Wrappers.Projects.UpdateKanban)
       end
 
       namespace(:invitations) do

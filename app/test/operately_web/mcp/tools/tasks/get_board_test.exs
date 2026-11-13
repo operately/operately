@@ -45,5 +45,6 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.GetBoardTest do
     board = Operately.Projects.Project.task_board(ctx.project)
     assert {:ok, %{board: result}} = GetBoard.call(ToolConnHelper.conn(ctx), %{"board_id" => ShortUuid.encode!(board.id), "project_id" => Paths.project_id(ctx.project)})
     assert result.project_id == ShortUuid.encode!(ctx.project.id)
+    assert {:ok, %{board: ^result}} = GetBoard.call(ToolConnHelper.conn(ctx), %{"project_id" => Paths.project_id(ctx.project)})
   end
 end
