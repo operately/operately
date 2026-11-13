@@ -89,7 +89,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     assert template.creator_id == ctx.creator.id
     assert template.source_project_id == source.id
     assert template.duration_days == 30
-    assert MapSet.disjoint?(MapSet.new(template.task_statuses, & &1.id), MapSet.new(source.task_statuses, & &1.id))
+    assert MapSet.disjoint?(MapSet.new(template.task_statuses, & &1.id), MapSet.new(Operately.Projects.Project.task_statuses(source), & &1.id))
 
     assert milestone.id != ctx.launch.id
     assert milestone.title == "Launch"
@@ -130,7 +130,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
         }
       })
 
-    task_status = source.task_statuses |> List.first() |> Map.from_struct()
+    task_status = Operately.Projects.Project.task_statuses(source) |> List.first() |> Map.from_struct()
 
     ctx =
       ctx
@@ -267,7 +267,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
       |> Factory.add_project_task(:task, nil,
         project_id: source.id,
         due_date: nil,
-        task_status: source.task_statuses |> List.first() |> Map.from_struct()
+        task_status: Operately.Projects.Project.task_statuses(source) |> List.first() |> Map.from_struct()
       )
       |> Factory.add_task_assignee(:assignment, :task, :assignee)
 
@@ -315,8 +315,8 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
   test "copies comments onto included discussions and resources and skips milestone and task comments", ctx do
     source = ctx.source |> update_project!(%{timeframe: timeframe(~D[2028-01-01], nil)})
-    task_status = source.task_statuses |> List.first() |> Map.from_struct()
-    closed_task_status = Enum.find(source.task_statuses, & &1.closed)
+    task_status = Operately.Projects.Project.task_statuses(source) |> List.first() |> Map.from_struct()
+    closed_task_status = Enum.find(Operately.Projects.Project.task_statuses(source), & &1.closed)
 
     ctx =
       ctx
@@ -410,7 +410,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
       ctx.source
       |> update_project!(%{timeframe: timeframe(start_date, ~D[2028-01-09])})
 
-    task_status = source.task_statuses |> List.first() |> Map.from_struct()
+    task_status = Operately.Projects.Project.task_statuses(source) |> List.first() |> Map.from_struct()
 
     ctx =
       ctx
@@ -435,7 +435,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   test "clears task due dates and reminders that fall before the project start", ctx do
     start_date = ~D[2028-01-10]
     source = ctx.source |> update_project!(%{timeframe: timeframe(start_date, ~D[2028-01-20])})
-    task_status = source.task_statuses |> List.first() |> Map.from_struct()
+    task_status = Operately.Projects.Project.task_statuses(source) |> List.first() |> Map.from_struct()
 
     ctx =
       ctx
@@ -561,7 +561,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
   test "rejects foreign milestone and task status references", ctx do
     source = ctx.source |> update_project!(%{timeframe: timeframe(~D[2028-01-01], nil)})
-    valid_status = source.task_statuses |> List.first() |> Map.from_struct()
+    valid_status = Operately.Projects.Project.task_statuses(source) |> List.first() |> Map.from_struct()
 
     ctx =
       ctx
@@ -582,7 +582,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
   test "rejects invalid source children and rolls back a root insert failure", ctx do
     source = ctx.source |> update_project!(%{timeframe: timeframe(~D[2028-01-01], nil)})
-    task_status = source.task_statuses |> List.first() |> Map.from_struct()
+    task_status = Operately.Projects.Project.task_statuses(source) |> List.first() |> Map.from_struct()
 
     ctx =
       ctx

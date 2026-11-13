@@ -121,7 +121,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
         }, :flat)
 
         items = index_work_map_by_id(work_map)
-        project_statuses = if ctx.include_statuses, do: ctx.project.task_statuses, else: nil
+        project_statuses = if ctx.include_statuses, do: Operately.Projects.Project.task_statuses(ctx.project), else: nil
         space_statuses = if ctx.include_statuses, do: Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses, else: nil
 
         assert Map.fetch!(items, ctx.open_task.id).resource.available_statuses == project_statuses

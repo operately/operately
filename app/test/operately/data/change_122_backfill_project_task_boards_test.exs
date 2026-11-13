@@ -7,7 +7,19 @@ defmodule Operately.Data.Change122BackfillProjectTaskBoardsTest do
   alias OperatelyWeb.Paths
 
   setup ctx do
-    ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:project, :space)
+    # Restore the schema this historical backfill ran against; sandbox rollback undoes it.
+    Repo.query!("ALTER TABLE projects ADD COLUMN task_statuses jsonb[] DEFAULT '{}', ADD COLUMN tasks_kanban_state jsonb DEFAULT '{}'")
+    Repo.query!("ALTER TABLE tasks ALTER COLUMN board_id DROP NOT NULL")
+
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:project, :space)
+
+    from(p in Change.Project,
+      join: b in Change.Board, on: b.project_id == p.id,
+      update: [set: [task_statuses: b.task_statuses, tasks_kanban_state: b.tasks_kanban_state]]
+    )
+    |> Repo.update_all([])
+
+    ctx
   end
 
   test "copies exact project workflow and ordering, changing only task board references", ctx do

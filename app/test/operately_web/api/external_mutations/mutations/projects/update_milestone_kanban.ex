@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.UpdateMilestoneK
     ctx = Factory.log_in_person(ctx, :creator)
 
     status_input =
-      Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+      Enum.find(Operately.Projects.Project.task_statuses(ctx.project) || [], fn s -> s.value == "in_progress" end)
       |> then(fn status ->
         status
         |> Map.from_struct()

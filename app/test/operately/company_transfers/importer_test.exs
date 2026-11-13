@@ -55,6 +55,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
              export_and_stage_import(ctx, fn package ->
                package
                |> replace_company_short_id(short_id)
+               |> add_stale_project_workflow_fields()
              end)
 
     assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
@@ -1229,6 +1230,24 @@ defmodule Operately.CompanyTransfers.ImporterTest do
       end)
     end)
     |> put_in(["manifest", "source_company", "short_id"], short_id)
+  end
+
+  defp add_stale_project_workflow_fields(package) do
+    package
+    |> Map.update!("tables", fn tables ->
+      Enum.map(tables, fn
+        %{"name" => "projects"} = table ->
+          Map.update!(table, "rows", fn rows ->
+            Enum.map(rows, fn row ->
+              refute Map.has_key?(row, "task_statuses")
+              refute Map.has_key?(row, "tasks_kanban_state")
+              Map.merge(row, %{"task_statuses" => [], "tasks_kanban_state" => %{}})
+            end)
+          end)
+
+        table -> table
+      end)
+    end)
   end
 
   defp add_unknown_company_column(package, column, value) do

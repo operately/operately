@@ -328,7 +328,7 @@ defmodule Operately.Support.Features.ProfileSteps do
     project = Map.fetch!(ctx, project_key)
     task = Map.fetch!(ctx, task_key)
 
-    closed_status = Enum.find(project.task_statuses, & &1.closed)
+    closed_status = Enum.find(Operately.Projects.Project.task_statuses(project), & &1.closed)
 
     assert closed_status
 

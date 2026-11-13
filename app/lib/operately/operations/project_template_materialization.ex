@@ -242,7 +242,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
 
       Multi.new()
       |> insert_project(params, plan)
-      |> Operately.Tasks.TaskBoard.insert_for_project()
+      |> Operately.Tasks.TaskBoard.insert_for_project(%{task_statuses: plan.task_statuses, tasks_kanban_state: plan.root_kanban})
       |> insert_default_resource_hub()
       |> insert_access_context()
       |> insert_champion_as_contributor(params)
@@ -272,9 +272,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
           timeframe: plan.timeframe,
           next_check_in_scheduled_at: Operately.Time.first_friday_from_today(),
           health: :on_track,
-          task_statuses: plan.task_statuses,
           milestones_ordering_state: plan.milestone_ordering,
-          tasks_kanban_state: plan.root_kanban,
           subscription_list_id: changes.subscription_list.id
         })
       end)

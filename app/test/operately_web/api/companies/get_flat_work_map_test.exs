@@ -314,7 +314,7 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMapTest do
       project_task = Enum.find(res.work_map, &(&1.id == Paths.task_id(ctx.open_task)))
       space_task = Enum.find(res.work_map, &(&1.id == Paths.task_id(ctx.space_task)))
 
-      assert project_task.task_statuses == Serializer.serialize(ctx.project.task_statuses)
+      assert project_task.task_statuses == Serializer.serialize(Operately.Projects.Project.task_statuses(ctx.project))
       assert space_task.task_statuses == Serializer.serialize(Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses)
       assert project_task.can_edit_task
       assert space_task.can_edit_task

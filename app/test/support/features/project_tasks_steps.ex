@@ -99,7 +99,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     project = Operately.Repo.get!(Operately.Projects.Project, ctx.project.id)
 
     filtered_statuses =
-      project.task_statuses
+      Operately.Projects.Project.task_statuses(project)
       |> Enum.reject(fn status -> status.color == :green end)
       |> Enum.map(fn status ->
         %{
