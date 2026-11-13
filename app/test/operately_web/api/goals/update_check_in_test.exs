@@ -218,9 +218,159 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckInTest do
     end
   end
 
+  test "content edits preserve omitted progress, timeframe, and publication fields", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+    ctx = ctx |> Factory.add_goal_update(:update, :goal, :creator) |> Factory.log_in_person(:creator)
+    before = Repo.reload!(ctx.update)
+    goal_before = Repo.reload!(ctx.goal)
+
+    assert {200, _} = mutation(ctx.conn, [:goals, :update_check_in], %{
+      id: Paths.goal_update_id(before), content: RichText.rich_text("Revised", :as_string)
+    })
+
+    after_edit = Repo.reload!(before)
+    assert after_edit.status == before.status
+    assert after_edit.targets == before.targets
+    assert after_edit.checks == before.checks
+    assert after_edit.timeframe == before.timeframe
+    assert after_edit.state == before.state
+    assert Repo.reload!(ctx.goal).timeframe == goal_before.timeframe
+  end
+
+  describe "saved check-in inputs" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space, targets: [])
+      |> Factory.add_goal_check(:check, :goal)
+      |> Factory.add_goal_target(:target, :goal, value: 10)
+      |> Factory.log_in_person(:creator)
+    end
+
+    for item <- [:check, :target] do
+      test "allows content edits after a saved #{item} is deleted", ctx do
+        update = create_saved_check_in(ctx, %{})
+        update = set_update_dates(update, inserted_at: days_ago_naive(5), published_at: DateTime.add(Operately.Time.utc_datetime_now(), -5, :day))
+        Repo.delete!(ctx[unquote(item)])
+
+        assert {200, _} =
+                 mutation(ctx.conn, [:goals, :update_check_in], %{
+                   id: Paths.goal_update_id(update),
+                   content: RichText.rich_text("Corrected", :as_string),
+                   new_target_values: Jason.encode!([%{id: ctx.target.id, value: 99}]),
+                   checklist: [%{id: ctx.check.id, name: ctx.check.name, completed: false, index: 1}]
+                 })
+
+        edited = Repo.reload!(update)
+        assert edited.message == RichText.rich_text("Corrected")
+        assert edited.checks == update.checks
+        assert edited.targets == update.targets
+      end
+    end
+
+    test "publishes saved progress without recreating deleted goal items", ctx do
+      update = create_saved_check_in(ctx, %{post_as_draft: true})
+      Repo.delete!(ctx.check)
+      Repo.delete!(ctx.target)
+
+      assert {200, _} = publish_saved_check_in(ctx, update)
+      published = Repo.reload!(update)
+      assert published.state == :published
+      assert published.checks == update.checks
+      assert published.targets == update.targets
+      assert Repo.get(Goals.Check, ctx.check.id) == nil
+      assert Repo.get(Goals.Target, ctx.target.id) == nil
+    end
+
+    test "rejects progress IDs from another goal", ctx do
+      update = create_saved_check_in(ctx, %{post_as_draft: true})
+      ctx = ctx |> Factory.add_goal(:other_goal, :space, targets: []) |> Factory.add_goal_check(:other_check, :other_goal) |> Factory.add_goal_target(:other_target, :other_goal)
+      inputs = %{id: Paths.goal_update_id(update), content: RichText.rich_text("Invalid", :as_string)}
+
+      for progress <- [
+            %{checklist: [%{id: ctx.other_check.id, name: ctx.other_check.name, completed: true, index: 1}]},
+            %{new_target_values: Jason.encode!([%{id: ctx.other_target.id, value: 99}])}
+          ] do
+        assert {400, _} = mutation(ctx.conn, [:goals, :update_check_in], Map.merge(inputs, progress))
+      end
+
+      assert Repo.reload!(update).message == update.message
+      refute Repo.reload!(ctx.other_check).completed
+      assert Repo.reload!(ctx.other_target).value == ctx.other_target.value
+    end
+
+    for clear_at <- [:creation, :edit] do
+      @tag clear_at: clear_at
+      test "publishing preserves a due-date clear saved at #{clear_at}", ctx do
+        due_date = if ctx.clear_at == :creation, do: nil, else: %{date_type: "day", value: "Feb 1, 2027", date: "2027-02-01"}
+        inputs = %{post_as_draft: true, due_date: due_date}
+        update = create_saved_check_in(ctx, inputs)
+
+        if ctx.clear_at == :edit do
+          assert {200, _} =
+                   mutation(ctx.conn, [:goals, :update_check_in], %{
+                     id: Paths.goal_update_id(update),
+                     content: RichText.rich_text("Clear date", :as_string),
+                     due_date: nil
+                   })
+        end
+
+        assert {200, %{update: edited}} =
+                 mutation(ctx.conn, [:goals, :update_check_in], %{
+                   id: Paths.goal_update_id(update),
+                   content: RichText.rich_text("Revised draft", :as_string)
+                 })
+
+        assert edited.timeframe == nil
+        assert Repo.reload!(ctx.goal).timeframe == ctx.goal.timeframe
+        assert {200, %{update: published}} = publish_saved_check_in(ctx, update)
+        assert Repo.reload!(ctx.goal).timeframe == nil
+        assert published.timeframe == nil
+        activity = Repo.get_by!(Operately.Activities.Activity, action: "goal_check_in")
+        assert activity.content["new_timeframe"] == nil
+      end
+    end
+
+    test "publishing an omitted due date preserves the current goal timeframe", ctx do
+      update = create_saved_check_in(ctx, %{post_as_draft: true})
+      timeframe = Operately.ContextualDates.Timeframe.next_quarter(:as_map)
+      goal = ctx.goal |> Goals.Goal.changeset(%{timeframe: timeframe}) |> Repo.update!()
+
+      assert {200, _} = publish_saved_check_in(ctx, update)
+      assert Repo.reload!(goal).timeframe == goal.timeframe
+    end
+  end
+
   #
   # Helpers
   #
+
+  defp create_saved_check_in(ctx, options) do
+    inputs =
+      Map.merge(
+        %{
+          goal_id: Paths.goal_id(ctx.goal),
+          status: "on_track",
+          content: RichText.rich_text("Saved", :as_string),
+          new_target_values: Jason.encode!([%{id: ctx.target.id, value: 25}]),
+          checklist: [%{id: ctx.check.id, name: ctx.check.name, completed: true, index: 1}]
+        },
+        options
+      )
+
+    assert {200, %{update: update}} = mutation(ctx.conn, [:goals, :create_check_in], inputs)
+    {:ok, id} = OperatelyWeb.Api.Types.Id.decode(update.id)
+    Repo.get!(Goals.Update, id)
+  end
+
+  defp publish_saved_check_in(ctx, update) do
+    mutation(ctx.conn, [:goals, :update_check_in], %{
+      id: Paths.goal_update_id(update),
+      content: RichText.rich_text("Published", :as_string),
+      state: "published"
+    })
+  end
 
   defp request(conn, update) do
     request_update(conn, update, status: "on_track")

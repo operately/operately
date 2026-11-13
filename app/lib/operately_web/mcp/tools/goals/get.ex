@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.Get do
   @impl true
   def call(conn, %{"goal_id" => goal_id}) do
     with {:ok, goal_id} <- decode_goal_id(goal_id) do
-      GoalGet.call(conn, %{id: goal_id, include_markdown: false})
+      GoalGet.call(conn, %{id: goal_id, include_markdown: false, include_retrospective: true})
     end
   end
 

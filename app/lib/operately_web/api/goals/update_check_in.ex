@@ -7,15 +7,16 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckIn do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  alias OperatelyWeb.Api.Goals.CheckInInputs
   alias Operately.Goals.Update
   alias Operately.Goals.Update.Permissions
   alias Operately.Operations.GoalCheckInEdit
 
   inputs do
     field :id, :id, null: false
-    field :due_date, :contextual_date, null: true
+    field? :due_date, :contextual_date, null: true
 
-    field :status, :goal_check_in_status, null: false
+    field? :status, :goal_check_in_status, null: false
     field :content, :json, null: false
     field? :state, :check_in_state, null: true
     field? :new_target_values, :string, null: true
@@ -30,10 +31,10 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckIn do
   def call(conn, inputs) do
     Action.new()
     |> Action.run(:me, fn -> find_me(conn) end)
-    |> Action.run(:attrs, fn -> parse_inputs(inputs) end)
     |> Action.run(:update, fn ctx -> Update.get(ctx.me, id: inputs.id, opts: [preload: [goal: [:targets, :checks]]]) end)
     |> Action.run(:check_draft_access, fn ctx -> check_draft_access(ctx.update, ctx.me) end)
     |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, ctx.update, ctx.me.id, :can_edit, company_read_only: company_read_only(conn)) end)
+    |> Action.run(:attrs, fn ctx -> parse_inputs(inputs, ctx.update) end)
     |> Action.run(:operation, fn ctx -> GoalCheckInEdit.run(ctx.me, ctx.update.goal, ctx.update, ctx.attrs) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(ctx.operation, level: :full)}} end)
     |> respond()
@@ -54,21 +55,43 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckIn do
     end
   end
 
-  defp parse_inputs(inputs) do
-    {:ok,
-     %{
-       status: inputs.status,
-       content: inputs.content,
-       state: inputs[:state],
-       new_target_values:
-         Jason.decode!(inputs.new_target_values)
-         |> Enum.map(fn t ->
-           {:ok, id} = decode_id(t["id"])
-           %{"id" => id, "value" => t["value"]}
-         end),
-       due_date: inputs.due_date,
-       checklist: inputs.checklist || [],
-       scheduled_at: inputs[:scheduled_at]
-     }}
+  defp parse_inputs(inputs, update) do
+    with {:ok, target_values} <- target_values(inputs, update),
+         :ok <- CheckInInputs.validate_checklist(inputs[:checklist], update.checks ++ update.goal.checks) do
+      publishing? = update.state != :published and inputs[:state] == :published
+      checklist = if publishing? and is_nil(inputs[:checklist]), do: Enum.map(update.checks, &Map.from_struct/1), else: inputs[:checklist]
+
+      {:ok,
+       %{
+         status: inputs[:status] || update.status,
+         content: inputs.content,
+         state: inputs[:state],
+         new_target_values: target_values,
+         checklist: checklist,
+         scheduled_at: inputs[:scheduled_at]
+       }
+       |> Map.merge(due_date_inputs(inputs, update, publishing?))}
+    end
+  end
+
+  defp target_values(inputs, update) do
+    encoded =
+      if update.state != :published and inputs[:state] == :published and is_nil(inputs[:new_target_values]) do
+        update.targets
+        |> Enum.map(&%{id: Operately.ShortUuid.encode!(&1.id), value: &1.value})
+        |> Jason.encode!()
+      else
+        inputs[:new_target_values]
+      end
+
+    CheckInInputs.decode_target_values(encoded, update.targets)
+  end
+
+  defp due_date_inputs(inputs, update, publishing?) do
+    cond do
+      Map.has_key?(inputs, :due_date) -> Map.take(inputs, [:due_date])
+      publishing? and not is_nil(update.timeframe) -> %{due_date: update.timeframe.contextual_end_date}
+      true -> %{}
+    end
   end
 end
