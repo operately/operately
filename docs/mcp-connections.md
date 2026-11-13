@@ -56,4 +56,4 @@ Scheduled goal check-ins publish their saved snapshot without applying target, c
 
 ## Collaboration tools
 
-MCP supports inviting members and guests, resource access, notification read state, subscribing/unsubscribing, and profile preferences. Existing company roles and resource permissions apply. `get_space` includes enabled tools; `list_goal_access_members` lists direct goal access. Use subscription-list IDs returned by resource reads such as `get_project` to subscribe or unsubscribe.
+MCP supports inviting members and guests, resource access, notification read state, subscribing/unsubscribing, and profile preferences. Existing company roles and resource permissions apply. `get_space` includes enabled tools; `list_goal_access_members` lists direct goal access. Use `resource_id` and `resource_type` to subscribe or unsubscribe; the tools resolve the subscription list automatically.
