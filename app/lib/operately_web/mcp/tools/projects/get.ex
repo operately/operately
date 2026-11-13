@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.Get do
   @impl true
   def call(conn, %{"project_id" => project_id}) do
     with {:ok, project_id} <- decode_project_id(project_id) do
-      ProjectGet.call(conn, %{id: project_id, include_markdown: false})
+      ProjectGet.call(conn, %{id: project_id, include_markdown: false, include_access_levels: true, include_subscription_list: true})
     end
   end
 
