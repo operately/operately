@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.UpdateTaskStatuses do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Wrappers.Projects.UpdateTaskStatuses do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 

@@ -32,6 +32,14 @@ defmodule OperatelyWeb.Api.Tasks.UpdateBoardStatusesTest do
     end
   end
 
+  test "rejects edits to an archived project's board", ctx do
+    ctx = setup_board(ctx, :project) |> subscribe()
+    Repo.update!(Ecto.Changeset.change(ctx.project, deleted_at: DateTime.utc_now()))
+    before = snapshot(ctx)
+    assert {404, _} = mutation(ctx.conn, [:tasks, :update_board_statuses], inputs(ctx))
+    assert_unchanged(ctx, before)
+  end
+
   test "requires authentication", ctx do
     ctx = setup_board(ctx, :project) |> subscribe()
     before = snapshot(ctx)

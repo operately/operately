@@ -11,7 +11,7 @@ describe("space task lifecycle queries", () => {
   it("invalidates space detail and task list queries", async () => {
     const queryClient = createQueryClient();
     const spaceKey = Api.spaces.getQueryKey({ id: "space-1", includePermissions: true });
-    const spaceTasksKey = Api.spaces.listTasksQueryKey({ spaceId: "space-1" });
+    const spaceTasksKey = Api.tasks.listQueryKey({ spaceId: "space-1" });
     const unrelatedKey = Api.spaces.listQueryKey({ includePermissions: true });
 
     [spaceKey, spaceTasksKey, unrelatedKey].forEach((queryKey) => queryClient.setQueryData(queryKey, {}));
@@ -27,7 +27,7 @@ describe("space task lifecycle queries", () => {
     const queryClient = createQueryClient();
     const spaceKey = Api.spaces.getQueryKey({ id: "space-1", includePermissions: true });
     const otherSpaceKey = Api.spaces.getQueryKey({ id: "space-2", includePermissions: true });
-    const spaceTasksKey = Api.spaces.listTasksQueryKey({ spaceId: "space-1" });
+    const spaceTasksKey = Api.tasks.listQueryKey({ spaceId: "space-1" });
     const nextKanbanState = '{"pending":["task-1"]}';
 
     queryClient.setQueryData(spaceKey, {

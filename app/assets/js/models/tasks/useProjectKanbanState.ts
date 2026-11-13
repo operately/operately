@@ -1,19 +1,19 @@
 import i18n from "@/i18n";
 import { useLayoutEffect, useMemo, useReducer, useRef } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { ProjectsUpdateKanbanInput } from "@/api";
+import type { TasksUpdateBoardKanbanInput } from "@/api";
 import { showErrorToast, type TaskBoard } from "turboui";
 import { KanbanQueue, type KanbanMove } from "./kanbanQueue";
 import { parseKanbanState } from "./parseKanbanState";
 import { serializeTaskStatus } from "./index";
 
 interface Options {
-  projectId: string;
+  boardId: string;
   initialRawState: unknown;
   statuses: TaskBoard.Status[];
   tasks: TaskBoard.Task[];
   setTasks?: Dispatch<SetStateAction<TaskBoard.Task[]>>;
-  updateKanban: (input: ProjectsUpdateKanbanInput) => Promise<unknown>;
+  updateKanban: (input: TasksUpdateBoardKanbanInput) => Promise<unknown>;
   onSuccess?: () => Promise<void> | void;
 }
 
@@ -34,7 +34,7 @@ export function useProjectKanbanState(options: Options | null) {
     };
   }, []);
 
-  // Keep one queue per project session and ignore late UI updates from previous sessions.
+  // Keep one queue per board session and ignore late UI updates from previous sessions.
   const session = useMemo(() => {
     const isCurrent = () => mounted.current && current.current === queue;
 
@@ -77,7 +77,7 @@ export function useProjectKanbanState(options: Options | null) {
       },
     );
     return { queue, publish, isCurrent, raw: options?.initialRawState };
-  }, [options?.projectId]);
+  }, [options?.boardId]);
 
   current.current = session.queue;
 
@@ -106,14 +106,14 @@ export function useProjectKanbanState(options: Options | null) {
     const status = serializeTaskStatus(intent.status);
 
     if (!status) return Promise.resolve(false);
-    const { projectId, updateKanban, onSuccess } = options;
+    const { boardId, updateKanban, onSuccess } = options;
 
     // Show the move immediately; the queue serializes saves and handles rollback.
     return session.queue.enqueue(
       intent,
       (snapshot) => {
         const { "unknown-status": _, ...board } = snapshot.board;
-        return updateKanban({ projectId, taskId: intent.taskId, status, kanbanState: JSON.stringify(board) });
+        return updateKanban({ boardId, taskId: intent.taskId, status, kanbanState: JSON.stringify(board) });
       },
       async () => {
         if (session.isCurrent()) await onSuccess?.();

@@ -141,6 +141,7 @@ describe("Project Page detail actions", () => {
         },
         childrenCount: {},
         space: null,
+        board: { id: "board-1", projectId: "project-1", taskStatuses: [], tasksKanbanState: {} },
       },
       refresh: jest.fn(),
     };

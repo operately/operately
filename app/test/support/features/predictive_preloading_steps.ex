@@ -42,7 +42,7 @@ defmodule Operately.Support.Features.PredictivePreloadingSteps do
     assert_request_count(ctx, "/companies/get_work_map", input, 1)
     assert_request_count(ctx, "/spaces/list_discussions", input, 1)
     assert_request_count(ctx, "/resource_hubs/get", %{id: Paths.resource_hub_id(ctx.hub)}, 1)
-    assert_request_count(ctx, "/spaces/list_tasks", input, 1)
+    assert_request_count(ctx, "/tasks/list", input, 1)
     assert_request_count(ctx, "/kpis/list_kpis", input, 1)
     assert_request_count(ctx, "/project_templates/list", input, 1)
     assert Wallaby.Browser.current_path(ctx.session) == Paths.space_path(ctx.company, ctx.space)
