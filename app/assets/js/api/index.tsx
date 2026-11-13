@@ -5443,8 +5443,8 @@ export interface GoalsUpdateCheckResult {
 
 export interface GoalsUpdateCheckInInput {
   id: Id;
-  dueDate: ContextualDate | null;
-  status: GoalCheckInStatus;
+  dueDate?: ContextualDate | null;
+  status?: GoalCheckInStatus;
   content: Json;
   state?: CheckInState | null;
   newTargetValues?: string | null;

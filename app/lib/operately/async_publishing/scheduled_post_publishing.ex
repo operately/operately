@@ -68,7 +68,7 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishing do
           goal_id: goal.id,
           update_id: changes.update.id,
           old_timeframe: goal.timeframe,
-          new_timeframe: changes.update.timeframe
+          new_timeframe: Operately.Goals.Update.timeframe(changes.update)
         }
       end)
       |> IndexUpdates.enqueue(:search_goal_check_in, "goal_check_in", update.id)
