@@ -39,4 +39,11 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.GetBoardTest do
     assert {:error, :bad_request} = GetBoard.call(conn, %{"space_id" => Paths.space_id(ctx.space), "board_id" => ShortUuid.encode!(ctx.other.default_task_board_id)})
     assert {:error, :not_found} = GetBoard.call(conn, %{"space_id" => Paths.space_id(ctx.space), "board_id" => ShortUuid.encode!(foreign.space.default_task_board_id)})
   end
+
+  test "accepts a project board without a space selector", ctx do
+    ctx = Factory.add_project(ctx, :project, :space)
+    board = Operately.Projects.Project.task_board(ctx.project)
+    assert {:ok, %{board: result}} = GetBoard.call(ToolConnHelper.conn(ctx), %{"board_id" => ShortUuid.encode!(board.id), "project_id" => Paths.project_id(ctx.project)})
+    assert result.project_id == ShortUuid.encode!(ctx.project.id)
+  end
 end

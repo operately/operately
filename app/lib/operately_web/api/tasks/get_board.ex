@@ -1,10 +1,11 @@
 defmodule OperatelyWeb.Api.Tasks.GetBoard do
-  @moduledoc "Returns a task board's name, archive state, statuses, and kanban ordering. Archived boards remain readable."
+  @moduledoc "Returns a project or space task board, including its owner, statuses, and kanban ordering. Archived boards remain readable. Optional owner selectors must match."
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field :space_id, :id, null: false
+    field? :space_id, :id, null: true
+    field? :project_id, :id, null: true
     field :board_id, :id, null: false
   end
 
@@ -13,8 +14,7 @@ defmodule OperatelyWeb.Api.Tasks.GetBoard do
   end
 
   def call(conn, inputs) do
-    with {:ok, space} <- Operately.Groups.Group.get(me(conn), id: inputs.space_id),
-         {:ok, board} <- OperatelyWeb.Api.Tasks.BoardScope.resolve(me(conn), space, inputs.board_id) do
+    with {:ok, %{board: board}} <- OperatelyWeb.Api.Tasks.BoardScope.select(me(conn), inputs) do
       {:ok, %{board: Serializer.serialize(board)}}
     end
   end

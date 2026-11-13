@@ -2,15 +2,14 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
   use OperatelyWeb.Mcp.Tool
 
   alias OperatelyWeb.Mcp.Helpers
-  alias OperatelyWeb.Api.Spaces.ListTasks, as: SpaceTasksList
-  alias OperatelyWeb.Api.Tasks.List, as: ProjectTasksList
+  alias OperatelyWeb.Api.Tasks.List, as: TasksList
 
   @impl true
   def definition do
     Definition.new!(
       name: "list_tasks",
       title: "List Tasks",
-      description: "Lists tasks for exactly one project or one space in the authenticated company.",
+      description: "Lists tasks for a project, space, or board. Optional owner and board selectors must match. Space-only requests include direct tasks across all its boards.",
       company_mode: :authenticated,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,
@@ -20,11 +19,12 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
       discovery_metadata: %{"category" => "tasks"},
       examples: [
         %{"title" => "List tasks for a project", "arguments" => %{"project_id" => "project_123"}},
-        %{"title" => "List tasks for a space", "arguments" => %{"space_id" => "space_123"}}
+        %{"title" => "List tasks for a space", "arguments" => %{"space_id" => "space_123"}},
+        %{"title" => "List tasks for a board", "arguments" => %{"board_id" => "board_123"}}
       ],
       input_schema:
         JsonSchema.object(%{
-          "board_id" => JsonSchema.string("Optional board identifier within the selected space. Omit to list tasks across all its boards."),
+          "board_id" => JsonSchema.string("Optional project or space board identifier. Can be supplied without an owner identifier."),
           "space_id" => JsonSchema.string("Optional space identifier used to filter tasks."),
           "project_id" => JsonSchema.string("Optional project identifier used to filter tasks.")
         }),
@@ -40,23 +40,13 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
 
   @impl true
   def call(conn, arguments) do
-    case {arguments["project_id"], arguments["space_id"]} do
-      {nil, nil} ->
-        {:error, :invalid_arguments}
-
-      {project_id, nil} when not is_map_key(arguments, "board_id") ->
-        with {:ok, project_id} <- Helpers.decode_id(project_id) do
-          ProjectTasksList.call(conn, %{project_id: project_id})
-        end
-
-      {nil, space_id} ->
-        with {:ok, space_id} <- Helpers.decode_id(space_id),
-             {:ok, board_id} <- Helpers.decode_optional_id(arguments["board_id"]) do
-          SpaceTasksList.call(conn, %{space_id: space_id, board_id: board_id})
-        end
-
-      _ ->
-        {:error, :invalid_arguments}
+    with {:ok, project_id} <- Helpers.decode_optional_id(arguments["project_id"]),
+         {:ok, space_id} <- Helpers.decode_optional_id(arguments["space_id"]),
+         {:ok, board_id} <- Helpers.decode_optional_id(arguments["board_id"]) do
+      case TasksList.call(conn, %{project_id: project_id, space_id: space_id, board_id: board_id}) do
+        {:error, :bad_request} -> {:error, :invalid_arguments}
+        result -> result
+      end
     end
   end
 end

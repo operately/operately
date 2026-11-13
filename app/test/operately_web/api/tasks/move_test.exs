@@ -592,6 +592,20 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
     end
   end
 
+  test "project destinations resolve their sole board and reject a board selector", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:destination, :space)
+      |> Factory.log_in_person(:creator)
+    task = task_fixture(%{space_id: ctx.space.id, creator_id: ctx.creator.id})
+    board = Operately.Projects.Project.task_board(ctx.destination)
+    inputs = %{task_id: task.id, destination_type: "project", destination_id: ctx.destination.id}
+
+    assert {400, _} = mutation(ctx.conn, [:tasks, :move], Map.put(inputs, :destination_board_id, board.id))
+    assert Repo.reload!(task).space_id == ctx.space.id
+    assert {200, %{board_id: id}} = mutation(ctx.conn, [:tasks, :move], inputs)
+    assert id == Operately.ShortUuid.encode!(board.id)
+    assert Repo.reload!(task).board_id == board.id
+  end
+
   defp assert_destination_changed(task, destination, :project) do
     assert task.project_id == destination.id
     assert task.space_id == nil
@@ -742,5 +756,4 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
 
     assert Map.take(actual, fields) == Map.take(expected, fields)
   end
-
 end

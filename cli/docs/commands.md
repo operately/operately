@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 267
+- Endpoints: 268
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -267,6 +267,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `tasks set_default_board` | `op tasks set_default_board` | `POST` | `/api/external/v1/tasks/set_default_board` |
 | `tasks update_archive` | `op tasks update_archive` | `POST` | `/api/external/v1/tasks/update_archive` |
 | `tasks update_assignee` | `op tasks update_assignee` | `POST` | `/api/external/v1/tasks/update_assignee` |
+| `tasks update_board_statuses` | `op tasks update_board_statuses` | `POST` | `/api/external/v1/tasks/update_board_statuses` |
 | `tasks update_description` | `op tasks update_description` | `POST` | `/api/external/v1/tasks/update_description` |
 | `tasks update_due_date` | `op tasks update_due_date` | `POST` | `/api/external/v1/tasks/update_due_date` |
 | `tasks update_milestone` | `op tasks update_milestone` | `POST` | `/api/external/v1/tasks/update_milestone` |

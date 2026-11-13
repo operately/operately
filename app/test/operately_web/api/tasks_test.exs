@@ -222,11 +222,10 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert {401, _} = query(ctx.conn, [:tasks, :list], %{})
     end
 
-    test "it requires a project_id", ctx do
+    test "it requires a project, space, or board selector", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = query(ctx.conn, [:tasks, :list], %{})
-      assert res.message == "Missing required fields: project_id"
+      assert {400, _} = query(ctx.conn, [:tasks, :list], %{})
     end
 
     test "it returns not found for non-existent project", ctx do

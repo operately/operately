@@ -58,6 +58,12 @@ defmodule OperatelyWeb.Api.Tasks.RestoreBoardTest do
     assert List.last(boards).id == Operately.ShortUuid.encode!(ctx.board.id)
   end
 
+  test "rejects project boards", ctx do
+    ctx = Factory.add_project(ctx, :project, :space)
+    board = Operately.Projects.Project.task_board(ctx.project)
+    assert {400, _} = mutation(ctx.conn, [:tasks, :restore_board], %{space_id: ctx.space.id, board_id: board.id})
+  end
+
   defp grant_access(_ctx, :no_access), do: :ok
   defp grant_access(ctx, level) do
     {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [%{id: ctx.member.id, access_level: Binding.from_atom(level)}])

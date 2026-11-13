@@ -1,6 +1,6 @@
 defmodule OperatelyWeb.Api.Tasks.Move do
   @moduledoc """
-  Moves a task to a project or space. Space destinations use the default board unless destination_board_id is supplied.
+  Moves a task to a project or space. Project destinations automatically use their sole board. Space destinations use the default board unless destination_board_id is supplied.
   Explicit board moves require destination_status_id when no equivalent status exists.
   """
 
