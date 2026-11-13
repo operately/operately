@@ -57,8 +57,7 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckIn do
 
   defp parse_inputs(inputs, update) do
     with {:ok, target_values} <- target_values(inputs, update),
-         :ok <- CheckInInputs.validate_checklist(inputs[:checklist], update.goal.checks),
-         :ok <- validate_target_values(target_values, update) do
+         :ok <- CheckInInputs.validate_checklist(inputs[:checklist], update.checks ++ update.goal.checks) do
       publishing? = update.state != :published and inputs[:state] == :published
       checklist = if publishing? and is_nil(inputs[:checklist]), do: Enum.map(update.checks, &Map.from_struct/1), else: inputs[:checklist]
 
@@ -85,7 +84,7 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckIn do
         inputs[:new_target_values]
       end
 
-    CheckInInputs.decode_target_values(encoded, update.goal.targets)
+    CheckInInputs.decode_target_values(encoded, update.targets)
   end
 
   defp due_date_inputs(inputs, update, publishing?) do
@@ -94,13 +93,5 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckIn do
       publishing? and not is_nil(update.timeframe) -> %{due_date: update.timeframe.contextual_end_date}
       true -> %{}
     end
-  end
-
-  defp validate_target_values(nil, _update), do: :ok
-
-  defp validate_target_values(values, update) do
-    ids = Enum.map(values, & &1["id"])
-    allowed = MapSet.intersection(MapSet.new(update.targets, & &1.id), MapSet.new(update.goal.targets, & &1.id))
-    if Enum.uniq(ids) == ids and Enum.all?(ids, &MapSet.member?(allowed, &1)), do: :ok, else: {:error, :bad_request}
   end
 end

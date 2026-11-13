@@ -6,6 +6,7 @@ defmodule Operately.Goals.Update do
 
   alias Operately.Notifications
   alias Operately.Goals.Update.Permissions
+  alias Operately.ContextualDates.Timeframe
 
   @valid_statuses [:on_track, :caution, :off_track]
   @valid_states [:draft, :scheduled, :published]
@@ -63,7 +64,7 @@ defmodule Operately.Goals.Update do
     ])
     |> cast_embed(:targets)
     |> cast_embed(:checks)
-    |> cast_embed(:timeframe)
+    |> cast_timeframe(attrs)
     |> Operately.StateMachine.cast_and_validate(:state, %{
       initial: :draft,
       states: [
@@ -84,6 +85,15 @@ defmodule Operately.Goals.Update do
 
   def valid_statuses, do: @valid_statuses
   def valid_states, do: @valid_states
+
+  # An empty snapshot records an explicit clear; nil means the date was omitted.
+  # Hide this storage distinction when displaying dates or recording activities.
+  def timeframe(%__MODULE__{timeframe: %Timeframe{contextual_start_date: nil, contextual_end_date: nil, start_date: nil, end_date: nil}}), do: nil
+  def timeframe(%__MODULE__{timeframe: timeframe}), do: timeframe
+
+  defp cast_timeframe(changeset, %{timeframe: nil}), do: put_embed(changeset, :timeframe, %Timeframe{})
+  defp cast_timeframe(changeset, %{"timeframe" => nil}), do: put_embed(changeset, :timeframe, %Timeframe{})
+  defp cast_timeframe(changeset, _attrs), do: cast_embed(changeset, :timeframe)
 
   defp set_published_at(changeset) do
     put_change(changeset, :published_at, Operately.Time.utc_datetime_now())

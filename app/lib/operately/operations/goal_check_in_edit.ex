@@ -92,10 +92,13 @@ defmodule Operately.Operations.GoalCheckInEdit do
   defp update_targets(targets, new_target_values) do
     Enum.reduce(new_target_values, Multi.new(), fn target_value, multi ->
       target = Enum.find(targets, fn target -> target.id == target_value["id"] end)
-      changeset = Target.changeset(target, %{value: target_value["value"]})
-      id = "target-#{target.id}"
 
-      Multi.update(multi, id, changeset)
+      if target do
+        changeset = Target.changeset(target, %{value: target_value["value"]})
+        Multi.update(multi, "target-#{target.id}", changeset)
+      else
+        multi
+      end
     end)
   end
 
@@ -118,7 +121,6 @@ defmodule Operately.Operations.GoalCheckInEdit do
         changeset = Operately.Goals.Check.changeset(check, %{completed: item.completed, index: item.index})
         Multi.update(multi, "update-check-#{check.id}", changeset)
       else
-        # no-op for new checks
         multi
       end
     end)
@@ -166,14 +168,14 @@ defmodule Operately.Operations.GoalCheckInEdit do
               goal_id: goal.id,
               update_id: changes.check_in.id,
               old_timeframe: goal.timeframe,
-              new_timeframe: changes.check_in.timeframe
+              new_timeframe: Update.timeframe(changes.check_in)
             }
           end)
 
         true ->
           Activities.insert_sync(Multi.new(), author.id, :goal_check_in_edit, fn _ ->
-            old_timeframe = check_in.timeframe
-            new_timeframe = changes.check_in.timeframe
+            old_timeframe = Update.timeframe(check_in)
+            new_timeframe = Update.timeframe(changes.check_in)
 
             %{
               company_id: goal.company_id,

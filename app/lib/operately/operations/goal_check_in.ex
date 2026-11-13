@@ -113,7 +113,7 @@ defmodule Operately.Operations.GoalCheckIn do
   defp maybe_record_activity(multi, author, goal, _attrs) do
     Activities.insert_sync(multi, author.id, :goal_check_in, fn changes ->
       old_timeframe = goal.timeframe
-      new_timeframe = changes.update.timeframe
+      new_timeframe = Update.timeframe(changes.update)
 
       %{
         company_id: goal.company_id,
