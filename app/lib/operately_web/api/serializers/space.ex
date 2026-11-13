@@ -22,12 +22,18 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Group do
       permissions: OperatelyWeb.Api.Serializer.serialize(space.permissions),
       members: OperatelyWeb.Api.Serializer.serialize(space.members),
       access_levels: OperatelyWeb.Api.Serializer.serialize(space.access_levels, level: :full),
+      tools: serialize_tool_settings(space.tools),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(space.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(space.notifications),
       default_task_board_id: board && Operately.ShortUuid.encode!(board.id),
       task_statuses: OperatelyWeb.Api.Serializer.serialize(board && board.task_statuses),
       tasks_kanban_state: OperatelyWeb.Api.Serializer.serialize(%Operately.Tasks.KanbanState{state: (board && board.tasks_kanban_state) || %{}}),
     })
+  end
+
+  defp serialize_tool_settings(tools) do
+    tools = tools || Operately.Groups.SpaceTools.default_settings()
+    Map.take(tools, [:tasks_enabled, :discussions_enabled, :resource_hub_enabled, :kpis_enabled, :templates_enabled])
   end
 
   defp private_space(%{access_levels: %{company: company_access}}) do

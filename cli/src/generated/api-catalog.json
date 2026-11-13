@@ -6012,6 +6012,17 @@
           },
           {
             "default": null,
+            "name": "tools",
+            "type": {
+              "name": "space_tool_settings",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "potential_subscribers",
             "type": {
               "item": {
@@ -25182,6 +25193,65 @@
             "name": "tasks_kanban_state",
             "type": {
               "name": "json",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "space_tool_settings": {
+        "fields": [
+          {
+            "default": null,
+            "name": "tasks_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "discussions_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resource_hub_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "kpis_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "templates_enabled",
+            "type": {
+              "name": "boolean",
               "kind": "named"
             },
             "optional": false,
