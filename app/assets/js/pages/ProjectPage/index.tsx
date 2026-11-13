@@ -51,7 +51,7 @@ function LoadedPage() {
   const paths = usePaths();
   const currentUser = useMe();
   const { data, projectInput, checkInsInput, discussionsInput, tasksInput } = useLoadedData();
-  const { project, childrenCount, space } = data;
+  const { project, childrenCount, space, board } = data;
   useProjectUpdates(projectInput.id, project.resourceHub?.id);
 
   const refreshCore = useRefreshCore();
@@ -195,7 +195,7 @@ function LoadedPage() {
     transformResult: transformPerson,
   });
 
-  const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(project.id, project.taskStatuses, refresh);
+  const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(board.id, board.taskStatuses, refresh);
 
   const handleTasksViewChange = React.useCallback(
     async (tasksView: "list" | "board") => {
@@ -241,10 +241,10 @@ function LoadedPage() {
   );
 
   const { kanbanState, handleTaskKanbanChange, handleTaskStatusChange } = Tasks.useKanbanState({
-    initialRawState: project.tasksKanbanState,
+    initialRawState: board.tasksKanbanState,
     updateKanban: updateKanban.mutateAsync,
     statuses,
-    projectId: project.id,
+    boardId: board.id,
     type: "project",
     tasks: baseTasks,
     setTasks,

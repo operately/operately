@@ -4533,7 +4533,7 @@ export interface TasksGetResult {
 export interface TasksGetBoardInput {
   spaceId?: Id | null;
   projectId?: Id | null;
-  boardId: Id;
+  boardId?: Id | null;
 }
 
 export interface TasksGetBoardResult {

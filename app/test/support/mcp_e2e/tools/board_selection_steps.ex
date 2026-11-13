@@ -149,6 +149,20 @@ defmodule Operately.Support.McpE2E.Tools.BoardSelectionSteps do
     ctx
   end
 
+  step :edit_project_board_workflow, ctx do
+    ctx = Factory.add_project(ctx, :project, :space)
+    board = call!(ctx, "get_task_board", %{"project_id" => ctx.project.id})["board"]
+    statuses = Enum.map(board["task_statuses"], &Map.take(&1, ["id", "label", "color", "index", "value", "closed"]))
+    statuses = List.update_at(statuses, 0, &Map.put(&1, "label", "Ready"))
+    assert call!(ctx, "update_task_board_statuses", %{"board_id" => board["id"], "task_statuses" => statuses})["success"]
+    task = call!(ctx, "create_task", %{"project_id" => ctx.project.id, "name" => "Project task"})["task"]
+    assert task["board_id"] == board["id"]
+    assert task["status"]["label"] == "Ready"
+    assert [%{"id" => id}] = call!(ctx, "list_tasks", %{"board_id" => board["id"]})["tasks"]
+    assert id == task["id"]
+    ctx
+  end
+
   defp call!(ctx, name, arguments) do
     conn = call_tool(ctx.access_token, ctx.session_id, name, arguments)
     assert conn.status == 200

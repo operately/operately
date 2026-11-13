@@ -23,7 +23,9 @@ defmodule OperatelyWeb.Api.Tasks.BoardScope do
     if inputs[:project_id] || inputs[:space_id] || inputs[:board_id], do: :ok, else: {:error, :bad_request}
   end
 
-  defp load_owner(me, %{project_id: id}) when not is_nil(id), do: Operately.Projects.Project.get(me, id: id)
+  # Board queries remain readable on archived project pages. Mutation pipelines
+  # load their owner separately and retain the active-project requirement.
+  defp load_owner(me, %{project_id: id}) when not is_nil(id), do: Operately.Projects.Project.get(me, id: id, opts: [with_deleted: true])
   defp load_owner(me, %{space_id: id}) when not is_nil(id), do: Operately.Groups.Group.get(me, id: id)
   defp load_owner(_, _), do: {:ok, nil}
   defp load_board(_, nil), do: {:ok, nil}

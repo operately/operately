@@ -25,6 +25,7 @@ function projectPageFilters(projectId: string): QueryFilters[] {
     Api.projects.getQueryKeyPrefix(),
     Api.projects.countChildrenQueryKeyPrefix(),
     Api.tasks.listQueryKeyPrefix(),
+    Api.tasks.getBoardQueryKeyPrefix(),
     Api.projects.listCheckInsQueryKeyPrefix(),
     Api.projects.listDiscussionsQueryKeyPrefix(),
   ].map((queryKey) => ({

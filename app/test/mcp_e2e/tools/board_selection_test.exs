@@ -5,6 +5,10 @@ defmodule Operately.McpE2E.Tools.BoardSelectionTest do
 
   setup ctx, do: {:ok, ctx |> AuthSteps.setup() |> Steps.setup() |> AuthSteps.authenticate_via_cimd_with_write()}
 
+  test "edits and uses a project workflow through shared board tools", ctx do
+    Steps.edit_project_board_workflow(ctx)
+  end
+
   test "discovers boards, selects a board, and moves a task back to the default", ctx do
     ctx
     |> Steps.given_another_board()

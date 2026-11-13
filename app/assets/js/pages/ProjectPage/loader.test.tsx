@@ -17,6 +17,7 @@ jest.mock("turboui", () => ({}));
 jest.mock("@/components/Pages", () => ({ useLoadedData: jest.fn() }));
 
 const project = { id: "project-1", spaceId: "space-1", resourceHub: { id: "hub-1" } };
+const board = { id: "board-1", projectId: "project-1", taskStatuses: [], tasksKanbanState: {} };
 const response = (path: string) => ({
   data: path.endsWith("/projects/get")
     ? { project }
@@ -26,7 +27,9 @@ const response = (path: string) => ({
         ? { resourceHub: { id: "hub-1" } }
         : path.endsWith("/projects/count_children")
           ? { childrenCount: {} }
-          : {},
+          : path.endsWith("/tasks/get_board")
+            ? { board }
+            : {},
 });
 const visit = (tab?: string) =>
   loader({
@@ -52,6 +55,7 @@ it.each([undefined, "overview", "activity"])("%s waits only for core queries", a
     "/api/v2/projects/count_children",
     "/api/v2/projects/get",
     "/api/v2/spaces/get",
+    "/api/v2/tasks/get_board",
   ]);
 });
 
@@ -157,6 +161,7 @@ it("reuses hover-preloaded core data during navigation and mounting", async () =
   });
   try {
     expect(result.current.data.project).toEqual(project);
+    expect(result.current.data.board).toEqual(board);
     expect(axios.get).not.toHaveBeenCalled();
   } finally {
     unmount();
@@ -182,6 +187,7 @@ it("keeps the loaded project visible when the optional space request fails befor
       wrapper: ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
     });
     expect(result.current.data.project).toEqual(project);
+    expect(result.current.data.board).toEqual(board);
     expect(result.current.data.space).toBeNull();
     expect(axios.get).not.toHaveBeenCalled();
     unmount();
@@ -196,10 +202,12 @@ it("subscribes to cached core data and follows space changes without old space p
   const inputs = {
     projectInput: projectQueryInput("project-1"),
     childrenInput: { id: "project-1" },
+    boardInput: { projectId: "project-1" },
     ...projectContentInputs("project-1"),
   };
   jest.mocked(Pages.useLoadedData).mockReturnValue(inputs);
   const key = Api.projects.getQueryKey(inputs.projectInput);
+  client.setQueryData(Api.tasks.getBoardQueryKey(inputs.boardInput), { board });
   client.setQueryData(key, { project: { id: "project-1", name: "Original", spaceId: "space-1" } });
   client.setQueryData(Api.projects.countChildrenQueryKey(inputs.childrenInput), { childrenCount: { tasksCount: 1 } });
   client.setQueryData(Api.spaces.getQueryKey({ id: "space-1", includePermissions: true }), {
@@ -249,7 +257,7 @@ it("subscribes to cached core data and follows space changes without old space p
   }
 });
 
-it.each(["/api/v2/projects/get", "/api/v2/projects/count_children"])(
+it.each(["/api/v2/projects/get", "/api/v2/projects/count_children", "/api/v2/tasks/get_board"])(
   "propagates core failures: %s",
   async (failedPath) => {
     jest

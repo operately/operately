@@ -31,6 +31,14 @@ defmodule OperatelyWeb.Api.Tasks.UpdateBoardKanbanTest do
     end
   end
 
+  test "rejects edits to an archived project's board", ctx do
+    ctx = setup_board(ctx, :project) |> add_task(:task) |> subscribe()
+    Repo.update!(Ecto.Changeset.change(ctx.project, deleted_at: DateTime.utc_now()))
+    before = snapshot(ctx)
+    assert {404, _} = mutation(ctx.conn, [:tasks, :update_board_kanban], inputs(ctx))
+    assert_unchanged(ctx, before)
+  end
+
   test "requires authentication", ctx do
     ctx = setup_board(ctx, :project) |> add_task(:task) |> subscribe()
     before = snapshot(ctx)
@@ -83,7 +91,9 @@ defmodule OperatelyWeb.Api.Tasks.UpdateBoardKanbanTest do
     end
 
     test "updates #{@owner} board ordering and creates exactly one status activity", ctx do
-      ctx = setup_board(ctx, @owner) |> add_task(:task) |> subscribe()
+      ctx = setup_board(ctx, @owner) |> add_task(:task) |> Factory.add_task_assignee(:assignment, :task, :creator) |> subscribe()
+      assignments_topic = "api:assignments_count:#{ctx.creator.id}"
+      OperatelyWeb.Endpoint.subscribe(assignments_topic)
       before = snapshot(ctx)
       assert {200, %{board_id: id, task: result}} = mutation(ctx.conn, [:tasks, :update_board_kanban], inputs(ctx))
       assert id == Operately.ShortUuid.encode!(ctx.board.id)
@@ -101,6 +111,7 @@ defmodule OperatelyWeb.Api.Tasks.UpdateBoardKanbanTest do
       assert activity.content["space_id"] == ctx.space.id
       assert activity.content["old_status"]["id"] == ctx.task.task_status.id
       assert activity.content["new_status"]["id"] == updated.task_status.id
+      assert_receive %Phoenix.Socket.Broadcast{topic: ^assignments_topic, event: "event"}
       assert_project_broadcast(ctx)
     end
 
