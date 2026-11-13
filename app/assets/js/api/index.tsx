@@ -2762,6 +2762,7 @@ export interface Space {
   permissions?: SpacePermissions | null;
   members?: Person[] | null;
   accessLevels?: AccessLevels | null;
+  tools?: SpaceToolSettings;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
   defaultTaskBoardId?: Id | null;
@@ -2780,6 +2781,14 @@ export interface SpacePermissions {
 export interface SpaceSetupInput {
   name: string;
   description: string;
+}
+
+export interface SpaceToolSettings {
+  tasksEnabled: boolean;
+  discussionsEnabled: boolean;
+  resourceHubEnabled: boolean;
+  kpisEnabled: boolean;
+  templatesEnabled: boolean;
 }
 
 export interface SpaceTools {
