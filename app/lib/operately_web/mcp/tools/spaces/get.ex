@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.Spaces.Get do
     Definition.new!(
       name: "get_space",
       title: "Get Space",
-      description: "Returns one space by identifier.",
+      description: "Returns a space with members, access levels, permissions, and enabled tools.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,
@@ -37,8 +37,10 @@ defmodule OperatelyWeb.Mcp.Tools.Spaces.Get do
 
   @impl true
   def call(conn, %{"space_id" => space_id}) do
-    with {:ok, space_id} <- Helpers.decode_id(space_id) do
-      SpaceGet.call(conn, %{id: space_id})
+    with {:ok, space_id} <- Helpers.decode_id(space_id),
+         {:ok, %{space: space}} <- SpaceGet.call(conn, %{id: space_id, include_members: true, include_members_access_levels: true, include_access_levels: true, include_permissions: true}),
+         {:ok, %{tools: tools}} <- OperatelyWeb.Api.Spaces.ListTools.call(conn, %{space_id: space_id}) do
+      {:ok, %{space: Map.put(space, :tools, tools)}}
     end
   end
 end
