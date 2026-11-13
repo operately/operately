@@ -165,8 +165,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
 
   test "creates a template when project Kanban lists milestone-owned tasks", ctx do
     # Release 1.9-shaped source: every task has a milestone, but those same task
-    # IDs still appear in project.tasks_kanban_state. Ordering is seeded from the board.
-    pending = Enum.find(ctx.source.task_statuses, &(&1.value == "pending")) || List.first(ctx.source.task_statuses)
+    # IDs still appear in the project board ordering.
+    pending = Enum.find(Operately.Projects.Project.task_statuses(ctx.source), &(&1.value == "pending")) || List.first(Operately.Projects.Project.task_statuses(ctx.source))
 
     ctx =
       ctx

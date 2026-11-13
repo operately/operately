@@ -217,7 +217,7 @@ defmodule OperatelyWeb.Api.Mutations.Projects.MilestonesPermissionsTest do
   end
 
   defp status_input(project) do
-    project.task_statuses
+    Operately.Projects.Project.task_statuses(project)
     |> Enum.find(fn status -> status.value == "in_progress" end)
     |> then(fn status ->
       status

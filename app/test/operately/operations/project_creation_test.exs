@@ -48,10 +48,10 @@ defmodule Operately.Operations.ProjectCreationTest do
     {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
 
     # Verify project has 4 default task statuses
-    assert length(project.task_statuses) == 4
+    assert length(Operately.Projects.Project.task_statuses(project)) == 4
 
     # Verify the default statuses are present
-    statuses_by_value = Enum.group_by(project.task_statuses, & &1.value)
+    statuses_by_value = Enum.group_by(Operately.Projects.Project.task_statuses(project), & &1.value)
     assert Map.has_key?(statuses_by_value, "pending")
     assert Map.has_key?(statuses_by_value, "in_progress")
     assert Map.has_key?(statuses_by_value, "done")

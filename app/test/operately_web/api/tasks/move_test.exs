@@ -431,8 +431,8 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
     end
 
     test "preserves an equivalent open status using destination metadata", ctx do
-      source_status = Enum.find(ctx.project.task_statuses, &(&1.value == "in_progress"))
-      closed_status = Enum.find(ctx.project.task_statuses, &(&1.value == "done"))
+      source_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.value == "in_progress"))
+      closed_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.value == "done"))
 
       destination_space =
         set_space_statuses(ctx.destination_space, [
@@ -460,7 +460,7 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
     end
 
     test "preserves an equivalent closed status and closure timestamps when moving to the project's space", ctx do
-      source_status = Enum.find(ctx.project.task_statuses, &(&1.value == "done"))
+      source_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.value == "done"))
       destination_status = Enum.find(Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses, &(&1.value == "done"))
       {:ok, task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, source_status))
       origin_topic = "api:project_updated:#{ctx.project.id}"
@@ -479,7 +479,7 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
     end
 
     test "uses the destination default and reopens a closed task when no equivalent status exists", ctx do
-      source_status = Enum.find(ctx.project.task_statuses, &(&1.value == "done"))
+      source_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.value == "done"))
       destination_space = set_space_statuses(ctx.destination_space, [status("Ready", :gray, "ready")])
       destination_status = hd(destination_space.default_task_board.task_statuses)
       {:ok, task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, source_status))
@@ -497,7 +497,7 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
     end
 
     test "does not match a destination status with different closed meaning", ctx do
-      source_status = Enum.find(ctx.project.task_statuses, &(&1.value == "done"))
+      source_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.value == "done"))
 
       destination_space =
         set_space_statuses(ctx.destination_space, [

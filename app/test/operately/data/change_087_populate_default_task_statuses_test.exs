@@ -3,11 +3,14 @@ defmodule Operately.Data.Change087PopulateDefaultTaskStatusesTest do
   import Ecto.Query
 
   alias Operately.Repo
-  alias Operately.Projects.Project
+  alias Operately.Data.Change087PopulateDefaultTaskStatuses.Project
   alias Operately.Data.Change087PopulateDefaultTaskStatuses
   alias Operately.Support.Factory
 
   setup ctx do
+    # Restore the column this historical migration populated.
+    Repo.query!("ALTER TABLE projects ADD COLUMN task_statuses jsonb[] DEFAULT '{}'")
+
     Factory.setup(ctx)
   end
 
@@ -42,15 +45,15 @@ defmodule Operately.Data.Change087PopulateDefaultTaskStatusesTest do
     # Verify custom status is set
     project = Repo.get!(Project, ctx.project.id)
     assert length(project.task_statuses) == 1
-    assert hd(project.task_statuses).label == "My Custom Status"
+    assert hd(project.task_statuses)["label"] == "My Custom Status"
 
     Change087PopulateDefaultTaskStatuses.run()
 
     # Should remain unchanged with custom status
     updated_project = Repo.get!(Project, ctx.project.id)
     assert length(updated_project.task_statuses) == 1
-    assert hd(updated_project.task_statuses).label == "My Custom Status"
-    assert hd(updated_project.task_statuses).value == "custom_pending"
+    assert hd(updated_project.task_statuses)["label"] == "My Custom Status"
+    assert hd(updated_project.task_statuses)["value"] == "custom_pending"
   end
 
   test "handles multiple projects with mixed states", ctx do
@@ -83,24 +86,24 @@ defmodule Operately.Data.Change087PopulateDefaultTaskStatusesTest do
     # Project with custom statuses should remain unchanged (2 custom statuses)
     updated_custom = Repo.get!(Project, ctx.project_custom.id)
     assert length(updated_custom.task_statuses) == 2
-    assert hd(updated_custom.task_statuses).label == "Backlog"
+    assert hd(updated_custom.task_statuses)["label"] == "Backlog"
 
     # Project with partial statuses should remain unchanged (1 status)
     updated_partial = Repo.get!(Project, ctx.project_partial.id)
     assert length(updated_partial.task_statuses) == 1
-    assert hd(updated_partial.task_statuses).label == "Todo"
+    assert hd(updated_partial.task_statuses)["label"] == "Todo"
   end
 
   # This migration operates on the legacy project column, before task boards existed.
   defp set_legacy_task_statuses(project, attrs) do
-    project
-    |> Project.changeset(attrs)
+    Repo.get!(Project, project.id)
+    |> Ecto.Changeset.change(attrs)
     |> Repo.update!()
   end
 
   defp assert_default_task_statuses(task_statuses) do
     # Check that we have the expected default statuses
-    statuses_by_value = Enum.group_by(task_statuses, & &1.value)
+    statuses_by_value = Enum.group_by(task_statuses, & &1["value"])
 
     assert Map.has_key?(statuses_by_value, "pending")
     assert Map.has_key?(statuses_by_value, "in_progress")
@@ -109,27 +112,27 @@ defmodule Operately.Data.Change087PopulateDefaultTaskStatusesTest do
 
     # Check specific properties of each status
     pending = hd(statuses_by_value["pending"])
-    assert pending.label == "Not started"
-    assert pending.color == :gray
-    assert pending.index == 0
-    assert pending.closed == false
+    assert pending["label"] == "Not started"
+    assert pending["color"] == "gray"
+    assert pending["index"] == 0
+    assert pending["closed"] == false
 
     in_progress = hd(statuses_by_value["in_progress"])
-    assert in_progress.label == "In progress"
-    assert in_progress.color == :blue
-    assert in_progress.index == 1
-    assert in_progress.closed == false
+    assert in_progress["label"] == "In progress"
+    assert in_progress["color"] == "blue"
+    assert in_progress["index"] == 1
+    assert in_progress["closed"] == false
 
     done = hd(statuses_by_value["done"])
-    assert done.label == "Done"
-    assert done.color == :green
-    assert done.index == 2
-    assert done.closed == true
+    assert done["label"] == "Done"
+    assert done["color"] == "green"
+    assert done["index"] == 2
+    assert done["closed"] == true
 
     canceled = hd(statuses_by_value["canceled"])
-    assert canceled.label == "Canceled"
-    assert canceled.color == :red
-    assert canceled.index == 3
-    assert canceled.closed == true
+    assert canceled["label"] == "Canceled"
+    assert canceled["color"] == "red"
+    assert canceled["index"] == 3
+    assert canceled["closed"] == true
   end
 end

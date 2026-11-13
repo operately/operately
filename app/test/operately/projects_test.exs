@@ -75,10 +75,10 @@ defmodule Operately.ProjectsTest do
       assert {:ok, %Project{} = project} = Projects.create_project(project_attrs)
 
       # Verify project has 4 default task statuses
-      assert length(project.task_statuses) == 4
+      assert length(Operately.Projects.Project.task_statuses(project)) == 4
 
       # Verify the default statuses are present
-      statuses_by_value = Enum.group_by(project.task_statuses, & &1.value)
+      statuses_by_value = Enum.group_by(Operately.Projects.Project.task_statuses(project), & &1.value)
       assert Map.has_key?(statuses_by_value, "pending")
       assert Map.has_key?(statuses_by_value, "in_progress")
       assert Map.has_key?(statuses_by_value, "done")
@@ -105,13 +105,13 @@ defmodule Operately.ProjectsTest do
       assert {:ok, %Project{} = project_with_custom_statuses} =
                Projects.update_project(ctx.project, %{task_statuses: custom_statuses})
 
-      assert Enum.map(project_with_custom_statuses.task_statuses, & &1.id) == ["custom_todo"]
+      assert Enum.map(Operately.Projects.Project.task_statuses(project_with_custom_statuses), & &1.id) == ["custom_todo"]
 
       assert {:ok, %Project{} = updated_project} =
                Projects.update_project(project_with_custom_statuses, %{name: "some updated name"})
 
       assert updated_project.name == "some updated name"
-      assert Enum.map(updated_project.task_statuses, & &1.id) == ["custom_todo"]
+      assert Enum.map(Operately.Projects.Project.task_statuses(updated_project), & &1.id) == ["custom_todo"]
     end
 
     test "update_project/2 with valid data updates the project", ctx do

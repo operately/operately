@@ -63,28 +63,26 @@ defmodule Operately.Tasks.TaskBoard do
     end
   end
 
-  def insert_for_project(multi) do
+  def insert_for_project(multi, attrs \\ %{}) do
     Multi.insert(multi, :task_board, fn %{project: project} ->
-      changeset(%{
-        project_id: project.id,
-        name: "Tasks",
-        task_statuses: Enum.map(project.task_statuses, &Map.from_struct/1),
-        tasks_kanban_state: project.tasks_kanban_state
-      })
+      %{project_id: project.id} |> default_attrs() |> Map.merge(attrs) |> changeset()
     end)
   end
 
-  def insert_for_space(multi) do
+  def insert_for_space(multi, attrs \\ %{}) do
     Multi.insert(multi, :task_board, fn %{group: space} ->
-      statuses = Operately.Tasks.Status.default_task_statuses()
-
-      changeset(%{
-        space_id: space.id,
-        name: "Tasks",
-        task_statuses: Enum.map(statuses, &Map.from_struct/1),
-        tasks_kanban_state: Operately.Tasks.KanbanState.initialize(Enum.map(statuses, & &1.value))
-      })
+      %{space_id: space.id} |> default_attrs() |> Map.merge(attrs) |> changeset()
     end)
+  end
+
+  defp default_attrs(owner) do
+    statuses = Operately.Tasks.Status.default_task_statuses()
+
+    Map.merge(owner, %{
+      name: "Tasks",
+      task_statuses: Enum.map(statuses, &Map.from_struct/1),
+      tasks_kanban_state: Operately.Tasks.KanbanState.initialize(Enum.map(statuses, & &1.value))
+    })
   end
 
   def owns_task?(board, task), do: {board.space_id, board.project_id} == {task.space_id, task.project_id}

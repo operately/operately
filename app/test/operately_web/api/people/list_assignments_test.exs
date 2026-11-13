@@ -375,9 +375,9 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
     test "get pending tasks", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "My Project"})
 
-      pending = Enum.find(project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
-      in_progress = Enum.find(project.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
-      done = Enum.find(project.task_statuses, &(&1.color == :green)) |> Map.from_struct()
+      pending = Enum.find(Operately.Projects.Project.task_statuses(project), &(&1.color == :gray)) |> Map.from_struct()
+      in_progress = Enum.find(Operately.Projects.Project.task_statuses(project), &(&1.color == :blue)) |> Map.from_struct()
+      done = Enum.find(Operately.Projects.Project.task_statuses(project), &(&1.color == :green)) |> Map.from_struct()
 
       task1 =
         create_task(project, ctx.person, %{

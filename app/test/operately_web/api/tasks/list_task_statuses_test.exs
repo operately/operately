@@ -57,7 +57,7 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
       project = Repo.preload(task, :project).project
 
       assert {200, res} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(task)})
-      assert_statuses_match(res.task_statuses, project.task_statuses)
+      assert_statuses_match(res.task_statuses, Operately.Projects.Project.task_statuses(project))
     end
 
     test "space members have no access", ctx do
@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
       project = Repo.preload(task, :project).project
 
       assert {200, res} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(task)})
-      assert_statuses_match(res.task_statuses, project.task_statuses)
+      assert_statuses_match(res.task_statuses, Operately.Projects.Project.task_statuses(project))
     end
   end
 
@@ -94,7 +94,7 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
       assert {200, res} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(task)})
       assert length(res.task_statuses) > 0
       assert Enum.any?(res.task_statuses, &(&1.value == "done"))
-      assert_statuses_match(res.task_statuses, project.task_statuses)
+      assert_statuses_match(res.task_statuses, Operately.Projects.Project.task_statuses(project))
     end
 
     test "returns statuses for a space task", ctx do
