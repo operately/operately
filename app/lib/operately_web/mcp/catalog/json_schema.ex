@@ -35,6 +35,7 @@ defmodule OperatelyWeb.Mcp.Catalog.JsonSchema do
   def integer(description, opts \\ []) when is_binary(description) do
     %{"type" => "integer", "description" => description}
     |> put_if_present("minimum", Keyword.get(opts, :minimum), Keyword.has_key?(opts, :minimum))
+    |> put_if_present("enum", Keyword.get(opts, :enum), Keyword.has_key?(opts, :enum))
     |> put_if_present("default", Keyword.get(opts, :default), Keyword.has_key?(opts, :default))
   end
 
