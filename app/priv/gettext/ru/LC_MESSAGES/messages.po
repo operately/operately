@@ -4995,8 +4995,13 @@ msgid "15 minutes"
 msgstr "15 минут"
 
 #.frontend
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:300
+msgid "2. What is the current progress on the project?"
+msgstr "2. Каков текущий прогресс по проекту?"
+
+#.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:262
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:297
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:299
 #: assets/js/features/projectCheckIns/DescriptionSection.tsx:23
 msgid "2. What's new since the last check-in?"
 msgstr "2. Что нового с момента последнего отчёта?"
@@ -5524,7 +5529,7 @@ msgid "Actions"
 msgstr "Действия"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:257
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:255
 msgid "Actions for %{name}"
 msgstr "Действия для %{name}"
 
@@ -6438,8 +6443,8 @@ msgstr "Применить фильтр"
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:44
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:176
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:275
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:174
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:273
 #: ../turboui/src/TaskPage/PageOptions.tsx:21
 #: ../turboui/src/TaskPage/Sidebar.tsx:449
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:109
@@ -6451,7 +6456,7 @@ msgid "Archive"
 msgstr "Архивировать"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:164
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:162
 msgid "Archive %{name}?"
 msgstr "Архивировать %{name}?"
 
@@ -6727,8 +6732,7 @@ msgstr "Не менее 12 символов"
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:13
 #: lib/operately_web/api/project_templates/helpers.ex:25
-#: lib/operately_web/api/projects.ex:793
-#: lib/operately_web/api/spaces.ex:379
+#: lib/operately_web/api/tasks/update_board_statuses.ex:39
 msgid "At least one task status is required"
 msgstr "Требуется хотя бы один статус задачи"
 
@@ -7401,7 +7405,7 @@ msgid "Cannot delete goal"
 msgstr "Невозможно удалить цель"
 
 #.frontend
-#: assets/js/models/tasks/useKanbanState.tsx:246
+#: assets/js/models/tasks/useKanbanState.tsx:243
 msgid "Cannot move task to unknown status"
 msgstr "Невозможно переместить задачу в неизвестный статус"
 
@@ -7848,7 +7852,7 @@ msgstr "Выберите статус для доски назначения."
 #~ msgstr "Выберите ветку комментариев для этого фрагмента."
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:111
+#: lib/operately/comments/create_milestone_comment_operation.ex:123
 msgid "Choose a valid open task resolution"
 msgstr "Выберите допустимое действие для открытых задач"
 
@@ -7898,7 +7902,7 @@ msgid "Choose someone else"
 msgstr "Выберите кого-то другого"
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:93
+#: lib/operately/comments/create_milestone_comment_operation.ex:105
 msgid "Choose what happens to the open tasks before completing the milestone"
 msgstr "Выберите, что сделать с открытыми задачами перед завершением вехи"
 
@@ -8997,7 +9001,7 @@ msgid "Couldn’t load more activities."
 msgstr "Не удалось загрузить дополнительные действия."
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:400
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:396
 msgid "Create"
 msgstr "Создать"
 
@@ -9473,7 +9477,7 @@ msgid "Deactivate Account"
 msgstr "Деактивировать учётную запись"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:249
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:247
 msgid "Default"
 msgstr "По умолчанию"
 
@@ -9496,8 +9500,8 @@ msgstr "По умолчанию"
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:67
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:291
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:517
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:176
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:288
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:174
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:286
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:339
 #: ../turboui/src/TaskPage/PageOptions.tsx:28
 #: ../turboui/src/TaskPage/Sidebar.tsx:465
@@ -9538,7 +9542,7 @@ msgid "Delete %{name} target?"
 msgstr "Удалить показатель «%{name}»?"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:165
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:163
 msgid "Delete %{name}?"
 msgstr "Удалить %{name}?"
 
@@ -10888,9 +10892,9 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/models/reactions/useReactionHandlers.tsx:67
 #: assets/js/models/reactions/useReactionHandlers.tsx:96
 #: assets/js/models/subscriptions/useSubscription.tsx:113
-#: assets/js/models/tasks/useKanbanState.tsx:124
-#: assets/js/models/tasks/useKanbanState.tsx:246
-#: assets/js/models/tasks/useKanbanState.tsx:253
+#: assets/js/models/tasks/useKanbanState.tsx:121
+#: assets/js/models/tasks/useKanbanState.tsx:243
+#: assets/js/models/tasks/useKanbanState.tsx:250
 #: assets/js/models/tasks/useProjectKanbanState.ts:72
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:202
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:227
@@ -10922,7 +10926,7 @@ msgstr "Введите нулевое или положительное числ
 #: assets/js/pages/ProjectPage/index.tsx:292
 #: assets/js/pages/ProjectPage/index.tsx:793
 #: assets/js/pages/ProjectPage/index.tsx:822
-#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:69
+#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:67
 #: assets/js/pages/SpaceKpisPage/page.tsx:102
 #: assets/js/pages/SpacePage/page.tsx:119
 #: assets/js/pages/TaskPage/index.tsx:84
@@ -10967,8 +10971,7 @@ msgstr "Esc"
 
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:55
-#: lib/operately_web/api/projects.ex:1278
-#: lib/operately_web/api/spaces.ex:531
+#: lib/operately_web/api/tasks/board_multi_steps.ex:91
 msgid "Every deleted task status in use requires a replacement"
 msgstr "Для каждого удаляемого статуса, используемого задачами, требуется замена"
 
@@ -11711,7 +11714,7 @@ msgid "Failed to update task name."
 msgstr "Не удалось обновить название задачи."
 
 #.frontend
-#: assets/js/models/tasks/useKanbanState.tsx:124
+#: assets/js/models/tasks/useKanbanState.tsx:121
 #: assets/js/models/tasks/useProjectKanbanState.ts:72
 msgid "Failed to update task position"
 msgstr "Не удалось обновить положение задачи"
@@ -11728,7 +11731,7 @@ msgid "Failed to update task reminders."
 msgstr "Не удалось обновить напоминания о задачах."
 
 #.frontend
-#: assets/js/models/tasks/useKanbanState.tsx:253
+#: assets/js/models/tasks/useKanbanState.tsx:250
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:381
 #: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:248
 msgid "Failed to update task status"
@@ -11743,7 +11746,7 @@ msgstr "Не удалось обновить статус задачи."
 #.frontend
 #: assets/js/models/projects/useTaskStatuses.tsx:67
 #: assets/js/models/projects/useTaskStatuses.tsx:73
-#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:69
+#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:67
 msgid "Failed to update task statuses"
 msgstr "Не удалось обновить статусы задач"
 
@@ -12351,7 +12354,7 @@ msgid "Hide list"
 msgstr "Скрыть список"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:305
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:309
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Hide previous check-in"
 msgstr "Скрыть предыдущий отчёт о ходе работы"
@@ -12741,8 +12744,8 @@ msgid "Invalid profile update"
 msgstr "Недействительное обновление профиля"
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:797
-#: lib/operately_web/api/tasks.ex:803
+#: lib/operately_web/api/tasks.ex:761
+#: lib/operately_web/api/tasks.ex:767
 msgid "Invalid reminders"
 msgstr "Недействительные напоминания"
 
@@ -12764,17 +12767,16 @@ msgid "Invalid site message parameters"
 msgstr "Некорректные параметры системного сообщения"
 
 #.elixir
-#: lib/operately/operations/kanban_state_updating.ex:93
-#: lib/operately/operations/kanban_state_updating.ex:105
-#: lib/operately_web/api/spaces.ex:522
-#: lib/operately_web/api/tasks.ex:772
-#: lib/operately_web/api/tasks.ex:1174
-#: lib/operately_web/api/tasks.ex:1181
+#: lib/operately/operations/kanban_state_updating.ex:103
+#: lib/operately/operations/kanban_state_updating.ex:107
+#: lib/operately_web/api/tasks.ex:728
+#: lib/operately_web/api/tasks.ex:1138
+#: lib/operately_web/api/tasks/board_multi_steps.ex:85
 msgid "Invalid status"
 msgstr "Недействительный статус"
 
 #.elixir
-#: lib/operately/operations/kanban_state_updating.ex:222
+#: lib/operately/operations/kanban_state_updating.ex:217
 msgid "Invalid status %{status}"
 msgstr "Недействительный статус %{status}"
 
@@ -12800,7 +12802,7 @@ msgid "Invalid token"
 msgstr "Недействительный токен"
 
 #.elixir
-#: lib/operately_web/api/spaces.ex:525
+#: lib/operately_web/api/spaces.ex:282
 msgid "Invalid tools"
 msgstr "Недействительные инструменты"
 
@@ -13926,9 +13928,9 @@ msgid "Milestone is not %{name}"
 msgstr "Веха — не %{name}"
 
 #.elixir
-#: lib/operately/operations/milestone_ordering_state_updating.ex:55
-#: lib/operately_web/api/tasks.ex:951
-#: lib/operately_web/api/tasks.ex:971
+#: lib/operately/operations/milestone_ordering_state_updating.ex:56
+#: lib/operately_web/api/tasks.ex:915
+#: lib/operately_web/api/tasks.ex:935
 msgid "Milestone must belong to the same project as the task"
 msgstr "Веха должна принадлежать тому же проекту, что и задача"
 
@@ -13955,11 +13957,11 @@ msgid "Milestone not deleted"
 msgstr "Веха не удалена"
 
 #.elixir
-#: lib/operately/operations/milestone_ordering_state_updating.ex:49
-#: lib/operately_web/api/projects.ex:647
-#: lib/operately_web/api/projects.ex:662
+#: lib/operately/operations/milestone_ordering_state_updating.ex:50
+#: lib/operately_web/api/projects.ex:560
+#: lib/operately_web/api/projects.ex:575
 #: lib/operately_web/api/projects/milestones.ex:291
-#: lib/operately_web/api/tasks.ex:699
+#: lib/operately_web/api/tasks.ex:670
 msgid "Milestone not found"
 msgstr "Веха не найдена"
 
@@ -14258,7 +14260,7 @@ msgstr "Оценка NPS"
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:53
 #: ../turboui/src/SortControl/index.tsx:18
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:71
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:397
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:393
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:120
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:201
@@ -14278,7 +14280,7 @@ msgstr "Имя не может быть пустым"
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:154
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:25
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:39
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:374
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:370
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
 #: lib/operately_web/api/resource_hubs/create.ex:27
 #: lib/operately_web/api/resource_hubs/rename.ex:37
@@ -14423,7 +14425,7 @@ msgstr "Новый проект"
 
 #.frontend
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:100
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:392
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:388
 msgid "New Resource Hub"
 msgstr "Новый центр ресурсов"
 
@@ -14434,7 +14436,7 @@ msgstr "Новое значение"
 
 #.frontend
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:100
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:389
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:385
 msgid "New board"
 msgstr "Новая доска"
 
@@ -15396,7 +15398,7 @@ msgstr "Только администраторы компании могут в
 
 #.elixir
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:172
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:170
 #: lib/operately_web/api/resource_hubs/delete.ex:27
 msgid "Only empty Resource Hubs can be deleted. Remove all documents, drafts, files, links, and folders first."
 msgstr "Удалить можно только пустые центры ресурсов. Сначала удалите все документы, черновики, файлы, ссылки и папки."
@@ -15694,9 +15696,9 @@ msgid "Or, <discard>Discard this message</discard>"
 msgstr "Или <discard>удалить это сообщение</discard>"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:398
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:430
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:477
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:402
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:434
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:481
 msgid "Or, <resource>Cancel</resource>"
 msgstr "Или <resource>отменить</resource>"
 
@@ -16368,7 +16370,7 @@ msgid "Posted as the first comment on this update."
 msgstr "Опубликовано первым комментарием к этому обновлению."
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:347
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:351
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:405
 msgid "Posted by %{author} on <date/>"
 msgstr "Автор: %{author}, опубликовано <date/>"
@@ -16448,7 +16450,7 @@ msgid "Previous Notifications"
 msgstr "Предыдущие уведомления"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:345
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:349
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:403
 msgid "Previous check-in"
 msgstr "Предыдущий доклад о ходе работы"
@@ -16764,15 +16766,15 @@ msgid "Project name cannot be empty"
 msgstr "Название проекта не может быть пустым"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:608
-#: lib/operately_web/api/projects.ex:623
-#: lib/operately_web/api/projects.ex:653
-#: lib/operately_web/api/projects.ex:688
+#: lib/operately_web/api/projects.ex:536
+#: lib/operately_web/api/projects.ex:551
+#: lib/operately_web/api/projects.ex:566
+#: lib/operately_web/api/projects.ex:601
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:282
-#: lib/operately_web/api/tasks.ex:651
-#: lib/operately_web/api/tasks.ex:690
-#: lib/operately_web/api/tasks.ex:705
+#: lib/operately_web/api/tasks.ex:622
+#: lib/operately_web/api/tasks.ex:661
+#: lib/operately_web/api/tasks.ex:676
 msgid "Project not found"
 msgstr "Проект не найден"
 
@@ -16898,7 +16900,7 @@ msgstr "Опубликовать сейчас"
 
 #.frontend
 #: ../turboui/src/OngoingDraftActions/index.tsx:89
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:470
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:474
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:163
 #: assets/js/pages/DiscussionEditPage/index.tsx:88
 msgid "Publish now"
@@ -17467,7 +17469,7 @@ msgstr "При удалении вехи её задачи остаются в �
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:99
 #: ../turboui/src/ResourceHubFolderPage/index.tsx:34
 #: ../turboui/src/ResourceHubPage/index.tsx:45
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:262
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:260
 #: ../turboui/src/TemplateProjectPage/TemplateResourceMenu.tsx:55
 msgid "Rename"
 msgstr "Переименовать"
@@ -17484,12 +17486,12 @@ msgstr "Переименовать компанию"
 
 #.frontend
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:50
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:391
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:387
 msgid "Rename Resource Hub"
 msgstr "Переименовать центр ресурсов"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:388
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:384
 msgid "Rename board"
 msgstr "Переименовать доску"
 
@@ -17577,7 +17579,7 @@ msgid "Reopening Goal"
 msgstr "Повторное открытие цели"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:342
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:340
 msgid "Reorder %{name}"
 msgstr "Изменить порядок: %{name}"
 
@@ -17624,8 +17626,7 @@ msgid "Replacement"
 msgstr "Замена"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:831
-#: lib/operately_web/api/spaces.ex:423
+#: lib/operately_web/api/tasks/update_board_statuses.ex:77
 msgid "Replacement statuses must be existing statuses that are not being deleted"
 msgstr "Статусы замены должны быть существующими статусами, которые не удаляются."
 
@@ -17745,7 +17746,7 @@ msgstr "Возобновить уведомления для участнико�
 #.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:142
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:47
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:283
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:281
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:92
 msgid "Restore"
 msgstr "Восстановить"
@@ -18222,7 +18223,7 @@ msgstr "Как в системе"
 #: ../turboui/src/PageDescription/index.tsx:195
 #: ../turboui/src/PrivacyField/index.tsx:118
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:97
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:400
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:396
 #: ../turboui/src/TitleSetupPrompt/index.tsx:63
 #: assets/js/features/ProjectRetrospective/Form.tsx:82
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:173
@@ -18240,8 +18241,8 @@ msgstr "Сохранить"
 #: ../turboui/src/CommentSection/CommentItem.tsx:397
 #: ../turboui/src/DocumentEditPage/index.tsx:83
 #: ../turboui/src/ProfileEditPage/index.tsx:142
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:443
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:453
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:447
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:457
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:133
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:146
 #: assets/js/pages/DiscussionEditPage/index.tsx:68
@@ -18263,8 +18264,8 @@ msgstr "Сохранить примечание"
 
 #.frontend
 #: ../turboui/src/NewDocumentPage/index.tsx:137
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:425
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:471
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:429
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:475
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:120
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:164
 #: assets/js/pages/DiscussionEditPage/index.tsx:89
@@ -18295,7 +18296,7 @@ msgstr "Сохранить участника проекта"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:215
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:463
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:467
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:156
 msgid "Save draft"
 msgstr "Сохранить черновик"
@@ -18346,8 +18347,8 @@ msgid "Schedule"
 msgstr "Запланировать"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:417
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:452
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:421
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:456
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:112
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:145
 msgid "Schedule Check-in"
@@ -18380,8 +18381,8 @@ msgid "Scheduled plan change"
 msgstr "Запланированная смена тарифа"
 
 #.elixir
-#: lib/operately_web/api/goals/create_check_in.ex:59
-#: lib/operately_web/api/goals/update_check_in.ex:51
+#: lib/operately_web/api/goals/create_check_in.ex:60
+#: lib/operately_web/api/goals/update_check_in.ex:52
 #: lib/operately_web/api/projects/create_check_in.ex:46
 #: lib/operately_web/api/projects/update_check_in.ex:48
 #: lib/operately_web/api/spaces/create_discussion.ex:47
@@ -18600,7 +18601,7 @@ msgid "Select a Space"
 msgstr "Выберите пространство"
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:106
+#: lib/operately/comments/create_milestone_comment_operation.ex:118
 msgid "Select a closed task status"
 msgstr "Выберите статус закрытой задачи"
 
@@ -18905,7 +18906,7 @@ msgid "Set active"
 msgstr "Сделать активным"
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:270
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:268
 msgid "Set as default"
 msgstr "Использовать по умолчанию"
 
@@ -19124,7 +19125,7 @@ msgid "Show on space page"
 msgstr "Показывать на странице пространства"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:305
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:309
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Show previous check-in"
 msgstr "Показать предыдущий отчёт о ходе работы"
@@ -19491,7 +19492,7 @@ msgid "Space members will have full access."
 msgstr "Участники пространства получат полный доступ."
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:660
+#: lib/operately_web/api/tasks.ex:631
 msgid "Space not found"
 msgstr "Пространство не найдено"
 
@@ -19841,14 +19842,14 @@ msgid "Subject"
 msgstr "Тема"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:396
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:412
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:400
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:416
 #: assets/js/pages/SetupPage/page.tsx:208
 msgid "Submit"
 msgstr "Отправить"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:443
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:447
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:133
 msgid "Submit check-in"
 msgstr "Опубликовать отчёт"
@@ -20082,7 +20083,7 @@ msgstr "Ссылка на задачу скопирована в буфер об
 #~ msgstr "Доски задач"
 
 #.elixir
-#: lib/operately/operations/milestone_ordering_state_updating.ex:34
+#: lib/operately/operations/milestone_ordering_state_updating.ex:35
 #: lib/operately/operations/project_template_milestone_ordering_updating.ex:32
 #: lib/operately/tasks/ordering_state.ex:32
 msgid "Task index must be zero or greater"
@@ -20130,12 +20131,11 @@ msgid "Task not deleted"
 msgstr "Задача не удалена"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:617
-#: lib/operately_web/api/projects.ex:632
+#: lib/operately_web/api/projects.ex:545
 #: lib/operately_web/api/projects/milestones.ex:303
-#: lib/operately_web/api/spaces.ex:321
-#: lib/operately_web/api/tasks.ex:672
-#: lib/operately_web/api/tasks.ex:684
+#: lib/operately_web/api/tasks.ex:643
+#: lib/operately_web/api/tasks.ex:655
+#: lib/operately_web/api/tasks/update_board_kanban.ex:50
 msgid "Task not found"
 msgstr "Задача не найдена"
 
@@ -21196,7 +21196,7 @@ msgid "This board is archived."
 msgstr "Эта доска в архиве."
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:169
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:167
 msgid "This board will be hidden from the space. Its tasks will remain readable, and you can restore it here."
 msgstr "Эта доска будет скрыта в пространстве. Её задачи останутся доступны для чтения, а восстановить доску можно будет здесь."
 
@@ -21641,7 +21641,7 @@ msgid "This space has no available default resource hub. Retry with resource_hub
 msgstr "В этом пространстве нет доступного хранилища материалов по умолчанию. Повторите попытку, указав resource_hub_id одного из доступных хранилищ."
 
 #.elixir
-#: lib/operately_web/api/tasks/board_scope.ex:25
+#: lib/operately_web/api/tasks/board_scope.ex:75
 msgid "This space has no available default task board. Retry with board_id from the available boards."
 msgstr "В этом пространстве нет доступной доски задач по умолчанию. Повторите попытку с board_id одной из доступных досок."
 
@@ -21684,7 +21684,7 @@ msgstr "Эта вкладка устарела. Перезагрузка, что
 #.elixir
 #.frontend
 #: ../turboui/src/TaskPage/MoveModal.tsx:84
-#: lib/operately/tasks/task_board.ex:42
+#: lib/operately/tasks/task_board.ex:94
 #: lib/operately_web/api/tasks/move.ex:93
 #: lib/operately_web/api/tasks/set_default_board.ex:28
 msgid "This task board is archived. Restore it before making changes."
@@ -22254,7 +22254,7 @@ msgstr "Требуется единица измерения"
 
 #.elixir
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:349
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:353
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:458
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:407
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:21
@@ -23094,7 +23094,7 @@ msgid "View only"
 msgstr "Только просмотр"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:358
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:362
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:278
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:418
 msgid "View original"
@@ -23608,7 +23608,7 @@ msgstr "Пишите здесь..."
 
 #.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:265
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:321
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:325
 msgid "Write your check-in here..."
 msgstr "Напишите здесь отчёт о ходе работы..."
 
@@ -24769,12 +24769,12 @@ msgid "has already been taken"
 msgstr "уже используется"
 
 #.elixir
-#: lib/operately_web/api/projects/get.ex:108
+#: lib/operately_web/api/projects/get.ex:109
 msgid "id is required"
 msgstr "Требуется идентификатор"
 
 #.elixir
-#: lib/operately_web/api/projects/get.ex:114
+#: lib/operately_web/api/projects/get.ex:115
 msgid "include_contributors_access_levels requires include_contributors"
 msgstr "include_contributors_access_levels требует include_contributors"
 

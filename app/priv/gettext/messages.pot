@@ -4787,8 +4787,13 @@ msgid "15 minutes"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:300
+msgid "2. What is the current progress on the project?"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:262
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:297
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:299
 #: assets/js/features/projectCheckIns/DescriptionSection.tsx:23
 msgid "2. What's new since the last check-in?"
 msgstr ""
@@ -5311,7 +5316,7 @@ msgid "Actions"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:257
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:255
 msgid "Actions for %{name}"
 msgstr ""
 
@@ -6208,8 +6213,8 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:44
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:176
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:275
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:174
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:273
 #: ../turboui/src/TaskPage/PageOptions.tsx:21
 #: ../turboui/src/TaskPage/Sidebar.tsx:449
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:109
@@ -6221,7 +6226,7 @@ msgid "Archive"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:164
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:162
 msgid "Archive %{name}?"
 msgstr ""
 
@@ -6497,8 +6502,7 @@ msgstr ""
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:13
 #: lib/operately_web/api/project_templates/helpers.ex:25
-#: lib/operately_web/api/projects.ex:793
-#: lib/operately_web/api/spaces.ex:379
+#: lib/operately_web/api/tasks/update_board_statuses.ex:39
 msgid "At least one task status is required"
 msgstr ""
 
@@ -7156,7 +7160,7 @@ msgid "Cannot delete goal"
 msgstr ""
 
 #.frontend
-#: assets/js/models/tasks/useKanbanState.tsx:246
+#: assets/js/models/tasks/useKanbanState.tsx:243
 msgid "Cannot move task to unknown status"
 msgstr ""
 
@@ -7593,7 +7597,7 @@ msgid "Choose a status for the destination board."
 msgstr ""
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:111
+#: lib/operately/comments/create_milestone_comment_operation.ex:123
 msgid "Choose a valid open task resolution"
 msgstr ""
 
@@ -7638,7 +7642,7 @@ msgid "Choose someone else"
 msgstr ""
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:93
+#: lib/operately/comments/create_milestone_comment_operation.ex:105
 msgid "Choose what happens to the open tasks before completing the milestone"
 msgstr ""
 
@@ -8718,7 +8722,7 @@ msgid "Couldn’t load more activities."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:400
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:396
 msgid "Create"
 msgstr ""
 
@@ -9194,7 +9198,7 @@ msgid "Deactivate Account"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:249
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:247
 msgid "Default"
 msgstr ""
 
@@ -9217,8 +9221,8 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:67
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:291
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:517
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:176
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:288
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:174
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:286
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:339
 #: ../turboui/src/TaskPage/PageOptions.tsx:28
 #: ../turboui/src/TaskPage/Sidebar.tsx:465
@@ -9259,7 +9263,7 @@ msgid "Delete %{name} target?"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:165
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:163
 msgid "Delete %{name}?"
 msgstr ""
 
@@ -10594,9 +10598,9 @@ msgstr ""
 #: assets/js/models/reactions/useReactionHandlers.tsx:67
 #: assets/js/models/reactions/useReactionHandlers.tsx:96
 #: assets/js/models/subscriptions/useSubscription.tsx:113
-#: assets/js/models/tasks/useKanbanState.tsx:124
-#: assets/js/models/tasks/useKanbanState.tsx:246
-#: assets/js/models/tasks/useKanbanState.tsx:253
+#: assets/js/models/tasks/useKanbanState.tsx:121
+#: assets/js/models/tasks/useKanbanState.tsx:243
+#: assets/js/models/tasks/useKanbanState.tsx:250
 #: assets/js/models/tasks/useProjectKanbanState.ts:72
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:202
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:227
@@ -10628,7 +10632,7 @@ msgstr ""
 #: assets/js/pages/ProjectPage/index.tsx:292
 #: assets/js/pages/ProjectPage/index.tsx:793
 #: assets/js/pages/ProjectPage/index.tsx:822
-#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:69
+#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:67
 #: assets/js/pages/SpaceKpisPage/page.tsx:102
 #: assets/js/pages/SpacePage/page.tsx:119
 #: assets/js/pages/TaskPage/index.tsx:84
@@ -10673,8 +10677,7 @@ msgstr ""
 
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:55
-#: lib/operately_web/api/projects.ex:1278
-#: lib/operately_web/api/spaces.ex:531
+#: lib/operately_web/api/tasks/board_multi_steps.ex:91
 msgid "Every deleted task status in use requires a replacement"
 msgstr ""
 
@@ -11409,7 +11412,7 @@ msgid "Failed to update task name."
 msgstr ""
 
 #.frontend
-#: assets/js/models/tasks/useKanbanState.tsx:124
+#: assets/js/models/tasks/useKanbanState.tsx:121
 #: assets/js/models/tasks/useProjectKanbanState.ts:72
 msgid "Failed to update task position"
 msgstr ""
@@ -11426,7 +11429,7 @@ msgid "Failed to update task reminders."
 msgstr ""
 
 #.frontend
-#: assets/js/models/tasks/useKanbanState.tsx:253
+#: assets/js/models/tasks/useKanbanState.tsx:250
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:381
 #: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:248
 msgid "Failed to update task status"
@@ -11441,7 +11444,7 @@ msgstr ""
 #.frontend
 #: assets/js/models/projects/useTaskStatuses.tsx:67
 #: assets/js/models/projects/useTaskStatuses.tsx:73
-#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:69
+#: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:67
 msgid "Failed to update task statuses"
 msgstr ""
 
@@ -12044,7 +12047,7 @@ msgid "Hide list"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:305
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:309
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Hide previous check-in"
 msgstr ""
@@ -12434,8 +12437,8 @@ msgid "Invalid profile update"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:797
-#: lib/operately_web/api/tasks.ex:803
+#: lib/operately_web/api/tasks.ex:761
+#: lib/operately_web/api/tasks.ex:767
 msgid "Invalid reminders"
 msgstr ""
 
@@ -12457,17 +12460,16 @@ msgid "Invalid site message parameters"
 msgstr ""
 
 #.elixir
-#: lib/operately/operations/kanban_state_updating.ex:93
-#: lib/operately/operations/kanban_state_updating.ex:105
-#: lib/operately_web/api/spaces.ex:522
-#: lib/operately_web/api/tasks.ex:772
-#: lib/operately_web/api/tasks.ex:1174
-#: lib/operately_web/api/tasks.ex:1181
+#: lib/operately/operations/kanban_state_updating.ex:103
+#: lib/operately/operations/kanban_state_updating.ex:107
+#: lib/operately_web/api/tasks.ex:728
+#: lib/operately_web/api/tasks.ex:1138
+#: lib/operately_web/api/tasks/board_multi_steps.ex:85
 msgid "Invalid status"
 msgstr ""
 
 #.elixir
-#: lib/operately/operations/kanban_state_updating.ex:222
+#: lib/operately/operations/kanban_state_updating.ex:217
 msgid "Invalid status %{status}"
 msgstr ""
 
@@ -12493,7 +12495,7 @@ msgid "Invalid token"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/spaces.ex:525
+#: lib/operately_web/api/spaces.ex:282
 msgid "Invalid tools"
 msgstr ""
 
@@ -13584,9 +13586,9 @@ msgid "Milestone is not %{name}"
 msgstr ""
 
 #.elixir
-#: lib/operately/operations/milestone_ordering_state_updating.ex:55
-#: lib/operately_web/api/tasks.ex:951
-#: lib/operately_web/api/tasks.ex:971
+#: lib/operately/operations/milestone_ordering_state_updating.ex:56
+#: lib/operately_web/api/tasks.ex:915
+#: lib/operately_web/api/tasks.ex:935
 msgid "Milestone must belong to the same project as the task"
 msgstr ""
 
@@ -13613,11 +13615,11 @@ msgid "Milestone not deleted"
 msgstr ""
 
 #.elixir
-#: lib/operately/operations/milestone_ordering_state_updating.ex:49
-#: lib/operately_web/api/projects.ex:647
-#: lib/operately_web/api/projects.ex:662
+#: lib/operately/operations/milestone_ordering_state_updating.ex:50
+#: lib/operately_web/api/projects.ex:560
+#: lib/operately_web/api/projects.ex:575
 #: lib/operately_web/api/projects/milestones.ex:291
-#: lib/operately_web/api/tasks.ex:699
+#: lib/operately_web/api/tasks.ex:670
 msgid "Milestone not found"
 msgstr ""
 
@@ -13911,7 +13913,7 @@ msgstr ""
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:53
 #: ../turboui/src/SortControl/index.tsx:18
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:71
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:397
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:393
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:120
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:201
@@ -13931,7 +13933,7 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:154
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:25
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:39
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:374
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:370
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
 #: lib/operately_web/api/resource_hubs/create.ex:27
 #: lib/operately_web/api/resource_hubs/rename.ex:37
@@ -14076,7 +14078,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:100
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:392
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:388
 msgid "New Resource Hub"
 msgstr ""
 
@@ -14087,7 +14089,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:100
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:389
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:385
 msgid "New board"
 msgstr ""
 
@@ -15039,7 +15041,7 @@ msgstr ""
 
 #.elixir
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:172
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:170
 #: lib/operately_web/api/resource_hubs/delete.ex:27
 msgid "Only empty Resource Hubs can be deleted. Remove all documents, drafts, files, links, and folders first."
 msgstr ""
@@ -15337,9 +15339,9 @@ msgid "Or, <discard>Discard this message</discard>"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:398
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:430
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:477
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:402
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:434
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:481
 msgid "Or, <resource>Cancel</resource>"
 msgstr ""
 
@@ -16004,7 +16006,7 @@ msgid "Posted as the first comment on this update."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:347
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:351
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:405
 msgid "Posted by %{author} on <date/>"
 msgstr ""
@@ -16076,7 +16078,7 @@ msgid "Previous Notifications"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:345
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:349
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:403
 msgid "Previous check-in"
 msgstr ""
@@ -16390,15 +16392,15 @@ msgid "Project name cannot be empty"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/projects.ex:608
-#: lib/operately_web/api/projects.ex:623
-#: lib/operately_web/api/projects.ex:653
-#: lib/operately_web/api/projects.ex:688
+#: lib/operately_web/api/projects.ex:536
+#: lib/operately_web/api/projects.ex:551
+#: lib/operately_web/api/projects.ex:566
+#: lib/operately_web/api/projects.ex:601
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:282
-#: lib/operately_web/api/tasks.ex:651
-#: lib/operately_web/api/tasks.ex:690
-#: lib/operately_web/api/tasks.ex:705
+#: lib/operately_web/api/tasks.ex:622
+#: lib/operately_web/api/tasks.ex:661
+#: lib/operately_web/api/tasks.ex:676
 msgid "Project not found"
 msgstr ""
 
@@ -16524,7 +16526,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/OngoingDraftActions/index.tsx:89
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:470
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:474
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:163
 #: assets/js/pages/DiscussionEditPage/index.tsx:88
 msgid "Publish now"
@@ -17093,7 +17095,7 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:99
 #: ../turboui/src/ResourceHubFolderPage/index.tsx:34
 #: ../turboui/src/ResourceHubPage/index.tsx:45
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:262
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:260
 #: ../turboui/src/TemplateProjectPage/TemplateResourceMenu.tsx:55
 msgid "Rename"
 msgstr ""
@@ -17105,12 +17107,12 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:50
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:391
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:387
 msgid "Rename Resource Hub"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:388
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:384
 msgid "Rename board"
 msgstr ""
 
@@ -17191,7 +17193,7 @@ msgid "Reopening Goal"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:342
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:340
 msgid "Reorder %{name}"
 msgstr ""
 
@@ -17233,8 +17235,7 @@ msgid "Replacement"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/projects.ex:831
-#: lib/operately_web/api/spaces.ex:423
+#: lib/operately_web/api/tasks/update_board_statuses.ex:77
 msgid "Replacement statuses must be existing statuses that are not being deleted"
 msgstr ""
 
@@ -17349,7 +17350,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:142
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:47
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:283
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:281
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:92
 msgid "Restore"
 msgstr ""
@@ -17821,7 +17822,7 @@ msgstr ""
 #: ../turboui/src/PageDescription/index.tsx:195
 #: ../turboui/src/PrivacyField/index.tsx:118
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:97
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:400
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:396
 #: ../turboui/src/TitleSetupPrompt/index.tsx:63
 #: assets/js/features/ProjectRetrospective/Form.tsx:82
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:173
@@ -17839,8 +17840,8 @@ msgstr ""
 #: ../turboui/src/CommentSection/CommentItem.tsx:397
 #: ../turboui/src/DocumentEditPage/index.tsx:83
 #: ../turboui/src/ProfileEditPage/index.tsx:142
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:443
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:453
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:447
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:457
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:133
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:146
 #: assets/js/pages/DiscussionEditPage/index.tsx:68
@@ -17862,8 +17863,8 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/NewDocumentPage/index.tsx:137
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:425
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:471
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:429
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:475
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:120
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:164
 #: assets/js/pages/DiscussionEditPage/index.tsx:89
@@ -17894,7 +17895,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:215
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:463
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:467
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:156
 msgid "Save draft"
 msgstr ""
@@ -17940,8 +17941,8 @@ msgid "Schedule"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:417
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:452
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:421
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:456
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:112
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:145
 msgid "Schedule Check-in"
@@ -17974,8 +17975,8 @@ msgid "Scheduled plan change"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/goals/create_check_in.ex:59
-#: lib/operately_web/api/goals/update_check_in.ex:51
+#: lib/operately_web/api/goals/create_check_in.ex:60
+#: lib/operately_web/api/goals/update_check_in.ex:52
 #: lib/operately_web/api/projects/create_check_in.ex:46
 #: lib/operately_web/api/projects/update_check_in.ex:48
 #: lib/operately_web/api/spaces/create_discussion.ex:47
@@ -18189,7 +18190,7 @@ msgid "Select a Space"
 msgstr ""
 
 #.elixir
-#: lib/operately/comments/create_milestone_comment_operation.ex:106
+#: lib/operately/comments/create_milestone_comment_operation.ex:118
 msgid "Select a closed task status"
 msgstr ""
 
@@ -18484,7 +18485,7 @@ msgid "Set active"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:270
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:268
 msgid "Set as default"
 msgstr ""
 
@@ -18692,7 +18693,7 @@ msgid "Show on space page"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:305
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:309
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Show previous check-in"
 msgstr ""
@@ -19048,7 +19049,7 @@ msgid "Space members will have full access."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/tasks.ex:660
+#: lib/operately_web/api/tasks.ex:631
 msgid "Space not found"
 msgstr ""
 
@@ -19398,14 +19399,14 @@ msgid "Subject"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:396
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:412
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:400
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:416
 #: assets/js/pages/SetupPage/page.tsx:208
 msgid "Submit"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:443
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:447
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:133
 msgid "Submit check-in"
 msgstr ""
@@ -19634,7 +19635,7 @@ msgid "Task URL copied to clipboard"
 msgstr ""
 
 #.elixir
-#: lib/operately/operations/milestone_ordering_state_updating.ex:34
+#: lib/operately/operations/milestone_ordering_state_updating.ex:35
 #: lib/operately/operations/project_template_milestone_ordering_updating.ex:32
 #: lib/operately/tasks/ordering_state.ex:32
 msgid "Task index must be zero or greater"
@@ -19682,12 +19683,11 @@ msgid "Task not deleted"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/projects.ex:617
-#: lib/operately_web/api/projects.ex:632
+#: lib/operately_web/api/projects.ex:545
 #: lib/operately_web/api/projects/milestones.ex:303
-#: lib/operately_web/api/spaces.ex:321
-#: lib/operately_web/api/tasks.ex:672
-#: lib/operately_web/api/tasks.ex:684
+#: lib/operately_web/api/tasks.ex:643
+#: lib/operately_web/api/tasks.ex:655
+#: lib/operately_web/api/tasks/update_board_kanban.ex:50
 msgid "Task not found"
 msgstr ""
 
@@ -20719,7 +20719,7 @@ msgid "This board is archived."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:169
+#: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:167
 msgid "This board will be hidden from the space. Its tasks will remain readable, and you can restore it here."
 msgstr ""
 
@@ -21142,7 +21142,7 @@ msgid "This space has no available default resource hub. Retry with resource_hub
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/tasks/board_scope.ex:25
+#: lib/operately_web/api/tasks/board_scope.ex:75
 msgid "This space has no available default task board. Retry with board_id from the available boards."
 msgstr ""
 
@@ -21185,7 +21185,7 @@ msgstr ""
 #.elixir
 #.frontend
 #: ../turboui/src/TaskPage/MoveModal.tsx:84
-#: lib/operately/tasks/task_board.ex:42
+#: lib/operately/tasks/task_board.ex:94
 #: lib/operately_web/api/tasks/move.ex:93
 #: lib/operately_web/api/tasks/set_default_board.ex:28
 msgid "This task board is archived. Restore it before making changes."
@@ -21747,7 +21747,7 @@ msgstr ""
 
 #.elixir
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:349
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:353
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:458
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:407
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:21
@@ -22578,7 +22578,7 @@ msgid "View only"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:358
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:362
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:278
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:418
 msgid "View original"
@@ -23087,7 +23087,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:265
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:321
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:325
 msgid "Write your check-in here..."
 msgstr ""
 
@@ -24235,12 +24235,12 @@ msgid "has already been taken"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/projects/get.ex:108
+#: lib/operately_web/api/projects/get.ex:109
 msgid "id is required"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/projects/get.ex:114
+#: lib/operately_web/api/projects/get.ex:115
 msgid "include_contributors_access_levels requires include_contributors"
 msgstr ""
 
