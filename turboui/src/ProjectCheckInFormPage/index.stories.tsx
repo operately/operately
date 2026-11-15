@@ -43,33 +43,44 @@ function useInteractiveSubscriptions(): SubscribersSelector.Props {
   };
 }
 
+function CreateFormStory({ previousCheckIn }: Pick<ProjectCheckInFormPage.CreateProps, "previousCheckIn">) {
+  const subscriptions = useInteractiveSubscriptions();
+
+  return (
+    <ProjectCheckInFormPage
+      mode="create"
+      pageTitle={["Check-In", "Apollo"]}
+      navigation={navigation}
+      cancelLink="/projects/project-1?tab=check-ins"
+      richTextHandlers={richTextHandlers}
+      mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+      formattedTimePreferences={defaultFormattedTimePreferences}
+      reviewer={mockReviewer}
+      previousCheckIn={previousCheckIn}
+      subscriptions={subscriptions}
+      onSubmit={async (values, meta) => {
+        console.log("Create submit", values, meta);
+        return true;
+      }}
+    />
+  );
+}
+
 export const Create: Story = {
   args: {} as ProjectCheckInFormPage.Props,
-  render: () => {
-    const subscriptions = useInteractiveSubscriptions();
+  render: () => (
+    <CreateFormStory
+      previousCheckIn={{
+        checkIn: createMockCheckIn(),
+        link: "/projects/project-1/check-ins/check-in-1",
+      }}
+    />
+  ),
+};
 
-    return (
-      <ProjectCheckInFormPage
-        mode="create"
-        pageTitle={["Check-In", "Apollo"]}
-        navigation={navigation}
-        cancelLink="/projects/project-1?tab=check-ins"
-        richTextHandlers={richTextHandlers}
-        mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
-        formattedTimePreferences={defaultFormattedTimePreferences}
-        reviewer={mockReviewer}
-        previousCheckIn={{
-          checkIn: createMockCheckIn(),
-          link: "/projects/project-1/check-ins/check-in-1",
-        }}
-        subscriptions={subscriptions}
-        onSubmit={async (values, meta) => {
-          console.log("Create submit", values, meta);
-          return true;
-        }}
-      />
-    );
-  },
+export const FirstCheckIn: Story = {
+  args: {} as ProjectCheckInFormPage.Props,
+  render: () => <CreateFormStory previousCheckIn={null} />,
 };
 
 export const EditFull: Story = {
