@@ -294,7 +294,11 @@ function CreateDescriptionSection({
   return (
     <div>
       <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-        <div className="font-bold">{t("2. What's new since the last check-in?")}</div>
+        <div className="font-bold">
+          {previousCheckIn
+            ? t("2. What's new since the last check-in?")
+            : t("2. What is the current progress on the project?")}
+        </div>
 
         {previousCheckIn && (
           <ActionLink
