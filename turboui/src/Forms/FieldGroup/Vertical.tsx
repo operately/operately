@@ -21,7 +21,13 @@ export function Input(props: InputFieldProps) {
   return (
     <div className="flex flex-col gap-0.5">
       {props.label ? (
-        <Label field={props.field} label={props.label} icon={props.labelIcon} required={props.required} />
+        <Label
+          field={props.field}
+          label={props.label}
+          labelAction={props.labelAction}
+          icon={props.labelIcon}
+          required={props.required}
+        />
       ) : null}
       {props.children}
       {props.error ? <ErrorMessage error={props.error} id={`${props.field}-error`} /> : null}

@@ -129,12 +129,8 @@ function PasswordInput() {
   return (
     <Forms.PasswordInput
       field={"password"}
-      label={
-        <div className="flex justify-between w-full">
-          <span>{t("Password")}</span>
-          <ForgotPasswordLink />
-        </div>
-      }
+      label={t("Password")}
+      labelAction={<ForgotPasswordLink />}
       placeholder={translationText(t("Password"))}
       required
     />
@@ -145,7 +141,11 @@ function ForgotPasswordLink() {
   const { t } = useTranslation();
 
   return (
-    <DimmedLink to={Paths.forgotPasswordPath()} className="text-sm font-normal" testId="forgot-password-link">
+    <DimmedLink
+      to={Paths.forgotPasswordPath()}
+      className="text-sm font-normal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+      testId="forgot-password-link"
+    >
       {t("Forgot password?")}
     </DimmedLink>
   );

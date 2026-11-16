@@ -3,16 +3,26 @@ import * as React from "react";
 export interface LabelProps {
   field?: string;
   label: string | React.ReactNode;
+  labelAction?: React.ReactNode;
   icon?: React.ReactNode;
   required?: boolean;
 }
 
-export function Label({ field, label, icon, required }: LabelProps) {
-  return (
+export function Label({ field, label, labelAction, icon, required }: LabelProps) {
+  const fieldLabel = (
     <label className="font-semibold flex items-center gap-2" htmlFor={field}>
       {icon}
       {label}
       {required && <span className="text-xs -ml-1 text-red-500">*</span>}
     </label>
+  );
+
+  if (!labelAction) return fieldLabel;
+
+  return (
+    <div className="flex items-center justify-between gap-2">
+      {fieldLabel}
+      {labelAction}
+    </div>
   );
 }

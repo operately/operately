@@ -77,6 +77,7 @@ export interface InputFieldProps {
   field: string;
   children: React.ReactNode;
   label?: string | React.ReactNode;
+  labelAction?: React.ReactNode;
   labelIcon?: React.ReactNode;
   required?: boolean;
   hidden?: boolean;
@@ -218,6 +219,7 @@ export interface RichTextAreaProps {
 export interface PasswordInputProps {
   field: string;
   label?: string | React.ReactNode;
+  labelAction?: React.ReactNode;
   required?: boolean;
   placeholder?: string;
   minLength?: number;
