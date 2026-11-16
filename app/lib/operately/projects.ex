@@ -100,8 +100,12 @@ defmodule Operately.Projects do
     |> CoreWorkIndexUpdates.enqueue_project(fn changes -> changes.project.id end)
     |> Repo.transaction()
     |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(project.id)
-    |> Repo.extract_result(:project)
+    |> extract_rename_result()
   end
+
+  defp extract_rename_result({:ok, %{project: project}}), do: {:ok, project}
+  defp extract_rename_result({:error, :project, %Ecto.Changeset{errors: [name: error]}, _changes}), do: {:error, {:invalid_name, error}}
+  defp extract_rename_result({:error, step, reason, _changes}), do: {:error, {step, reason}}
 
   def change_project(%Project{} = project, attrs \\ %{}) do
     Project.changeset(project, attrs)

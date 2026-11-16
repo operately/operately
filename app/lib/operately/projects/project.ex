@@ -117,6 +117,7 @@ defmodule Operately.Projects.Project do
       :creator_id,
       :subscription_list_id
     ])
+    |> validate_length(:name, max: 255, count: :codepoints)
   end
 
   def valid_tasks_views, do: @valid_tasks_views

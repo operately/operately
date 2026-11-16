@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.UpdateName do
         JsonSchema.object(
           %{
             "project_id" => JsonSchema.string("The project identifier."),
-            "name" => JsonSchema.string("The new project name.")
+            "name" => JsonSchema.string("The new project name (at most 255 characters).") |> Map.put("maxLength", 255)
           },
           required: ["project_id", "name"]
         ),
