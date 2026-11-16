@@ -74,6 +74,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
   end
 
   defp extract_result({:ok, %{project: project}}), do: {:ok, project}
+  defp extract_result({:error, :project, %Ecto.Changeset{errors: [name: error]}, _changes}), do: {:error, {:invalid_name, error}}
   defp extract_result({:error, :copy_plan, reason, _changes}), do: {:error, reason}
   defp extract_result({:error, :materialized_children, reason, _changes}), do: {:error, reason}
   defp extract_result({:error, step, reason, _changes}), do: {:error, {:project_creation, step, reason}}

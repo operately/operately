@@ -8,6 +8,17 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.CreateProjectTest do
   alias OperatelyWeb.Mcp.Tools.ProjectTemplates.CreateProject
   alias OperatelyWeb.Paths
 
+  test "call/2 rejects an oversized project name" do
+    ctx = setup_ctx()
+    assert CreateProject.definition().input_schema["properties"]["name"]["maxLength"] == 255
+
+    assert {:error, :bad_request, message} =
+             CreateProject.call(ToolConnHelper.conn(ctx), Map.put(create_args(ctx), "name", String.duplicate("a", 256)))
+
+    assert message =~ "255"
+    assert Operately.Repo.aggregate(Project, :count) == 0
+  end
+
   test "call/2 creates a project from a template" do
     ctx = setup_ctx()
 
