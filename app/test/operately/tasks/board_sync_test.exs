@@ -2,26 +2,28 @@ defmodule Operately.Tasks.BoardSyncTest do
   use Operately.DataCase
   alias Operately.Tasks.{BoardSync, TaskBoard, Task}
 
-  setup ctx do
-    ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space)
-  end
+  describe "task references" do
+    setup ctx do
+      ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space)
+    end
 
-  test "rejects a stale authorized task after it has moved to another board", ctx do
-    board = Repo.insert!(%TaskBoard{space_id: ctx.space.id, name: "Other"})
-    ctx.task |> change(board_id: board.id) |> Repo.update!()
-    assert {:ok, {:error, :not_found}} = Repo.transaction(fn ->
-      {:ok, boards} = BoardSync.lock_boards([ctx.task.board_id])
-      BoardSync.lock_task(ctx.task, boards)
-    end)
-  end
+    test "rejects a stale authorized task after it has moved to another board", ctx do
+      board = Repo.insert!(%TaskBoard{space_id: ctx.space.id, name: "Other"})
+      ctx.task |> change(board_id: board.id) |> Repo.update!()
+      assert {:ok, {:error, :not_found}} = Repo.transaction(fn ->
+        {:ok, boards} = BoardSync.lock_boards([ctx.task.board_id])
+        BoardSync.lock_task(ctx.task, boards)
+      end)
+    end
 
-  test "ordinary changesets reject task and default references to another space", ctx do
-    ctx = Factory.add_space(ctx, :other)
-    board = Repo.get!(TaskBoard, ctx.other.default_task_board_id)
-    assert {:error, changeset} = ctx.task |> Task.changeset(%{board_id: board.id}) |> Repo.update()
-    assert errors_on(changeset).board_id == ["is invalid"]
-    refute Operately.Groups.Group.default_task_board_changeset(ctx.space, board).valid?
-    assert Repo.reload!(ctx.task).board_id == ctx.space.default_task_board_id
+    test "ordinary changesets reject task and default references to another space", ctx do
+      ctx = Factory.add_space(ctx, :other)
+      board = Repo.get!(TaskBoard, ctx.other.default_task_board_id)
+      assert {:error, changeset} = ctx.task |> Task.changeset(%{board_id: board.id}) |> Repo.update()
+      assert errors_on(changeset).board_id == ["is invalid"]
+      refute Operately.Groups.Group.default_task_board_changeset(ctx.space, board).valid?
+      assert Repo.reload!(ctx.task).board_id == ctx.space.default_task_board_id
+    end
   end
 
   test "a waiting writer checks archive state after acquiring the board lock" do

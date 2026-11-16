@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.CreateProject do
             "template_id" => JsonSchema.string("The project template identifier."),
             "space_id" => JsonSchema.string("The destination space identifier."),
             "start_date" => JsonSchema.string("The project start date in ISO YYYY-MM-DD format."),
-            "name" => JsonSchema.string("The project name."),
+            "name" => JsonSchema.string("The project name (at most 255 characters).") |> Map.put("maxLength", 255),
             "goal_id" => JsonSchema.nullable(JsonSchema.string("Optional parent goal identifier."))
           },
           required: ["template_id", "space_id", "start_date", "name"]

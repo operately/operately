@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.Create do
         JsonSchema.object(
           %{
             "space_id" => JsonSchema.string("The space where the project will be created."),
-            "name" => JsonSchema.string("The project name."),
+            "name" => JsonSchema.string("The project name (at most 255 characters).") |> Map.put("maxLength", 255),
             "champion_id" => JsonSchema.string("An optional champion person identifier."),
             "reviewer_id" => JsonSchema.string("An optional reviewer person identifier."),
             "goal_id" => JsonSchema.string("An optional parent goal identifier."),

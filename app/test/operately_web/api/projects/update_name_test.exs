@@ -63,6 +63,21 @@ defmodule OperatelyWeb.Api.Projects.UpdateNameTest do
       assert {200, res} = request(ctx.conn, project)
       assert_name_edited(res, project)
     end
+
+    test "rejects an oversized name without changing the project or recording an activity", ctx do
+      project = create_project(ctx)
+      activities_before = Repo.aggregate(Operately.Activities.Activity, :count)
+
+      assert {400, response} =
+               mutation(ctx.conn, [:projects, :update_name], %{
+                 project_id: Paths.project_id(project),
+                 name: String.duplicate("a", 256)
+               })
+
+      assert response.message =~ "255"
+      assert Repo.reload!(project).name == project.name
+      assert Repo.aggregate(Operately.Activities.Activity, :count) == activities_before
+    end
   end
 
   #

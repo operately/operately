@@ -51,6 +51,8 @@ defmodule OperatelyWeb.Api.Projects.Create do
       {:error, :owners, _} -> {:error, :bad_request}
       {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :parent_goal, _} -> {:error, :not_found}
+      {:error, :operation, %{error: {:invalid_name, error}}} ->
+        {:error, :bad_request, Operately.I18n.ValidationErrors.translate(error)}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end

@@ -7,6 +7,24 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.CreateTest do
   alias OperatelyWeb.Mcp.ToolConnHelper
   alias OperatelyWeb.Paths
 
+  test "returns a validation error through the executor for an oversized project name" do
+    ctx = space_context()
+    assert {:ok, definition} = OperatelyWeb.Mcp.Executor.fetch_definition("create_project")
+    assert definition.input_schema["properties"]["name"]["maxLength"] == 255
+
+    assert_unchanged(fn ->
+      assert {:ok, result} =
+               OperatelyWeb.Mcp.Executor.execute(ToolConnHelper.conn(ctx), definition, %{
+                 "space_id" => Paths.space_id(ctx.space),
+                 "name" => String.duplicate("a", 256)
+               })
+
+      assert result["isError"]
+      assert [%{"type" => "text", "text" => message}] = result["content"]
+      assert message =~ "255"
+    end)
+  end
+
   test "call/2 creates a project in a space" do
     ctx =
       %{}

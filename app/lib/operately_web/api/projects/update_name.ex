@@ -33,6 +33,8 @@ defmodule OperatelyWeb.Api.Projects.UpdateName do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :project, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, %{error: {:invalid_name, error}}} ->
+        {:error, :bad_request, Operately.I18n.ValidationErrors.translate(error)}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end

@@ -126,6 +126,14 @@ defmodule Operately.ProjectsTest do
       assert ctx.project == Projects.get_project!(ctx.project.id)
     end
 
+    test "rename_project/3 returns an invalid name error for an oversized name", ctx do
+      assert {:error, {:invalid_name, {_message, validation}}} =
+               Projects.rename_project(ctx.champion, ctx.project, String.duplicate("a", 256))
+
+      assert validation[:validation] == :length
+      assert validation[:count] == 255
+    end
+
     test "change_project/1 returns a project changeset", ctx do
       assert %Ecto.Changeset{} = Projects.change_project(ctx.project)
     end
