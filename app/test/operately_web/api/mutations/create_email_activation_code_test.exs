@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
   import Ecto.Query, only: [from: 2]
   use OperatelyWeb.TurboCase
+  import Swoosh.TestAssertions
 
   setup ctx do
     original_value = Application.get_env(:operately, :allow_signup_with_email)
@@ -14,6 +15,24 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
   end
 
   describe "create_email_activation_code" do
+    test "rejects the oversized signup email without persisting or sending a code", ctx do
+      email = "  " <> String.duplicate("a", 300) <> "@example.com  "
+
+      assert {400, result} = mutation(ctx.conn, :create_email_activation_code, %{email: email})
+      assert result.message == "Enter an email address with no more than 255 characters."
+      assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 0
+      assert_no_email_sent()
+    end
+
+    test "translates oversized-email validation messages", ctx do
+      email = String.duplicate("a", 244) <> "@example.com"
+
+      Gettext.with_locale(OperatelyWeb.Gettext, "de", fn ->
+        assert {:error, :bad_request, "Gib eine E-Mail-Adresse mit höchstens 255 Zeichen ein."} =
+                 OperatelyWeb.Api.Mutations.CreateEmailActivationCode.call(ctx.conn, %{email: email})
+      end)
+    end
+
     test "creates activation code and sends email when email delivery is configured", ctx do
       inputs = %{email: "newuser@test.com"}
 
@@ -30,6 +49,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
       now = DateTime.utc_now()
       diff = DateTime.diff(code.expires_at, now, :second)
       assert diff > 290 and diff < 310
+      assert_email_sent(to: "newuser@test.com")
     end
 
     test "returns error when email delivery is not configured", ctx do
@@ -89,12 +109,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
       assert length(codes) == 2
     end
 
-    test "works with nil email input", ctx do
-      inputs = %{email: nil}
-
-      # This should fail at the EmailActivationCode.create level
-      assert {500, result} = mutation(ctx.conn, :create_email_activation_code, inputs)
-      assert result.error == "Internal server error"
+    for {label, inputs} <- [{"null", %{email: nil}}, {"missing", %{}}, {"malformed", %{email: "invalid"}}] do
+      test "returns a validation error for #{label} email input", ctx do
+        assert {400, result} = mutation(ctx.conn, :create_email_activation_code, unquote(Macro.escape(inputs)))
+        assert result.message == "Enter a valid email address."
+        assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 0
+        assert_no_email_sent()
+      end
     end
 
     test "does not require authentication", ctx do
