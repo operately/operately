@@ -29,7 +29,13 @@ export function Input(props: InputFieldProps) {
   const options = useLayoutOptions<Options>();
 
   const label = props.label ? (
-    <Label field={props.field} label={props.label} icon={props.labelIcon} required={props.required} />
+    <Label
+      field={props.field}
+      label={props.label}
+      labelAction={props.labelAction}
+      icon={props.labelIcon}
+      required={props.required}
+    />
   ) : null;
   const error = props.error ? <ErrorMessage error={props.error} /> : null;
 
