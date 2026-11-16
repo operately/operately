@@ -4,7 +4,7 @@ import Api, { type ResourceHubDocument } from "@/api";
 import { queryClient, useLoadedQuery } from "@/api/queryClient";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
-export { useInlineThreadMutations, invalidateInlineThreadQueries } from "./inlineThreadLifecycle";
+export { useInlineThreadMutations } from "./inlineThreadLifecycle";
 
 export async function prefetchDocumentInlineThreads(document: ResourceHubDocument) {
   if (document.state !== "published") return;

@@ -8,7 +8,6 @@ import { displayDate } from "turboui";
 export type ProjectCheckIn = api.ProjectCheckIn;
 
 export {
-  invalidateProjectCheckInQueries,
   useAcknowledgeProjectCheckIn,
   useDeleteProjectCheckIn,
   useEditProjectCheckIn,
