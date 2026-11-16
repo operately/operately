@@ -1,10 +1,9 @@
 import * as api from "@/api";
 
 export type Company = api.Company;
-export { hasFeature } from "./hasFeature";
 export { useLoadCollaboratorResources } from "./useLoadCollaboratorResources";
 
-export { completeCompanySetup, useAddFirstCompany, useCompleteCompanySetup } from "@/api";
+export { useAddFirstCompany } from "@/api";
 
 // Individual invitations
 export function createInvitationUrl(token: string) {
