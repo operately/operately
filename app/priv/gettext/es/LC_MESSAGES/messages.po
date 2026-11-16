@@ -5276,7 +5276,7 @@ msgstr "Modo de acceso del nuevo token"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/User.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:109
+#: ../turboui/src/CompanyNavigation/index.tsx:118
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:311
 msgid "Account"
 msgstr "Cuenta"
@@ -8120,7 +8120,7 @@ msgstr "Empresa"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:50
-#: ../turboui/src/CompanyNavigation/index.tsx:113
+#: ../turboui/src/CompanyNavigation/index.tsx:122
 msgid "Company Admin"
 msgstr "Administración de la empresa"
 
@@ -12234,8 +12234,8 @@ msgstr "Mmmm, algo no está bien con este enlace. Vuelve a verificarlo o pídele
 #: ../turboui/src/AccountSecurityPage/index.tsx:21
 #: ../turboui/src/AccountSettingsPage/index.tsx:45
 #: ../turboui/src/CompanyAdminPage/index.tsx:53
-#: ../turboui/src/CompanyNavigation/index.tsx:85
-#: ../turboui/src/CompanyNavigation/index.tsx:185
+#: ../turboui/src/CompanyNavigation/index.tsx:94
+#: ../turboui/src/CompanyNavigation/index.tsx:194
 #: ../turboui/src/HomePage/index.tsx:20
 #: ../turboui/src/ProfileEditPage/index.tsx:81
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
@@ -13417,7 +13417,7 @@ msgid "Lobby"
 msgstr "Seleccionar empresa"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:121
+#: ../turboui/src/CompanyNavigation/index.tsx:130
 msgid "Log Out"
 msgstr "Cerrar sesión"
 
@@ -14066,8 +14066,8 @@ msgid "My upcoming work"
 msgstr "Mi próximo trabajo"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:93
-#: ../turboui/src/CompanyNavigation/index.tsx:193
+#: ../turboui/src/CompanyNavigation/index.tsx:102
+#: ../turboui/src/CompanyNavigation/index.tsx:202
 msgid "My work"
 msgstr "Mi trabajo"
 
@@ -14155,6 +14155,11 @@ msgstr "Nombre:"
 #: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:57
 msgid "Navbar update badge"
 msgstr "Indicador de nueva versión en la barra de navegación"
+
+#.frontend
+#: ../turboui/src/CompanyNavigation/index.tsx:80
+msgid "Navigation menu"
+msgstr "Menú de navegación"
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:71
@@ -15137,7 +15142,7 @@ msgstr "Configuración de notificaciones"
 #: ../turboui/src/AccountPage/index.tsx:61
 #: ../turboui/src/CompanyNavigation/Bell.tsx:26
 #: ../turboui/src/CompanyNavigation/User.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:105
+#: ../turboui/src/CompanyNavigation/index.tsx:114
 #: ../turboui/src/SidebarSection/index.tsx:34
 #: assets/js/pages/NotificationsPage/index.tsx:38
 #: assets/js/pages/NotificationsPage/index.tsx:41
@@ -17800,7 +17805,7 @@ msgstr "Se revirtió la fecha de inicio a su valor anterior."
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/Review.tsx:18
-#: ../turboui/src/CompanyNavigation/index.tsx:97
+#: ../turboui/src/CompanyNavigation/index.tsx:106
 #: ../turboui/src/ReviewPage/index.tsx:83
 #: ../turboui/src/ReviewPage/index.tsx:132
 msgid "Review"
@@ -19763,7 +19768,7 @@ msgstr "Las cuentas suspendidas no se pueden convertir a colaboradores externos"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:117
+#: ../turboui/src/CompanyNavigation/index.tsx:126
 msgid "Switch Company"
 msgstr "Cambiar de empresa"
 
@@ -26082,15 +26087,15 @@ msgid "Title"
 msgstr "Título"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:89
-#: ../turboui/src/CompanyNavigation/index.tsx:189
+#: ../turboui/src/CompanyNavigation/index.tsx:98
+#: ../turboui/src/CompanyNavigation/index.tsx:198
 msgctxt "navigation"
 msgid "Company"
 msgstr "Empresa"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:101
+#: ../turboui/src/CompanyNavigation/index.tsx:110
 #: assets/js/pages/PeoplePage/page.tsx:14
 msgctxt "navigation"
 msgid "People"
