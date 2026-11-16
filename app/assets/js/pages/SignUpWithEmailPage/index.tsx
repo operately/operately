@@ -1,5 +1,5 @@
 import { internalReturnPath, Paths } from "@/routes/paths";
-import * as Api from "@/api";
+import * as Accounts from "@/models/accounts";
 import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
@@ -39,6 +39,8 @@ function Page() {
   const redirectToParam = internalReturnPath(new URLSearchParams(window.location.search).get("redirect_to"));
   const [pageState, setPageState] = React.useState<PageState>("form");
   const [submitError, setSubmitError] = React.useState<string | null>(null);
+  const createEmailActivationCode = Accounts.useCreateEmailActivationCode();
+  const createAccount = Accounts.useCreateAccount();
 
   const form = Forms.useForm({
     fields: {
@@ -49,6 +51,11 @@ function Page() {
       confirmPassword: "",
       code: "",
     },
+    onChange: ({ field }) => {
+      if (field && ["email", "name", "password", "confirmPassword", "code"].includes(field)) {
+        setSubmitError(null);
+      }
+    },
     validate: (addError) => {
       if (form.values.password !== form.values.confirmPassword) {
         addError("confirmPassword", t("Passwords do not match"));
@@ -58,12 +65,12 @@ function Page() {
       if (pageState === "form") {
         setSubmitError(null);
 
-        await Api.createEmailActivationCode({ email: form.values.email });
+        await createEmailActivationCode.mutateAsync({ email: form.values.email });
         setPageState("code-verification");
       } else {
         setSubmitError(null);
 
-        const result = await Api.createAccount({
+        const result = await createAccount.mutateAsync({
           inviteToken: form.values.inviteToken,
           code: form.values.code,
           email: form.values.email,
@@ -165,7 +172,11 @@ function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; s
 
               <div className="my-6">
                 <Forms.Submit
-                  saveText={!validation.isValid ? translationText(t("Please fill in all fields")) : translationText(t("Continue ->"))}
+                  saveText={
+                    !validation.isValid
+                      ? translationText(t("Please fill in all fields"))
+                      : translationText(t("Continue ->"))
+                  }
                   className="w-full py-2 px-4"
                 />
               </div>
