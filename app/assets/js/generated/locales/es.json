@@ -1417,6 +1417,7 @@
   "Enter a valid email address.": "Introduce una dirección de correo electrónico válida.",
   "Enter a value": "Introduce un valor",
   "Enter an email address with no more than 255 characters.": "Introduce una dirección de correo electrónico de no más de 255 caracteres.",
+  "Enter exactly six characters using uppercase letters (A–Z) or digits (0–9).": "Introduce exactamente seis caracteres usando letras mayúsculas (A–Z) o dígitos (0–9).",
   "Enter milestone name": "Introduce el nombre del hito",
   "Enter milestone title": "Introduce el título del hito",
   "Enter password": "Introduce la contraseña",

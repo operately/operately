@@ -80,6 +80,43 @@ function submissionError(message: string) {
   return { response: { data: { message } } };
 }
 
+test("verification alone requires a complete code and submits normalized email paste to server verification", async () => {
+  const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
+  const account = jest.spyOn(Api.default, "createAccount").mockRejectedValue(submissionError("Server rejected code"));
+  await fillDetails();
+  await submit();
+  expect(activation).toHaveBeenCalledWith({ email: details.email });
+
+  await submit();
+  expect(account).not.toHaveBeenCalled();
+  expect(input("code").getAttribute("aria-invalid")).toBe("true");
+  expect(container.querySelector("#code-error")).not.toBeNull();
+  await edit("code", "ABC");
+  await submit();
+  expect(account).not.toHaveBeenCalled();
+
+  await act(async () => {
+    input("code").select();
+    const paste = new Event("paste", { bubbles: true, cancelable: true });
+    Object.defineProperty(paste, "clipboardData", { value: { getData: () => " ABC-123\n" } });
+    input("code").dispatchEvent(paste);
+  });
+  expect(input("code").value).toBe("ABC123");
+  expect(container.querySelector("#code-error")).toBeNull();
+  await act(async () => {
+    input("code").dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+  });
+  await waitFor(() => expect(container.querySelector("[role=alert]")?.textContent).toBe("Server rejected code"));
+  expect(account).toHaveBeenCalledWith({
+    inviteToken: "invitation",
+    code: "ABC123",
+    email: details.email,
+    fullName: details.name,
+    password: details.password,
+  });
+  expect(logIn).not.toHaveBeenCalled();
+});
+
 test.each([
   ["email", "alex.updated@example.com"],
   ["name", "Alex Updated"],
