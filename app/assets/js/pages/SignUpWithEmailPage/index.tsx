@@ -228,7 +228,16 @@ function CodeVerification({
               )}
 
               <div className="flex flex-col items-center">
-                <CodeInput field={"code"} />
+                <div className="w-60">
+                  <Forms.FieldGroup>
+                    <Forms.VerificationCodeInput
+                      field="code"
+                      autoFocus
+                      testId="code"
+                      className="text-4xl text-center text-content-base"
+                    />
+                  </Forms.FieldGroup>
+                </div>
                 <Forms.Submit saveText={translationText(t("Continue ->"))} className="w-60" />
               </div>
 
@@ -252,24 +261,6 @@ function CodeMessage() {
         components={{ email: <span className="font-bold" /> }}
       />
     </p>
-  );
-}
-
-function CodeInput({ field }: { field: string }) {
-  const [value, setValue] = Forms.useFieldValue<string>(field);
-
-  return (
-    <input
-      name="code"
-      autoFocus
-      data-test-id="code"
-      className={
-        "text-4xl border border-surface-outline rounded-lg px-3 py-1.5 text-center placeholder-content-subtle w-60 bg-surface-base text-content-base"
-      }
-      type="text"
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    />
   );
 }
 
