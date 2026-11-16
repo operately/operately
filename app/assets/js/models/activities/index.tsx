@@ -1,6 +1,5 @@
 import { Activity } from "@/api";
-export { useDeleteFeedActivity } from "./activityLifecycle";
-export type { Activity, ActivityContentGoalCheckIn, ActivityContentGoalTimeframeEditing, CommentThread } from "@/api";
+export type { Activity } from "@/api";
 
 import * as api from "@/api";
 import * as Time from "@/utils/time";

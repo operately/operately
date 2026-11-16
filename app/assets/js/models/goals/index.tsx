@@ -6,15 +6,8 @@ export type Target = api.Target;
 export type Timeframe = api.Timeframe;
 export type Check = api.GoalCheck;
 
-export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
 export { useGoalTargets } from "./useGoalTargets";
-export {
-  invalidateGoalRetrospectiveQueries,
-  useAcknowledgeGoalRetrospective,
-  useCreateGoal,
-  useCloseGoal,
-  useReopenGoal,
-} from "./goalLifecycle";
+export { useAcknowledgeGoalRetrospective, useCreateGoal, useCloseGoal, useReopenGoal } from "./goalLifecycle";
 
 export { useCreateGoalDiscussion, useEditGoalDiscussion } from "./goalDiscussionLifecycle";
 
@@ -37,11 +30,6 @@ export {
   useDeleteGoal,
 } from "./goalDetailsLifecycle";
 export {
-  useCreateGoalTarget,
-  useDeleteGoalTarget,
-  useUpdateGoalTarget,
-  useUpdateGoalTargetValue,
-  useUpdateGoalTargetIndex,
   useCreateGoalCheck,
   useDeleteGoalCheck,
   useUpdateGoalCheck,
