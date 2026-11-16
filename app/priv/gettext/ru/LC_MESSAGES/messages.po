@@ -5382,7 +5382,7 @@ msgstr "API-токен создан"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:75
 #: ../turboui/src/AccountApiTokensPage/index.tsx:82
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:24
-#: ../turboui/src/CompanyNavigation/User.tsx:60
+#: ../turboui/src/CompanyNavigation/User.tsx:62
 msgid "API Tokens"
 msgstr "API-токены"
 
@@ -5442,6 +5442,7 @@ msgid "Access mode for new token"
 msgstr "Режим доступа для нового токена"
 
 #.frontend
+#: ../turboui/src/CompanyNavigation/User.tsx:33
 #: ../turboui/src/CompanyNavigation/index.tsx:109
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:311
 msgid "Account"
@@ -13652,7 +13653,7 @@ msgstr "Долгосрочные результаты, над которыми �
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:50
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:57
-#: ../turboui/src/CompanyNavigation/User.tsx:63
+#: ../turboui/src/CompanyNavigation/User.tsx:65
 msgid "MCP Connections"
 msgstr "MCP-подключения"
 
@@ -15307,7 +15308,7 @@ msgstr "Параметры уведомлений"
 #.frontend
 #: ../turboui/src/AccountPage/index.tsx:61
 #: ../turboui/src/CompanyNavigation/Bell.tsx:26
-#: ../turboui/src/CompanyNavigation/User.tsx:54
+#: ../turboui/src/CompanyNavigation/User.tsx:56
 #: ../turboui/src/CompanyNavigation/index.tsx:105
 #: ../turboui/src/SidebarSection/index.tsx:34
 #: assets/js/pages/NotificationsPage/index.tsx:38
@@ -15902,7 +15903,7 @@ msgstr "Пароль"
 #: ../turboui/src/AccountPage/index.tsx:67
 #: ../turboui/src/AccountSecurityPage/index.tsx:24
 #: ../turboui/src/AccountSecurityPage/index.tsx:26
-#: ../turboui/src/CompanyNavigation/User.tsx:57
+#: ../turboui/src/CompanyNavigation/User.tsx:59
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:54
 msgid "Password & Security"
 msgstr "Пароль и безопасность"
@@ -16631,7 +16632,7 @@ msgstr "Продукты"
 
 #.frontend
 #: ../turboui/src/AccountPage/index.tsx:49
-#: ../turboui/src/CompanyNavigation/User.tsx:48
+#: ../turboui/src/CompanyNavigation/User.tsx:50
 #: assets/js/pages/ProfilePage/index.tsx:56
 msgid "Profile"
 msgstr "Профиль"
@@ -19016,7 +19017,7 @@ msgstr "Задать срок выполнения"
 #: ../turboui/src/AccountPage/index.tsx:55
 #: ../turboui/src/AccountSettingsPage/index.tsx:50
 #: ../turboui/src/AccountSettingsPage/index.tsx:52
-#: ../turboui/src/CompanyNavigation/User.tsx:51
+#: ../turboui/src/CompanyNavigation/User.tsx:53
 #: ../turboui/src/TaskBoard/components/TasksMenu.tsx:45
 msgid "Settings"
 msgstr "Настройки"
@@ -19166,7 +19167,7 @@ msgstr "Войти"
 
 #.frontend
 #: ../turboui/src/AccountPage/index.tsx:76
-#: ../turboui/src/CompanyNavigation/User.tsx:66
+#: ../turboui/src/CompanyNavigation/User.tsx:68
 msgid "Sign Out"
 msgstr "Выйти"
 

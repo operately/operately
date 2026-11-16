@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { createInstance } from "i18next";
 import React from "react";
 import { I18nextProvider } from "react-i18next";
@@ -52,18 +53,41 @@ describe("CompanyNavigation", () => {
     expect(document.querySelector(`[data-test-id="new-dropdown"]`)).not.toBeInTheDocument();
   });
 
-  it("calls onLogOut from the account menu", async () => {
+  it.each(["{Enter}", " "])("operates the Account menu with the keyboard using %s", async (key) => {
+    const user = userEvent.setup();
+    renderNav();
+
+    const trigger = screen.getByRole("button", { name: "Account" });
+    await user.tab({ shift: true });
+    expect(trigger).toHaveFocus();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+
+    await user.keyboard(key);
+    expect(screen.getByRole("menu")).toBeInTheDocument();
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(getByTestId("profile-link")).toHaveFocus();
+
+    await user.keyboard("{ArrowDown}");
+    expect(getByTestId("settings-link")).toHaveFocus();
+
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(trigger).toHaveFocus());
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("calls onLogOut from the account menu with pointer interaction", async () => {
+    const user = userEvent.setup();
     const onLogOut = jest.fn();
     renderNav({ onLogOut });
 
-    fireEvent.pointerDown(getByTestId("account-menu"));
-    fireEvent.keyDown(getByTestId("account-menu"), { key: "Enter" });
+    await user.click(screen.getByRole("button", { name: "Account" }));
 
     await waitFor(() => {
       expect(getByTestId("log-out-button")).toBeInTheDocument();
     });
 
-    fireEvent.click(getByTestId("log-out-button"));
+    await user.click(getByTestId("log-out-button"));
 
     expect(onLogOut).toHaveBeenCalled();
   });
@@ -107,6 +131,7 @@ describe("CompanyNavigation", () => {
       resources: {},
       newLabel: "New",
       help: "Help",
+      account: "Account",
       badgeTitle: "Operately v1.8 is available. This instance is running an older version. View release notes.",
       badgeText: "v1.8 available",
     },
@@ -115,32 +140,39 @@ describe("CompanyNavigation", () => {
       resources: {
         New: "Novo",
         Help: "Ajuda",
+        Account: "Conta",
         "Operately {{version}} is available. This instance is running an older version. View release notes.":
           "Operately {{version}} está disponível. Esta instância está em uma versão anterior. Ver notas de lançamento.",
         "<version>{{version}}</version> available": "<version>{{version}}</version> disponível",
       },
       newLabel: "Novo",
       help: "Ajuda",
-      badgeTitle: "Operately v1.8 está disponível. Esta instância está em uma versão anterior. Ver notas de lançamento.",
+      account: "Conta",
+      badgeTitle:
+        "Operately v1.8 está disponível. Esta instância está em uma versão anterior. Ver notas de lançamento.",
       badgeText: "v1.8 disponível",
     },
-  ])("uses catalog copy for navigation chrome: $label", async ({ resources, newLabel, help, badgeTitle, badgeText }) => {
-    const i18n = createInstance();
-    await i18n.init({ lng: "en", resources: { en: { translation: resources } } });
+  ])(
+    "uses catalog copy for navigation chrome: $label",
+    async ({ resources, newLabel, help, account, badgeTitle, badgeText }) => {
+      const i18n = createInstance();
+      await i18n.init({ lng: "en", resources: { en: { translation: resources } } });
 
-    render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <CompanyNavigation {...defaultProps} showCurrentVersion availableUpdate={{ version: "v1.8" }} />
-        </MemoryRouter>
-      </I18nextProvider>,
-    );
+      render(
+        <I18nextProvider i18n={i18n}>
+          <MemoryRouter>
+            <CompanyNavigation {...defaultProps} showCurrentVersion availableUpdate={{ version: "v1.8" }} />
+          </MemoryRouter>
+        </I18nextProvider>,
+      );
 
-    expect(getByTestId("new-dropdown")).toHaveTextContent(newLabel);
-    expect(getByTestId("help-dropdown")).toHaveTextContent(help);
+      expect(getByTestId("new-dropdown")).toHaveTextContent(newLabel);
+      expect(getByTestId("help-dropdown")).toHaveTextContent(help);
+      expect(screen.getByRole("button", { name: account })).toHaveAccessibleName(account);
 
-    const badge = getByTestId("update-available-badge");
-    expect(badge).toHaveTextContent(badgeText);
-    expect(badge).toHaveAttribute("title", badgeTitle);
-  });
+      const badge = getByTestId("update-available-badge");
+      expect(badge).toHaveTextContent(badgeText);
+      expect(badge).toHaveAttribute("title", badgeTitle);
+    },
+  );
 });
