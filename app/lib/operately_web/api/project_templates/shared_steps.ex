@@ -929,6 +929,9 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp handle_error({:error, _step, {:invalid_resource_tree, _reason}, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, :invalid_resource_parent, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, {:validation, message}, _changes}), do: {:error, :bad_request, message}
+  defp handle_error({:error, _step, {:invalid_name, error}, _changes}) do
+    {:error, :bad_request, Operately.I18n.ValidationErrors.translate(error)}
+  end
   defp handle_error({:error, _step, %Ecto.Changeset{}, _changes}), do: {:error, :bad_request}
 
   defp handle_error(error) do

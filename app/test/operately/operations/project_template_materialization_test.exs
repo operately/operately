@@ -29,6 +29,14 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     |> Factory.add_goal(:goal, :space)
   end
 
+  test "returns an invalid name error for an oversized project name", ctx do
+    ctx = Factory.add_project_template(ctx, :template, :space)
+
+    assert {:error, {:invalid_name, {_message, validation}}} = materialize(ctx, ~D[2028-02-15], String.duplicate("a", 256))
+    assert validation[:validation] == :length
+    assert validation[:count] == 255
+  end
+
   test "materializes an independent core graph with dates, workflow, ordering, and reminders", ctx do
     [not_started, done] = statuses()
 
@@ -531,14 +539,14 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     end)
   end
 
-  defp materialize(ctx, start_date) do
+  defp materialize(ctx, start_date, name \\ "Generated launch") do
     ProjectTemplateMaterialization.run(%ProjectTemplateMaterialization{
       template_id: ctx.template.id,
       start_date: start_date,
       project: %ProjectCreation{
         company_id: ctx.company.id,
         group_id: ctx.space.id,
-        name: "Generated launch",
+        name: name,
         champion_id: ctx.champion.id,
         reviewer_id: ctx.reviewer.id,
         creator_id: ctx.creator.id,
