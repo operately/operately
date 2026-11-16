@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 
+import { SecondaryButton } from "../Button";
 import { GlobalSearch } from "../GlobalSearch";
 import {
   IconBell,
@@ -56,14 +57,14 @@ function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Pr
   const displayName = truncateCompanyName(companyName);
 
   return (
-    <div className="transition-all z-50 py-2 bg-base border-b border-surface-outline">
-      <div className="flex items-center justify-between px-4">
-        <div className="flex items-center gap-3">
-          <DivLink className="flex items-center gap-2 cursor-pointer" to={links.home}>
+    <div className="relative transition-all z-50 py-2 bg-base border-b border-surface-outline">
+      <div className="flex items-center justify-between gap-3 px-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <DivLink className="flex items-center gap-2 cursor-pointer shrink-0" to={links.home}>
             <OperatelyLogo />
           </DivLink>
           <DivLink
-            className="font-bold cursor-pointer"
+            className="font-bold cursor-pointer truncate"
             to={links.home}
             title={displayName === companyName ? undefined : companyName}
           >
@@ -71,14 +72,22 @@ function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Pr
           </DivLink>
         </div>
 
-        <div className="">
-          <IconMenu2 size={24} onClick={() => setOpen(!open)} />
-        </div>
+        <SecondaryButton
+          className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1"
+          size="base"
+          icon={IconMenu2}
+          iconSize={24}
+          ariaLabel={t("Navigation menu")}
+          aria-expanded={open}
+          onClick={() => setOpen((isOpen) => !isOpen)}
+        >
+          {null}
+        </SecondaryButton>
       </div>
 
       {open && (
         <div
-          className="flex flex-col bg-base absolute inset-0 top-10 bg-surface-bg border-t border-surface-outline"
+          className="flex flex-col bg-base absolute inset-x-0 top-full h-[calc(100dvh-100%)] overflow-y-auto bg-surface-bg border-t border-surface-outline"
           onClick={() => setOpen(false)}
         >
           <MobileSectionLink to={links.home} icon={IconHome2}>
