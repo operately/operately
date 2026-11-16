@@ -2,6 +2,12 @@
   word-break: break-word;
 }
 
+/* Separate prose paragraphs without changing list or table-cell spacing. */
+.ProseMirror > p + p,
+.ProseMirror blockquote > p + p {
+  margin-top: 0.75em;
+}
+
 .ProseMirror.dragover {
   position: relative;
 }
