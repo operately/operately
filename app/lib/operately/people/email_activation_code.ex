@@ -48,6 +48,7 @@ defmodule Operately.People.EmailActivationCode do
     |> validate_required([:email, :code, :expires_at, :analytics_context])
     |> validate_length(:code, min: 6, max: 6)
     |> validate_format(:email, ~r/@/)
+    |> validate_length(:email, max: 255, count: :codepoints)
     |> unique_constraint(:code, name: :unique_email_activation_code)
   end
 
@@ -65,9 +66,13 @@ defmodule Operately.People.EmailActivationCode do
         analytics_context: analytics_context
       })
 
-      case Repo.insert(cs) do
-        {:ok, record} -> {:ok, record}
-        {:error, _} -> create_unique_code(email, analytics_context, attempts_left: n - 1)
+      if cs.valid? do
+        case Repo.insert(cs) do
+          {:ok, record} -> {:ok, record}
+          {:error, _} -> create_unique_code(email, analytics_context, attempts_left: n - 1)
+        end
+      else
+        {:error, cs}
       end
     end
   end
