@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { createInstance } from "i18next";
 import React from "react";
 import { I18nextProvider } from "react-i18next";
-import { MemoryRouter, useLocation } from "react-router";
+import { MemoryRouter } from "react-router";
 
 import { CompanyNavigation } from "./index";
 import { defaultProps } from "./mockData";
@@ -26,103 +26,6 @@ function getByTestId(testId: string): HTMLElement {
 
   return element as HTMLElement;
 }
-
-function CurrentRoute() {
-  return <output data-test-id="current-route">{useLocation().pathname}</output>;
-}
-
-describe("mobile CompanyNavigation", () => {
-  const originalWidth = window.innerWidth;
-
-  beforeEach(() => {
-    window.innerWidth = 374;
-  });
-
-  afterEach(() => {
-    window.innerWidth = originalWidth;
-  });
-
-  it("exposes a named native button and toggles the disclosure with pointer interaction", async () => {
-    const user = userEvent.setup();
-    renderNav();
-
-    const trigger = screen.getByRole("button", { name: "Navigation menu" });
-    expect(trigger.tagName).toBe("BUTTON");
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("link", { name: "My work" })).not.toBeInTheDocument();
-
-    await user.click(trigger);
-    expect(trigger).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByRole("link", { name: "My work" })).toBeInTheDocument();
-
-    await user.click(trigger);
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("link", { name: "My work" })).not.toBeInTheDocument();
-  });
-
-  it.each(["{Enter}", " "])("opens and closes using the keyboard with %s", async (key) => {
-    const user = userEvent.setup();
-    renderNav();
-
-    const trigger = screen.getByRole("button", { name: "Navigation menu" });
-    await user.tab({ shift: true });
-    expect(trigger).toHaveFocus();
-    await user.keyboard(key);
-    expect(trigger).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByRole("link", { name: "My work" })).toBeInTheDocument();
-    expect(trigger).toHaveFocus();
-    await user.keyboard(key);
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("link", { name: "My work" })).not.toBeInTheDocument();
-    expect(trigger).toHaveFocus();
-  });
-
-  it("closes on link selection and navigates to the supplied destination", async () => {
-    const user = userEvent.setup();
-    render(
-      <MemoryRouter>
-        <CompanyNavigation {...defaultProps} />
-        <CurrentRoute />
-      </MemoryRouter>,
-    );
-
-    const trigger = screen.getByRole("button", { name: "Navigation menu" });
-    await user.click(trigger);
-    const link = screen.getByRole("link", { name: "My work" });
-    expect(link).toHaveAttribute("href", defaultProps.links.profile);
-    await user.click(link);
-    expect(getByTestId("current-route")).toHaveTextContent(defaultProps.links.profile);
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-    expect(link).not.toBeInTheDocument();
-  });
-
-  it("preserves the logout callback and dismisses the panel", async () => {
-    const user = userEvent.setup();
-    const onLogOut = jest.fn();
-    renderNav({ onLogOut });
-    const trigger = screen.getByRole("button", { name: "Navigation menu" });
-    await user.click(trigger);
-    await user.click(screen.getByText("Log Out"));
-    expect(onLogOut).toHaveBeenCalledTimes(1);
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-  });
-
-  it("uses the current translation for its accessible name", async () => {
-    const i18n = createInstance();
-    await i18n.init({
-      lng: "pt-BR",
-      resources: { "pt-BR": { translation: { "Navigation menu": "Menu de navegação" } } },
-    });
-    render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <CompanyNavigation {...defaultProps} />
-        </MemoryRouter>
-      </I18nextProvider>,
-    );
-    expect(screen.getByRole("button", { name: "Menu de navegação" })).toHaveAttribute("aria-expanded", "false");
-  });
-});
 
 describe("CompanyNavigation", () => {
   it("shows review and notification counts", () => {

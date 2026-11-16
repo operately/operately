@@ -2,7 +2,7 @@ import * as React from "react";
 import { autoUpdate } from "@floating-ui/dom";
 import { useTranslation } from "react-i18next";
 
-import { SecondaryButton } from "../Button";
+import { UnstyledButton } from "../Button/UnstalyedButton";
 import { GlobalSearch } from "../GlobalSearch";
 import {
   IconBell,
@@ -85,17 +85,14 @@ function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Pr
           </DivLink>
         </div>
 
-        <SecondaryButton
-          className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1"
-          size="base"
-          icon={IconMenu2}
-          iconSize={24}
+        <UnstyledButton
+          className="shrink-0 p-2 -m-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1"
           ariaLabel={t("Navigation menu")}
           aria-expanded={open}
           onClick={() => setOpen((isOpen) => !isOpen)}
         >
-          {null}
-        </SecondaryButton>
+          <IconMenu2 size={24} />
+        </UnstyledButton>
       </div>
 
       {open && (

@@ -56,18 +56,6 @@ export const LongCompanyName: Story = {
   },
 };
 
-/** Resize the browser to 374px to exercise the mobile disclosure and padding hit area. */
-export const Mobile: Story = {
-  args: defaultProps,
-};
-
-export const MobileLongCompanyName: Story = {
-  args: {
-    ...defaultProps,
-    companyName: longCompanyName,
-  },
-};
-
 export const MobileWithBanner: Story = {
   args: defaultProps,
   render: (args) => (

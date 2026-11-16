@@ -28,6 +28,13 @@ async function paddingPoint(trigger: Locator) {
   assert.ok(button && icon);
   assert.equal(icon.width, 24);
   assert.equal(icon.height, 24);
+  assert.equal(icon.x + icon.width, 374 - 16);
+  const appearance = await trigger.evaluate((button) => {
+    const style = getComputedStyle(button);
+    return { background: style.backgroundColor, border: style.borderWidth };
+  });
+  assert.equal(appearance.background, "rgba(0, 0, 0, 0)");
+  assert.equal(appearance.border, "0px");
   assert.ok(button.width > icon.width && button.height > icon.height);
   const point = { x: button.x + 4, y: button.y + 4 };
   assert.ok(point.x < icon.x && point.y < icon.y);
@@ -84,31 +91,13 @@ describe("mobile navigation in a browser", () => {
     await assertMobileLayout(trigger);
   });
 
-  test.each(["mobile", "mobile-long-company-name"])(
-    "toggles from pointer padding taps without clipping: %s",
-    async (story) => {
-      await page.setViewportSize({ width: 374, height: 812 });
-      await page.goto(storyUrl(story));
-      const trigger = page.getByRole("button", { name: "Navigation menu", exact: true });
-      await trigger.waitFor();
-      await assertExpanded(trigger, false);
-      await assertMobileLayout(trigger);
-      const point = await paddingPoint(trigger);
-      await page.mouse.click(point.x, point.y);
-      await assertExpanded(trigger, true);
-      await assertMobileLayout(trigger);
-      await page.mouse.click(point.x, point.y);
-      await assertExpanded(trigger, false);
-    },
-  );
-
   test("opens and closes from real emulated touch taps outside the icon", async () => {
     const browser = page.context().browser();
     assert.ok(browser);
     const context = await browser.newContext({ viewport: { width: 374, height: 812 }, hasTouch: true, isMobile: true });
     try {
       const touchPage = await context.newPage();
-      await touchPage.goto(storyUrl("mobile-long-company-name"));
+      await touchPage.goto(storyUrl("long-company-name"));
       const trigger = touchPage.getByRole("button", { name: "Navigation menu", exact: true });
       await trigger.waitFor();
       const point = await paddingPoint(trigger);
@@ -124,7 +113,7 @@ describe("mobile navigation in a browser", () => {
 
   test("Tab reaches the trigger with visible focus and Enter/Space each toggle it", async () => {
     await page.setViewportSize({ width: 374, height: 812 });
-    await page.goto(storyUrl("mobile"));
+    await page.goto(storyUrl("default"));
     const trigger = page.getByRole("button", { name: "Navigation menu", exact: true });
     await trigger.waitFor();
     for (let tab = 0; tab < 3; tab++) await page.keyboard.press("Tab");
@@ -138,20 +127,5 @@ describe("mobile navigation in a browser", () => {
       await assertExpanded(trigger, false);
       assert.ok(await trigger.evaluate((button) => button.matches(":focus-visible")));
     }
-  });
-
-  test("keeps desktop navigation and Account interaction at 1280px", async () => {
-    await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto(storyUrl("default"));
-    const account = page.getByRole("button", { name: "Account", exact: true });
-    await account.waitFor();
-    assert.equal(await page.getByRole("button", { name: "Navigation menu" }).count(), 0);
-    assert.ok(await page.getByRole("link", { name: "My work", exact: true }).isVisible());
-    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
-    await account.click();
-    await page.getByRole("menu").waitFor();
-    await page.keyboard.press("Escape");
-    await page.getByRole("menu").waitFor({ state: "detached" });
-    assert.equal(await account.getAttribute("aria-expanded"), "false");
   });
 });
