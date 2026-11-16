@@ -28,12 +28,14 @@ export function User({
   return (
     <Menu
       customTrigger={
-        <div
-          className="flex items-center cursor-pointer border border-stroke-base rounded-full"
+        <button
+          type="button"
+          aria-label={t("Account")}
+          className="flex items-center cursor-pointer border border-stroke-base rounded-full p-0 bg-transparent"
           style={{ height: "32px", width: "32px" }}
         >
           <Avatar person={me} size={30} />
-        </div>
+        </button>
       }
       testId="account-menu"
       showArrow
