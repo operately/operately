@@ -8,6 +8,25 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocumentTest do
   alias OperatelyWeb.Mcp.ToolConnHelper
   alias OperatelyWeb.Paths
 
+  test "creates, reads, edits, and publishes a draft" do
+    alias OperatelyWeb.Mcp.Tools.DocsAndFiles.{GetDocument, UpdateDocument, PublishDocument}
+    ctx = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.fetch_default_resource_hub(:hub, :space)
+    conn = ToolConnHelper.conn(ctx)
+    args = %{"space_id" => Paths.space_id(ctx.space), "name" => "Draft", "content" => "Draft body", "post_as_draft" => true}
+
+    assert {:ok, %{document: document}} = CreateDocument.call(conn, args)
+    assert {:ok, %{document: draft}} = GetDocument.call(conn, %{"document_id" => document.id})
+
+    assert draft.state == "draft"
+
+    assert {:ok, _} = UpdateDocument.call(conn, %{"document_id" => document.id, "name" => "Edited", "content" => "Edited body"})
+    assert Repo.get!(Document, ToolConnHelper.decode_id!(document.id)).state == :draft
+
+    assert {:ok, _} = PublishDocument.call(conn, %{"document_id" => document.id})
+    assert Repo.get!(Document, ToolConnHelper.decode_id!(document.id)).state == :published
+    assert {:error, :invalid_arguments} = CreateDocument.call(conn, Map.put(args, "post_as_draft", "yes"))
+  end
+
   test "call/2 creates a document in a space hub with safe notification defaults" do
     ctx =
       %{}
