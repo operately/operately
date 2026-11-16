@@ -49,11 +49,41 @@ async function assertMobileLayout(trigger: Locator) {
         return { top: bounds.top, bottom: bounds.bottom };
       });
     assert.ok(panel.top >= button.y + button.height);
-    assert.ok(panel.bottom >= (trigger.page().viewportSize()?.height ?? 0));
+    assert.ok(Math.abs(panel.bottom - (trigger.page().viewportSize()?.height ?? 0)) <= 1);
   }
 }
 
 describe("mobile navigation in a browser", () => {
+  test("fits below an announcement banner and updates when the banner or viewport resizes", async () => {
+    await page.setViewportSize({ width: 374, height: 812 });
+    await page.goto(storyUrl("mobile-with-banner"));
+    const trigger = page.getByRole("button", { name: "Navigation menu", exact: true });
+    await trigger.click();
+    await assertExpanded(trigger, true);
+    await assertMobileLayout(trigger);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight));
+
+    await page.setViewportSize({ width: 374, height: 360 });
+    await assertMobileLayout(trigger);
+    const panel = page.getByRole("link", { name: "My work", exact: true }).locator("..");
+    assert.ok(await panel.evaluate((element) => element.scrollHeight > element.clientHeight));
+    await panel.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    const lastItem = await panel.locator("div").last().boundingBox();
+    assert.ok(lastItem && lastItem.y + lastItem.height <= 360);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight));
+
+    await page.locator('[data-test-id="announcement-banner"]').evaluate((banner) => {
+      banner.style.height = "40px";
+    });
+    await page.waitForFunction(
+      (panel) => panel && Math.abs(panel.getBoundingClientRect().bottom - window.innerHeight) <= 1,
+      await panel.elementHandle(),
+    );
+    await assertMobileLayout(trigger);
+  });
+
   test.each(["mobile", "mobile-long-company-name"])(
     "toggles from pointer padding taps without clipping: %s",
     async (story) => {
