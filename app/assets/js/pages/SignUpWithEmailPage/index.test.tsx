@@ -10,7 +10,6 @@ import PageModule from "./index";
 
 jest.mock("@/layouts/header", () => ({ useDocumentTitle: jest.fn() }));
 jest.mock("@/routes/auth", () => ({ logIn: jest.fn() }));
-jest.mock("@tabler/icons-react", () => new Proxy({}, { get: () => () => null }));
 
 const details = {
   email: "alex@example.com",
