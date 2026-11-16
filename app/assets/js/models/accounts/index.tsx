@@ -1,4 +1,5 @@
 export { useRequestEmailChange, useConfirmEmailChange, useCancelEmailChange } from "./emailChangeLifecycle";
+export { useCreateEmailActivationCode, useCreateAccount } from "./signupLifecycle";
 
 export type {
   ApiToken,
