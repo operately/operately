@@ -56,6 +56,31 @@ export const LongCompanyName: Story = {
   },
 };
 
+/** Resize the browser to 374px to exercise the mobile disclosure and padding hit area. */
+export const Mobile: Story = {
+  args: defaultProps,
+};
+
+export const MobileLongCompanyName: Story = {
+  args: {
+    ...defaultProps,
+    companyName: longCompanyName,
+  },
+};
+
+export const MobileWithBanner: Story = {
+  args: defaultProps,
+  render: (args) => (
+    <div className="flex flex-col h-screen">
+      <div data-test-id="announcement-banner" className="shrink-0 bg-surface-accent" style={{ height: 104 }} />
+      <CompanyNavigation {...args} />
+      <div className="relative flex-1 min-h-0 overflow-y-auto">
+        <HomePage {...homePageProps} />
+      </div>
+    </div>
+  ),
+};
+
 /**
  * Prototype of the "instance is outdated" badge. Shown when
  * `showCurrentVersion` is set.
