@@ -77,8 +77,18 @@ defmodule Operately.ResourceHubs.ResourceHub do
     Map.put(resource_hub, :potential_subscribers, subscribers)
   end
 
+  def load_comments_count([]), do: []
+
   def load_comments_count(resource_hubs) when is_list(resource_hubs) do
-    Enum.map(resource_hubs, &load_comments_count/1)
+    nodes_by_id =
+      resource_hubs
+      |> Enum.flat_map(& &1.nodes)
+      |> Operately.ResourceHubs.Node.load_comments_count()
+      |> Map.new(&{&1.id, &1})
+
+    Enum.map(resource_hubs, fn hub ->
+      %{hub | nodes: Enum.map(hub.nodes, &Map.fetch!(nodes_by_id, &1.id))}
+    end)
   end
 
   def load_comments_count(resource_hub = %__MODULE__{}) do
