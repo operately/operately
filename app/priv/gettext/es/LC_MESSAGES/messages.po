@@ -7247,7 +7247,7 @@ msgid "Can’t find your code? Check your spam folder or request another."
 msgstr "¿No encuentras tu código? Revisa la carpeta de correo no deseado o solicita otro."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:235
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:244
 msgid "Can’t find your code? Check your spam folder."
 msgstr "¿No encuentras tu código? Revisa la carpeta de correo no deseado."
 
@@ -8531,8 +8531,9 @@ msgid "Continue"
 msgstr "Continuar"
 
 #.frontend
+#: ../turboui/src/Forms/VerificationCodeInput.stories.tsx:15
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:178
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:232
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:241
 msgid "Continue ->"
 msgstr "Continuar ->"
 
@@ -10634,6 +10635,11 @@ msgid "Enter an email address with no more than 255 characters."
 msgstr "Introduce una dirección de correo electrónico de no más de 255 caracteres."
 
 #.frontend
+#: ../turboui/src/Forms/VerificationCodeInput.tsx:28
+msgid "Enter exactly six characters using uppercase letters (A–Z) or digits (0–9)."
+msgstr "Introduce exactamente seis caracteres usando letras mayúsculas (A–Z) o dígitos (0–9)."
+
+#.frontend
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:86
 #: ../turboui/src/TemplateProjectPage/MilestoneFormModal.tsx:56
 msgid "Enter milestone name"
@@ -11784,6 +11790,7 @@ msgid "Forgot Password?"
 msgstr "¿Olvidaste tu contraseña?"
 
 #.frontend
+#: ../turboui/src/Forms/Inputs.stories.tsx:73
 #: assets/js/pages/LoginPage/index.tsx:149
 msgid "Forgot password?"
 msgstr "¿Olvidaste tu contraseña?"
@@ -15706,8 +15713,10 @@ msgid "Parent goal"
 msgstr "Objetivo superior"
 
 #.frontend
+#: ../turboui/src/Forms/Inputs.stories.tsx:67
+#: ../turboui/src/Forms/Inputs.stories.tsx:76
+#: assets/js/pages/LoginPage/index.tsx:132
 #: assets/js/pages/LoginPage/index.tsx:134
-#: assets/js/pages/LoginPage/index.tsx:138
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:152
@@ -23089,7 +23098,7 @@ msgid "We've emailed %{name} a link to finish setting up their account. You can 
 msgstr "Hemos enviado a %{name} un enlace por correo electrónico para terminar de configurar su cuenta. También puedes compartirlo abajo."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:249
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:258
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
 msgstr "Te enviamos un código de 6 caracteres a <email>%{email}</email>. Caduca en 5 minutos, así que introdúcelo pronto."
 

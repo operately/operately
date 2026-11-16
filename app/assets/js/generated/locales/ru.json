@@ -1484,6 +1484,7 @@
   "Enter a valid email address.": "Введите действительный адрес электронной почты.",
   "Enter a value": "Введите значение",
   "Enter an email address with no more than 255 characters.": "Введите адрес электронной почты длиной не более 255 символов.",
+  "Enter exactly six characters using uppercase letters (A–Z) or digits (0–9).": "Введите ровно шесть символов, используя заглавные латинские буквы (A–Z) или цифры (0–9).",
   "Enter milestone name": "Введите название вехи",
   "Enter milestone title": "Введите название вехи",
   "Enter password": "Введите пароль",
