@@ -82,6 +82,22 @@ defmodule Operately.Groups.Group do
     %{group | is_member: is_member}
   end
 
+  def preload_access_levels(groups) when is_list(groups) do
+    groups = Repo.preload(groups, :access_context)
+
+    identifiers =
+      Enum.map(groups, fn group ->
+        if is_nil(group.access_context), do: raise(Ecto.NoResultsError, queryable: Operately.Access.Context)
+        %{context_id: group.access_context.id, company_id: group.company_id, space_id: group.id}
+      end)
+
+    access_levels = Operately.Access.AccessLevels.load_many(identifiers)
+
+    Enum.map(groups, fn group ->
+      %{group | access_levels: Map.fetch!(access_levels, group.access_context.id)}
+    end)
+  end
+
   def preload_access_levels(group) do
     context = Operately.Access.get_context!(group_id: group.id)
     access_levels = Operately.Access.AccessLevels.load(context.id, group.company_id, group.id)
