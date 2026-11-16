@@ -52,7 +52,7 @@ export const PersistentWithAction = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("button", { name: "Close notification" })).toBeVisible();
-    await expect(canvas.getByRole("button", { name: "Try again" })).toBeVisible();
+    await expect(await canvas.findByRole("button", { name: "Close notification" })).toBeVisible();
+    await expect(await canvas.findByRole("button", { name: "Try again" })).toBeVisible();
   },
 };
