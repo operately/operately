@@ -56,6 +56,18 @@ export const LongCompanyName: Story = {
   },
 };
 
+/** Resize the browser to 374px to exercise the mobile disclosure and padding hit area. */
+export const Mobile: Story = {
+  args: defaultProps,
+};
+
+export const MobileLongCompanyName: Story = {
+  args: {
+    ...defaultProps,
+    companyName: longCompanyName,
+  },
+};
+
 /**
  * Prototype of the "instance is outdated" badge. Shown when
  * `showCurrentVersion` is set.

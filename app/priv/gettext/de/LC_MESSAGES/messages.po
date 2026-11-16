@@ -5277,7 +5277,7 @@ msgstr "Zugriffsmodus für neues Token"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/User.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:109
+#: ../turboui/src/CompanyNavigation/index.tsx:118
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:311
 msgid "Account"
 msgstr "Konto"
@@ -8121,7 +8121,7 @@ msgstr "Unternehmen"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:50
-#: ../turboui/src/CompanyNavigation/index.tsx:113
+#: ../turboui/src/CompanyNavigation/index.tsx:122
 msgid "Company Admin"
 msgstr "Unternehmensverwaltung"
 
@@ -11785,6 +11785,7 @@ msgid "Forgot Password?"
 msgstr "Passwort vergessen?"
 
 #.frontend
+#: ../turboui/src/Forms/Inputs.stories.tsx:73
 #: assets/js/pages/LoginPage/index.tsx:149
 msgid "Forgot password?"
 msgstr "Passwort vergessen?"
@@ -12228,8 +12229,8 @@ msgstr "Mit diesem Link stimmt etwas nicht. Prüfe ihn oder bitte die Person, vo
 #: ../turboui/src/AccountSecurityPage/index.tsx:21
 #: ../turboui/src/AccountSettingsPage/index.tsx:45
 #: ../turboui/src/CompanyAdminPage/index.tsx:53
-#: ../turboui/src/CompanyNavigation/index.tsx:85
-#: ../turboui/src/CompanyNavigation/index.tsx:185
+#: ../turboui/src/CompanyNavigation/index.tsx:94
+#: ../turboui/src/CompanyNavigation/index.tsx:194
 #: ../turboui/src/HomePage/index.tsx:20
 #: ../turboui/src/ProfileEditPage/index.tsx:81
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
@@ -13411,7 +13412,7 @@ msgid "Lobby"
 msgstr "Unternehmensauswahl"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:121
+#: ../turboui/src/CompanyNavigation/index.tsx:130
 msgid "Log Out"
 msgstr "Abmelden"
 
@@ -14060,8 +14061,8 @@ msgid "My upcoming work"
 msgstr "Meine anstehende Arbeit"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:93
-#: ../turboui/src/CompanyNavigation/index.tsx:193
+#: ../turboui/src/CompanyNavigation/index.tsx:102
+#: ../turboui/src/CompanyNavigation/index.tsx:202
 msgid "My work"
 msgstr "Meine Arbeit"
 
@@ -14149,6 +14150,11 @@ msgstr "Name:"
 #: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:57
 msgid "Navbar update badge"
 msgstr "Hinweis auf neue Version in der Navigationsleiste"
+
+#.frontend
+#: ../turboui/src/CompanyNavigation/index.tsx:80
+msgid "Navigation menu"
+msgstr "Navigationsmenü"
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:71
@@ -15131,7 +15137,7 @@ msgstr "Benachrichtigungseinstellungen"
 #: ../turboui/src/AccountPage/index.tsx:61
 #: ../turboui/src/CompanyNavigation/Bell.tsx:26
 #: ../turboui/src/CompanyNavigation/User.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:105
+#: ../turboui/src/CompanyNavigation/index.tsx:114
 #: ../turboui/src/SidebarSection/index.tsx:34
 #: assets/js/pages/NotificationsPage/index.tsx:38
 #: assets/js/pages/NotificationsPage/index.tsx:41
@@ -15707,8 +15713,10 @@ msgid "Parent goal"
 msgstr "Übergeordnetes Ziel"
 
 #.frontend
+#: ../turboui/src/Forms/Inputs.stories.tsx:67
+#: ../turboui/src/Forms/Inputs.stories.tsx:76
+#: assets/js/pages/LoginPage/index.tsx:132
 #: assets/js/pages/LoginPage/index.tsx:134
-#: assets/js/pages/LoginPage/index.tsx:138
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:152
@@ -17792,7 +17800,7 @@ msgstr "Das tatsächliche Startdatum wurde auf seinen vorherigen Wert zurückges
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/Review.tsx:18
-#: ../turboui/src/CompanyNavigation/index.tsx:97
+#: ../turboui/src/CompanyNavigation/index.tsx:106
 #: ../turboui/src/ReviewPage/index.tsx:83
 #: ../turboui/src/ReviewPage/index.tsx:132
 msgid "Review"
@@ -19760,7 +19768,7 @@ msgstr "Gesperrte Konten können nicht in externe Personen umgewandelt werden"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:117
+#: ../turboui/src/CompanyNavigation/index.tsx:126
 msgid "Switch Company"
 msgstr "Unternehmen wechseln"
 
@@ -26085,15 +26093,15 @@ msgid "Title"
 msgstr "Titel"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:89
-#: ../turboui/src/CompanyNavigation/index.tsx:189
+#: ../turboui/src/CompanyNavigation/index.tsx:98
+#: ../turboui/src/CompanyNavigation/index.tsx:198
 msgctxt "navigation"
 msgid "Company"
 msgstr "Unternehmen"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:101
+#: ../turboui/src/CompanyNavigation/index.tsx:110
 #: assets/js/pages/PeoplePage/page.tsx:14
 msgctxt "navigation"
 msgid "People"
