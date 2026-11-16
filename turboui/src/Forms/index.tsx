@@ -18,6 +18,8 @@ export { SelectStatus, StatusDisplay } from "./SelectStatus";
 export { Submit } from "./Submit";
 export { SubmitButton } from "./SubmitButton";
 export { TextInput } from "./TextInput";
+export { VerificationCodeInput } from "./VerificationCodeInput";
+export type { VerificationCodeInputProps } from "./VerificationCodeInput";
 export { DateInput } from "./DateInput";
 export { useFieldError, useFieldValue, useFormContext } from "./context";
 export { useForm } from "./useForm";
