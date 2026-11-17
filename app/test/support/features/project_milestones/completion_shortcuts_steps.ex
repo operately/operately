@@ -35,14 +35,14 @@ defmodule Operately.Support.Features.ProjectMilestones.CompletionShortcutsSteps 
       |> UI.hover(css: "div[data-test-id^=milestone-]")
       |> UI.click(testid: "complete-milestone")
     end)
-    |> UI.refute_has(testid: "complete-milestone")
+    |> UI.assert_has(testid: "completed-milestones-toggle")
     |> UI.refute_has(testid: "complete-milestone-modal")
   end
 
   step :assert_completed_in_tasks, ctx do
     ctx
     |> UI.click(testid: "completed-milestones-toggle")
-    |> UI.assert_has(css: "[data-test-id^=completed-milestone-]")
+    |> UI.assert_has(testid: "completed-milestone-#{Paths.milestone_id(ctx.milestone)}")
   end
 
   step :choose_closed_status, ctx do
@@ -53,7 +53,7 @@ defmodule Operately.Support.Features.ProjectMilestones.CompletionShortcutsSteps 
     ctx
     |> UI.click(css: "[data-test-id=complete-milestone-form] button[type=submit]")
     |> UI.refute_has(testid: "complete-milestone-modal")
-    |> UI.refute_has(testid: "complete-milestone")
+    |> UI.assert_has(testid: "completed-milestones-toggle")
     |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
   end
 

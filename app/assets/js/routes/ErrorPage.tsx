@@ -1,7 +1,6 @@
 import NotFoundPage from "@/pages/NotFoundPage";
 import * as React from "react";
 
-import { captureException } from "@sentry/react";
 import axios from "axios";
 import { useRouteError } from "react-router";
 import { ErrorPage as ErrorPageUI } from "turboui";
@@ -23,15 +22,6 @@ function ServerErrorPage({ status }: { status: 500 | 503 }) {
   const error = useRouteError() as Error | null;
   const paths = useOptionalPaths();
   const env = window.appConfig.environment;
-
-  React.useEffect(() => {
-    if (!error) return;
-
-    console.error(error);
-    if (!axios.isAxiosError(error)) {
-      captureException(error, { level: "fatal" });
-    }
-  }, [error]);
 
   return (
     <ErrorPageUI

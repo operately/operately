@@ -85,6 +85,8 @@ export interface KanbanBoardProps {
   onTaskArchiveChange?: TaskBoardProps["onTaskArchiveChange"];
   milestone?: TaskBoard.Milestone;
   tasks: TaskBoard.Task[];
+  /** All tasks in the project or space, before filtering. */
+  statusUsageTasks?: TaskBoard.Task[];
   statuses: StatusSelector.StatusOption[];
   kanbanState: KanbanState;
   canEdit: boolean;
@@ -118,6 +120,8 @@ export interface KanbanBoardProps {
   richTextHandlers?: RichTextHandlers;
   getTaskPageProps: GetTaskPageProps;
   unstyled?: boolean;
+  /** Fill a height-constrained parent instead of using viewport-based board sizing. */
+  fillHeight?: boolean;
   /** Place board actions in a page header instead of the default toolbar. */
   renderHeader?: (actions: ReactNode) => ReactNode;
   toolbarLeading?: ReactNode;

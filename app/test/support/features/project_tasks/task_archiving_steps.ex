@@ -2,7 +2,7 @@ defmodule Operately.Support.Features.ProjectTasks.TaskArchivingSteps do
   use Operately.FeatureCase
 
   step :close_task, ctx do
-    status = Enum.find(ctx.project.task_statuses, &(&1.value == "done"))
+    status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.value == "done"))
     {:ok, task} = Operately.Tasks.update_task(ctx.task, Operately.Tasks.Task.status_change_attrs(ctx.task, status))
     Map.put(ctx, :task, task)
   end

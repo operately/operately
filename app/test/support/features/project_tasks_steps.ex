@@ -99,7 +99,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     project = Operately.Repo.get!(Operately.Projects.Project, ctx.project.id)
 
     filtered_statuses =
-      project.task_statuses
+      Operately.Projects.Project.task_statuses(project)
       |> Enum.reject(fn status -> status.color == :green end)
       |> Enum.map(fn status ->
         %{
@@ -409,7 +409,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.select(testid: "move-task-destination-type", option: "Space")
     |> UI.click(testid: "move-task-space-field")
     |> UI.click(testid: destination_space_result)
-    |> UI.click(testid: "confirm-move-task")
+    |> UI.click(css: "[data-test-id='confirm-move-task']:not([disabled])")
     |> UI.sleep(400)
   end
 
@@ -646,6 +646,15 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   step :assert_redirected_to_destination_space_kanban, ctx do
     task_path = Paths.space_kanban_path(ctx.company, ctx.destination_space)
     UI.assert_page(ctx, task_path)
+  end
+
+  step :assert_redirected_to_destination_space_task, ctx do
+    task_path =
+      Paths.space_kanban_path(ctx.company, ctx.destination_space) <> "?taskId=#{Paths.task_id(ctx.task)}"
+
+    ctx
+    |> UI.assert_location(task_path)
+    |> UI.assert_has(testid: "task-slide-in")
   end
 
   step :assert_redirected_to_destination_project_task, ctx do

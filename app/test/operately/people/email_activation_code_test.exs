@@ -1,11 +1,57 @@
 defmodule Operately.People.EmailActivationCodeTest do
   use Operately.DataCase
 
+  import Swoosh.TestAssertions
+  alias Operately.People.EmailActivationCode
+
   describe "creation" do
-    test "it creates a 6 digit code" do
-      {:ok, code} = Operately.People.EmailActivationCode.create("hello@text.localhost")
+    test "creates a six-character code with the supplied analytics context" do
+      analytics_context = %{channel: "web", preference: "granted"}
+      {:ok, code} = EmailActivationCode.create("hello@text.localhost", analytics_context)
 
       assert String.length(code.code) == 6
+      assert Repo.get!(EmailActivationCode, code.id).analytics_context == %{"channel" => "web", "preference" => "granted"}
+    end
+
+    test "accepts an email at the 255-code-point storage limit" do
+      email = String.duplicate("a", 243) <> "@example.com"
+
+      assert {:ok, code} = EmailActivationCode.create(email)
+      assert code.email == email
+      assert Repo.get!(EmailActivationCode, code.id).email == email
+      assert_email_sent(to: email)
+    end
+
+    test "rejects an email one code point beyond the storage limit" do
+      email = String.duplicate("a", 244) <> "@example.com"
+
+      assert {:error, %Ecto.Changeset{} = changeset} = EmailActivationCode.create(email)
+      assert {_, options} = changeset.errors[:email]
+      assert options[:validation] == :length
+      assert options[:count] == 255
+      assert Repo.aggregate(EmailActivationCode, :count) == 0
+      assert_no_email_sent()
+    end
+
+    test "counts Unicode code points rather than graphemes" do
+      email = String.duplicate("a\u0301", 122) <> "@example.com"
+      assert String.length(email) < 255
+      assert length(String.codepoints(email)) == 256
+
+      assert {:error, %Ecto.Changeset{} = changeset} = EmailActivationCode.create(email)
+      assert {_, options} = changeset.errors[:email]
+      assert options[:validation] == :length
+      assert Repo.aggregate(EmailActivationCode, :count) == 0
+      assert_no_email_sent()
+    end
+
+    for {label, email} <- [{"null", nil}, {"blank", "   "}, {"malformed", "invalid"}] do
+      test "returns an invalid changeset for #{label} email" do
+        assert {:error, %Ecto.Changeset{valid?: false} = changeset} = EmailActivationCode.create(unquote(email))
+        assert changeset.errors[:email]
+        assert Repo.aggregate(EmailActivationCode, :count) == 0
+        assert_no_email_sent()
+      end
     end
 
     test "it returns an error when email delivery is not configured" do

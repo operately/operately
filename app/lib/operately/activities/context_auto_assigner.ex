@@ -38,6 +38,11 @@ defmodule Operately.Activities.ContextAutoAssigner do
   ]
 
   @space_actions [
+    "task_board_created",
+    "task_board_renamed",
+    "task_board_default_changed",
+    "task_board_archived",
+    "task_board_restored",
     "space_joining",
     "space_permissions_edited",
     "space_added",
@@ -131,6 +136,8 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "resource_hub_folder_created",
     "resource_hub_folder_copied",
     "resource_hub_folder_renamed",
+    "resource_hub_deleted",
+    "resource_hub_renamed",
     "resource_hub_folder_deleted",
     "resource_hub_parent_folder_edited",
     "resource_hub_link_created",

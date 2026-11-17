@@ -161,7 +161,8 @@ Health, completion, and deadlines are separate dimensions. Use the source meanin
 
 | English | Meaning/context | Français | Capitalization and usage |
 | --- | --- | --- | --- |
-| Docs & Files / Documents & Files | Named content tool | Documents et fichiers | Same name for both variants. Never expose the internal Resource Hub name. |
+| Docs & Files / Documents & Files | Named content tool | Documents et fichiers | Same name for both variants. |
+| Resource Hub / Resource Hubs | Named container of documents, files, links, and folders | Espace de ressources / Espaces de ressources | User-facing product term. Use for hub management; preserve user-authored hub names. |
 | document / doc | Rich-text document | Document | Distinct from an uploaded **fichier**, **dossier**, **lien**, or comment **pièce jointe**. |
 | resource / item | Generic content entry | Ressource / Élément | Prefer the specific type when known; ressource here is not necessarily staff or capacity. |
 | key resource / support material | Supporting project/goal content | Ressource clé / Document de référence | For support material that can also be a link, use **Ressource de référence**. |

@@ -18,7 +18,7 @@ const TaskDeleting: ActivityHandler = {
       return paths.projectPath(project.id, { tab: "tasks" });
     }
 
-    return paths.spaceKanbanPath(space.id);
+    return paths.spacePath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {

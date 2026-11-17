@@ -6,6 +6,9 @@ defmodule Operately.Data.Change071ConvertTaskDueDatesToContextualDatesTest do
   alias Operately.Data.Change071ConvertTaskDueDatesToContextualDates
 
   setup ctx do
+    # This migration predates required task boards.
+    Repo.query!("ALTER TABLE tasks ALTER COLUMN board_id DROP NOT NULL")
+
     ctx
     |> Factory.setup()
   end

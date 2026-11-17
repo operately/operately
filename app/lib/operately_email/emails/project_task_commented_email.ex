@@ -3,17 +3,23 @@ defmodule OperatelyEmail.Emails.ProjectTaskCommentedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias OperatelyWeb.Paths
-  alias Operately.{Repo, Updates}
+  alias Operately.Repo
   alias Operately.Tasks.Task
+  alias Operately.Updates.Comment
 
   def send(person, activity) do
+    case Repo.get(Comment, activity.content["comment_id"]) do
+      nil -> :skip
+      comment -> send_email(person, activity, comment)
+    end
+  end
+
+  defp send_email(person, activity, comment) do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
 
     {:ok, task} = Task.get(:system, id: activity.content["task_id"], opts: [
       preload: [:project]
     ])
-
-    comment = Updates.get_comment!(activity.content["comment_id"])
 
     company
     |> new()
@@ -28,14 +34,16 @@ defmodule OperatelyEmail.Emails.ProjectTaskCommentedEmail do
   end
 
   def buffered_item(_person, activity) do
-    case Task.get(:system, id: activity.content["task_id"], opts: [preload: [:project, :space]]) do
-      {:ok, task} -> build_buffered_item(activity, task)
+    with {:ok, task} <- Task.get(:system, id: activity.content["task_id"], opts: [preload: [:project, :space]]),
+         %Comment{} = comment <- Repo.get(Comment, activity.content["comment_id"]) do
+      build_buffered_item(activity, task, comment)
+    else
       {:error, :not_found} -> :skip
+      nil -> :skip
     end
   end
 
-  defp build_buffered_item(activity, task) do
-    comment = Operately.Updates.get_comment!(activity.content["comment_id"])
+  defp build_buffered_item(activity, task, comment) do
     content = comment.content
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company

@@ -90,7 +90,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       p = create_project(ctx, company_access_level: Binding.view_access())
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
-      expected = Serializer.serialize(p, level: :full) |> normalize_serialized_project()
+      expected = p |> Repo.preload(:task_board) |> Serializer.serialize(level: :full) |> normalize_serialized_project()
       assert res.project == expected
     end
 
@@ -107,7 +107,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       p = create_project(ctx, space_access_level: Binding.view_access())
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
-      expected = Serializer.serialize(p, level: :full) |> normalize_serialized_project()
+      expected = p |> Repo.preload(:task_board) |> Serializer.serialize(level: :full) |> normalize_serialized_project()
       assert res.project == expected
     end
 
@@ -210,7 +210,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       project = create_project(ctx)
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
-      expected = Serializer.serialize(project, level: :full) |> normalize_serialized_project()
+      expected = project |> Repo.preload(:task_board) |> Serializer.serialize(level: :full) |> normalize_serialized_project()
       assert res.project == expected
     end
 

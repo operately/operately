@@ -6,7 +6,7 @@ import { ProfilePage } from "./index";
 import { PersonCard } from "../PersonCard";
 import { WorkMap } from "../WorkMap";
 import { genPeople } from "../utils/storybook/genPeople";
-import { mockItems, mockTasksTabItems } from "../WorkMap/tests/mockData";
+import { mockItems, mockTasksTabItems, mockTaskStatusOptions } from "../WorkMap/tests/mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { asRichText } from "../utils/storybook/richContent";
@@ -89,6 +89,34 @@ export const ReorderTasks: Story = {
     const [taskOrdering, setTaskOrdering] = React.useState<string[]>([]);
     return (
       <ProfilePage {...args} taskOrdering={taskOrdering} onTaskOrderingChange={async (ids) => setTaskOrdering(ids)} />
+    );
+  },
+};
+
+export const ChangeTaskStatus: Story = {
+  args: { ...defaultArgs, viewer: defaultArgs.person },
+  render: function ChangeTaskStatusStory(args) {
+    const [tasks, setTasks] = React.useState<WorkMap.Item[]>(() =>
+      mockTasksTabItems
+        .filter((task) => !task.taskStatus?.closed)
+        .map((task) => ({
+          ...task,
+          taskStatuses: [...mockTaskStatusOptions],
+          canEditTask: true,
+        })),
+    );
+    return (
+      <ProfilePage
+        {...args}
+        workMap={tasks}
+        onTaskStatusChange={async (task, status) => {
+          setTasks((items) =>
+            status.closed
+              ? items.filter((item) => item.id !== task.id)
+              : items.map((item) => (item.id === task.id ? { ...item, taskStatus: status } : item)),
+          );
+        }}
+      />
     );
   },
 };

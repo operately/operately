@@ -15,12 +15,12 @@ type SaveStatusesPayload = {
 };
 
 export function useTaskStatuses(
-  projectId: string,
+  boardId: string,
   backendStatuses: TaskStatus[] | null | undefined,
   refresh?: () => void,
 ) {
-  const currentProject = React.useRef(projectId);
-  currentProject.current = projectId;
+  const currentBoard = React.useRef(boardId);
+  currentBoard.current = boardId;
   const mounted = React.useRef(false);
 
   React.useEffect(() => {
@@ -43,7 +43,7 @@ export function useTaskStatuses(
 
   const handleSaveStatuses = React.useCallback(
     async (payload: SaveStatusesPayload) => {
-      const isCurrent = () => mounted.current && currentProject.current === projectId;
+      const isCurrent = () => mounted.current && currentBoard.current === boardId;
 
       const taskStatuses = Tasks.serializeTaskStatuses(payload.nextStatuses);
       const deletedStatusReplacements = Object.entries(payload.deletedStatusReplacements).map(
@@ -55,12 +55,12 @@ export function useTaskStatuses(
 
       try {
         const res = await mutation.mutateAsync({
-          projectId,
+          boardId,
           taskStatuses,
           deletedStatusReplacements,
         });
 
-        // If the project has changed, don't refresh the task statuses
+        // If the board has changed, don't refresh the task statuses
         if (!isCurrent()) return;
 
         if (res.success === false) {
@@ -80,7 +80,7 @@ export function useTaskStatuses(
         console.error("Failed to refresh task statuses", error);
       }
     },
-    [projectId, refresh, mutation.mutateAsync],
+    [boardId, refresh, mutation.mutateAsync],
   );
 
   return {

@@ -64,6 +64,7 @@ cmd_update() {
   apply_release_files "$tmp_dir"
 
   "${COMPOSE[@]}" pull app
+  "${COMPOSE[@]}" stop --timeout 60 app
   cmd_migrate
   "${COMPOSE[@]}" up -d
 }

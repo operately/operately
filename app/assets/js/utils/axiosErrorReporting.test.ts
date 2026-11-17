@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/react";
-import axios from "axios";
+import axios, { AxiosError, AxiosHeaders, CanceledError } from "axios";
 
 import { installSentryAxiosInterceptor } from "./axiosErrorReporting";
 
@@ -34,8 +34,19 @@ describe("installSentryAxiosInterceptor", () => {
             enabled: true,
           },
         },
+        navigator: { onLine: true },
+        document: { visibilityState: "visible" },
       },
     });
+  });
+
+  it("ignores explicit cancellations and preserves the rejection", async () => {
+    const client = installSentryAxiosInterceptor(axios.create());
+    const error = new CanceledError();
+
+    await expect(getRejectedHandler(client)(error)).rejects.toBe(error);
+
+    expect(Sentry.captureException).not.toHaveBeenCalled();
   });
 
   it("reports non-404 axios errors and preserves the rejection", async () => {
@@ -105,15 +116,20 @@ describe("installSentryAxiosInterceptor", () => {
     expect(Sentry.captureException).toHaveBeenCalledTimes(report ? 1 : 0);
   });
 
-  it("reports network errors without a response", async () => {
+  it.each([
+    ["Network Error", AxiosError.ERR_NETWORK],
+    ["Request aborted", AxiosError.ECONNABORTED],
+    ["timeout of 5000ms exceeded", AxiosError.ECONNABORTED],
+    ["timeout of 5000ms exceeded", AxiosError.ETIMEDOUT],
+  ])("reports %s (%s) without a response", async (message, code) => {
     const client = axios.create();
     installSentryAxiosInterceptor(client);
 
-    const error = {
-      isAxiosError: true,
-      config: { method: "get", url: "/api/v2/projects/get" },
-      message: "Network Error",
-    };
+    const error = new AxiosError(message, code, {
+      headers: new AxiosHeaders(),
+      method: "get",
+      url: "/api/v2/projects/get",
+    });
 
     await expect(getRejectedHandler(client)(error)).rejects.toBe(error);
 
@@ -124,7 +140,46 @@ describe("installSentryAxiosInterceptor", () => {
           method: "get",
           url: "/api/v2/projects/get",
           status: undefined,
+          code,
         }),
+      }),
+    );
+  });
+
+  it.each([
+    { online: true, visibilityState: "visible", signalAborted: false },
+    { online: false, visibilityState: "hidden", signalAborted: true },
+  ])("includes diagnostic context: %j", async ({ online, visibilityState, signalAborted }) => {
+    Object.defineProperty(window.navigator, "onLine", { value: online });
+    Object.defineProperty(window.document, "visibilityState", { value: visibilityState });
+    const controller = new AbortController();
+    if (signalAborted) controller.abort();
+
+    const client = installSentryAxiosInterceptor(axios.create());
+    const error = new AxiosError("Network Error", AxiosError.ERR_NETWORK, {
+      headers: new AxiosHeaders({ Authorization: "secret" }),
+      data: { password: "secret" },
+      method: "get",
+      url: "/api/v2/get_language",
+      timeout: 5000,
+      signal: controller.signal,
+    });
+
+    await expect(getRejectedHandler(client)(error)).rejects.toBe(error);
+
+    expect(Sentry.captureException).toHaveBeenCalledWith(
+      error,
+      expect.objectContaining({
+        extra: {
+          method: "get",
+          url: "/api/v2/get_language",
+          status: undefined,
+          code: AxiosError.ERR_NETWORK,
+          timeout: 5000,
+          signalAborted,
+          online,
+          visibilityState,
+        },
       }),
     );
   });

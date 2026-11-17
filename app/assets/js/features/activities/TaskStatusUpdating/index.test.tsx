@@ -4,8 +4,10 @@ import { createRoot } from "react-dom/client";
 import { aggregateConsecutiveFeedActivities, type Activity } from "@/models/activities";
 import Handler from ".";
 import { usePaths } from "@/routes/paths";
+import { MemoryRouter } from "react-router";
 
 jest.mock("turboui", () => ({
+  ...jest.requireActual("turboui"),
   Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
 }));
 jest.mock("@/contexts/TimezoneContext", () => ({ useLocale: () => "en" }));
@@ -18,7 +20,8 @@ jest.mock("@/routes/paths", () => ({
         projectPath: (id: string) => `/projects/${id}`,
         spacePath: (id: string) => `/spaces/${id}`,
         taskPath: (id: string) => `/tasks/${id}`,
-        spaceKanbanPath: (id: string, { taskId }: { taskId: string }) => `/spaces/${id}/kanban?taskId=${taskId}`,
+        spaceKanbanPath: (id: string, boardId: string, { taskId }: { taskId: string }) =>
+          `/spaces/${id}/boards/${boardId}?taskId=${taskId}`,
       }),
       [],
     );
@@ -54,7 +57,16 @@ function activity(id: string, inProject: boolean, hasTask = true): Activity {
           }
         : null,
       space: { __typename: "space", id: "space", name: "Space" },
-      task: hasTask ? { __typename: "task", id, name: id, type: inProject ? "project" : "space" } : null,
+      task: hasTask
+        ? {
+            __typename: "task",
+            boardId: inProject ? null : "board-1",
+            spaceId: inProject ? null : "space",
+            id,
+            name: id,
+            type: inProject ? "project" : "space",
+          }
+        : null,
       name: id,
       oldStatus: {
         __typename: "task_status",
@@ -98,7 +110,11 @@ for (const inProject of [true, false]) {
 
     async function render(item: Activity) {
       await act(async () => {
-        root.render(<Title item={item} />);
+        root.render(
+          <MemoryRouter>
+            <Title item={item} />
+          </MemoryRouter>,
+        );
       });
     }
 
@@ -108,7 +124,7 @@ for (const inProject of [true, false]) {
         .filter((href) => href?.startsWith("/tasks/") || href?.includes("taskId="));
     }
 
-    const taskPath = (id: string) => (inProject ? `/tasks/${id}` : `/spaces/space/kanban?taskId=${id}`);
+    const taskPath = (id: string) => (inProject ? `/tasks/${id}` : `/spaces/space/boards/board-1?taskId=${id}`);
 
     it("keeps rendering when pagination aggregates a row and deletion separates it again", async () => {
       const first = activity("first", inProject);
@@ -120,6 +136,19 @@ for (const inProject of [true, false]) {
       if (!aggregated) throw new Error("Expected an aggregated activity");
       await render(aggregated);
       expect(taskLinks()).toEqual([taskPath("first"), taskPath("second")]);
+
+      const extended = aggregateConsecutiveFeedActivities([
+        first,
+        second,
+        activity("third", inProject),
+        activity("fourth", inProject),
+      ])[0];
+      if (!extended) throw new Error("Expected an extended aggregate");
+      await render(extended);
+      expect(taskLinks()).toEqual([taskPath("first"), taskPath("second"), taskPath("third")]);
+      expect(container.querySelector("button")?.textContent).toBe("Show 1 more task");
+      await render(aggregated);
+      expect(container.querySelector("button")).toBeNull();
 
       await render(first);
       expect(taskLinks()).toEqual([taskPath("first")]);

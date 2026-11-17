@@ -1,9 +1,10 @@
 {
-  "$schema": "https://unpkg.com/knip@2/schema.json",
-  "entry": ["assets/js/app.tsx", "assets/build.js", "assets/codegen.ts", "vite.config.mjs"],
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["assets/js/app.tsx", "vite.config.mjs"],
   "project": [
     "assets/js/**/*.ts",
     "assets/js/**/*.tsx",
+    "assets/css/**/*.css",
     "assets/js/i18n.ts",
     "ee/assets/js/**/*.ts",
     "ee/assets/js/**/*.tsx"
@@ -16,8 +17,6 @@
     "assets/js/models/companies/hasFeature.tsx",
     "assets/js/routes/redirectUtils.tsx"
   ],
-  "ignoreDependencies": ["turboui"],
-
   "rules": {
     "nsTypes": "off"
   }

@@ -173,6 +173,7 @@ defmodule OperatelyWeb.Api.Mutations.ProjectsPermissionsTest do
           %{id: "todo", label: "Todo", color: "gray", index: 0, value: "todo", closed: false},
           %{id: "done", label: "Done", color: "green", index: 1, value: "done", closed: true}
         ]
+        original_statuses = Operately.Projects.Project.task_statuses(project)
 
         assert {code, res} = mutation(ctx.conn, [:projects, :update_task_statuses], %{
           project_id: Paths.project_id(project),
@@ -180,10 +181,10 @@ defmodule OperatelyWeb.Api.Mutations.ProjectsPermissionsTest do
         })
         assert code == @test.expected
 
-        case @test.expected do
-          200 -> assert res.success == true
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "Project not found"
+        if code == 200 do
+          assert res.success == true
+        else
+          assert Operately.Projects.Project.task_statuses(Repo.reload!(project)) == original_statuses
         end
       end
     end

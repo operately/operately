@@ -18,6 +18,7 @@ import {
 
 import { PagePreloading } from "./routes/preloading/PagePreloading";
 import { createAppRoutes } from "./routes";
+import { reportError } from "./routes/reportError";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 import Api from "@/api";
@@ -72,7 +73,7 @@ const App: JSX.Element = (
       <ToasterBar />
       <ThemeProvider>
         <PagePreloading router={routes}>
-          <RouterProvider router={routes} />
+          <RouterProvider router={routes} onError={reportError} />
         </PagePreloading>
       </ThemeProvider>
     </QueryClientProvider>

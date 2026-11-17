@@ -78,7 +78,7 @@ defmodule Operately.Operations.CuratedTemplateInstantiation do
           )
 
         ProjectCreation.build(params)
-        |> Multi.merge(fn %{project: project} -> ProjectChildren.build(project, definition, inputs.start_date) end)
+        |> Multi.merge(fn %{project: project, task_board: board} -> ProjectChildren.build(%{project | task_board: board}, definition, inputs.start_date) end)
 
       :kpi ->
         KpiCreation.build(person, Map.merge(attrs, %{unit: definition["unit"], cadence: definition["cadence"]}))
@@ -101,7 +101,7 @@ defmodule Operately.Operations.CuratedTemplateInstantiation do
 
   defmodule ProjectChildren do
     alias Ecto.Multi
-    alias Operately.Projects.{Milestone, Project}
+    alias Operately.Projects.Milestone
     alias Operately.Tasks.Task
     alias OperatelyWeb.Paths
     alias Operately.Operations.ProjectTemplateMaterialization.ChildrenCreator
@@ -113,7 +113,7 @@ defmodule Operately.Operations.CuratedTemplateInstantiation do
       tasks =
         Enum.map(definition["tasks"] || [], fn source ->
           %{
-            source: %Task{name: source["name"], description: source["description"] || %{"type" => "doc", "content" => []}, reminders: [], task_status: hd(project.task_statuses)},
+            source: %Task{name: source["name"], description: source["description"] || %{"type" => "doc", "content" => []}, reminders: [], task_status: hd(project.task_board.task_statuses)},
             target: %Task{id: Ecto.UUID.generate(), name: source["name"], milestone_id: milestone_ids[source["milestone_key"]]},
             due_date: offset(start_date, source["due_offset_days"])
           }
@@ -132,17 +132,16 @@ defmodule Operately.Operations.CuratedTemplateInstantiation do
           }
         end)
 
-      plan = %{milestones: milestones, tasks: tasks, task_statuses: Enum.map(project.task_statuses, &Map.from_struct/1)}
+      plan = %{milestones: milestones, tasks: tasks, task_statuses: Enum.map(project.task_board.task_statuses, &Map.from_struct/1)}
 
       Multi.new()
       |> Multi.run(:children, fn repo, _ -> ChildrenCreator.insert_work_items(repo, plan, project) end)
-      |> Multi.update(
-        :project_ordering,
-        Project.changeset(project, %{
+      |> Multi.run(:project_ordering, fn _, _ ->
+        Operately.Projects.update_project(project, %{
           milestones_ordering_state: Enum.map(milestones, &Paths.milestone_id(&1.target)),
           tasks_kanban_state: tasks |> Enum.filter(&is_nil(&1.target.milestone_id)) |> kanban()
         })
-      )
+      end)
     end
 
     defp kanban(tasks) do

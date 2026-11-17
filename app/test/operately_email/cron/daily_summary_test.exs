@@ -30,6 +30,8 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
         ctx
         |> Factory.add_company_member(:enabled_member, preferences: %{notifications: %{send_daily_summary: true}})
         |> Factory.add_company_member(:disabled_member, preferences: %{notifications: %{send_daily_summary: false}})
+        |> Factory.add_company_member(:suspended_member, suspended: true, preferences: %{notifications: %{send_daily_summary: true}})
+        |> Factory.add_company_member(:removed_member, suspended_at: DateTime.utc_now(), preferences: %{notifications: %{send_daily_summary: true}})
 
       {:ok, no_account_member} =
         Operately.People.create_person(%{
@@ -56,6 +58,8 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
         |> Factory.add_company_member(:new_york_not_due, timezone: "America/New_York", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "15:00"}})
         |> Factory.add_company_member(:invalid_timezone_due, timezone: "America/New_Jersey", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "18:00"}})
         |> Factory.add_company_member(:disabled_member, preferences: %{notifications: %{send_daily_summary: false, daily_summary_delivery_time: "18:00"}})
+        |> Factory.add_company_member(:suspended_member, suspended: true, preferences: %{notifications: %{send_daily_summary: true}})
+        |> Factory.add_company_member(:removed_member, suspended_at: DateTime.utc_now(), preferences: %{notifications: %{send_daily_summary: true}})
 
       {:ok, no_account_member} =
         Operately.People.create_person(%{
@@ -74,6 +78,8 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
 
       refute Map.has_key?(schedule_by_person, ctx.disabled_member.id)
       refute Map.has_key?(schedule_by_person, no_account_member.id)
+      refute Map.has_key?(schedule_by_person, ctx.suspended_member.id)
+      refute Map.has_key?(schedule_by_person, ctx.removed_member.id)
     end
 
     test "uses default delivery time when preference is missing", ctx do
@@ -160,6 +166,22 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
   end
 
   describe "deliver_daily_summary/2" do
+    test "skips a summary queued before the member was removed", ctx do
+      ctx = Factory.add_company_member(ctx, :member, has_open_invitation: false, preferences: %{notifications: %{send_daily_summary: true}})
+      activity = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
+      notification_fixture(person_id: ctx.member.id, activity_id: activity.id)
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert :ok = DailySummary.send_daily_summaries()
+        assert_enqueued worker: DailySummary, args: %{person_id: ctx.member.id}
+        assert {:ok, %{suspended: true}} = Operately.Operations.CompanyMemberRemoving.run(ctx.creator, ctx.member)
+        flush_emails()
+
+        assert :ok = perform_job(DailySummary, %{person_id: ctx.member.id})
+        refute_email_sent()
+      end)
+    end
+
     test "skips when there are no updates in the last 24 hours", ctx do
       with_mocks([
         {OperatelyEmail.Mailers.DigestMailer, [:passthrough], [send_daily_summary: fn _person, _items -> {:ok, :delivered} end]}

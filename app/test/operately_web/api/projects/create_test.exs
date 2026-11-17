@@ -205,6 +205,44 @@ defmodule OperatelyWeb.Api.Projects.CreateTest do
     end
   end
 
+  describe "name validation" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_api_token(:write_token, :creator, read_only: false)
+    end
+
+    test "rejects oversized names through both APIs without persisting records", ctx do
+      for name <- [String.duplicate("a", 256), String.duplicate("e\u0301", 128)] do
+        assert_unchanged(ctx, fn ->
+          assert {400, response} = boundary_request(ctx, %{name: name})
+          assert response.message =~ "255"
+
+          assert {400, response} =
+                   external_mutation(external_conn(), ctx.write_token, "projects/create", boundary_inputs(ctx, %{name: name}))
+
+          assert response.message =~ "255"
+        end)
+      end
+    end
+
+    test "accepts names at the database character limit", ctx do
+      for name <- [String.duplicate("a", 255), String.duplicate("😀", 255)] do
+        assert {200, response} = boundary_request(ctx, %{name: name})
+        assert response.project.name == name
+        assert_project_created(response, ctx.space.id)
+      end
+    end
+
+    test "rejects blank names without persisting records", ctx do
+      assert_unchanged(ctx, fn ->
+        assert {400, _} = boundary_request(ctx, %{name: "   "})
+      end)
+    end
+  end
+
   #
   # Steps
   #

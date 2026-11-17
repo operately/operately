@@ -108,7 +108,9 @@ function prepareTasks(paths: Paths, result: CompaniesQuickSearchResult): GlobalS
       link:
         task.type === "project"
           ? paths.taskPath(task.id!)
-          : paths.spaceKanbanPath(task.space?.id || "", { taskId: task.id }),
+          : task.space?.id && task.boardId
+            ? paths.spaceKanbanPath(task.space.id, task.boardId, { taskId: task.id })
+            : paths.homePath(),
       project: task.project ?? null,
       space: task.type === "project" ? task.projectSpace : task.space,
     })) || []

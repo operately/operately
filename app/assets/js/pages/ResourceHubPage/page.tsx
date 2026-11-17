@@ -7,6 +7,7 @@ import {
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
   useCreateFolder,
+  useRenameCollection,
 } from "@/models/resourceHubs";
 import { useResourceHubSearchProps } from "@/models/search/resourceHub";
 
@@ -26,12 +27,19 @@ export function Page() {
   const newFileModalsContext = useNewFileModalsContextValue({ resourceHub });
   const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
   const { mutateAsync: createFolder } = useCreateFolder();
+  const { mutateAsync: renameCollection } = useRenameCollection({
+    resourceHubId: resourceHub.id,
+    spaceId: resourceHub.space?.id,
+  });
   const nodesListProps = useResourceHubNodesListProps({ resourceHub, type: "resource_hub", nodes, refetch: refresh });
 
   const props: ResourceHubPage.Props = {
     title: resourceHub.name || t("Docs & Files"),
     navigation: buildResourceHubPageNavigation(resourceHub, paths),
     resourceHub,
+    renameCollection: async (resourceHubId, newName) => {
+      await renameCollection({ resourceHubId, newName });
+    },
     drafts: {
       nodes: draftNodes,
       draftsPath: paths.resourceHubDraftsPath(resourceHub.id),

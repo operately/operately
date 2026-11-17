@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Spaces.List do
       company_id: me.company_id,
       opts: [
         required_access_level: Binding.from_atom(inputs[:access_level] || :view_access),
-        preload: [:company, :members],
+        preload: [:company, :members, :default_task_board],
         order_by: [asc: :name]
       ]
     )
@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.Spaces.List do
   defp load_permissions(spaces, _, _company_read_only), do: spaces
 
   defp load_access_levels(spaces, true) do
-    Enum.map(spaces, &Operately.Groups.Group.preload_access_levels/1)
+    Group.preload_access_levels(spaces)
   end
 
   defp load_access_levels(spaces, _), do: spaces

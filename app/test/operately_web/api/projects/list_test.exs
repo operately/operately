@@ -119,7 +119,7 @@ defmodule OperatelyWeb.Api.Projects.ListTest do
       project3 = project_fixture(company_id: ctx.company.id, name: "Project 3", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, [:projects, :list], %{})
-      expected = serialize([project1, project2, project3], level: :full) |> normalize_serialized_projects()
+      expected = [project1, project2, project3] |> Repo.preload(:task_board) |> serialize(level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end
 
@@ -129,7 +129,7 @@ defmodule OperatelyWeb.Api.Projects.ListTest do
       project = Map.put(project, :champion, ctx.person)
 
       assert {200, res} = query(ctx.conn, [:projects, :list], %{include_champion: true})
-      expected = serialize([project], level: :full) |> normalize_serialized_projects()
+      expected = [project] |> Repo.preload(:task_board) |> serialize(level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end
 
@@ -173,7 +173,7 @@ defmodule OperatelyWeb.Api.Projects.ListTest do
       project = Map.put(project, :goal, goal)
 
       assert {200, res} = query(ctx.conn, [:projects, :list], %{include_goal: true})
-      expected = serialize([project], level: :full) |> normalize_serialized_projects()
+      expected = [project] |> Repo.preload(:task_board) |> serialize(level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end
 
@@ -182,7 +182,7 @@ defmodule OperatelyWeb.Api.Projects.ListTest do
       project = Map.put(project, :milestones, [])
 
       assert {200, res} = query(ctx.conn, [:projects, :list], %{include_milestones: true})
-      expected = serialize([project], level: :full) |> normalize_serialized_projects()
+      expected = [project] |> Repo.preload(:task_board) |> serialize(level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end
 
@@ -190,7 +190,7 @@ defmodule OperatelyWeb.Api.Projects.ListTest do
       project = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, [:projects, :list], %{include_last_check_in: true})
-      expected = serialize([project], level: :full) |> normalize_serialized_projects()
+      expected = [project] |> Repo.preload(:task_board) |> serialize(level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end
 
@@ -200,7 +200,7 @@ defmodule OperatelyWeb.Api.Projects.ListTest do
       _project2 = project_fixture(company_id: ctx.company.id, name: "Project 2", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, [:projects, :list], %{space_id: Paths.space_id(space)})
-      expected = serialize([project1], level: :full) |> normalize_serialized_projects()
+      expected = [project1] |> Repo.preload(:task_board) |> serialize(level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end
   end

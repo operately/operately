@@ -58,6 +58,15 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.ListTest do
     end
   end
 
+  test "accepts a board selector without an owner" do
+    ctx = Operately.Support.Factory.setup(%{}) |> Operately.Support.Factory.add_space(:space)
+      |> Operately.Support.Factory.add_project(:project, :space)
+    board = Operately.Projects.Project.task_board(ctx.project)
+    task = task_fixture(%{creator_id: ctx.creator.id, project_id: ctx.project.id})
+    assert {:ok, %{tasks: [result]}} = List.call(OperatelyWeb.Mcp.ToolConnHelper.conn(ctx), %{"board_id" => Operately.ShortUuid.encode!(board.id)})
+    assert result.id == Paths.task_id(task)
+  end
+
   defp conn_with_assigns(account, company, person) do
     %Conn{}
     |> Map.put(:assigns, %{

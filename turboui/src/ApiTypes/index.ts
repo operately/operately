@@ -795,6 +795,13 @@ export interface ActivityContentProjectTimelineEdited {
   updatedMilestones?: ActivityMilestone[] | null;
 }
 
+export interface ActivityContentResourceHubDeleted {
+  __typename: "activity_content_resource_hub_deleted";
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  name: string;
+}
+
 export interface ActivityContentResourceHubDocumentCommented {
   __typename: "activity_content_resource_hub_document_commented";
   goal?: Goal | null;
@@ -981,6 +988,14 @@ export interface ActivityContentResourceHubLinkEdited {
   previousUrl?: string | null;
 }
 
+export interface ActivityContentResourceHubRenamed {
+  __typename: "activity_content_resource_hub_renamed";
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  oldName: string;
+  newName: string;
+}
+
 export interface ActivityContentSpaceAdded {
   __typename: "activity_content_space_added";
   companyId?: string | null;
@@ -1016,6 +1031,7 @@ export interface ActivityContentSpaceTaskCommented {
 
 export interface ActivityContentTaskAdding {
   __typename: "activity_content_task_adding";
+  boardId?: Id | null;
   space: Space;
   project: Project | null;
   milestone: Milestone | null;
@@ -1049,6 +1065,43 @@ export interface ActivityContentTaskAssigneeUpdating {
   newAssignee: Person;
   addedAssignees: Person[];
   removedAssignees: Person[];
+}
+
+export interface ActivityContentTaskBoardArchived {
+  __typename: "activity_content_task_board_archived";
+  space: Space | null;
+  boardId: Id;
+  name: string;
+}
+
+export interface ActivityContentTaskBoardCreated {
+  __typename: "activity_content_task_board_created";
+  space: Space | null;
+  boardId: Id;
+  name: string;
+}
+
+export interface ActivityContentTaskBoardDefaultChanged {
+  __typename: "activity_content_task_board_default_changed";
+  space: Space | null;
+  boardId: Id;
+  previousBoardId: Id | null;
+  name: string;
+}
+
+export interface ActivityContentTaskBoardRenamed {
+  __typename: "activity_content_task_board_renamed";
+  space: Space | null;
+  boardId: Id;
+  oldName: string;
+  newName: string;
+}
+
+export interface ActivityContentTaskBoardRestored {
+  __typename: "activity_content_task_board_restored";
+  space: Space | null;
+  boardId: Id;
+  name: string;
 }
 
 export interface ActivityContentTaskClosing {
@@ -1104,6 +1157,8 @@ export interface ActivityContentTaskMilestoneUpdating {
 
 export interface ActivityContentTaskMoving {
   __typename: "activity_content_task_moving";
+  originBoardId?: Id | null;
+  destinationBoardId?: Id | null;
   task: Task | null;
   taskName: string;
   originType: TaskType;
@@ -2358,6 +2413,7 @@ export interface ResourceHub {
   nodes?: ResourceHubNode[] | null;
   potentialSubscribers?: Subscriber[] | null;
   permissions?: ResourceHubPermissions | null;
+  position?: number | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -2496,7 +2552,16 @@ export interface ResourceHubPermissions {
   canEditFile?: boolean | null;
   canEditLink?: boolean | null;
   canRenameFolder?: boolean | null;
+  canRenameHub?: boolean | null;
   canView?: boolean | null;
+}
+
+export interface ResourceHubSummary {
+  __typename: "resource_hub_summary";
+  id: Id;
+  name: string;
+  position: number;
+  isDefault: boolean;
 }
 
 export interface ResourceHubUploadedFile {
@@ -2542,6 +2607,7 @@ export interface ReviewAssignmentOrigin {
 }
 
 export interface SearchNavigationTarget {
+  boardId?: Id | null;
   resourceHubId?: string | null;
   folderId?: string | null;
   documentId?: string | null;
@@ -2600,8 +2666,10 @@ export interface Space {
   permissions?: SpacePermissions | null;
   members?: Person[] | null;
   accessLevels?: AccessLevels | null;
+  tools?: SpaceToolSettings;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  defaultTaskBoardId?: Id | null;
   taskStatuses?: TaskStatus[] | null;
   tasksKanbanState?: Json | null;
 }
@@ -2619,6 +2687,14 @@ export interface SpaceSetupInput {
   description: string;
 }
 
+export interface SpaceToolSettings {
+  tasksEnabled: boolean;
+  discussionsEnabled: boolean;
+  resourceHubEnabled: boolean;
+  kpisEnabled: boolean;
+  templatesEnabled: boolean;
+}
+
 export interface SpaceTools {
   __typename: "space_tools";
   tasksEnabled: boolean;
@@ -2631,6 +2707,7 @@ export interface SpaceTools {
   messagesBoards: MessagesBoard[] | null;
   resourceHubs: ResourceHub[] | null;
   tasks: Task[] | null;
+  taskBoards?: TaskBoardSummary[] | null;
   kpis: Kpi[] | null;
   templates: ProjectTemplate[] | null;
 }
@@ -2672,6 +2749,8 @@ export interface Target {
 
 export interface Task {
   __typename: "task";
+  spaceId?: Id | null;
+  boardId?: Id | null;
   id: string;
   url?: string;
   name: string;
@@ -2696,6 +2775,28 @@ export interface Task {
   subscriptionList?: SubscriptionList | null;
   availableStatuses?: TaskStatus[] | null;
   type: TaskType;
+}
+
+export interface TaskBoard {
+  __typename: "task_board";
+  spaceId?: Id | null;
+  projectId?: Id | null;
+  id: Id;
+  name: string;
+  archivedAt: string | null;
+  taskStatuses: TaskStatus[];
+  tasksKanbanState: Json;
+}
+
+export interface TaskBoardSummary {
+  __typename: "task_board_summary";
+  spaceId?: Id | null;
+  projectId?: Id | null;
+  id: Id;
+  name: string;
+  position: number;
+  isDefault: boolean;
+  archivedAt: string | null;
 }
 
 export interface TaskReminder {
@@ -2843,6 +2944,8 @@ export interface WorkMapItem {
   state: WorkMapItemState;
   status: WorkMapItemStatus;
   taskStatus: TaskStatus | null;
+  taskStatuses?: TaskStatus[] | null;
+  canEditTask?: boolean | null;
   progress: number | null;
   space: Space | null;
   spacePath: string | null;
@@ -2959,6 +3062,13 @@ export type ActivityContent =
   | ActivityContentResourceHubFolderCreated
   | ActivityContentResourceHubFolderDeleted
   | ActivityContentResourceHubFolderRenamed
+  | ActivityContentResourceHubDeleted
+  | ActivityContentResourceHubRenamed
+  | ActivityContentTaskBoardCreated
+  | ActivityContentTaskBoardRenamed
+  | ActivityContentTaskBoardDefaultChanged
+  | ActivityContentTaskBoardArchived
+  | ActivityContentTaskBoardRestored
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
   | ActivityContentResourceHubLinkDeleted
@@ -3239,6 +3349,8 @@ export type SubscriptionParentType =
   | "kpi";
 
 export type SuccessStatus = "achieved" | "missed";
+
+export type TaskBoardArchiveStatus = "active" | "archived" | "all";
 
 export type TaskReminderType = "before_due" | "due_day" | "overdue" | "on_date";
 

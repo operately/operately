@@ -16,7 +16,11 @@ jest.mock("@/components/Pages", () => ({ useLoadedData: jest.fn() }));
 jest.mock("@/models/spaces", () => jest.requireActual("@/models/spaces/spaceLifecycle"));
 jest.mock("@/routes/paths", () => ({
   ...jest.requireActual("@/routes/paths"),
-  usePaths: () => ({ spacePath: (id: string) => `/spaces/${id}` }),
+  usePaths: () => ({
+    spacePath: (id: string) => `/spaces/${id}`,
+    resourceHubPath: (id: string) => `/resource-hubs/${id}`,
+    spaceKanbanPath: (spaceId: string, boardId: string) => `/spaces/${spaceId}/boards/${boardId}`,
+  }),
 }));
 jest.mock("react-router", () => ({ useNavigate: jest.fn() }));
 jest.mock("turboui", () => ({ SpaceToolsConfigurationPage: jest.fn(() => null), showErrorToast: jest.fn() }));
@@ -48,9 +52,13 @@ beforeEach(() => {
   savedTools = { ...initialTools };
   jest.mocked(useNavigate).mockReturnValue(navigate);
   jest.mocked(axios.get).mockImplementation(async (url) => ({
-    data: String(url).endsWith("/spaces/list_tools")
-      ? { tools: savedTools }
-      : { space: { id: "space-1", name: "Marketing" } },
+    data: String(url).endsWith("/tasks/list_boards")
+      ? { boards: [] }
+      : String(url).endsWith("/resource_hubs/list")
+        ? { hubs: [] }
+        : String(url).endsWith("/spaces/list_tools")
+          ? { tools: savedTools }
+          : { space: { id: "space-1", name: "Marketing" } },
   }));
   root = createRoot(document.createElement("div"));
 });
@@ -85,12 +93,14 @@ async function flushQueryUpdates() {
   await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
-it("starts both loader requests concurrently", async () => {
+it("starts configuration and management requests concurrently", async () => {
   let finishSpace = () => {};
   jest.mocked(axios.get).mockImplementation((url) => {
     if (String(url).endsWith("/spaces/list_tools")) {
       return Promise.resolve({ data: { tools: initialTools } });
     }
+    if (String(url).endsWith("/tasks/list_boards")) return Promise.resolve({ data: { boards: [] } });
+    if (String(url).endsWith("/resource_hubs/list")) return Promise.resolve({ data: { hubs: [] } });
     return new Promise((resolve) => {
       finishSpace = () => resolve({ data: { space: { id: "space-1", name: "Marketing" } } });
     });
@@ -99,24 +109,35 @@ it("starts both loader requests concurrently", async () => {
   expect(jest.mocked(axios.get).mock.calls.map(([url]) => url)).toEqual([
     "/api/v2/spaces/get",
     "/api/v2/spaces/list_tools",
+    "/api/v2/tasks/list_boards",
+    "/api/v2/resource_hubs/list",
   ]);
   finishSpace();
   await pending;
 });
 
-it("returns loader inputs and reuses both cached queries on mount and re-entry", async () => {
-  expect(await visit()).toEqual({ spaceQueryInput: { id: "space-1" }, toolsQueryInput: { spaceId: "space-1" } });
+it("returns loader inputs and reuses cached queries on mount and re-entry", async () => {
+  expect(await visit()).toEqual({
+    spaceQueryInput: { id: "space-1", includePermissions: true },
+    toolsQueryInput: { spaceId: "space-1" },
+    boardsQueryInput: { spaceId: "space-1", archiveStatus: "all" },
+    hubsQueryInput: { spaceId: "space-1" },
+  });
   expect(pageProps().tools).toEqual(initialTools);
   await act(async () => root.render(null));
   await visit();
-  expect(axios.get).toHaveBeenCalledTimes(2);
+  expect(axios.get).toHaveBeenCalledTimes(4);
 });
 
 it.each(["space", "tools"])("rejects missing %s data explicitly", async (missing) => {
   jest.mocked(axios.get).mockImplementation(async (url) => ({
-    data: String(url).endsWith("/spaces/list_tools")
-      ? { tools: missing === "tools" ? null : initialTools }
-      : { space: missing === "space" ? null : { id: "space-1", name: "Marketing" } },
+    data: String(url).endsWith("/tasks/list_boards")
+      ? { boards: [] }
+      : String(url).endsWith("/resource_hubs/list")
+        ? { hubs: [] }
+        : String(url).endsWith("/spaces/list_tools")
+          ? { tools: missing === "tools" ? null : initialTools }
+          : { space: missing === "space" ? null : { id: "space-1", name: "Marketing" } },
   }));
   const consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
   try {
@@ -131,7 +152,7 @@ it("keeps unsaved settings when background queries update", async () => {
   await act(async () => pageProps().onToolsChange(changedTools));
   await act(async () => {
     queryClient.setQueryData(Api.spaces.listToolsQueryKey({ spaceId: "space-1" }), { tools: initialTools });
-    queryClient.setQueryData(Api.spaces.getQueryKey({ id: "space-1" }), {
+    queryClient.setQueryData(Api.spaces.getQueryKey({ id: "space-1", includePermissions: true }), {
       space: { id: "growth-1", name: "Growth" },
     });
     await flushQueryUpdates();
@@ -143,7 +164,7 @@ it("keeps unsaved settings when background queries update", async () => {
 it("resets the form when navigating to another space", async () => {
   await visit();
   await act(async () => pageProps().onToolsChange(changedTools));
-  queryClient.setQueryData(Api.spaces.getQueryKey({ id: "space-2" }), {
+  queryClient.setQueryData(Api.spaces.getQueryKey({ id: "space-2", includePermissions: true }), {
     space: { id: "space-2", name: "Engineering" },
   });
   queryClient.setQueryData(Api.spaces.listToolsQueryKey({ spaceId: "space-2" }), { tools: initialTools });
@@ -195,7 +216,7 @@ it("saves all toggles, tracks pending state, and reloads saved settings on re-en
   await act(async () => root.render(null));
   await visit();
   expect(pageProps().tools).toEqual(changedTools);
-  expect(axios.get).toHaveBeenCalledTimes(4);
+  expect(axios.get).toHaveBeenCalledTimes(6);
 });
 
 it("shows a failed save, preserves edits, and allows retry", async () => {
@@ -210,7 +231,7 @@ it("shows a failed save, preserves edits, and allows retry", async () => {
   expect(pageProps().isSubmitting).toBe(false);
   expect(pageProps().tools).toEqual(changedTools);
   expect(navigate).not.toHaveBeenCalled();
-  expect(axios.get).toHaveBeenCalledTimes(2);
+  expect(axios.get).toHaveBeenCalledTimes(4);
 
   jest.mocked(axios.post).mockResolvedValueOnce({ data: { success: true, tools: changedTools } });
   await act(async () => {

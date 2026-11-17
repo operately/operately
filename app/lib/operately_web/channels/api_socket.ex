@@ -105,14 +105,13 @@ defmodule OperatelyWeb.ApiSocket do
           {:error, :unauthorized}
 
         sub ->
-          socket = assign_company_and_person(socket, payload)
-
-          {:ok, socket, topics} = apply(sub.handler, :join, [topic, payload, socket])
-
-          topics = Enum.map(topics, fn t -> "api:#{topic}:#{t}" end)
-          socket = put_new_topics(socket, topics)
-
-          {:ok, put_new_topics(socket, topics)}
+          with {:ok, socket} <- assign_company_and_person(socket, payload),
+               {:ok, socket, topics} <- apply(sub.handler, :join, [topic, payload, socket]) do
+            topics = Enum.map(topics, fn t -> "api:#{topic}:#{t}" end)
+            {:ok, put_new_topics(socket, topics)}
+          else
+            _ -> {:error, %{reason: "unauthorized"}}
+          end
       end
     end
 
@@ -146,26 +145,14 @@ defmodule OperatelyWeb.ApiSocket do
     end
 
     defp assign_company_and_person(socket, payload) do
-      if payload["x-company-id"] do
-        id = OperatelyWeb.Api.Helpers.id_without_comments(payload["x-company-id"])
-        {:ok, id} = Operately.Companies.ShortId.decode(id)
-
-        company = Operately.Companies.get_company!(id)
-        socket = assign(socket, :company, company)
-
-        if socket.assigns[:account] do
-          case get_person(socket, company) do
-            nil ->
-              {:error, :unauthorized}
-
-            person ->
-              assign(socket, :person, person)
-          end
-        else
-          socket
-        end
+      with id when is_binary(id) <- payload["x-company-id"],
+           {:ok, short_id} <- OperatelyWeb.Api.Helpers.decode_company_id(id),
+           company when not is_nil(company) <- Operately.Repo.get_by(Operately.Companies.Company, short_id: short_id),
+           account when not is_nil(account) <- socket.assigns[:account],
+           person when not is_nil(person) <- get_person(socket, company) do
+        {:ok, socket |> assign(:company, company) |> assign(:person, person)}
       else
-        socket
+        _ -> {:error, :unauthorized}
       end
     end
 

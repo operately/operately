@@ -48,6 +48,7 @@ defmodule OperatelyEmail.Cron.Assignments do
       where: not is_nil(a.email),
       where: fragment("COALESCE((?->'notifications'->>'notify_about_assignments')::boolean, true)", p.preferences)
     )
+    |> Person.scope_active()
     |> Repo.all()
     |> Repo.preload([:account])
     |> Repo.preload([:company])

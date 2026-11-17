@@ -169,6 +169,7 @@ defmodule Operately.Search.CoreWorkIndexingTest do
       assert {:ok, %{updated_task: updated_task}} =
                Ecto.Multi.new()
                |> Ecto.Multi.put(:task, ctx.task)
+               |> OperatelyWeb.Api.Tasks.SharedMultiSteps.lock_task()
                |> OperatelyWeb.Api.Tasks.SharedMultiSteps.update_task_name("Renamed task")
                |> Repo.transaction()
 
@@ -178,6 +179,7 @@ defmodule Operately.Search.CoreWorkIndexingTest do
       assert {:ok, _changes} =
                Ecto.Multi.new()
                |> Ecto.Multi.put(:task, updated_task)
+               |> OperatelyWeb.Api.Tasks.SharedMultiSteps.lock_task()
                |> OperatelyWeb.Api.Tasks.SharedMultiSteps.delete_task()
                |> Repo.transaction()
 

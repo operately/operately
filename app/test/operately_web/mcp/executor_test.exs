@@ -22,6 +22,12 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
     def call(_conn, _arguments), do: {:error, :bad_request}
   end
 
+  defmodule DetailedBadRequestTool do
+    def call(_conn, _arguments) do
+      {:error, :bad_request, "Choose a hub", %{code: "default_resource_hub_unavailable", candidates: [%{id: "hub_123"}]}}
+    end
+  end
+
   defmodule NotFoundTool do
     def call(_conn, _arguments), do: {:error, :not_found}
   end
@@ -32,6 +38,51 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
 
   defmodule FailingTool do
     def call(conn, _arguments), do: raise(conn.assigns.failure)
+  end
+
+  defmodule DateTimeTool do
+    def call(_conn, _arguments) do
+      {:ok,
+       %{
+         assignments: [
+           %{
+             "due_date" => ~D[2026-11-04],
+             "schedule" => %{starts_at: ~U[2026-11-04 10:13:15.123456Z], local_time: ~N[2026-11-04 10:13:15], time: ~T[10:13:15]},
+             "completed" => false,
+             "completed_at" => nil
+           }
+         ]
+       }}
+    end
+  end
+
+  test "preserves structured retry details in both error representations", %{conn: conn} do
+    definition = Definition.new!(name: "detailed_error", implementation: DetailedBadRequestTool, input_schema: %{"type" => "object", "properties" => %{}})
+    assert {:ok, result} = Executor.execute(conn, definition, %{})
+    assert result["isError"]
+    assert result["structuredContent"]["details"]["code"] == "default_resource_hub_unavailable"
+    assert [%{"text" => text}] = result["content"]
+    assert Jason.decode!(text) == result["structuredContent"]
+  end
+
+  test "serializes nested dates and times consistently in both MCP output representations", %{conn: conn} do
+    definition = Definition.new!(name: "date_time", implementation: DateTimeTool, input_schema: %{"type" => "object", "properties" => %{}})
+
+    assert {:ok, result} = Executor.execute(conn, definition, %{})
+
+    assert result["structuredContent"] == %{
+             "assignments" => [
+               %{
+                 "due_date" => "2026-11-04",
+                 "schedule" => %{"starts_at" => "2026-11-04T10:13:15.123456Z", "local_time" => "2026-11-04T10:13:15", "time" => "10:13:15"},
+                 "completed" => false,
+                 "completed_at" => nil
+               }
+             ]
+           }
+
+    assert [%{"type" => "text", "text" => text}] = result["content"]
+    assert Jason.decode!(text) == result["structuredContent"]
   end
 
   test "queue failures return a localized tool error", %{conn: conn} do

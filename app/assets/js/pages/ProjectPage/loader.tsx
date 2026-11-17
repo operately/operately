@@ -30,6 +30,7 @@ export function projectQueryInput(id: string) {
 export async function loader({ params, request }: { params: { id: string }; request?: Request }) {
   const projectInput = projectQueryInput(params.id);
   const childrenInput = { id: params.id };
+  const boardInput = { projectId: params.id };
   const contentInputs = projectContentInputs(params.id);
 
   const tab = request ? new URL(request.url).searchParams.get("tab") : null;
@@ -53,9 +54,14 @@ export async function loader({ params, request }: { params: { id: string }; requ
     ]);
   });
 
-  await Promise.all([core, Api.projects.countChildrenQuery(childrenInput), selectedContent]);
+  await Promise.all([
+    core,
+    Api.projects.countChildrenQuery(childrenInput),
+    Api.tasks.getBoardQuery(boardInput),
+    selectedContent,
+  ]);
 
-  return { projectInput, childrenInput, ...contentInputs };
+  return { projectInput, childrenInput, boardInput, ...contentInputs };
 }
 
 type LoaderResult = Awaited<ReturnType<typeof loader>>;
@@ -64,6 +70,7 @@ export function useLoadedData() {
   const inputs = Pages.useLoadedData<LoaderResult>();
   const projectQuery = useLoadedQuery(Api.projects.getQueryOptions(inputs.projectInput));
   const childrenQuery = useLoadedQuery(Api.projects.countChildrenQueryOptions(inputs.childrenInput));
+  const boardQuery = useLoadedQuery(Api.tasks.getBoardQueryOptions(inputs.boardInput));
 
   const spaceId = projectQuery.data?.project?.spaceId;
   const spaceQuery = useLoadedQuery({
@@ -74,11 +81,12 @@ export function useLoadedData() {
 
   const project = projectQuery.data?.project;
   const childrenCount = childrenQuery.data?.childrenCount;
+  const board = boardQuery.data?.board;
   const space = spaceId ? (spaceQuery.data?.space ?? null) : null;
 
   const data = useMemo(
-    () => (project && childrenCount ? { project, childrenCount, space } : null),
-    [project, childrenCount, space],
+    () => (project && childrenCount && board ? { project, childrenCount, space, board } : null),
+    [project, childrenCount, space, board],
   );
 
   if (!data) throw new Error("Project page data is unavailable");
@@ -88,13 +96,14 @@ export function useLoadedData() {
 
 export function useRefreshCore() {
   const client = useQueryClient();
-  const { projectInput, childrenInput } = Pages.useLoadedData<LoaderResult>();
+  const { projectInput, childrenInput, boardInput } = Pages.useLoadedData<LoaderResult>();
 
   return useCallback(async () => {
     await Promise.all([
       client.invalidateQueries({ queryKey: Api.projects.getQueryKey(projectInput) }),
       client.invalidateQueries({ queryKey: Api.projects.countChildrenQueryKey(childrenInput) }),
+      client.invalidateQueries({ queryKey: Api.tasks.getBoardQueryKey(boardInput) }),
       client.invalidateQueries({ queryKey: Api.spaces.getQueryKeyPrefix() }),
     ]);
-  }, [client, projectInput, childrenInput]);
+  }, [client, projectInput, childrenInput, boardInput]);
 }

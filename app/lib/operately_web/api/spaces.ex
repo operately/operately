@@ -80,40 +80,6 @@ defmodule OperatelyWeb.Api.Spaces do
     end
   end
 
-  defmodule UpdateKanban do
-    @moduledoc """
-    Updates the kanban state and status of a task in a space.
-    """
-
-    use TurboConnect.Mutation
-    use OperatelyWeb.Api.Helpers
-
-    inputs do
-      field :space_id, :id, null: false
-      field :task_id, :id, null: false
-      field :status, :task_status, null: false
-      field :kanban_state, :json, null: false
-    end
-
-    outputs do
-      field :task, :task, null: false
-    end
-
-    def call(conn, inputs) do
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_space(inputs.space_id)
-      |> Steps.find_task(inputs.task_id)
-      |> Steps.check_task_permissions(:can_edit)
-      |> Steps.update_space_kanban_state(inputs.status, inputs.kanban_state)
-      |> Steps.commit()
-      |> Steps.broadcast_review_count_update()
-      |> Steps.respond(fn changes ->
-        %{task: Serializer.serialize(changes.updated_task_with_preloads, level: :full)}
-      end)
-    end
-  end
-
   defmodule ListMembers do
     @moduledoc """
     Lists members of a space.
@@ -193,7 +159,7 @@ defmodule OperatelyWeb.Api.Spaces do
 
   defmodule ListTasks do
     @moduledoc """
-    Lists tasks in a space.
+    Lists tasks across all boards in a space. Supply board_id to filter to one board.
     """
 
     use TurboConnect.Query
@@ -201,56 +167,14 @@ defmodule OperatelyWeb.Api.Spaces do
 
     inputs do
       field :space_id, :id, null: false
+      field? :board_id, :id, null: true
     end
 
     outputs do
       field :tasks, list_of(:task), null: false
     end
 
-    def call(conn, inputs) do
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_space(inputs.space_id)
-      |> Steps.check_permissions(:can_view)
-      |> Steps.get_tasks()
-      |> Steps.commit()
-      |> Steps.respond(fn changes ->
-        %{tasks: Serializer.serialize(changes.tasks, level: :full)}
-      end)
-    end
-  end
-
-  defmodule UpdateTaskStatuses do
-    @moduledoc """
-    Updates task statuses for a space.
-    """
-
-    use TurboConnect.Mutation
-    use OperatelyWeb.Api.Helpers
-
-    inputs do
-      field :space_id, :id, null: false
-      field :task_statuses, list_of(:task_status), null: false
-      field? :deleted_status_replacements, list_of(:deleted_status_replacement), null: true
-    end
-
-    outputs do
-      field :success, :boolean, null: false
-    end
-
-    def call(conn, inputs) do
-      replacements = inputs[:deleted_status_replacements] || []
-
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_space(inputs.space_id)
-      |> Steps.check_permissions(:can_edit)
-      |> Steps.validate_status_replacements(inputs.task_statuses, replacements)
-      |> Steps.update_task_statuses(inputs.task_statuses)
-      |> Steps.replace_deleted_task_statuses(replacements)
-      |> Steps.commit()
-      |> Steps.respond(fn _ -> %{success: true} end)
-    end
+    def call(conn, inputs), do: OperatelyWeb.Api.Tasks.List.call(conn, inputs)
   end
 
   defmodule UpdateTools do
@@ -289,7 +213,6 @@ defmodule OperatelyWeb.Api.Spaces do
     use Gettext, backend: OperatelyWeb.Gettext
     alias Ecto.Multi
     alias Operately.Repo
-    import Ecto.Query, only: [from: 2]
 
     def start_transaction(conn) do
       Multi.new()
@@ -306,158 +229,15 @@ defmodule OperatelyWeb.Api.Spaces do
       end)
     end
 
-    def find_task(multi, task_id) do
-      Multi.run(multi, :task, fn _repo, %{me: me} ->
-        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:assigned_people]]) do
-          {:ok, task} -> {:ok, task}
-          {:error, _} -> {:error, {:not_found, gettext("Task not found")}}
-        end
-      end)
-    end
-
-    def check_task_permissions(multi, permission) do
-      Multi.run(multi, :permissions, fn _repo, %{task: task, company_read_only: company_read_only} ->
-        Operately.Groups.Permissions.check(task.request_info.access_level, permission, company_read_only: company_read_only)
-      end)
-    end
-
-    def update_space_kanban_state(multi, status, kanban_state) do
-      Multi.merge(multi, fn %{me: me, space: space, task: task} ->
-        Operately.Operations.KanbanStateUpdating.run(me, %{type: :space, space: space}, task, status, kanban_state)
-      end)
-    end
-
-    def broadcast_review_count_update(result) do
-      case result do
-        {:ok, changes} ->
-          broadcast(changes[:task])
-          broadcast(changes[:updated_task_with_preloads] || changes[:updated_task])
-
-        _result ->
-          :ok
-      end
-
-      result
-    end
-
-    defp broadcast(task = %Operately.Tasks.Task{}) do
-      if Ecto.assoc_loaded?(task.assigned_people) do
-        Enum.each(task.assigned_people, fn person ->
-          OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: person.id)
-        end)
-      end
-    end
-
-    defp broadcast(_), do: :ok
-
     def check_permissions(multi, permission) do
       Multi.run(multi, :permissions, fn _repo, %{space: space, company_read_only: company_read_only} ->
         Permissions.check(space.request_info.access_level, permission, company_read_only: company_read_only)
       end)
     end
 
-    def update_task_statuses(multi, task_statuses) do
-      case task_statuses do
-        [] ->
-          Multi.run(multi, :validate_task_statuses, fn _repo, _changes ->
-            {:error, gettext("At least one task status is required")}
-          end)
-
-        _ ->
-          Multi.update(multi, :updated_space, fn %{space: space} ->
-            Space.changeset(space, %{task_statuses: task_statuses})
-          end)
-      end
-    end
-
     def update_tools(multi, tools) do
       Multi.update(multi, :updated_space, fn %{space: space} ->
         Space.changeset(space, %{tools: tools})
-      end)
-    end
-
-    def validate_status_replacements(multi, _task_statuses, []), do: multi
-
-    def validate_status_replacements(multi, task_statuses, replacements) do
-      Multi.run(multi, :validate_replacements, fn _repo, _changes ->
-        new_status_ids = MapSet.new(task_statuses, & &1.id)
-        deleted_status_ids = MapSet.new(replacements, & &1.deleted_status_id)
-
-        invalid_replacements =
-          Enum.filter(replacements, fn r ->
-            replacement_is_deleted = MapSet.member?(deleted_status_ids, r.replacement_status_id)
-            replacement_not_in_new_statuses = not MapSet.member?(new_status_ids, r.replacement_status_id)
-
-            replacement_is_deleted or replacement_not_in_new_statuses
-          end)
-
-        if Enum.empty?(invalid_replacements) do
-          {:ok, :valid}
-        else
-          {:error, gettext("Replacement statuses must be existing statuses that are not being deleted")}
-        end
-      end)
-    end
-
-    def replace_deleted_task_statuses(multi, []), do: multi
-
-    def replace_deleted_task_statuses(multi, replacements) do
-      Multi.run(multi, :replace_task_statuses, fn _repo, changes ->
-        space = Map.get(changes, :updated_space, changes.space)
-        replacement_map =
-          Map.new(replacements, fn r -> {r.deleted_status_id, r.replacement_status_id} end)
-
-        deleted_status_ids = Map.keys(replacement_map)
-
-        tasks =
-          from(t in Operately.Tasks.Task,
-            where: t.space_id == ^space.id,
-            where: fragment("?->>'id' = ANY(?)", t.task_status, ^deleted_status_ids)
-          )
-          |> Repo.all()
-
-        new_statuses_by_id = Map.new(space.task_statuses, fn s -> {s.id, s} end)
-
-        results =
-          Enum.map(tasks, fn task ->
-            old_status_id = task.task_status.id
-            new_status_id = Map.get(replacement_map, old_status_id)
-            new_status = Map.get(new_statuses_by_id, new_status_id)
-
-            if new_status do
-              task
-              |> Operately.Tasks.Task.changeset(%{task_status: Map.from_struct(new_status)})
-              |> Repo.update()
-            else
-              {:ok, task}
-            end
-          end)
-
-        errors = Enum.filter(results, fn
-          {:error, _} -> true
-          _ -> false
-        end)
-
-        if Enum.empty?(errors) do
-          {:ok, Enum.map(tasks, & &1.id)}
-        else
-          List.first(errors)
-        end
-      end)
-      |> Operately.Search.IndexUpdates.enqueue(:search_tasks_with_replaced_status, "task", fn changes -> changes.replace_task_statuses end)
-    end
-
-    def get_tasks(multi) do
-      Multi.run(multi, :tasks, fn _repo, %{space: space} ->
-        tasks =
-          from(t in Operately.Tasks.Task,
-            where: t.space_id == ^space.id,
-            preload: [:assigned_people, subscription_list: [subscriptions: :person]]
-          )
-          |> Repo.all()
-          |> Operately.Tasks.Task.load_comments_count()
-
-        {:ok, tasks}
       end)
     end
 
@@ -480,6 +260,9 @@ defmodule OperatelyWeb.Api.Spaces do
 
     defp handle_error(reason) do
       case reason do
+        {:error, _step, {:bad_request, message, details}, _changes} ->
+          {:error, :bad_request, message, details}
+
         {:error, _failed_operation, {:bad_request, message}, _changes} ->
           {:error, :bad_request, message}
 
@@ -492,14 +275,11 @@ defmodule OperatelyWeb.Api.Spaces do
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
 
+        {:error, _failed_operation, :bad_request, _changes} ->
+          {:error, :bad_request}
+
         {:error, :updated_space, %Ecto.Changeset{}, _changes} ->
           {:error, :bad_request, gettext("Invalid tools")}
-
-        {:error, :validate_task_statuses, message, _changes} ->
-          {:error, :bad_request, message}
-
-        {:error, :validate_replacements, message, _changes} ->
-          {:error, :bad_request, message}
 
         {:error, _failed_operation, _reason, _changes} ->
           {:error, :internal_server_error}

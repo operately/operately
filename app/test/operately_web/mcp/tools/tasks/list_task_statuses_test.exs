@@ -46,8 +46,9 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.ListTaskStatusesTest do
                "task_id" => Paths.task_id(ctx.task)
              })
 
-    assert length(task_statuses) == length(space.task_statuses)
-    assert Enum.map(task_statuses, & &1.value) == Enum.map(space.task_statuses, & &1.value)
+    statuses = Repo.get!(Operately.Tasks.TaskBoard, space.default_task_board_id).task_statuses
+    assert length(task_statuses) == length(statuses)
+    assert Enum.map(task_statuses, & &1.value) == Enum.map(statuses, & &1.value)
   end
 
   test "returns not_found for a task outside the authenticated company" do

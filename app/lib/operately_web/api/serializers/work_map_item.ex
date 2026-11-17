@@ -35,7 +35,17 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       privacy: OperatelyWeb.Api.Serializer.serialize(item.privacy),
       assignees: OperatelyWeb.Api.Serializer.serialize(item.assignees)
     }
+    |> Map.merge(serialize_task_fields(item))
   end
+
+  defp serialize_task_fields(%{type: :task, resource: task}) do
+    %{
+      task_statuses: Serializer.serialize(task.available_statuses),
+      can_edit_task: task.permissions && task.permissions.can_edit
+    }
+  end
+
+  defp serialize_task_fields(_item), do: %{}
 
   defp serialize_milestones(%{state: :closed}), do: []
 

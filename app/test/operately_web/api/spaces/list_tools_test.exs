@@ -228,10 +228,15 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
       assert message.author == Serializer.serialize(ctx.creator)
     end
 
-    test "list resource hubs", ctx do
+    test "list resource hubs in position and creation order", ctx do
+      [newer, older] = Enum.sort_by([ctx.hub1, ctx.hub2], & &1.id)
+      newer |> Ecto.Changeset.change(position: 2, inserted_at: ~N[2021-01-01 00:00:00]) |> Repo.update!()
+      older |> Ecto.Changeset.change(position: 2, inserted_at: ~N[2020-01-01 00:00:00]) |> Repo.update!()
       assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
 
-      assert length(res.tools.resource_hubs) == 3
+      default = Repo.get!(Operately.ResourceHubs.ResourceHub, ctx.space.default_resource_hub_id)
+      expected = Enum.map([default, older, newer], &Paths.resource_hub_id/1)
+      assert Enum.map(res.tools.resource_hubs, & &1.id) == expected
 
       hub1 = Enum.find(res.tools.resource_hubs, &(&1.id == Paths.resource_hub_id(ctx.hub1)))
       assert length(hub1.nodes) == 2
@@ -477,6 +482,21 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
       assert res.tools.kpis_enabled == false
       assert res.tools.kpis == []
     end
+  end
+
+  test "includes active board summaries even when Tasks is disabled", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.set_space_tools(:space, tasks_enabled: false) |> Factory.log_in_person(:creator)
+    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Other", position: 1})
+    Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Archived", position: 2, archived_at: ~N[2026-01-01 00:00:00]})
+
+    assert {200, %{tools: tools}} = query(ctx.conn, [:spaces, :list_tools], %{space_id: ctx.space.id})
+    assert Enum.map(tools.task_boards, & &1.id) == Enum.map([ctx.space.default_task_board_id, board.id], &Operately.ShortUuid.encode!/1)
+    assert Enum.map(tools.task_boards, & &1.is_default) == [true, false]
+    assert tools.tasks == []
+    refute tools.tasks_enabled
+
+    ctx = ctx |> Factory.add_company_member(:outsider) |> Factory.log_in_person(:outsider)
+    assert {200, %{tools: %{task_boards: []}}} = query(ctx.conn, [:spaces, :list_tools], %{space_id: ctx.space.id})
   end
 
   #

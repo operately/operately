@@ -44,14 +44,22 @@ defmodule Operately.Operations.ProjectCreationTest do
     {:ok, company: company, space: space, creator: creator, reviewer: reviewer, champion: champion, project_attrs: project_attrs}
   end
 
+  test "returns an invalid name error for an oversized project name", ctx do
+    attrs = %{ctx.project_attrs | name: String.duplicate("a", 256)}
+
+    assert {:error, {:invalid_name, {_message, validation}}} = Operately.Operations.ProjectCreation.run(attrs)
+    assert validation[:validation] == :length
+    assert validation[:count] == 255
+  end
+
   test "ProjectCreation operation creates project with default task statuses", ctx do
     {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
 
     # Verify project has 4 default task statuses
-    assert length(project.task_statuses) == 4
+    assert length(Operately.Projects.Project.task_statuses(project)) == 4
 
     # Verify the default statuses are present
-    statuses_by_value = Enum.group_by(project.task_statuses, & &1.value)
+    statuses_by_value = Enum.group_by(Operately.Projects.Project.task_statuses(project), & &1.value)
     assert Map.has_key?(statuses_by_value, "pending")
     assert Map.has_key?(statuses_by_value, "in_progress")
     assert Map.has_key?(statuses_by_value, "done")

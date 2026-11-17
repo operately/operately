@@ -1,143 +1,95 @@
 defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.HubScope do
   @moduledoc false
 
-  import Ecto.Query
+  use Gettext, backend: OperatelyWeb.Gettext
 
-  alias Operately.Repo
-  alias Operately.ResourceHubs.ResourceHub
+  alias Operately.Groups.Group
+  alias Operately.ResourceHubs.{Folder, ResourceHub}
+  alias OperatelyWeb.Api.Serializer
 
-  def resolve_hub_id(me, inputs, opts \\ []) do
-    with {:ok, scope} <- parse_hub_scope(inputs, opts),
-         {:ok, hub} <- get_resource_hub(me, scope) do
+  def resolve_hub_id(me, inputs) do
+    with :ok <- validate_selectors(inputs),
+         {:ok, parent} <- load_parent(me, inputs),
+         {:ok, explicit_hub} <- load_explicit_hub(me, inputs[:resource_hub_id]),
+         {:ok, folder_hub} <- load_folder_hub(me, inputs[:folder_id]),
+         {:ok, hub} <- select_hub(me, parent, explicit_hub, folder_hub),
+         :ok <- validate_parent(hub, parent) do
       {:ok, hub.id}
     end
   end
 
-  def resolve_filter(me, inputs) do
-    cond do
-      not is_nil(inputs[:folder_id]) ->
-        {:ok, %{folder_id: inputs.folder_id}}
+  def validate_selectors(inputs) do
+    parents = Enum.count([:space_id, :project_id, :goal_id], &inputs[&1])
+    selected? = Enum.any?([:space_id, :project_id, :goal_id, :resource_hub_id, :folder_id], &inputs[&1])
+    if selected? and parents <= 1, do: :ok, else: {:error, :bad_request}
+  end
 
-      inputs[:resource_hub_id] && (inputs[:space_id] || inputs[:project_id] || inputs[:goal_id]) ->
-        {:error, :bad_request}
-
-      not is_nil(inputs[:resource_hub_id]) ->
-        {:ok, %{resource_hub_id: inputs.resource_hub_id}}
-
-      true ->
-        case resolve_hub_id(me, inputs) do
-          {:ok, hub_id} -> {:ok, %{resource_hub_id: hub_id}}
-          error -> error
-        end
+  def to_resource_hub_inputs(me, inputs) do
+    with {:ok, hub_id} <- resolve_hub_id(me, inputs) do
+      {:ok, inputs |> Map.put(:resource_hub_id, hub_id) |> Map.drop([:space_id, :project_id, :goal_id])}
     end
   end
 
-  def to_resource_hub_inputs(me, inputs, opts \\ []) do
-    with {:ok, hub_id} <- resolve_hub_id(me, inputs, opts) do
-      {:ok,
-       inputs
-       |> Map.put(:resource_hub_id, hub_id)
-       |> Map.drop([:space_id, :project_id, :goal_id])}
+  def with_resolved_hub({:ok, result}, hub_id) do
+    {:ok, Map.put(result, :resource_hub_id, OperatelyWeb.Paths.resource_hub_id(hub_id))}
+  end
+
+  def with_resolved_hub(error, _hub_id), do: error
+
+  defp load_parent(me, inputs) do
+    parents = Enum.filter([:space_id, :project_id, :goal_id], &inputs[&1])
+
+    case parents do
+      [] -> {:ok, nil}
+      [:space_id] -> load_parent_resource(Group, me, :space_id, inputs.space_id)
+      [:project_id] -> load_parent_resource(Operately.Projects.Project, me, :project_id, inputs.project_id)
+      [:goal_id] -> load_parent_resource(Operately.Goals.Goal, me, :goal_id, inputs.goal_id)
+      _ -> {:error, :bad_request}
     end
   end
 
-  def parse_hub_scope(inputs, opts \\ []) do
-    hub_key = Keyword.get(opts, :hub_key, :resource_hub_id)
-    space_key = Keyword.get(opts, :space_key, :space_id)
-    project_key = Keyword.get(opts, :project_key, :project_id)
-    goal_key = Keyword.get(opts, :goal_key, :goal_id)
-    optional? = Keyword.get(opts, :optional, false)
+  defp load_parent_resource(module, me, key, id) do
+    with {:ok, resource} <- module.get(me, id: id), do: {:ok, {key, resource}}
+  end
 
-    hub_id = inputs[hub_key]
-    space_id = inputs[space_key]
-    project_id = inputs[project_key]
-    goal_id = inputs[goal_key]
-    parent_ids = Enum.filter([space_id, project_id, goal_id], & &1)
+  defp load_explicit_hub(_me, nil), do: {:ok, nil}
+  defp load_explicit_hub(me, id), do: ResourceHub.get(me, id: id)
 
-    cond do
-      hub_id && parent_ids != [] ->
-        {:error, :bad_request}
+  defp load_folder_hub(_me, nil), do: {:ok, nil}
 
-      hub_id ->
-        {:ok, %{id: hub_id}}
-
-      length(parent_ids) > 1 ->
-        {:error, :bad_request}
-
-      space_id ->
-        {:ok, %{space_id: space_id}}
-
-      project_id ->
-        {:ok, %{project_id: project_id}}
-
-      goal_id ->
-        {:ok, %{goal_id: goal_id}}
-
-      optional? ->
-        {:ok, nil}
-
-      true ->
-        {:error, :bad_request}
+  defp load_folder_hub(me, id) do
+    with {:ok, folder} <- Folder.get(me, id: id, opts: [preload: :node]) do
+      ResourceHub.get(me, id: folder.node.resource_hub_id)
     end
   end
 
-  def get_resource_hub(me, scope, opts \\ [])
+  defp select_hub(_me, _parent, %{id: id}, %{id: other_id}) when id != other_id, do: {:error, :bad_request}
+  defp select_hub(_me, _parent, _explicit, %ResourceHub{} = folder_hub), do: {:ok, folder_hub}
+  defp select_hub(_me, _parent, %ResourceHub{} = explicit, nil), do: {:ok, explicit}
+  defp select_hub(_me, nil, nil, nil), do: {:error, :bad_request}
 
-  def get_resource_hub(me, %{id: hub_id}, opts) do
-    ResourceHub.get(me, Keyword.merge(opts, id: hub_id))
-  end
-
-  def get_resource_hub(me, %{space_id: space_id}, opts) do
-    with {:ok, hub_id} <- hub_id_for_parent(space_id: space_id) do
-      ResourceHub.get(me, Keyword.merge(opts, id: hub_id))
+  defp select_hub(me, {:space_id, space}, nil, nil) do
+    case load_explicit_hub(me, space.default_resource_hub_id) do
+      {:ok, %ResourceHub{space_id: space_id} = hub} when space_id == space.id -> {:ok, hub}
+      _ -> unavailable_default(me, space)
     end
   end
 
-  def get_resource_hub(me, %{project_id: project_id}, opts) do
-    with {:ok, hub_id} <- hub_id_for_parent(project_id: project_id) do
-      ResourceHub.get(me, Keyword.merge(opts, id: hub_id))
+  defp select_hub(me, {key, parent}, nil, nil) do
+    case ResourceHub.list(me, [{key, parent.id}, {:opts, [order_by: [asc: :inserted_at, asc: :id]]}]) do
+      [hub | _] -> {:ok, hub}
+      [] -> {:error, :not_found}
     end
   end
 
-  def get_resource_hub(me, %{goal_id: goal_id}, opts) do
-    with {:ok, hub_id} <- hub_id_for_parent(goal_id: goal_id) do
-      ResourceHub.get(me, Keyword.merge(opts, id: hub_id))
-    end
+  defp validate_parent(_hub, nil), do: :ok
+
+  defp validate_parent(hub, {key, parent}) do
+    if Map.fetch!(hub, key) == parent.id, do: :ok, else: {:error, :bad_request}
   end
 
-  defp hub_id_for_parent(space_id: space_id) do
-    from(h in ResourceHub,
-      where: h.space_id == ^space_id,
-      order_by: [asc: h.inserted_at],
-      limit: 1,
-      select: h.id
-    )
-    |> Repo.one()
-    |> to_hub_id_result()
+  defp unavailable_default(me, space) do
+    {:error, :bad_request, gettext("This space has no available default resource hub. Retry with resource_hub_id from the available hubs."),
+     %{code: "default_resource_hub_unavailable", candidates: Serializer.serialize(Operately.ResourceHubs.list_summaries(me, space))}}
   end
-
-  defp hub_id_for_parent(project_id: project_id) do
-    from(h in ResourceHub,
-      where: h.project_id == ^project_id,
-      order_by: [asc: h.inserted_at],
-      limit: 1,
-      select: h.id
-    )
-    |> Repo.one()
-    |> to_hub_id_result()
-  end
-
-  defp hub_id_for_parent(goal_id: goal_id) do
-    from(h in ResourceHub,
-      where: h.goal_id == ^goal_id,
-      order_by: [asc: h.inserted_at],
-      limit: 1,
-      select: h.id
-    )
-    |> Repo.one()
-    |> to_hub_id_result()
-  end
-
-  defp to_hub_id_result(nil), do: {:error, :not_found}
-  defp to_hub_id_result(hub_id), do: {:ok, hub_id}
 end

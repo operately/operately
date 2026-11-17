@@ -44,6 +44,7 @@ export namespace ProfilePage {
     taskOrdering: string[];
     onTaskOrderingChange: (taskIds: string[]) => Promise<void>;
     taskOrderingSaving: boolean;
+    onTaskStatusChange?: WorkMap.TaskStatusChangeFn;
 
     activityFeed: React.ReactNode;
 
@@ -110,6 +111,7 @@ export function ProfilePage(props: ProfilePage.Props) {
       {["tasks", "assigned", "reviewing", "paused", "completed"].includes(tabs.active) && (
         <WorkMapTable
           onReorder={canReorder ? reorderTask : undefined}
+          onTaskStatusChange={tabs.active === "tasks" ? props.onTaskStatusChange : undefined}
           reorderingDisabled={props.taskOrderingSaving}
           items={items[tabs.active]}
           tab={["completed", "paused"].includes(tabs.active) ? (tabs.active as WorkMap.Filter) : "all"}

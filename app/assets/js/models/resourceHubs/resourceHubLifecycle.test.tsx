@@ -8,6 +8,7 @@ import {
   invalidateResourceHubQueries,
   useMoveResource,
   useRenameFolder,
+  useRenameCollection,
   useRestoreDocumentVersion,
 } from "./resourceHubLifecycle";
 
@@ -79,6 +80,58 @@ it.each(["success", "failure", "unsuccessful response"])(
 );
 
 jest.mock("react-router", () => ({}));
+
+it.each([true, false])(
+  "refreshes the owning collection, embedded navigation, and space preview only on success: %s",
+  async (success) => {
+    const client = new QueryClient();
+    const hubKey = Api.resource_hubs.getQueryKey({ id: "hub1", includePermissions: true });
+    const previewKey = Api.spaces.listToolsQueryKey({ spaceId: "space1" });
+    const unrelatedKey = Api.resource_hubs.getQueryKey({ id: "hub2" });
+    client.setQueryData(hubKey, { resourceHub: { id: "hub1", name: "Original" } });
+    client.setQueryData(previewKey, {});
+    client.setQueryData(unrelatedKey, {});
+    const details = [
+      { key: Api.resource_hubs.getFolderQueryKey({ id: "folder1" }), field: "folder" },
+      { key: Api.documents.getQueryKey({ id: "doc1", includeResourceHub: true }), field: "document" },
+      { key: Api.files.getQueryKey({ id: "file1", includeResourceHub: true }), field: "file" },
+      { key: Api.links.getQueryKey({ id: "link1", includeResourceHub: true }), field: "link" },
+    ];
+    details.forEach(({ key, field }) =>
+      client.setQueryData(key, { [field]: { resourceHub: { id: "renamed-hub1", name: "Original" } } }),
+    );
+    const otherDetail = Api.documents.getQueryKey({ id: "doc2" });
+    client.setQueryData(otherDetail, { document: { resourceHubId: "hub2" } });
+    const optionsSpy = jest.spyOn(Api.resource_hubs, "renameMutationOptions").mockReturnValue({
+      mutationFn: async () => {
+        if (!success) throw new Error("Failed");
+        return { success: true };
+      },
+    });
+    const { result, unmount } = renderHook(() => useRenameCollection({ resourceHubId: "hub1", spaceId: "space1" }), {
+      initialProps: undefined,
+      wrapper: ({ children }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>,
+    });
+    try {
+      await act(async () => {
+        const pending = result.current.mutateAsync({ resourceHubId: "hub1", newName: "Team library" });
+        if (success) await pending;
+        else await expect(pending).rejects.toThrow("Failed");
+      });
+      [hubKey, previewKey, ...details.map(({ key }) => key)].forEach((key) =>
+        expect(client.getQueryState(key)?.isInvalidated).toBe(success),
+      );
+      [unrelatedKey, otherDetail].forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(false));
+      expect(client.getQueryData(hubKey)).toEqual({
+        resourceHub: { id: "hub1", name: success ? "Team library" : "Original" },
+      });
+    } finally {
+      unmount();
+      client.clear();
+      optionsSpy.mockRestore();
+    }
+  },
+);
 
 it("invalidates cached version history after restoring a document", async () => {
   const client = new QueryClient();

@@ -5,7 +5,6 @@ export type BillingCompanyAccessState = api.BillingCompanyAccessState;
 export type BillingOverview = api.BillingOverview;
 
 export type { BillingLimitGuidance, BillingLimitViewerRole } from "./memberLimitGuidance";
-export type { BillingLimitError } from "./limitError";
 
 export { buildBillingDangerBanner, isBillingManagementPath } from "./dangerBanner";
 export { isPaymentRecoveryAccessState } from "./paymentDefaultBanner";

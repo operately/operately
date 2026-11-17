@@ -332,8 +332,10 @@ export class Paths {
     return this.createCompanyPath(["files", fileId, "edit"]);
   }
 
-  resourceHubDocumentPath(documentId: string) {
-    return this.createCompanyPath(["documents", documentId]);
+  resourceHubDocumentPath(documentId: string, opts?: { inlineThread?: string | null }) {
+    const path = this.createCompanyPath(["documents", documentId]);
+
+    return path + encodeUrlParams(opts?.inlineThread ? { inlineThread: opts.inlineThread } : undefined);
   }
 
   resourceHubDocumentVersionsPath(documentId: string) {
@@ -491,11 +493,11 @@ export class Paths {
     return this.createCompanyPath(["project-templates", templateId, "files", fileId, "edit"]);
   }
 
-  spaceKanbanPath(spaceId: string, opts?: { taskId?: string }) {
+  spaceKanbanPath(spaceId: string, boardId: string, opts?: { taskId?: string }) {
     if (opts?.taskId) {
-      return this.createCompanyPath(["spaces", spaceId, "kanban"]) + "?taskId=" + opts.taskId;
+      return this.createCompanyPath(["spaces", spaceId, "boards", boardId]) + "?taskId=" + opts.taskId;
     }
-    return this.createCompanyPath(["spaces", spaceId, "kanban"]);
+    return this.createCompanyPath(["spaces", spaceId, "boards", boardId]);
   }
 
   spaceEditPath(spaceId: string) {
@@ -711,7 +713,7 @@ function isUUID(id: string) {
   return id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
 }
 
-function idWithoutComments(id: string) {
+export function idWithoutComments(id: string) {
   const parts = id.split("-");
   return parts[parts.length - 1];
 }

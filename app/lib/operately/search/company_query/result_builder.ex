@@ -101,7 +101,12 @@ defmodule Operately.Search.CompanyQuery.ResultBuilder do
   defp navigation_target(%{source_type: :milestone} = candidate), do: %{milestone_id: candidate.source_id}
 
   defp navigation_target(%{source_type: :task} = candidate) do
-    %{task_id: candidate.source_id, space_id: candidate.source_space_id, project_id: candidate.source_project_id}
+    %{
+      board_id: Map.get(candidate, :board_id),
+      task_id: candidate.source_id,
+      space_id: candidate.source_space_id,
+      project_id: candidate.source_project_id
+    }
   end
 
   defp navigation_target(%{source_type: :person} = candidate), do: %{person_id: candidate.source_id}

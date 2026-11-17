@@ -375,9 +375,9 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
     test "get pending tasks", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "My Project"})
 
-      pending = Enum.find(project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
-      in_progress = Enum.find(project.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
-      done = Enum.find(project.task_statuses, &(&1.color == :green)) |> Map.from_struct()
+      pending = Enum.find(Operately.Projects.Project.task_statuses(project), &(&1.color == :gray)) |> Map.from_struct()
+      in_progress = Enum.find(Operately.Projects.Project.task_statuses(project), &(&1.color == :blue)) |> Map.from_struct()
+      done = Enum.find(Operately.Projects.Project.task_statuses(project), &(&1.color == :green)) |> Map.from_struct()
 
       task1 =
         create_task(project, ctx.person, %{
@@ -435,8 +435,9 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
     end
 
     test "get pending space tasks", ctx do
-      pending = Enum.find(ctx.space.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
-      in_progress = Enum.find(ctx.space.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
+      statuses = Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses
+      pending = Enum.find(statuses, &(&1.color == :gray)) |> Map.from_struct()
+      in_progress = Enum.find(statuses, &(&1.color == :blue)) |> Map.from_struct()
 
       task1 =
         create_space_task(ctx.space, ctx.person, %{

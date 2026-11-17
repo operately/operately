@@ -21,5 +21,12 @@ defmodule OperatelyWeb.Mcp.Tools.Spaces.GetTest do
     assert {:ok, %{space: serialized_space}} = Get.call(conn, %{"space_id" => Paths.space_id(space)})
     assert serialized_space.id == Paths.space_id(space)
     assert serialized_space.name == space.name
+    assert is_map(serialized_space.access_levels)
+    assert is_map(serialized_space.permissions)
+    assert Enum.any?(serialized_space.members, &(&1.id == Paths.person_id(me)))
+    assert is_boolean(serialized_space.tools.discussions_enabled)
+    assert is_boolean(serialized_space.tools.resource_hub_enabled)
+    refute Map.has_key?(serialized_space.tools, :projects)
+    refute Map.has_key?(serialized_space.tools, :goals)
   end
 end

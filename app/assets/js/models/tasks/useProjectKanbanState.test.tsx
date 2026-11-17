@@ -38,7 +38,7 @@ it("keeps optimistic status through stale props and restores both values on fail
       const [visible, setVisible] = React.useState(incoming);
       React.useEffect(() => setVisible(incoming), [incoming]);
       const queue = useProjectKanbanState({
-        projectId: "p1",
+        boardId: "p1",
         tasks: visible,
         statuses,
         initialRawState: raw,
@@ -72,9 +72,9 @@ it.each(["switch", "unmount"])("ignores late UI and refresh callbacks after %s",
   const refresh = jest.fn();
   const setTasks = jest.fn();
   const { result, rerender, unmount } = renderHook(
-    ({ projectId }) =>
+    ({ boardId }) =>
       useProjectKanbanState({
-        projectId,
+        boardId,
         tasks,
         statuses,
         initialRawState: raw,
@@ -82,13 +82,13 @@ it.each(["switch", "unmount"])("ignores late UI and refresh callbacks after %s",
         updateKanban: () => request.promise,
         onSuccess: refresh,
       }),
-    { initialProps: { projectId: "p1" } },
+    { initialProps: { boardId: "p1" } },
   );
   let saved: Promise<boolean> = Promise.resolve(false);
   act(() => {
     saved = result.current.move({ taskId: "a", status: done, index: 0 });
   });
-  if (action === "switch") rerender({ projectId: "p2" });
+  if (action === "switch") rerender({ boardId: "p2" });
   else unmount();
   setTasks.mockClear();
   await act(async () => {
@@ -108,7 +108,7 @@ it("reconciles tasks received during the final refresh after the queue drains", 
       const [visible, setVisible] = React.useState(incoming);
       React.useEffect(() => setVisible(incoming), [incoming]);
       return useProjectKanbanState({
-        projectId: "p1",
+        boardId: "p1",
         tasks: visible,
         statuses,
         initialRawState: raw,

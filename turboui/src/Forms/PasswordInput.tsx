@@ -14,7 +14,7 @@ const DEFAULT_VALIDATION_PROPS = {
 };
 
 export function PasswordInput(props: PasswordInputProps) {
-  const { field, label } = props;
+  const { field, label, labelAction } = props;
   const { required, minLength, maxLength } = { ...DEFAULT_VALIDATION_PROPS, ...props };
   const [value, setValue] = useFieldValue<string>(field);
   const error = useFieldError(field);
@@ -23,9 +23,10 @@ export function PasswordInput(props: PasswordInputProps) {
   useValidation(field, validateTextLength(minLength, maxLength));
 
   return (
-    <InputField field={field} label={label} error={error} required={required}>
+    <InputField field={field} label={label} labelAction={labelAction} error={error} required={required}>
       <div className="relative">
         <input
+          id={field}
           name={field}
           type="password"
           data-test-id={props.testId ?? field}

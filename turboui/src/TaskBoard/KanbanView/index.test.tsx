@@ -41,6 +41,7 @@ jest.mock("./Kanban", () => ({
       </button>
       {props.statuses.map((status) => (
         <div key={status.value} data-test-id={`column-${status.value}`}>
+          <button data-test-id={`delete-${status.id}`} onClick={() => props.onDeleteStatus?.(status)} />
           {(props.columns[status.value] ?? []).map((task) => (
             <button key={task.id} data-test-id={`task-${task.id}`} onClick={() => props.onTaskClick(task.id)} />
           ))}
@@ -244,3 +245,68 @@ function getElement(testId: string): HTMLElement {
   if (!element) throw new Error(`Missing element: ${testId}`);
   return element;
 }
+
+describe("KanbanBoard status deletion", () => {
+  const done = { ...pendingStatus, id: "done", value: "done", closed: true };
+
+  beforeEach(() => {
+    search.params = new URLSearchParams();
+  });
+
+  function clickDelete() {
+    fireEvent.click(getElement("delete-pending"));
+  }
+
+  it("deletes an unused status directly", () => {
+    const save = jest.fn();
+    render(<KanbanBoard {...boardProps([])} statuses={[pendingStatus, done]} onStatusesChange={save} />);
+    clickDelete();
+    expect(save).toHaveBeenCalledWith({
+      nextStatuses: [{ ...done, index: 0 }],
+      deletedStatusReplacements: {},
+    });
+    expect(document.querySelector('[data-test-id="delete-status-modal"]')).not.toBeInTheDocument();
+  });
+
+  it.each([false, true])("requires a replacement for an occupied status (archived=%s)", (archived) => {
+    const save = jest.fn();
+    const task = makeTask({ archivedAt: archived ? new Date() : undefined });
+    render(<KanbanBoard {...boardProps([task])} statuses={[pendingStatus, done]} onStatusesChange={save} />);
+    clickDelete();
+    expect(save).not.toHaveBeenCalled();
+    expect(document.querySelector('[data-test-id="deleted-status-replacement-pending"]')).toBeInTheDocument();
+  });
+
+  it("uses the same status-value matching as the visible columns", () => {
+    const save = jest.fn();
+    const task = makeTask({ status: { ...pendingStatus, id: "legacy-id" } });
+    render(<KanbanBoard {...boardProps([task])} statuses={[pendingStatus, done]} onStatusesChange={save} />);
+    clickDelete();
+    expect(save).not.toHaveBeenCalled();
+    expect(document.querySelector('[data-test-id="deleted-status-replacement-pending"]')).toBeInTheDocument();
+  });
+
+  it("counts tasks outside the visible milestone", () => {
+    const save = jest.fn();
+    render(
+      <KanbanBoard
+        {...boardProps([])}
+        statusUsageTasks={[makeTask()]}
+        statuses={[pendingStatus, done]}
+        onStatusesChange={save}
+      />,
+    );
+    clickDelete();
+    expect(save).not.toHaveBeenCalled();
+    expect(document.querySelector('[data-test-id="deleted-status-replacement-pending"]')).toBeInTheDocument();
+  });
+
+  it("does not delete the last remaining status", () => {
+    const save = jest.fn();
+    render(<KanbanBoard {...boardProps([])} onStatusesChange={save} />);
+    clickDelete();
+    expect(save).not.toHaveBeenCalled();
+    expect(document.querySelector('[data-test-id="delete-status-confirm"]')).not.toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="delete-status-modal"]')).toBeInTheDocument();
+  });
+});

@@ -14,7 +14,6 @@ defmodule Operately.Mcp.ClientMetadata do
   alias Operately.Mcp.Observability
   alias Operately.Repo
 
-  @localhost_hosts ["localhost", "127.0.0.1", "::1"]
   @supported_token_endpoint_auth_methods ["none"]
 
   @doc """
@@ -73,18 +72,6 @@ defmodule Operately.Mcp.ClientMetadata do
       :ok
     else
       {:error, :invalid_redirect_uri}
-    end
-  end
-
-  @doc """
-  Returns true when the redirect URI points to localhost or a loopback address.
-
-  This is used to show a warning on the consent screen for local clients.
-  """
-  def localhost_redirect?(uri) when is_binary(uri) do
-    case URI.parse(uri) do
-      %URI{host: host} when host in @localhost_hosts -> true
-      _ -> false
     end
   end
 

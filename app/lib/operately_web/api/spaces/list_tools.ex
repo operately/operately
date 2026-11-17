@@ -73,6 +73,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
        projects: projects,
        goals: goals,
        tasks: tasks,
+       task_boards: OperatelyWeb.Api.Tasks.BoardScope.list(me, space),
        messages_boards: messages_boards,
        resource_hubs: resource_hubs,
        kpis: kpis,
@@ -142,7 +143,8 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
       from(h in ResourceHub,
         left_join: space in assoc(h, :space), as: :space,
         preload: [nodes: ^nodes_q],
-        where: h.space_id == ^space_id
+        where: h.space_id == ^space_id,
+        order_by: [asc: h.position, asc: h.inserted_at, asc: h.id]
       )
       |> Filters.filter_by_view_access(me.id, named_binding: :space)
       |> Repo.all()

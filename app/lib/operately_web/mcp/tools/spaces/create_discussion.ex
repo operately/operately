@@ -41,6 +41,8 @@ defmodule OperatelyWeb.Mcp.Tools.Spaces.CreateDiscussion do
           %{
             "space_id" => JsonSchema.string("The space identifier."),
             "title" => JsonSchema.string("The discussion title."),
+            "post_as_draft" => JsonSchema.boolean("Save as a draft instead of publishing. Defaults to false."),
+            "scheduled_at" => JsonSchema.string("Schedule publication at an ISO 8601 instant with an explicit timezone offset.", format: "date-time"),
             "content" => JsonSchema.string("The discussion body in plain text or markdown."),
             "notify_person_ids" =>
               JsonSchema.array(
@@ -66,6 +68,7 @@ defmodule OperatelyWeb.Mcp.Tools.Spaces.CreateDiscussion do
   def call(conn, %{"space_id" => space_id, "title" => title, "content" => content} = arguments) do
     with {:ok, space_id} <- Helpers.decode_id(space_id),
          {:ok, content} <- Helpers.markdown_to_rich_text(content),
+         {:ok, publishing_inputs} <- Helpers.decode_creation_publishing_inputs(arguments),
          {:ok, notification_inputs} <- Helpers.decode_notification_inputs(arguments) do
       SpaceCreateDiscussion.call(
         conn,
@@ -73,10 +76,9 @@ defmodule OperatelyWeb.Mcp.Tools.Spaces.CreateDiscussion do
           %{
             space_id: space_id,
             title: title,
-            body: content,
-            post_as_draft: false
+            body: content
           },
-          notification_inputs
+          Map.merge(notification_inputs, publishing_inputs)
         )
       )
     end

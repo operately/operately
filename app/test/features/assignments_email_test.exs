@@ -27,7 +27,7 @@ defmodule Operately.Features.AssignmentsEmailTest do
 
     ctx
     |> UI.visit(link)
-    |> UI.assert_text("What's new since the last check-in?")
+    |> UI.assert_has(testid: "project-check-in-new-page")
   end
 
   describe "assignments email" do

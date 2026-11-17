@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.UpdateArchiveTest do
   end
 
   test "decodes the task ID and archives and restores through the API", ctx do
-    status = Enum.find(ctx.project.task_statuses, & &1.closed)
+    status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), & &1.closed)
     {:ok, task} = Operately.Tasks.update_task(ctx.task, Operately.Tasks.Task.status_change_attrs(ctx.task, status))
     args = %{"task_id" => Paths.task_id(task), "archived" => true}
     assert {:ok, %{task: archived}} = UpdateArchive.call(ToolConnHelper.conn(ctx), args)

@@ -83,10 +83,11 @@ defmodule OperatelyWeb.Api.People.UpdateTaskOrderingTest do
 
     test "it preserves shared ordering and other preferences", ctx do
       {:ok, _} = Operately.People.update_person(ctx.creator, %{preferences: %{time_format: :hour_24}})
+      board = Operately.Projects.Project.task_board(ctx.project)
 
       assert {200, _} = mutation(ctx.conn, [:people, :update_task_ordering], %{task_ids: [Paths.task_id(ctx.project_task)]})
       assert Repo.reload!(ctx.milestone).tasks_ordering_state == ctx.milestone.tasks_ordering_state
-      assert Repo.reload!(ctx.project).tasks_kanban_state == ctx.project.tasks_kanban_state
+      assert Repo.reload!(board).tasks_kanban_state == board.tasks_kanban_state
       assert Operately.People.Person.time_format(Repo.reload!(ctx.creator)) == :hour_24
     end
 

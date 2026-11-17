@@ -7,7 +7,7 @@ import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Link, Summary } from "turboui";
 import { Trans } from "../i18n";
 import i18n from "@/i18n";
-import { activityAuthorName, commentPath, commentedLink, projectLink } from "./../feedItemLinks";
+import { taskActivityPath, activityAuthorName, commentPath, commentedLink, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -19,7 +19,7 @@ const ProjectTaskCommented: ActivityHandler = {
   pagePath(paths, activity: Activity): string {
     const { comment, task, project } = content(activity);
 
-    return task ? commentPath(paths.taskPath(task.id), comment) : paths.projectPath(project.id);
+    return task ? commentPath(taskActivityPath(paths, task), comment) : paths.projectPath(project.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -37,7 +37,7 @@ const ProjectTaskCommented: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { comment, project, task } = content(activity);
 
-    const taskPath = task ? paths.taskPath(task.id) : null;
+    const taskPath = task ? taskActivityPath(paths, task) : null;
     const action = taskPath ? commentedLink(taskPath, comment) : "commented";
     const taskLink = taskPath && task ? <Link to={taskPath}>{null}</Link> : <React.Fragment />;
     const components = {

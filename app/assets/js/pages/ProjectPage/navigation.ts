@@ -10,10 +10,15 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
 
   const currentSearch = new URLSearchParams(currentUrl.search);
   const nextSearch = new URLSearchParams(nextUrl.search);
-  if (currentSearch.get("tab") === nextSearch.get("tab")) return defaultShouldRevalidate;
+  // Tabs and task panels use data already loaded by the page. Rerunning the
+  // loader here can race with mutation/live refetches that cancel its queries.
+  const viewParams = ["tab", "taskId"];
+  if (viewParams.every((param) => currentSearch.get(param) === nextSearch.get(param))) return defaultShouldRevalidate;
 
-  currentSearch.delete("tab");
-  nextSearch.delete("tab");
+  viewParams.forEach((param) => {
+    currentSearch.delete(param);
+    nextSearch.delete(param);
+  });
   currentSearch.sort();
   nextSearch.sort();
 

@@ -8,9 +8,16 @@ defmodule Operately.Tasks do
 
   def get_task!(id), do: Repo.get!(Task, id)
 
-  def create_task(attrs \\ %{}), do: Task.changeset(attrs) |> Repo.insert()
-
-  def update_task(task, attrs \\ %{}), do: Task.changeset(task, attrs) |> Repo.update()
+  def update_task(task, attrs \\ %{}) do
+    Multi.new()
+    |> Multi.run(:locked_task, fn _, _ -> Operately.Tasks.BoardSync.lock_task(task) end)
+    |> Multi.update(:task, fn %{locked_task: task} -> Task.changeset(task, attrs) end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{task: task}} -> {:ok, task}
+      {:error, _step, reason, _changes} -> {:error, reason}
+    end
+  end
 
   def create_assignee(attrs \\ %{}) do
     Multi.new()
@@ -41,6 +48,55 @@ defmodule Operately.Tasks do
   def list_task_assignees(task) do
     query = from(a in Assignee, where: a.task_id == ^task.id)
     Repo.all(query)
+  end
+
+  def create_task(attrs \\ %{}) do
+    Multi.new()
+    |> Multi.run(:board, fn _repo, _ -> creation_board(attrs) end)
+    |> Multi.run(:task, fn _repo, %{board: board} ->
+      with {:ok, attrs} <- creation_attrs(attrs, board) do
+        attrs |> Task.changeset() |> Repo.insert()
+      end
+    end)
+    |> Multi.run(:sync, fn _repo, %{task: task, board: board} -> Operately.Tasks.BoardSync.add_task(board, task) end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:task)
+  end
+
+  defp creation_board(%{space_id: space_id} = attrs) when not is_nil(space_id) do
+    case Repo.get(Operately.Groups.Group, space_id) do
+      nil -> {:error, :not_found}
+      space ->
+        with {:ok, board} <- Operately.Tasks.TaskBoard.for_space(space) do
+          Operately.Tasks.BoardSync.lock_board(attrs[:board_id] || board.id)
+        end
+    end
+  end
+
+  defp creation_board(%{project_id: project_id} = attrs) when not is_nil(project_id) do
+    with {:ok, board} <- Operately.Tasks.TaskBoard.for_project(%{id: project_id}),
+         true <- is_nil(attrs[:board_id]) or attrs[:board_id] == board.id do
+      Operately.Tasks.BoardSync.lock_board(board.id)
+    else
+      false -> {:error, :bad_request}
+      error -> error
+    end
+  end
+
+  defp creation_board(_attrs), do: {:error, :bad_request}
+
+  defp creation_attrs(attrs, nil), do: {:ok, attrs}
+  defp creation_attrs(attrs, board) do
+    attrs = Map.put(attrs, :board_id, board.id)
+
+    if attrs[:task_status] do
+      {:ok, attrs}
+    else
+      case Operately.Tasks.TaskBoard.get_default_task_status(board) do
+        nil -> {:error, :bad_request}
+        status -> {:ok, Map.put(attrs, :task_status, Map.from_struct(status))}
+      end
+    end
   end
 
   defp apply_if(query, condition, fun) do

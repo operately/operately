@@ -15,6 +15,19 @@ it("builds paths from canonical company metadata and supports non-company routes
 });
 
 describe("Paths", () => {
+  test("builds document paths with an optional encoded inline thread", () => {
+    const paths = new Paths({ companyId: "acme" });
+
+    expect(paths.resourceHubDocumentPath("doc-1")).toBe("/acme/documents/doc-1");
+    expect(paths.resourceHubDocumentPath("doc-1", { inlineThread: null })).toBe("/acme/documents/doc-1");
+    expect(paths.resourceHubDocumentPath("doc-1", { inlineThread: "thread-1" })).toBe(
+      "/acme/documents/doc-1?inlineThread=thread-1",
+    );
+    expect(paths.resourceHubDocumentPath("doc-1", { inlineThread: "thread?#" })).toBe(
+      "/acme/documents/doc-1?inlineThread=thread%3F%23",
+    );
+  });
+
   test("uses the company home path for the deprecated feed path", () => {
     const paths = new Paths({ companyId: "nexus-dynamics" });
 

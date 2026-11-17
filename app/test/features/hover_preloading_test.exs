@@ -10,7 +10,7 @@ defmodule Operately.Features.HoverPreloadingTest do
     |> Steps.hover_and_navigate(:space)
   end
 
-  feature "Work Map project links preload and reuse their data on navigation", ctx do
+  feature "Work Map project links preload and refresh after joining live updates", ctx do
     ctx
     |> Steps.visit_work_map()
     |> Steps.hover_and_navigate(:project)

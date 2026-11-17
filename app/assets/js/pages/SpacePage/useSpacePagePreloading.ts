@@ -10,7 +10,10 @@ export function useSpacePagePreloading({ spaceId, tools }: { spaceId: string; to
   if (tools.resourceHubEnabled) {
     for (const hub of tools.resourceHubs ?? []) destinations.push(paths.resourceHubPath(hub.id));
   }
-  if (tools.tasksEnabled) destinations.push(paths.spaceKanbanPath(spaceId));
+
+  const defaultBoard = tools.taskBoards?.find((board) => board.isDefault);
+
+  if (tools.tasksEnabled && defaultBoard) destinations.push(paths.spaceKanbanPath(spaceId, defaultBoard.id));
   if (tools.kpisEnabled) destinations.push(paths.spaceKpisPath(spaceId));
   if (tools.templatesEnabled) destinations.push(paths.spaceProjectTemplatesPath(spaceId));
 

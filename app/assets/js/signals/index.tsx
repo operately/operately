@@ -10,6 +10,7 @@ enum ApiSignal {
   ReloadComments = "api:reload_comments",
   UnreadNotificationCount = "api:unread_notifications_count",
   ProfileUpdated = "api:profile_updated",
+  ProjectUpdated = "api:project_updated",
   BillingUpdated = "api:billing_updated",
 }
 
@@ -36,6 +37,10 @@ export function useUnreadNotificationCount(callback: () => void) {
 
 export function useProfileUpdatedSignal(callback: () => void) {
   return Api.useSubscription(ApiSignal.ProfileUpdated, callback);
+}
+
+export function useProjectUpdatedSignal(callback: () => void, payload: { projectId: string }, onJoined: () => void) {
+  return Api.useSubscription(ApiSignal.ProjectUpdated, callback, payload, onJoined);
 }
 
 export function useBillingUpdatedSignal(callback: () => void) {

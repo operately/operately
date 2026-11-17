@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Companies.Get do
 
   alias OperatelyWeb.Api.Serializer
   alias Operately.Companies.Company
+  alias Operately.Groups.Group
   alias Operately.Access.Binding
 
   require Logger
@@ -70,9 +71,28 @@ defmodule OperatelyWeb.Api.Companies.Get do
       include_admins: &Company.load_admins/1,
       include_owners: &Company.load_owners/1,
       include_permissions: &Company.load_permissions(&1, company_read_only),
-      include_general_space: &Company.load_general_space/1,
+      include_general_space: &load_general_space/1,
       include_members_access_levels: &Company.preload_members_access_level/1
     )
+  end
+
+  defp load_general_space(%Company{company_space_id: nil} = company) do
+    Map.put(company, :general_space, nil)
+  end
+
+  defp load_general_space(%Company{} = company) do
+    case Group.get(:system, id: company.company_space_id, opts: [preload: [:default_task_board]]) do
+      {:ok, space} ->
+        space = Map.put(space, :company, company)
+        Map.put(company, :general_space, space)
+
+      {:error, :not_found} ->
+        Map.put(company, :general_space, nil)
+
+      e ->
+        Logger.error("Failed to load general space for company #{company.id}: #{inspect(e)}")
+        Map.put(company, :general_space, nil)
+    end
   end
 
   defp minimal_hooks(inputs, company_read_only) do

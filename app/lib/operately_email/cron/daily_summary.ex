@@ -58,6 +58,7 @@ defmodule OperatelyEmail.Cron.DailySummary do
       where: fragment("COALESCE((?->'notifications'->>'send_daily_summary')::boolean, true)", p.preferences),
       preload: [account: a, company: c]
     )
+    |> Person.scope_active()
     |> Repo.all()
   end
 
@@ -92,6 +93,7 @@ defmodule OperatelyEmail.Cron.DailySummary do
             )
         }
       )
+      |> Person.scope_active()
 
     # Convert local "now" and local delivery clock time into seconds until the next delivery.
     # If today's time already passed, schedule for tomorrow at the same local time.
@@ -188,7 +190,7 @@ defmodule OperatelyEmail.Cron.DailySummary do
   end
 
   defp eligible_person?(person = %Person{}) do
-    Person.send_daily_summary?(person)
+    Person.active?(person) and Person.send_daily_summary?(person)
   end
 
   defp eligible_person?(_), do: false

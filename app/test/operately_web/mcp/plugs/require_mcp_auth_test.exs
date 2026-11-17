@@ -142,7 +142,7 @@ defmodule OperatelyWeb.Mcp.Plugs.RequireMcpAuthTest do
     challenge = www_authenticate(conn)
 
     assert challenge =~ "resource_metadata="
-    assert challenge =~ ~s(scope="mcp:read")
+    assert challenge =~ ~s(scope="mcp:read mcp:write")
     refute challenge =~ "error="
   end
 
@@ -151,7 +151,7 @@ defmodule OperatelyWeb.Mcp.Plugs.RequireMcpAuthTest do
 
     assert challenge =~ ~s(error="invalid_token")
     assert challenge =~ "resource_metadata="
-    assert challenge =~ ~s(scope="mcp:read")
+    assert challenge =~ ~s(scope="mcp:read mcp:write")
   end
 
   defp www_authenticate(conn) do

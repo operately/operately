@@ -43,8 +43,8 @@ defmodule Operately.RichContent.ResourceLinksTest do
                ResourceLinks.parse("/#{@company}/projects/website-xyz", @origin)
     end
 
-    test "extracts space kanban task ids" do
-      url = "#{@origin}/#{@company}/spaces/product-space/kanban?taskId=ship-it"
+    test "extracts board task ids" do
+      url = "#{@origin}/#{@company}/spaces/product-space/boards/support?taskId=ship-it"
 
       assert {:ok, %{type: :task, id: "ship-it"}} = ResourceLinks.parse(url, @origin)
     end

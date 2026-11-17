@@ -28,6 +28,7 @@ interface Props {
     disabled: boolean;
   };
   item: WorkMap.Item;
+  onTaskStatusChange?: WorkMap.TaskStatusChangeFn;
   level: number;
   isLast: boolean;
   tab: WorkMap.Filter;
@@ -93,7 +94,7 @@ export function TableRow(props: Props) {
           projectTemplates={props.projectTemplates}
           onCreateProjectTemplate={props.onCreateProjectTemplate}
         />
-        <StatusCell item={item} hide={columnOptions?.hideStatus} />
+        <StatusCell item={item} hide={columnOptions?.hideStatus} onTaskStatusChange={props.onTaskStatusChange} />
         <ProgressCell item={item} hide={tab === "completed" || columnOptions?.hideProgress} />
         <DueDateCell
           tab={tab}

@@ -23,6 +23,7 @@ defmodule Operately.ResourceHubs.Permissions do
     :can_edit_link,
     :can_edit_parent_folder,
     :can_rename_folder,
+    :can_rename_hub,
   ]
 
   def calculate(access_level, company_read_only: company_read_only) when is_integer(access_level) do
@@ -45,6 +46,7 @@ defmodule Operately.ResourceHubs.Permissions do
       can_edit_link: access_level >= Binding.edit_access(),
       can_edit_parent_folder: access_level >= Binding.edit_access(),
       can_rename_folder: access_level >= Binding.edit_access(),
+      can_rename_hub: access_level >= Binding.edit_access(),
     }
 
     if company_read_only, do: ReadOnly.view_only(permissions), else: permissions

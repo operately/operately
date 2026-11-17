@@ -221,7 +221,11 @@ defmodule OperatelyWeb.Paths do
   end
 
   def space_kanban_path(company = %Company{}, space = %Group{}) do
-    create_path([company_id(company), "spaces", space_id(space), "kanban"])
+    space_kanban_path(company, space, space.default_task_board_id)
+  end
+
+  def space_kanban_path(company = %Company{}, space = %Group{}, board_id) do
+    create_path([company_id(company), "spaces", space_id(space), "boards", Operately.ShortUuid.encode!(board_id)])
   end
 
   def space_kpis_path(company = %Company{}, space = %Group{}) do
@@ -237,7 +241,7 @@ defmodule OperatelyWeb.Paths do
   end
 
   def space_task_path(company = %Company{}, space = %Group{}, task = %Operately.Tasks.Task{}) do
-    create_path([company_id(company), "spaces", space_id(space), "kanban"]) <> "?taskId=#{task_id(task)}"
+    space_kanban_path(company, space, task.board_id) <> "?taskId=#{task_id(task)}"
   end
 
   def task_path(company = %Company{}, task = %Task{}) do
@@ -418,6 +422,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "documents", document_id(document)])
   end
 
+  def document_path(company = %Company{}, document, %Comment{entity_type: :inline_thread} = comment) do
+    document_path(company, document) <> "?inlineThread=" <> Operately.ShortUuid.encode!(comment.entity_id) <> "#" <> comment_id(comment)
+  end
+
   def document_path(company = %Company{}, document, comment = %Comment{}) do
     document_with_comment = document_id(document) <> "#" <> comment_id(comment)
 
@@ -546,6 +554,10 @@ defmodule OperatelyWeb.Paths do
 
   def kpi_annotation_id(annotation_id) when is_binary(annotation_id) do
     Operately.ShortUuid.encode!(annotation_id)
+  end
+
+  def project_id(project_id) when is_binary(project_id) do
+    Operately.ShortUuid.encode!(project_id)
   end
 
   def project_id(project) do

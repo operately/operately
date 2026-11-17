@@ -8,12 +8,11 @@ defmodule Operately.CompanyTransfers.Import.OrderingStateRewriter do
   alias OperatelyWeb.Api.Helpers
 
   @registry %{
-    "groups" => [
+    "task_boards" => [
       %{column: "tasks_kanban_state", kind: :id_lists_by_key, table: "tasks"}
     ],
     "projects" => [
-      %{column: "milestones_ordering_state", kind: :id_list, table: "project_milestones"},
-      %{column: "tasks_kanban_state", kind: :id_lists_by_key, table: "tasks"}
+      %{column: "milestones_ordering_state", kind: :id_list, table: "project_milestones"}
     ],
     "project_milestones" => [
       %{column: "tasks_ordering_state", kind: :id_list, table: "tasks"},

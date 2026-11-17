@@ -19,6 +19,7 @@ defmodule Operately.Operations.ResourceHubLinkDeleting do
       |> Map.merge(Parent.parent_fields(link.resource_hub))
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(link.resource_hub.project_id)
     |> Repo.extract_result(:link)
   end
 end

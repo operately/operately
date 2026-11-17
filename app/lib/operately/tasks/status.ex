@@ -3,6 +3,7 @@ defmodule Operately.Tasks.Status do
 
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query, only: [from: 2]
 
   @primary_key {:id, :string, autogenerate: false}
 
@@ -29,6 +30,15 @@ defmodule Operately.Tasks.Status do
     task_status
     |> cast(attrs, [:id | __schema__(:fields)])
     |> validate_required([:id, :label, :color, :index])
+  end
+
+  def replacement_required?(parent, next_statuses, replacements) do
+    retained_ids = Enum.map(next_statuses, & &1.id)
+    replaced_ids = Enum.map(replacements, & &1.deleted_status_id)
+    removed_ids = Enum.map(parent.task_statuses, & &1.id) -- (retained_ids ++ replaced_ids)
+
+    removed_ids != [] and
+      Operately.Repo.exists?(from t in Ecto.assoc(parent, :tasks), where: fragment("?->>'id'", t.task_status) in ^removed_ids)
   end
 
   @doc """

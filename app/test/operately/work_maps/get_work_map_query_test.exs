@@ -96,9 +96,71 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       open_task = Map.fetch!(items_by_id, ctx.open_task.id)
       assert open_task.type == :task
       assert open_task.parent_id == ctx.project.id
+      assert open_task.resource.available_statuses == nil
 
       assignee = Operately.Repo.get_by!(Operately.Tasks.Assignee, task_id: ctx.open_task.id, person_id: ctx.assignee.id)
       assert open_task.assigned_at == assignee.inserted_at
+    end
+
+    for include_statuses <- [false, true], requester <- [:person, :system] do
+      @tag include_statuses: include_statuses, requester: requester
+      test "include_task_statuses=#{include_statuses} controls project and space task statuses for #{requester}", ctx do
+        ctx =
+          ctx
+          |> Factory.create_space_task(:space_task, :space)
+          |> Factory.add_task_assignee(:space_assignment, :space_task, :creator)
+          |> Factory.add_task_assignee(:project_assignment, :open_task, :creator)
+
+        requester = if ctx.requester == :system, do: :system, else: ctx.creator
+
+        assert {:ok, work_map} = GetWorkMapQuery.execute(requester, %{
+          company_id: ctx.company.id,
+          contributor_id: ctx.creator.id,
+          include_tasks: true,
+          include_task_statuses: ctx.include_statuses
+        }, :flat)
+
+        items = index_work_map_by_id(work_map)
+        project_statuses = if ctx.include_statuses, do: Operately.Projects.Project.task_statuses(ctx.project), else: nil
+        space_statuses = if ctx.include_statuses, do: Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses, else: nil
+
+        assert Map.fetch!(items, ctx.open_task.id).resource.available_statuses == project_statuses
+        assert Map.fetch!(items, ctx.space_task.id).resource.available_statuses == space_statuses
+      end
+    end
+
+    test "loads boards in one query when including statuses for multiple space tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:first_task, :space)
+        |> Factory.create_space_task(:second_task, :space)
+        |> Factory.add_task_assignee(:first_assignment, :first_task, :creator)
+        |> Factory.add_task_assignee(:second_assignment, :second_task, :creator)
+
+      statuses = Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses
+      caller = self()
+      handler_id = make_ref()
+
+      :telemetry.attach(handler_id, [:operately, :repo, :query], fn _, _, metadata, _ ->
+        if metadata.source == "task_boards", do: send(caller, :board_query)
+      end, nil)
+
+      on_exit(fn -> :telemetry.detach(handler_id) end)
+
+      assert {:ok, work_map} = GetWorkMapQuery.execute(ctx.creator, %{
+        company_id: ctx.company.id,
+        include_tasks: true,
+        include_task_statuses: true
+      }, :flat)
+
+      items = index_work_map_by_id(work_map)
+
+      for task <- [ctx.first_task, ctx.second_task] do
+        assert Map.fetch!(items, task.id).resource.available_statuses == statuses
+      end
+
+      assert_received :board_query
+      refute_received :board_query
     end
 
     test "prioritizes contributor_id over requester when include_tasks is true", ctx do

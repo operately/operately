@@ -16,6 +16,7 @@ defmodule Operately.Groups.SpaceTools do
     field :messages_boards, {:array, :map}, virtual: true
     field :resource_hubs, {:array, :map}, virtual: true
     field :tasks, {:array, :map}, virtual: true
+    field :task_boards, {:array, :map}, virtual: true
     field :kpis, {:array, :map}, virtual: true
     field :templates, {:array, :map}, virtual: true
   end
@@ -50,6 +51,7 @@ defmodule Operately.Groups.SpaceTools do
       messages_boards: Map.get(attrs, :messages_boards),
       resource_hubs: Map.get(attrs, :resource_hubs),
       tasks: Map.get(attrs, :tasks),
+      task_boards: Map.get(attrs, :task_boards),
       kpis: Map.get(attrs, :kpis),
       templates: Map.get(attrs, :templates)
     }

@@ -35,12 +35,13 @@ defmodule Operately.Operations.ProjectCreation do
   def run(%__MODULE__{} = params) do
     build(params)
     |> Repo.transaction()
-    |> Repo.extract_result(:project)
+    |> extract_result()
   end
 
   def build(params) do
     Multi.new()
     |> insert_project(params)
+    |> Operately.Tasks.TaskBoard.insert_for_project()
     |> insert_default_resource_hub()
     |> insert_access_context(params)
     |> insert_champion_as_contributor(params)
@@ -53,6 +54,10 @@ defmodule Operately.Operations.ProjectCreation do
     |> track_workspace_activation(params)
     |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
   end
+
+  defp extract_result({:ok, %{project: project}}), do: {:ok, project}
+  defp extract_result({:error, :project, %Ecto.Changeset{errors: [name: error]}, _changes}), do: {:error, {:invalid_name, error}}
+  defp extract_result({:error, step, reason, _changes}), do: {:error, {step, reason}}
 
   defp track_workspace_activation(multi, params) do
     Operately.Analytics.enqueue_step(multi, :analytics_activation, fn %{project: project} ->

@@ -17,9 +17,9 @@ Destructive tools (for example archive or delete) require `mcp:write` only. Ther
 
 ### Default behavior
 
-If a client omits the `scope` parameter during authorization, the grant receives **`mcp:read` only**. Clients that need write access must request `mcp:write` explicitly.
+The unauthenticated MCP challenge and omitted `scope` parameter both request **`mcp:read` and `mcp:write`**. The consent screen selects **View and edit** by default. The person can choose **View only**, which grants `mcp:read` and leaves `mcp:write` off the token.
 
-This matches the CLI split between read-only and write API tokens.
+A client that explicitly requests `mcp:read` alone cannot be upgraded to write on that screen. The grant never includes a scope the client did not request.
 
 ## Connecting a client
 
@@ -47,3 +47,13 @@ The page lists each connected client, granted scopes, when the connection was cr
 - Write and destructive capabilities require an explicit `mcp:write` grant.
 - Server-side rate limits apply to OAuth, CIMD metadata fetch, and tool calls.
 - For architecture and tool development, see `specs/0012-operately-mcp.md` and `specs/0016-mcp-security-hardening.md`.
+
+## Work management tools
+
+MCP supports KPI management, discussion and check-in drafts/scheduling, check-in and retrospective editing, milestone discovery, and task reminders. Tool metadata describes inputs, examples, and edit restrictions.
+
+Scheduled goal check-ins publish their saved snapshot without applying target, checklist, or due-date changes to the goal. Use immediate publication through `update_goal_check_in` when those changes must be applied.
+
+## Collaboration tools
+
+MCP supports inviting members and guests, resource access, notification read state, subscribing/unsubscribing, and profile preferences. Existing company roles and resource permissions apply. `get_space` includes enabled tools; `list_goal_access_members` lists direct goal access. Use `resource_id` and `resource_type` to subscribe or unsubscribe; the tools resolve the subscription list automatically.

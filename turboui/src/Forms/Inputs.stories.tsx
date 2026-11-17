@@ -2,16 +2,9 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { Page } from "../Page";
-import {
-  CheckboxInput,
-  Form,
-  NumberInput,
-  PasswordInput,
-  RadioButtons,
-  Submit,
-  TitleInput,
-  useForm,
-} from "./index";
+import { DimmedLink } from "../Link";
+import { useTranslation } from "react-i18next";
+import { CheckboxInput, Form, NumberInput, PasswordInput, RadioButtons, Submit, TitleInput, useForm } from "./index";
 
 const meta: Meta = {
   title: "Components/Forms/Inputs",
@@ -49,6 +42,40 @@ export const PasswordInputStory: Story = {
       return (
         <Form form={form}>
           <PasswordInput field="password" label="Password" minLength={8} placeholder="Enter password" />
+          <Submit />
+        </Form>
+      );
+    }
+
+    return <Harness />;
+  },
+};
+
+export const PasswordInputWithAction: Story = {
+  render: () => {
+    function Harness() {
+      const { t } = useTranslation();
+      const form = useForm({
+        fields: { password: "" },
+        submit: async () => console.log("Submitted:", form.values),
+      });
+
+      return (
+        <Form form={form}>
+          <PasswordInput
+            field="password"
+            label={t("Password")}
+            labelAction={
+              <DimmedLink
+                to="/forgot-password"
+                className="text-sm font-normal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              >
+                {t("Forgot password?")}
+              </DimmedLink>
+            }
+            placeholder={t("Password")}
+            required
+          />
           <Submit />
         </Form>
       );

@@ -1,6 +1,7 @@
 defmodule Operately.Features.ProjectTasks.TaskSubscriptionsAndMovesTest do
   use Operately.FeatureCase
   alias Operately.Support.Features.ProjectTasksSteps, as: Steps
+  alias Operately.Support.Features.SpaceKanbanSteps, as: KanbanSteps
 
   setup ctx, do: Steps.setup(ctx)
 
@@ -32,7 +33,9 @@ defmodule Operately.Features.ProjectTasks.TaskSubscriptionsAndMovesTest do
 
   describe "move task" do
     @tag login_as: :contributor
-    feature "move to a space from sidebar actions", ctx do
+    feature "move to a space preserves status and comments after reopening", ctx do
+      comment = "This comment survives moving the task"
+
       ctx
       |> Steps.assert_contributor_has_edit_access()
       |> Steps.given_task_exists(name: "Implement user authentication")
@@ -41,9 +44,16 @@ defmodule Operately.Features.ProjectTasks.TaskSubscriptionsAndMovesTest do
       |> Steps.go_to_tasks_tab()
       |> Steps.assert_task_present()
       |> Steps.visit_task_page()
+      |> Steps.change_task_status_from_header_selector("in_progress")
+      |> Steps.assert_task_status_value("in_progress")
+      |> Steps.post_comment(comment)
+      |> Steps.assert_comment(comment)
       |> Steps.move_task_to_destination_space()
       |> Steps.assert_redirected_to_destination_space_kanban()
-      |> Steps.assert_task_present()
+      |> KanbanSteps.visit_destination_space_kanban_page()
+      |> KanbanSteps.assert_task_in_status(task_key: :task, status_value: "in_progress")
+      |> KanbanSteps.open_task_slide_in(:task)
+      |> Steps.assert_comment(comment)
       |> Steps.visit_project_page()
       |> Steps.go_to_tasks_tab()
       |> Steps.assert_task_not_present()
@@ -68,6 +78,32 @@ defmodule Operately.Features.ProjectTasks.TaskSubscriptionsAndMovesTest do
       |> Steps.visit_destination_project_page()
       |> Steps.go_to_tasks_tab()
       |> Steps.assert_task_present()
+    end
+
+    @tag login_as: :contributor
+    feature "move to another project from the project task slide-in", ctx do
+      ctx
+      |> Steps.given_task_exists(name: "Move from project slide-in")
+      |> Steps.given_destination_project_exists()
+      |> Steps.visit_project_page()
+      |> Steps.go_to_tasks_tab()
+      |> Steps.open_task_slide_in("Move from project slide-in")
+      |> Steps.assert_task_slide_in_open("Move from project slide-in")
+      |> Steps.move_task_to_destination_project()
+      |> Steps.assert_redirected_to_destination_project_task()
+      |> Steps.assert_task_belongs_to_destination_project()
+    end
+
+    @tag login_as: :contributor
+    feature "move to a space from the milestone task slide-in", ctx do
+      ctx
+      |> Steps.given_task_exists(name: "Move from milestone slide-in")
+      |> Steps.given_destination_space_exists()
+      |> Steps.visit_milestone_page()
+      |> Steps.open_task_slide_in("Move from milestone slide-in")
+      |> Steps.assert_task_slide_in_open("Move from milestone slide-in")
+      |> Steps.move_task_to_destination_space()
+      |> Steps.assert_redirected_to_destination_space_task()
     end
 
     @tag login_as: :contributor

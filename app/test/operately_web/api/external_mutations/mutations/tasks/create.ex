@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Tasks.Create do
   @impl true
   def inputs(ctx) do
     status_input =
-      Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "done" end)
+      Enum.find(Operately.Projects.Project.task_statuses(ctx.project) || [], fn s -> s.value == "done" end)
       |> then(fn status ->
         status
         |> Map.from_struct()

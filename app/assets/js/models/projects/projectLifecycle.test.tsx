@@ -230,18 +230,38 @@ describe("project detail mutations", () => {
     {
       name: "UpdateProjectTaskStatuses",
       hook: () => Lifecycle.useUpdateProjectTaskStatuses(),
-      options: "updateTaskStatusesMutationOptions",
-      input: { projectId: "project-1", taskStatuses: [] },
+      options: "updateBoardStatusesMutationOptions",
+      input: { boardId: "board-1", taskStatuses: [] },
       result: { success: true },
-      extra: ["task", "taskList", "children", "milestone", "unrelated", "milestoneTasks", "space", "spaceTasks"],
+      extra: [
+        "task",
+        "taskList",
+        "children",
+        "milestone",
+        "unrelated",
+        "milestoneTasks",
+        "space",
+        "spaceTasks",
+        "board",
+      ],
     },
     {
       name: "UpdateProjectKanban",
       hook: () => Lifecycle.useUpdateProjectKanban(),
-      options: "updateKanbanMutationOptions",
-      input: { projectId: "project-1", taskId: "task-1", status: {}, kanbanState: "{}" },
-      result: { project: {}, task: {} },
-      extra: ["task", "taskList", "children", "milestone", "unrelated", "milestoneTasks", "space", "spaceTasks"],
+      options: "updateBoardKanbanMutationOptions",
+      input: { boardId: "board-1", taskId: "task-1", status: {}, kanbanState: "{}" },
+      result: { boardId: "board-1", task: {} },
+      extra: [
+        "task",
+        "taskList",
+        "children",
+        "milestone",
+        "unrelated",
+        "milestoneTasks",
+        "space",
+        "spaceTasks",
+        "board",
+      ],
     },
   ] as const;
 
@@ -258,7 +278,14 @@ describe("project detail mutations", () => {
   });
 
   async function mount(testCase: (typeof cases)[number], request: jest.Mock) {
-    jest.spyOn(Api.projects, testCase.options).mockReturnValue({ mutationFn: request });
+    if (
+      testCase.options === "updateBoardStatusesMutationOptions" ||
+      testCase.options === "updateBoardKanbanMutationOptions"
+    ) {
+      jest.spyOn(Api.tasks, testCase.options).mockReturnValue({ mutationFn: request });
+    } else {
+      jest.spyOn(Api.projects, testCase.options).mockReturnValue({ mutationFn: request });
+    }
     let mutate!: (input: any) => Promise<unknown>;
     function Harness() {
       mutate = testCase.hook().mutateAsync;
@@ -290,6 +317,7 @@ describe("project detail mutations", () => {
       milestoneTasks: Api.projects.listMilestoneTasksQueryKey({ milestoneId: "milestone-1" }),
       space: Api.spaces.getQueryKey({ id: "space-1" }),
       spaceTasks: Api.spaces.listTasksQueryKey({ spaceId: "space-1" }),
+      board: Api.tasks.getBoardQueryKey({ projectId: "project-1" }),
       boundPeople: Api.people.getBindedQueryKey({ resourseType: "project", resourseId: "project-1" }),
       unrelated: Api.comments.listQueryKey({ entityId: "task-1", entityType: "project_task" }),
     };

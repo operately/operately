@@ -1,15 +1,9 @@
 // Mock for @tabler/icons-react
+const React = require("react");
+
 const createMockIcon = (name) => {
   const component = (props) => {
-    return {
-      type: "svg",
-      props: {
-        ...props,
-        "data-testid": `mock-icon-${name}`,
-      },
-      key: null,
-      ref: null,
-    };
+    return React.createElement("svg", { ...props, "data-testid": `mock-icon-${name}` });
   };
   component.displayName = name;
   return component;

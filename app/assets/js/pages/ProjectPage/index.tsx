@@ -12,6 +12,7 @@ import * as Time from "@/utils/time";
 
 import { Feed, useFeedItemsQuery } from "@/features/Feed";
 import { useInvalidateProjectPage } from "@/models/projects/projectPageQueries";
+import { useProjectUpdates } from "@/models/projects/useProjectUpdates";
 import { ProjectPage, showErrorToast } from "turboui";
 import { loader, useLoadedData, useRefreshCore } from "./loader";
 import { useResourceHubDocsQueries, type ResourceHubDocsAndFilesData } from "@/models/resourceHubs/docsQueries";
@@ -40,16 +41,18 @@ import { useResourceHubSearchProps } from "@/models/search/resourceHub";
 export default { name: "ProjectPage", loader, Page, shouldRevalidate } as PageModule;
 
 function Page() {
-  const { data } = useLoadedData();
-  return <LoadedPage key={data.project.id} />;
+  const { projectInput } = useLoadedData();
+  // Response IDs include the project name. A rename must not remount editors.
+  return <LoadedPage key={projectInput.id} />;
 }
 
 function LoadedPage() {
   const navigate = useNavigate();
   const paths = usePaths();
   const currentUser = useMe();
-  const { data, checkInsInput, discussionsInput, tasksInput } = useLoadedData();
-  const { project, childrenCount, space } = data;
+  const { data, projectInput, checkInsInput, discussionsInput, tasksInput } = useLoadedData();
+  const { project, childrenCount, space, board } = data;
+  useProjectUpdates(projectInput.id, project.resourceHub?.id);
 
   const refreshCore = useRefreshCore();
   const invalidateProjectPage = useInvalidateProjectPage();
@@ -192,7 +195,7 @@ function LoadedPage() {
     transformResult: transformPerson,
   });
 
-  const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(project.id, project.taskStatuses, refresh);
+  const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(board.id, board.taskStatuses, refresh);
 
   const handleTasksViewChange = React.useCallback(
     async (tasksView: "list" | "board") => {
@@ -227,25 +230,21 @@ function LoadedPage() {
   const taskSpaceSearch = Spaces.useSpaceSearch({ accessLevel: "edit_access", withTasksEnabledOnly: true });
 
   const handleMoveTaskSuccess = React.useCallback(
-    async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
+    ({ destinationType, destinationId }: Tasks.TaskMoveDestination) => {
       void invalidateProjectPage(project.id);
 
       if (destinationType === "project") {
         void invalidateProjectPage(destinationId);
       }
-
-      if (refresh) {
-        await refresh();
-      }
     },
-    [project.id, refresh],
+    [project.id],
   );
 
   const { kanbanState, handleTaskKanbanChange, handleTaskStatusChange } = Tasks.useKanbanState({
-    initialRawState: project.tasksKanbanState,
+    initialRawState: board.tasksKanbanState,
     updateKanban: updateKanban.mutateAsync,
     statuses,
-    projectId: project.id,
+    boardId: board.id,
     type: "project",
     tasks: baseTasks,
     setTasks,
@@ -485,7 +484,7 @@ function LoadedPage() {
     onTasksViewChange: handleTasksViewChange,
 
     richTextHandlers,
-    localDraftKeyBase: `project:${project.id}`,
+    localDraftKeyBase: `project:${projectInput.id}`,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
 
@@ -494,7 +493,7 @@ function LoadedPage() {
     formattedTimePreferences,
   };
 
-  return <ProjectPage key={project.id} {...props} />;
+  return <ProjectPage {...props} />;
 }
 
 function useProjectDocsAndFilesProps({

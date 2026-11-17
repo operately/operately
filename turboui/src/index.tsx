@@ -29,6 +29,7 @@ export { BulletDot } from "./BulletDot";
 export * from "./ImageWithPlaceholder";
 export * from "./icons";
 export * from "./Link";
+export * from "./ActivityTaskList";
 export * from "./Menu";
 export * from "./NotificationRow";
 export * from "./OptionsMenuItem";
@@ -204,6 +205,8 @@ export type { SpaceKpisPage as SpaceKpisPageTypes } from "./SpaceKpisPage/types"
 export { formatValue as formatKpiValue, fromIsoDate as kpiDateFromIso } from "./SpaceKpisPage/utils";
 // KPI summary card for the space home page (see KpiSummaryCard.stories.tsx).
 export { KpiSummaryCard } from "./SpaceKpisPage/KpiSummaryCard";
+export type { ToolAction } from "./SpaceToolsConfigurationPage";
+export { SpaceTaskBoardCard } from "./SpaceTaskBoardCard";
 export { SpaceToolsConfigurationPage } from "./SpaceToolsConfigurationPage";
 export { SpaceTemplatesTool } from "./SpaceTemplatesTool";
 export { SwitchToggle } from "./SwitchToggle";

@@ -22,5 +22,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Spaces.Get do
   def assert(response, ctx) do
     assert response.space
     assert response.space.id == Paths.space_id(ctx.space)
+    assert is_boolean(response.space.tools.tasks_enabled)
+    refute Map.has_key?(response.space.tools, :projects)
   end
 end

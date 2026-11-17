@@ -35,7 +35,7 @@ export function ToolsSection({ space, tools }: ToolsSectionPros) {
         {tools.resourceHubEnabled &&
           (tools.resourceHubs ?? []).map((hub) => <ResourceHub resourceHub={hub} key={hub.id} />)}
 
-        {tools.tasksEnabled && <Tasks space={space} tasks={tools.tasks ?? []} />}
+        {tools.tasksEnabled && <Tasks spaceId={space.id} boards={tools.taskBoards ?? []} tasks={tools.tasks ?? []} />}
 
         {tools.kpisEnabled && <Kpis space={space} kpis={tools.kpis ?? []} />}
 

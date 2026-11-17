@@ -1,5 +1,6 @@
 import { invalidateResourceHubInteractionQueries } from "@/models/resourceHubs/resourceHubInteractionQueries";
 import Api from "@/api";
+import { assertPresent } from "@/utils/assertions";
 import { prefetchDocumentInlineThreads } from "@/models/inlineThreads";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
@@ -13,6 +14,7 @@ export async function loader({ params }) {
     includePermissions: true,
     includePotentialSubscribers: true,
     includeResourceHub: true,
+    includeParentFolder: true,
     includeGoal: true,
     includeSpace: true,
     includeProject: true,
@@ -27,49 +29,29 @@ export async function loader({ params }) {
     Api.notifications.isSubscribedQuery(subscriptionInput),
   ]);
 
-  if (!document?.id) throw new Error("Document data is unavailable");
-  if (!document.resourceHubId) throw new Error("Document resource hub is unavailable");
+  assertPresent(document.resourceHub, "Document resource hub is unavailable");
 
-  const hubInput = { id: document.resourceHubId, includePotentialSubscribers: true };
-  const folderInput = document.parentFolderId
-    ? { id: document.parentFolderId, includePotentialSubscribers: true }
-    : null;
+  // Load threads before rendering so the document starts with the correct layout.
+  await prefetchDocumentInlineThreads(document);
 
-  await Promise.all([
-    prefetchDocumentInlineThreads(document),
-    Api.resource_hubs.getQuery(hubInput),
-    folderInput ? Api.resource_hubs.getFolderQuery(folderInput) : undefined,
-  ]);
-
-  return { documentInput, hubInput, folderInput, subscriptionInput };
+  return { documentInput, subscriptionInput };
 }
 
 export function useLoadedData() {
-  const { documentInput, hubInput, folderInput, subscriptionInput } =
-    Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
-
+  const { documentInput, subscriptionInput } = Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
   const { data: documentData } = useLoadedQuery(Api.documents.getQueryOptions(documentInput));
-  const { data: hubData } = useLoadedQuery(Api.resource_hubs.getQueryOptions(hubInput));
-  const { data: folderData } = useLoadedQuery({
-    ...Api.resource_hubs.getFolderQueryOptions(folderInput ?? { id: "" }),
-    enabled: folderInput !== null,
-  });
   const { data: subscriptionData } = useLoadedQuery(Api.notifications.isSubscribedQueryOptions(subscriptionInput));
 
   const document = documentData?.document;
-  const resourceHub = hubData?.resourceHub;
-  const folder = folderInput ? folderData?.folder : undefined;
-
-  if (!document?.id) throw new Error("Document data is unavailable");
-  if (!document.resourceHubId) throw new Error("Document resource hub is unavailable");
-  if (!resourceHub?.id) throw new Error("Document resource hub is unavailable");
-  if (folderInput && !folder?.id) throw new Error("Document folder is unavailable");
-  if (!subscriptionData) throw new Error("Document subscription status is unavailable");
+  assertPresent(document, "Document data is unavailable");
+  assertPresent(document.resourceHub, "Document resource hub is unavailable");
+  if (document.parentFolderId) assertPresent(document.parentFolder, "Document folder is unavailable");
+  assertPresent(subscriptionData, "Document subscription status is unavailable");
 
   return {
     document,
-    resourceHub,
-    folder,
+    resourceHub: document.resourceHub,
+    folder: document.parentFolder ?? undefined,
     isCurrentUserSubscribed: subscriptionData.subscribed,
   };
 }

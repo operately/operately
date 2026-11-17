@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 255
+- Endpoints: 268
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -36,10 +36,12 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `documents copy_folder` | `op documents copy_folder` | `POST` | `/api/external/v1/documents/copy_folder` |
 | `documents create_document` | `op documents create_document` | `POST` | `/api/external/v1/documents/create_document` |
 | `documents create_folder` | `op documents create_folder` | `POST` | `/api/external/v1/documents/create_folder` |
+| `documents create_hub` | `op documents create_hub` | `POST` | `/api/external/v1/documents/create_hub` |
 | `documents create_link` | `op documents create_link` | `POST` | `/api/external/v1/documents/create_link` |
 | `documents delete_document` | `op documents delete_document` | `POST` | `/api/external/v1/documents/delete_document` |
 | `documents delete_file` | `op documents delete_file` | `POST` | `/api/external/v1/documents/delete_file` |
 | `documents delete_folder` | `op documents delete_folder` | `POST` | `/api/external/v1/documents/delete_folder` |
+| `documents delete_hub` | `op documents delete_hub` | `POST` | `/api/external/v1/documents/delete_hub` |
 | `documents delete_link` | `op documents delete_link` | `POST` | `/api/external/v1/documents/delete_link` |
 | `documents get_document` | `op documents get_document` | `GET` | `/api/external/v1/documents/get_document` |
 | `documents get_document_version` | `op documents get_document_version` | `GET` | `/api/external/v1/documents/get_document_version` |
@@ -49,8 +51,10 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `documents list_contents` | `op documents list_contents` | `GET` | `/api/external/v1/documents/list_contents` |
 | `documents list_document_versions` | `op documents list_document_versions` | `GET` | `/api/external/v1/documents/list_document_versions` |
 | `documents list_drafts` | `op documents list_drafts` | `GET` | `/api/external/v1/documents/list_drafts` |
+| `documents list_hubs` | `op documents list_hubs` | `GET` | `/api/external/v1/documents/list_hubs` |
 | `documents publish_document` | `op documents publish_document` | `POST` | `/api/external/v1/documents/publish_document` |
 | `documents rename_folder` | `op documents rename_folder` | `POST` | `/api/external/v1/documents/rename_folder` |
+| `documents rename_hub` | `op documents rename_hub` | `POST` | `/api/external/v1/documents/rename_hub` |
 | `documents restore_document_version` | `op documents restore_document_version` | `POST` | `/api/external/v1/documents/restore_document_version` |
 | `documents search` | `op documents search` | `GET` | `/api/external/v1/documents/search` |
 | `documents update_document` | `op documents update_document` | `POST` | `/api/external/v1/documents/update_document` |
@@ -126,6 +130,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `people get_me` | `op people get_me` | `GET` | `/api/external/v1/people/get_me` |
 | `people list` | `op people list` | `GET` | `/api/external/v1/people/list` |
 | `people list_assignments` | `op people list_assignments` | `GET` | `/api/external/v1/people/list_assignments` |
+| `people list_my_tasks` | `op people list_my_tasks` | `GET` | `/api/external/v1/people/list_my_tasks` |
 | `people list_possible_managers` | `op people list_possible_managers` | `GET` | `/api/external/v1/people/list_possible_managers` |
 | `people search` | `op people search` | `GET` | `/api/external/v1/people/search` |
 | `people update` | `op people update` | `POST` | `/api/external/v1/people/update` |
@@ -246,15 +251,23 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `spaces update_permissions` | `op spaces update_permissions` | `POST` | `/api/external/v1/spaces/update_permissions` |
 | `spaces update_task_statuses` | `op spaces update_task_statuses` | `POST` | `/api/external/v1/spaces/update_task_statuses` |
 | `spaces update_tools` | `op spaces update_tools` | `POST` | `/api/external/v1/spaces/update_tools` |
+| `tasks archive_board` | `op tasks archive_board` | `POST` | `/api/external/v1/tasks/archive_board` |
 | `tasks create` | `op tasks create` | `POST` | `/api/external/v1/tasks/create` |
+| `tasks create_board` | `op tasks create_board` | `POST` | `/api/external/v1/tasks/create_board` |
 | `tasks delete` | `op tasks delete` | `POST` | `/api/external/v1/tasks/delete` |
 | `tasks get` | `op tasks get` | `GET` | `/api/external/v1/tasks/get` |
+| `tasks get_board` | `op tasks get_board` | `GET` | `/api/external/v1/tasks/get_board` |
 | `tasks list` | `op tasks list` | `GET` | `/api/external/v1/tasks/list` |
+| `tasks list_boards` | `op tasks list_boards` | `GET` | `/api/external/v1/tasks/list_boards` |
 | `tasks list_potential_assignees` | `op tasks list_potential_assignees` | `GET` | `/api/external/v1/tasks/list_potential_assignees` |
 | `tasks list_task_statuses` | `op tasks list_task_statuses` | `GET` | `/api/external/v1/tasks/list_task_statuses` |
 | `tasks move` | `op tasks move` | `POST` | `/api/external/v1/tasks/move` |
+| `tasks rename_board` | `op tasks rename_board` | `POST` | `/api/external/v1/tasks/rename_board` |
+| `tasks restore_board` | `op tasks restore_board` | `POST` | `/api/external/v1/tasks/restore_board` |
+| `tasks set_default_board` | `op tasks set_default_board` | `POST` | `/api/external/v1/tasks/set_default_board` |
 | `tasks update_archive` | `op tasks update_archive` | `POST` | `/api/external/v1/tasks/update_archive` |
 | `tasks update_assignee` | `op tasks update_assignee` | `POST` | `/api/external/v1/tasks/update_assignee` |
+| `tasks update_board_statuses` | `op tasks update_board_statuses` | `POST` | `/api/external/v1/tasks/update_board_statuses` |
 | `tasks update_description` | `op tasks update_description` | `POST` | `/api/external/v1/tasks/update_description` |
 | `tasks update_due_date` | `op tasks update_due_date` | `POST` | `/api/external/v1/tasks/update_due_date` |
 | `tasks update_milestone` | `op tasks update_milestone` | `POST` | `/api/external/v1/tasks/update_milestone` |

@@ -11,6 +11,8 @@ defmodule Operately.Groups.InsertGroup do
     |> insert_bindings(attrs)
     |> insert_default_messages_board()
     |> insert_default_resource_hub()
+    |> Operately.Tasks.TaskBoard.insert_for_space()
+    |> set_default_task_board()
   end
 
   defp insert_group(multi, attrs) do
@@ -83,6 +85,16 @@ defmodule Operately.Groups.InsertGroup do
         space_id: changes.group.id,
         name: "Documents & Files",
       })
+    end)
+    |> Multi.update(:group_with_default_hub, fn %{group: group, resource_hub: hub} ->
+      Ecto.Changeset.change(group, default_resource_hub_id: hub.id)
+    end)
+  end
+
+  defp set_default_task_board(multi) do
+    multi
+    |> Multi.update(:group_with_default_board, fn %{group_with_default_hub: group, task_board: board} ->
+      Groups.Group.default_task_board_changeset(group, board)
     end)
   end
 end

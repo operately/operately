@@ -63,6 +63,7 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
              goal_id: nil,
              milestone_id: nil,
              task_id: nil,
+             board_id: nil,
              person_id: nil,
              discussion_id: nil,
              project_check_in_id: nil,
@@ -142,10 +143,12 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
     assert person_target.person_id == Operately.ShortUuid.encode!(ctx.teammate.id)
   end
 
-  test "returns a canonical URL and owning space for space tasks", ctx do
+  test "returns the owning board URL for non-default board tasks", ctx do
+    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Support", task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses})
+
     ctx =
       ctx
-      |> Factory.create_space_task(:space_task, :space, name: "Space task marker")
+      |> Factory.create_space_task(:space_task, :space, name: "Space task marker", board_id: board.id)
       |> Factory.log_in_person(:creator)
 
     assert {:ok, _} = SourceIndexer.sync("task", ctx.space_task.id)
@@ -157,6 +160,7 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
 
     assert result.navigation_target.space_id == Operately.ShortUuid.encode!(ctx.space.id)
     assert result.navigation_target.project_id == nil
+    assert result.navigation_target.board_id == Operately.ShortUuid.encode!(board.id)
   end
 
   test "applies optional space, type, time, and sort filters", ctx do

@@ -29,6 +29,18 @@ const options = {
   platform: "browser",
   target: "es2020",
   packages: "external",
+  plugins: [
+    {
+      name: "bundle-private-icon-imports",
+      setup(build) {
+        // Private filenames can change between compatible Tabler releases.
+        // Ship the icons from our locked dependency instead of exposing those paths.
+        build.onResolve({ filter: /^@tabler\/icons-react\/dist\// }, ({ path: specifier }) => ({
+          path: require.resolve(specifier),
+        }));
+      },
+    },
+  ],
   logLevel: "info",
 };
 
@@ -71,6 +83,7 @@ if (watching) {
   const context = await esbuild.context({
     ...options,
     plugins: [
+      ...options.plugins,
       {
         name: "watch-styles",
         setup(build) {

@@ -2,6 +2,7 @@ import React from "react";
 import ErrorPage from "./ErrorPage";
 
 import pages from "@/pages";
+import { legacyLoader as legacyKanbanLoader } from "@/pages/SpaceKanbanPage/legacyLoader";
 
 import { createBrowserRouter, ShouldRevalidateFunction } from "react-router";
 import { companyLoader } from "./companyLoader";
@@ -127,10 +128,13 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("spaces/:id/edit/general-access", pages.SpaceEditGeneralAccessPage),
         pageRoute("spaces/:id/add-members", pages.SpaceAddMembersPage),
         pageRoute("spaces/:id/work-map", pages.SpaceWorkMapPage),
-        pageRoute("spaces/:id/kanban", pages.SpaceKanbanPage),
+        pageRoute("spaces/:id/boards/:boardId", pages.SpaceKanbanPage),
         pageRoute("spaces/:id/kpis", pages.SpaceKpisPage),
         pageRoute("spaces/:id/kpis/:kpiId", pages.SpaceKpisPage),
         pageRoute("spaces/:id/project-templates", pages.ProjectTemplatesPage),
+
+        // Redirect legacy kanban links to the space's default board, preserving query parameters such as taskId.
+        pageRoute("spaces/:id/kanban", { ...pages.SpaceKanbanPage, loader: legacyKanbanLoader }, { preload: false }),
 
         pageRoute("resource-hubs/:id", pages.ResourceHubPage),
         pageRoute("resource-hubs/:id/drafts", pages.ResourceHubDraftsPage),

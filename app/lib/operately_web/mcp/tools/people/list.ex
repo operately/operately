@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Mcp.Tools.People.List do
     Definition.new!(
       name: "list_people",
       title: "List People",
-      description: "Lists people in the authenticated company.",
+      description: "Lists company members and guests with access levels and invitation status.",
       company_mode: :authenticated,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,
@@ -29,5 +29,5 @@ defmodule OperatelyWeb.Mcp.Tools.People.List do
   end
 
   @impl true
-  def call(conn, _arguments), do: PeopleList.call(conn, %{})
+  def call(conn, _arguments), do: PeopleList.call(conn, %{include_account: true, include_company_access_levels: true})
 end

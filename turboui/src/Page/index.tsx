@@ -77,12 +77,19 @@ export function PageOpen(props: Page.Props) {
 }
 
 // New style pages
-export function PageNew(props: Page.Props) {
+export function PageNew(props: Page.Props & { fillHeight?: boolean }) {
   useHtmlTitle(props.title);
 
-  const containerClass = classNames("absolute inset-0");
-  const innerClass = classNames("bg-surface-base", "flex flex-col", "min-h-full", props.className);
-  const contentClass = classNames(sizeClasses[props.size || "medium"]);
+  const containerClass = classNames("absolute inset-0", props.fillHeight && "flex flex-col");
+  const innerClass = classNames(
+    "bg-surface-base flex flex-col",
+    props.fillHeight ? "flex-1 min-h-0 overflow-hidden" : "min-h-full",
+    props.className,
+  );
+  const contentClass = classNames(
+    sizeClasses[props.size || "medium"],
+    props.fillHeight && "flex flex-col flex-1 min-h-0",
+  );
 
   return (
     <div className={containerClass} data-test-id={props.testId}>

@@ -44,12 +44,18 @@ defmodule Operately.CompanyTransfers.ImporterTest do
       ctx
       |> Factory.add_subscription(:subscription, :project, person: ctx.member)
 
+    ctx = Factory.add_project_task(ctx, :project_task, nil, project_id: ctx.project.id)
+    source_board = Project.task_board(ctx.project)
+    # The board is authoritative even when the package contains stale project fields.
+    source_board |> change(tasks_kanban_state: %{"pending" => [WebPaths.task_id(ctx.project_task)]}) |> Repo.update!()
+
     short_id = unique_short_id()
 
     assert {:ok, import_run} =
              export_and_stage_import(ctx, fn package ->
                package
                |> replace_company_short_id(short_id)
+               |> add_stale_project_workflow_fields()
              end)
 
     assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
@@ -75,6 +81,14 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert imported_project.id != ctx.project.id
     assert imported_project.company_id == imported_company.id
 
+    imported_board = Project.task_board(imported_project)
+    imported_task = Repo.get_by!(Operately.Tasks.Task, project_id: imported_project.id, name: ctx.project_task.name)
+
+    assert imported_task.board_id == imported_board.id
+    assert imported_board.id != source_board.id
+    assert imported_board.task_statuses == source_board.task_statuses
+    assert imported_board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(imported_task)]}
+
     assert imported_creator.account_id == ctx.creator.account_id
     assert imported_member.account_id == ctx.member.account_id
     assert imported_member.company_id == imported_company.id
@@ -90,6 +104,128 @@ defmodule Operately.CompanyTransfers.ImporterTest do
              "reused_count" => 2,
              "created_count" => 0
            }
+  end
+
+  test "run/1 preserves board state when a transitional package also contains legacy group fields", ctx do
+    alias Operately.Groups.Group
+    alias Operately.Tasks.{Task, TaskBoard}
+
+    ctx = ctx |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space)
+    board =
+      Repo.insert!(%TaskBoard{
+        space_id: ctx.space.id,
+        name: "Team board",
+        position: 3,
+        task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses,
+        tasks_kanban_state: %{"pending" => [WebPaths.task_id(ctx.task)]}
+      })
+    ctx.space |> change(default_task_board_id: board.id) |> Repo.update!()
+    ctx.task |> change(board_id: board.id) |> Repo.update!()
+
+    {:ok, archived} = Operately.Operations.TaskBoardCreating.run(ctx.creator, ctx.space, "Archived board")
+    ctx = Factory.create_space_task(ctx, :archived_task, :space, board_id: archived.id)
+    {:ok, archived} = Operately.Operations.TaskBoardArchiving.run(ctx.creator, ctx.space, archived)
+
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               boards = Enum.find(package["tables"], &(&1["name"] == "task_boards"))
+               assert board.id in Enum.map(boards["rows"], & &1["id"])
+               Map.update!(package, "tables", fn tables ->
+                 Enum.map(tables, fn table ->
+                   if table["name"] == "groups" do
+                     Map.update!(table, "rows", fn rows ->
+                       Enum.map(rows, fn row ->
+                         refute Map.has_key?(row, "task_statuses")
+                         refute Map.has_key?(row, "tasks_kanban_state")
+                         Map.merge(row, %{"task_statuses" => [], "tasks_kanban_state" => %{}})
+                       end)
+                     end)
+                   else
+                     table
+                   end
+                 end)
+               end)
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    space = Repo.get_by!(Group, company_id: completed_run.company_id, name: ctx.space.name)
+    imported_board = Repo.get_by!(TaskBoard, space_id: space.id, name: board.name)
+    task = Repo.get_by!(Task, space_id: space.id, name: ctx.task.name)
+
+    assert imported_board.id != board.id
+    assert space.id != ctx.space.id
+    assert task.id != ctx.task.id
+    assert space.default_task_board_id == imported_board.id
+    assert task.board_id == imported_board.id
+    assert imported_board.position == board.position
+    assert imported_board.task_statuses == board.task_statuses
+    assert imported_board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(task)]}
+
+    imported_archive = Repo.get_by!(TaskBoard, space_id: space.id, name: archived.name)
+    archived_task = Repo.get_by!(Task, space_id: space.id, name: ctx.archived_task.name)
+
+    assert imported_archive.archived_at == archived.archived_at
+    assert imported_archive.position == archived.position
+    assert imported_archive.task_statuses == archived.task_statuses
+    assert archived_task.board_id == imported_archive.id
+    assert imported_archive.tasks_kanban_state == Map.put(archived.tasks_kanban_state, ctx.archived_task.task_status.value, [WebPaths.task_id(archived_task)])
+    assert Repo.exists?(from a in Operately.Activities.Activity,
+      where: a.action == "task_board_archived" and a.content["board_id"] == ^imported_archive.id and a.content["space_id"] == ^space.id)
+
+  end
+
+  test "run/1 initializes board ownership and ordering for older packages", ctx do
+    alias Operately.Groups.Group
+    alias Operately.Tasks.{Task, TaskBoard}
+
+    ctx = ctx |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space)
+    ctx = Factory.add_project(ctx, :project, :space)
+    ctx = Factory.add_project_task(ctx, :project_task, nil, project_id: ctx.project.id)
+    project_board = Project.task_board(ctx.project)
+    project_board |> change(tasks_kanban_state: %{"pending" => [WebPaths.task_id(ctx.project_task)]}) |> Repo.update!()
+    ordering = %{"pending" => [WebPaths.task_id(ctx.task)]}
+
+    Repo.get!(TaskBoard, ctx.space.default_task_board_id) |> change(tasks_kanban_state: ordering) |> Repo.update!()
+
+    assert {:ok, import_run} = export_and_stage_import(ctx, fn package ->
+      boards = package["tables"] |> Enum.find(&(&1["name"] == "task_boards")) |> Map.fetch!("rows") |> Map.new(&{&1["id"], &1})
+      tables = package["tables"] |> Enum.reject(&(&1["name"] == "task_boards")) |> Enum.map(fn table ->
+        case table["name"] do
+          "groups" -> Map.update!(table, "rows", &Enum.map(&1, fn row ->
+            board = Map.fetch!(boards, row["default_task_board_id"])
+            row |> Map.merge(Map.take(board, ["task_statuses", "tasks_kanban_state"])) |> Map.delete("default_task_board_id")
+          end))
+          "projects" -> Map.update!(table, "rows", &Enum.map(&1, fn row ->
+            board = Enum.find(Map.values(boards), fn board -> board["project_id"] == row["id"] end)
+            Map.merge(row, Map.take(board, ["task_statuses", "tasks_kanban_state"]))
+          end))
+          "tasks" -> Map.update!(table, "rows", &Enum.map(&1, fn row -> Map.delete(row, "board_id") end))
+          _ -> table
+        end
+      end)
+      Map.put(package, "tables", tables)
+    end)
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed} = Importer.run(import_run)
+    space = Repo.get_by!(Group, company_id: completed.company_id, name: ctx.space.name)
+    task = Repo.get_by!(Task, space_id: space.id, name: ctx.task.name)
+    board = Repo.get!(TaskBoard, space.default_task_board_id)
+    assert task.board_id == board.id
+    assert board.task_statuses == Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses
+    assert board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(task)]}
+    assert board.inserted_at == ctx.space.inserted_at
+
+    project = Repo.get_by!(Project, company_id: completed.company_id, name: ctx.project.name)
+    task = Repo.get_by!(Task, project_id: project.id, name: ctx.project_task.name)
+    board = Project.task_board(project)
+
+    assert task.board_id == board.id
+    assert board.task_statuses == project_board.task_statuses
+    assert board.tasks_kanban_state == %{"pending" => [WebPaths.task_id(task)]}
+    assert board.inserted_at == ctx.project.inserted_at
   end
 
   test "run/1 round-trips the core project template graph and provenance", ctx do
@@ -1094,6 +1230,24 @@ defmodule Operately.CompanyTransfers.ImporterTest do
       end)
     end)
     |> put_in(["manifest", "source_company", "short_id"], short_id)
+  end
+
+  defp add_stale_project_workflow_fields(package) do
+    package
+    |> Map.update!("tables", fn tables ->
+      Enum.map(tables, fn
+        %{"name" => "projects"} = table ->
+          Map.update!(table, "rows", fn rows ->
+            Enum.map(rows, fn row ->
+              refute Map.has_key?(row, "task_statuses")
+              refute Map.has_key?(row, "tasks_kanban_state")
+              Map.merge(row, %{"task_statuses" => [], "tasks_kanban_state" => %{}})
+            end)
+          end)
+
+        table -> table
+      end)
+    end)
   end
 
   defp add_unknown_company_column(package, column, value) do

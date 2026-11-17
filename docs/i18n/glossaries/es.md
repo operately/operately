@@ -158,7 +158,8 @@ Health, completion, and deadlines are separate dimensions. Choose the label acco
 
 | English | Meaning/context | Español | Capitalization and usage |
 | --- | --- | --- | --- |
-| Docs & Files / Documents & Files | Named content tool | Documentos y archivos | Same name for both variants. Never expose the internal Resource Hub name. |
+| Docs & Files / Documents & Files | Named content tool | Documentos y archivos | Same name for both variants. |
+| Resource Hub / Resource Hubs | Named container of documents, files, links, and folders | Centro de recursos / Centros de recursos | User-facing product term. Use for hub management; preserve user-authored hub names. |
 | document / doc | Rich-text document | Documento | Distinct from an uploaded **archivo**, **carpeta**, **enlace**, or comment **archivo adjunto**. |
 | resource / item | Generic content entry | Recurso / Elemento | Prefer the specific type when known; recurso here is not necessarily personnel or computing capacity. |
 | key resource / support material | Supporting project/goal content | Recurso clave / Material de apoyo | Can include links as well as documents or files. |

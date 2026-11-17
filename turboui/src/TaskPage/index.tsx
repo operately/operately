@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { InfoCallout } from "../Callouts";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useProjectPageTabs } from "../ProjectPageLayout/useProjectPageTabs";
 
@@ -13,6 +15,7 @@ export namespace TaskPage {
   export type MoveDestinationType = TaskPageTypes.MoveDestinationType;
   export type Variant = TaskPageTypes.Variant;
   export type VariantFeatures = TaskPageTypes.VariantFeatures;
+  export type MoveTaskResult = TaskPageTypes.MoveTaskResult;
   export type MoveTaskInput = TaskPageTypes.MoveTaskInput;
   export type Space = TaskPageTypes.Space;
   export type SpaceProps = TaskPageTypes.SpaceProps;
@@ -68,12 +71,15 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     onArchive: props.onArchive,
     onRestore: props.onRestore,
     onMoveTask: props.onMoveTask,
+    loadMoveBoards: props.loadMoveBoards,
+    currentBoardId: props.currentBoardId,
     projectSearch: props.projectSearch,
     spaceSearch: props.spaceSearch,
     assigneePersonSearch: props.assigneePersonSearch,
     richTextHandlers: props.richTextHandlers,
     localDraftKeyBase: props.localDraftKeyBase,
     canEdit: props.canEdit,
+    boardArchived: props.boardArchived,
     timelineItems: props.timelineItems,
     timelineIsLoading: props.timelineIsLoading,
     currentUser: props.currentUser,
@@ -134,17 +140,21 @@ export function TaskPage(props: TaskPage.Props) {
 }
 
 export function TaskContent(props: TaskPage.ContentState) {
+  const { t } = useTranslation();
+  const protectedProps = { ...props, canEdit: props.canEdit && !props.boardArchived };
+
   return (
     <>
-      <PageHeader {...props} />
-      <MobileSidebar {...props} />
+      {props.boardArchived && <InfoCallout testId="archived-board-notice" message={t("This board is archived.")} />}
+      <PageHeader {...protectedProps} />
+      <MobileSidebar {...protectedProps} />
       <div className="sm:grid sm:grid-cols-12 mt-6">
         <Overview {...props} />
-        <Sidebar {...props} />
+        <Sidebar {...protectedProps} />
       </div>
 
-      <MoveModal {...props} />
-      <DeleteModal {...props} />
+      {!props.boardArchived && <MoveModal {...props} />}
+      {!props.boardArchived && <DeleteModal {...props} />}
     </>
   );
 }

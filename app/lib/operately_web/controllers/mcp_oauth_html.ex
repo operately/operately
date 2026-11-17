@@ -3,6 +3,10 @@ defmodule OperatelyWeb.McpOAuthHTML do
   use OperatelyWeb, :html
 
   # Only the application-owned client tag becomes markup; names and catalog text are escaped.
+  def access_choice?(scopes) when is_list(scopes) do
+    "mcp:read" in scopes and "mcp:write" in scopes
+  end
+
   def client_sentence(sentence, client_name) do
     sentence
     |> String.split("<client/>")

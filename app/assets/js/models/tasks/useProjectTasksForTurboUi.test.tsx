@@ -269,6 +269,38 @@ describe("useProjectTasksForTurboUi", () => {
   });
 });
 
+it("preserves a refreshed milestone status while pruning task ordering", async () => {
+  (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+  const root = createRoot(document.createElement("div"));
+  const tasks: Task[] = [];
+  let currentMilestones: TaskBoard.Milestone[] = [];
+  function Harness({ completed }: { completed: boolean }) {
+    const [milestones, setMilestones] = React.useState<TaskBoard.Milestone[]>([
+      { id: "milestone-1", name: "Launch", status: "pending", tasksOrderingState: ["task-1"] },
+    ]);
+    React.useEffect(() => {
+      if (completed) setMilestones((prev) => prev.map((milestone) => ({ ...milestone, status: "done" })));
+    }, [completed]);
+    currentMilestones = milestones;
+    useProjectTasksForTurboUi({
+      backendTasks: tasks,
+      tasksLoaded: completed,
+      projectId: "project-1",
+      milestones,
+      setMilestones,
+    });
+    return null;
+  }
+  try {
+    await act(async () => root.render(<Harness completed={false} />));
+    await act(async () => root.render(<Harness completed />));
+    expect(currentMilestones[0]?.status).toBe("done");
+    expect(currentMilestones[0]?.tasksOrderingState).toEqual([]);
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
 it("preserves saved milestone order until background tasks have been parsed", async () => {
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
   const root = createRoot(document.createElement("div"));

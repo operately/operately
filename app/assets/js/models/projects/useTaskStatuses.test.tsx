@@ -28,7 +28,7 @@ it.each(["success", "false", "throw", "refresh failure"])(
       result.current.handleSaveStatuses({ nextStatuses: [], deletedStatusReplacements: { old: "new" } }),
     );
     expect(mockSave).toHaveBeenCalledWith({
-      projectId: "p1",
+      boardId: "p1",
       taskStatuses: [],
       deletedStatusReplacements: [{ deletedStatusId: "old", replacementStatusId: "new" }],
     });

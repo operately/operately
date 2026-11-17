@@ -173,6 +173,13 @@ export const DISPLAYED_IN_FEED = [
   "resource_hub_folder_created",
   "resource_hub_folder_deleted",
   "resource_hub_folder_renamed",
+  "resource_hub_deleted",
+  "resource_hub_renamed",
+  "task_board_created",
+  "task_board_renamed",
+  "task_board_default_changed",
+  "task_board_restored",
+  "task_board_archived",
   "resource_hub_link_created",
   "resource_hub_link_edited",
   "resource_hub_link_deleted",
@@ -289,6 +296,13 @@ import ResourceHubFolderCopied from "@/features/activities/ResourceHubFolderCopi
 import ResourceHubFolderCreated from "@/features/activities/ResourceHubFolderCreated";
 import ResourceHubFolderDeleted from "@/features/activities/ResourceHubFolderDeleted";
 import ResourceHubFolderRenamed from "@/features/activities/ResourceHubFolderRenamed";
+import ResourceHubDeleted from "@/features/activities/ResourceHubDeleted";
+import ResourceHubRenamed from "@/features/activities/ResourceHubRenamed";
+import TaskBoardCreated from "@/features/activities/TaskBoardCreated";
+import TaskBoardRenamed from "@/features/activities/TaskBoardRenamed";
+import TaskBoardDefaultChanged from "@/features/activities/TaskBoardDefaultChanged";
+import TaskBoardRestored from "@/features/activities/TaskBoardRestored";
+import TaskBoardArchived from "@/features/activities/TaskBoardArchived";
 import ResourceHubLinkCommented from "@/features/activities/ResourceHubLinkCommented";
 import ResourceHubLinkCreated from "@/features/activities/ResourceHubLinkCreated";
 import ResourceHubLinkDeleted from "@/features/activities/ResourceHubLinkDeleted";
@@ -403,6 +417,13 @@ function handler(activity: Activity) {
     .with("resource_hub_folder_created", () => ResourceHubFolderCreated)
     .with("resource_hub_folder_deleted", () => ResourceHubFolderDeleted)
     .with("resource_hub_folder_renamed", () => ResourceHubFolderRenamed)
+    .with("resource_hub_deleted", () => ResourceHubDeleted)
+    .with("resource_hub_renamed", () => ResourceHubRenamed)
+    .with("task_board_created", () => TaskBoardCreated)
+    .with("task_board_renamed", () => TaskBoardRenamed)
+    .with("task_board_default_changed", () => TaskBoardDefaultChanged)
+    .with("task_board_restored", () => TaskBoardRestored)
+    .with("task_board_archived", () => TaskBoardArchived)
     .with("resource_hub_link_created", () => ResourceHubLinkCreated)
     .with("resource_hub_link_edited", () => ResourceHubLinkEdited)
     .with("resource_hub_link_deleted", () => ResourceHubLinkDeleted)

@@ -118,6 +118,25 @@ it("skips company cards from the lobby but not enterprise company parameters", a
   service.dispose();
 });
 
+it("preloads renamed company links while keeping other companies isolated", async () => {
+  location = "/demo-1-0b0k/home";
+  Api.default.setHeaders({ "x-company-id": "0b0k" });
+  const service = preloader();
+
+  await service.preloadPage("/my-demo-0b0k/projects/one");
+  expect(dataLoader).toHaveBeenCalledWith({
+    params: { companyId: "my-demo-0b0k", id: "one" },
+    request: expect.any(Request),
+  });
+  dataLoader.mockClear();
+
+  await service.preloadPage("/my-demo-0b0l/projects/one");
+  Api.default.setHeaders({ "x-company-id": "0b0l" });
+  await service.preloadPage("/my-demo-0b0k/projects/one");
+  expect(dataLoader).not.toHaveBeenCalled();
+  service.dispose();
+});
+
 it("deduplicates pending URLs, ignores fragments, and retries finished loaders", async () => {
   let finish: () => void = () => {};
   dataLoader.mockImplementationOnce(

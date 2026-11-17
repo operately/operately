@@ -17,7 +17,7 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
 
   describe "archiving" do
     test "archives a closed task without changing its other attributes", ctx do
-      task = close_task(ctx.task, ctx.project.task_statuses)
+      task = close_task(ctx.task, Operately.Projects.Project.task_statuses(ctx.project))
 
       assert {:ok, archived} = TaskArchiveUpdating.run(ctx.creator, task, true)
       assert %NaiveDateTime{} = archived.archived_at
@@ -26,7 +26,7 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
     end
 
     test "records the author and project context in the activity", ctx do
-      task = close_task(ctx.task, ctx.project.task_statuses)
+      task = close_task(ctx.task, Operately.Projects.Project.task_statuses(ctx.project))
 
       assert {:ok, _} = TaskArchiveUpdating.run(ctx.creator, task, true)
       assert [activity] = archive_activities(task)
@@ -69,7 +69,7 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
     end
 
     test "validates the persisted status when given a stale closed task", ctx do
-      task = close_task(ctx.task, ctx.project.task_statuses)
+      task = close_task(ctx.task, Operately.Projects.Project.task_statuses(ctx.project))
       set_status(task, ctx.task.task_status)
 
       assert {:error, :bad_request} = TaskArchiveUpdating.run(ctx.creator, task, true)
@@ -78,7 +78,7 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
     end
 
     test "uses the persisted status when given a stale open task", ctx do
-      close_task(ctx.task, ctx.project.task_statuses)
+      close_task(ctx.task, Operately.Projects.Project.task_statuses(ctx.project))
 
       assert {:ok, archived} = TaskArchiveUpdating.run(ctx.creator, ctx.task, true)
       assert archived.archived_at
@@ -86,7 +86,7 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
     end
 
     test "records the current name when given a stale task", ctx do
-      task = close_task(ctx.task, ctx.project.task_statuses)
+      task = close_task(ctx.task, Operately.Projects.Project.task_statuses(ctx.project))
       {:ok, renamed} = Operately.Tasks.update_task(task, %{name: "Renamed task"})
 
       assert {:ok, _} = TaskArchiveUpdating.run(ctx.creator, task, true)
@@ -95,7 +95,7 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
     end
 
     test "repeated requests with a stale task preserve the timestamp and create only one activity", ctx do
-      task = close_task(ctx.task, ctx.project.task_statuses)
+      task = close_task(ctx.task, Operately.Projects.Project.task_statuses(ctx.project))
       archived_at = ~N[2026-01-01 12:00:00]
 
       assert {:ok, _} = TaskArchiveUpdating.run(ctx.creator, task, true)
@@ -116,11 +116,17 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
       {:ok, moved} =
         Operately.Tasks.update_task(task, %{
           project_id: ctx.destination_project.id,
+          board_id: Operately.Projects.Project.task_board(ctx.destination_project).id,
           milestone_id: nil,
           name: "Moved task"
         })
 
-      assert {:ok, restored} = TaskArchiveUpdating.run(ctx.creator, task, false)
+      assert {:error, :not_found} = TaskArchiveUpdating.run(ctx.creator, task, false)
+      assert Repo.reload!(task).archived_at == task.archived_at
+      assert archive_activities(task) == []
+
+      assert {:ok, current} = Task.get(ctx.creator, id: task.id)
+      assert {:ok, restored} = TaskArchiveUpdating.run(ctx.creator, current, false)
       assert is_nil(restored.archived_at)
       assert restored.project_id == moved.project_id
       assert [activity] = archive_activities(task)
@@ -137,11 +143,17 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
       {:ok, _} =
         Operately.Tasks.update_task(task, %{
           project_id: nil,
+          board_id: ctx.destination_space.default_task_board_id,
           milestone_id: nil,
           space_id: ctx.destination_space.id
         })
 
-      assert {:ok, restored} = TaskArchiveUpdating.run(ctx.creator, task, false)
+      assert {:error, :not_found} = TaskArchiveUpdating.run(ctx.creator, task, false)
+      assert Repo.reload!(task).archived_at == task.archived_at
+      assert archive_activities(task) == []
+
+      assert {:ok, current} = Task.get(ctx.creator, id: task.id)
+      assert {:ok, restored} = TaskArchiveUpdating.run(ctx.creator, current, false)
       assert is_nil(restored.archived_at)
       assert restored.space_id == ctx.destination_space.id
       assert [activity] = archive_activities(task)
@@ -151,7 +163,7 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
     end
 
     test "restores a task without changing its other attributes and records an activity", ctx do
-      task = close_task(ctx.task, ctx.project.task_statuses)
+      task = close_task(ctx.task, Operately.Projects.Project.task_statuses(ctx.project))
       assert {:ok, archived} = TaskArchiveUpdating.run(ctx.creator, task, true)
 
       assert {:ok, restored} = TaskArchiveUpdating.run(ctx.creator, Repo.preload(archived, :project), false)
@@ -168,7 +180,7 @@ defmodule Operately.Operations.TaskArchiveUpdatingTest do
     end
 
     test "repeated requests with a stale archived task create only one restore activity", ctx do
-      task = close_task(ctx.task, ctx.project.task_statuses)
+      task = close_task(ctx.task, Operately.Projects.Project.task_statuses(ctx.project))
       task = task |> Ecto.Changeset.change(archived_at: ~N[2026-01-01 12:00:00]) |> Repo.update!()
 
       assert {:ok, _} = TaskArchiveUpdating.run(ctx.creator, task, false)

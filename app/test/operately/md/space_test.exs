@@ -6,11 +6,14 @@ defmodule Operately.MD.SpaceTest do
   import Operately.PeopleFixtures
   import Operately.TasksFixtures
 
-  test "it renders company and members from a bare space struct" do
+  test "it renders company, members, and current board statuses from a bare space struct" do
     account = account_fixture()
     company = company_fixture(%{company_name: "MCP Company"}, account)
     creator = person_fixture(%{company_id: company.id, full_name: "Taylor Creator"})
     space = group_fixture(creator, %{company_id: company.id, name: "Roadmap Space", mission: "Coordinate roadmap work"})
+    board = Repo.get!(Operately.Tasks.TaskBoard, space.default_task_board_id)
+    status = board.task_statuses |> hd() |> Map.from_struct() |> Map.put(:label, "Board review")
+    board |> Operately.Tasks.TaskBoard.changeset(%{task_statuses: [status]}) |> Repo.update!()
 
     raw_space = Repo.get!(Operately.Groups.Group, space.id)
     rendered = Operately.MD.Space.render(raw_space)
@@ -20,6 +23,8 @@ defmodule Operately.MD.SpaceTest do
     assert rendered =~ "Members: 1"
     assert rendered =~ "## Members"
     assert rendered =~ "Taylor Creator"
+    assert rendered =~ "Board review"
+    refute rendered =~ "Not started"
     refute rendered =~ "## Tasks"
   end
 

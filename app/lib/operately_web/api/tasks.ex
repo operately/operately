@@ -2,35 +2,6 @@ defmodule OperatelyWeb.Api.Tasks do
   alias __MODULE__.SharedMultiSteps, as: Steps
 
   alias Operately.Repo
-  alias OperatelyWeb.Api.Serializer
-
-  defmodule List do
-    @moduledoc """
-    Lists all tasks for a project.
-    """
-
-    use TurboConnect.Query
-
-    inputs do
-      field :project_id, :id, null: false
-    end
-
-    outputs do
-      field :tasks, list_of(:task), null: false
-    end
-
-    def call(conn, inputs) do
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_view)
-      |> Steps.get_tasks()
-      |> Steps.commit()
-      |> Steps.respond(fn changes ->
-        %{tasks: Serializer.serialize(changes.tasks, level: :full)}
-      end)
-    end
-  end
 
   defmodule UpdateStatus do
     @moduledoc """
@@ -56,9 +27,11 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.update_task_status(inputs.status)
       |> Steps.save_activity(:task_status_updating, &build_activity_content/1)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
@@ -69,7 +42,8 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     defp build_activity_content(changes) do
-      old_status = changes.task.task_status && Map.from_struct(changes.task.task_status)
+      original_task = changes.locked_task
+      old_status = original_task.task_status && Map.from_struct(original_task.task_status)
       new_status = changes.updated_task.task_status && Map.from_struct(changes.updated_task.task_status)
 
       base = %{
@@ -124,6 +98,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.update_task_description(inputs.description)
       |> Steps.save_activity(:task_description_change, &build_activity_content(inputs, &1))
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
@@ -181,9 +156,11 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type)
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.update_task_name(inputs.name)
       |> Steps.save_activity(:task_name_updating, &build_activity_content/1)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
@@ -238,9 +215,11 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type)
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.update_task_due_date(inputs.due_date)
       |> Steps.save_activity(:task_due_date_updating, &build_activity_content/1)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
@@ -296,8 +275,10 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type)
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.update_task_reminders(inputs.reminders)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
@@ -330,10 +311,12 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.validate_assignees(assignee_ids)
       |> Steps.update_task_assignees(assignee_ids)
       |> Steps.save_activity(:task_assignee_updating, &build_activity_content(inputs, &1))
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
@@ -402,8 +385,10 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, :project)
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.update_milestone_and_ordering(inputs.milestone_id, inputs.index)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{
           task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full),
@@ -435,6 +420,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, :project)
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.validate_milestone_if_changed(inputs.milestone_id)
       |> Steps.update_task_milestone_if_changed(inputs.milestone_id)
       |> Steps.save_activity(:task_milestone_updating, fn changes ->
@@ -448,6 +434,7 @@ defmodule OperatelyWeb.Api.Tasks do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{ task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full) }
       end)
@@ -456,17 +443,16 @@ defmodule OperatelyWeb.Api.Tasks do
 
   defmodule Create do
     @moduledoc """
-    Creates a new task in a project or space.
+    Creates a task in a project or space. Space requests use the persisted default board unless board_id selects another board in that space.
     """
 
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
-    alias Operately.Tasks.SpaceSync
-
     inputs do
       field :type, :task_type, null: false
       field :id, :id, null: false
+      field? :board_id, :id, null: true
       field? :milestone_id, :id, null: true
       field :name, :string, null: false
       field? :assignee_id, :id, null: true
@@ -482,14 +468,18 @@ defmodule OperatelyWeb.Api.Tasks do
       field? :updated_space, :space, null: false
     end
 
+    def call(_conn, %{type: :project, board_id: board_id}) when not is_nil(board_id), do: {:error, :bad_request}
+
     def call(conn, inputs = %{type: :project}) do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.id)
       |> Steps.check_permissions(:can_edit)
+      |> Steps.find_project_board()
       |> Steps.validate_milestone_belongs_to_project(inputs[:milestone_id])
       |> Steps.validate_assignees(Steps.assignee_ids(inputs))
       |> Steps.create_task(inputs)
+      |> Steps.sync_created_task()
       |> Steps.save_activity(:task_adding, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -497,11 +487,13 @@ defmodule OperatelyWeb.Api.Tasks do
           project_id: changes.project.id,
           milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
+          board_id: changes.task.board_id,
           name: changes.task.name,
           description: changes.task.description
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
@@ -516,9 +508,10 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_space(inputs.id)
       |> Steps.check_permissions(:can_edit)
+      |> Steps.find_board(inputs[:board_id])
       |> Steps.validate_assignees(Steps.assignee_ids(inputs))
       |> Steps.create_task(inputs)
-      |> SpaceSync.sync_after_task_create(inputs.id)
+      |> Steps.sync_created_task()
       |> Steps.save_activity(:task_adding, fn changes ->
         %{
           company_id: changes.space.company_id,
@@ -526,11 +519,13 @@ defmodule OperatelyWeb.Api.Tasks do
           project_id: nil,
           milestone_id: nil,
           task_id: changes.task.id,
+          board_id: changes.task.board_id,
           name: changes.task.name,
           description: changes.task.description
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
@@ -564,9 +559,11 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit)
+      |> Steps.lock_task()
       |> Steps.delete_task()
       |> Steps.save_activity(:task_deleting, &build_activity_content/1)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
@@ -604,7 +601,6 @@ defmodule OperatelyWeb.Api.Tasks do
   defmodule SharedMultiSteps do
     use Gettext, backend: OperatelyWeb.Gettext
     require Logger
-    import Ecto.Query, only: [from: 2]
     use OperatelyWeb.Api.Helpers
     alias Operately.Operations.Notifications
     alias Operately.Notifications.Subscription
@@ -682,20 +678,6 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
-    def get_tasks(multi) do
-      Ecto.Multi.run(multi, :tasks, fn _repo, %{project: project} ->
-        tasks =
-          from(t in Operately.Tasks.Task,
-            where: t.project_id == ^project.id,
-            preload: [:assigned_people, :milestone, subscription_list: [subscriptions: :person]]
-          )
-          |> Repo.all()
-          |> Operately.Tasks.Task.load_comments_count()
-
-        {:ok, tasks}
-      end)
-    end
-
     def check_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, changes ->
         cond do
@@ -717,6 +699,12 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
+    def lock_task(multi) do
+      multi
+      |> Ecto.Multi.run(:boards, fn _repo, %{task: task} -> Operately.Tasks.BoardSync.lock_boards([task.board_id]) end)
+      |> Ecto.Multi.run(:locked_task, fn _repo, %{task: task, boards: boards} -> Operately.Tasks.BoardSync.lock_task(task, boards) end)
+    end
+
     def check_milestone_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone, company_read_only: company_read_only} ->
         Operately.Projects.Permissions.check(milestone.request_info.access_level, permission, company_read_only: company_read_only)
@@ -725,20 +713,47 @@ defmodule OperatelyWeb.Api.Tasks do
 
     def update_task_status(multi, new_status) do
       multi
-      |> Ecto.Multi.update(:updated_task, fn %{task: task} ->
-        Operately.Tasks.Task.changeset(task, Operately.Tasks.Task.status_change_attrs(task, new_status))
+      |> Ecto.Multi.run(:updated_task, fn _repo, %{locked_task: task, boards: boards} ->
+        with {:ok, status} <- validate_task_status(boards[task.board_id], new_status),
+             {:ok, updated} <- task |> Operately.Tasks.Task.changeset(Operately.Tasks.Task.status_change_attrs(task, status)) |> Repo.update(),
+             {:ok, _} <- Operately.Tasks.BoardSync.add_task(boards[task.board_id], updated) do
+          {:ok, Repo.preload(updated, [:assigned_people, :space, :project])}
+        end
       end)
       |> Operately.Search.IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.updated_task.id end)
     end
 
+    defp validate_task_status(board, status) do
+      case Enum.find(board.task_statuses || [], &(status && &1.id == status.id)) do
+        nil -> {:error, {:bad_request, gettext("Invalid status")}}
+        current -> {:ok, current}
+      end
+    end
+
+    def find_project_board(multi) do
+      Ecto.Multi.run(multi, :board, fn _, %{project: project} ->
+        with {:ok, board} <- Operately.Tasks.TaskBoard.for_project(project) do
+          Operately.Tasks.BoardSync.lock_board(board.id)
+        end
+      end)
+    end
+
+    def find_board(multi, board_id) do
+      Ecto.Multi.run(multi, :board, fn _repo, %{me: me, space: space} ->
+        with {:ok, board} <- OperatelyWeb.Api.Tasks.BoardScope.resolve(me, space, board_id) do
+          Operately.Tasks.BoardSync.lock_board(board.id)
+        end
+      end)
+    end
+
     def update_task_due_date(multi, new_due_date) do
-      Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
+      Ecto.Multi.update(multi, :updated_task, fn %{locked_task: task} ->
         Operately.Tasks.Task.changeset(task, update_due_date_attrs(task, new_due_date))
       end)
     end
 
     def update_task_reminders(multi, reminders) do
-      Ecto.Multi.run(multi, :updated_task, fn _repo, %{task: task} ->
+      Ecto.Multi.run(multi, :updated_task, fn _repo, %{locked_task: task} ->
         changeset = Operately.Tasks.Task.changeset(task, %{reminders: reminders})
 
         cond do
@@ -778,7 +793,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
     def update_task_name(multi, new_name) do
       multi
-      |> Ecto.Multi.update(:updated_task, fn %{task: task} ->
+      |> Ecto.Multi.update(:updated_task, fn %{locked_task: task} ->
         Operately.Tasks.Task.changeset(task, %{name: new_name})
       end)
       |> Operately.Search.IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.updated_task.id end)
@@ -814,7 +829,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
     def validate_assignees(multi, person_ids) do
       Ecto.Multi.run(multi, :company_members, fn _repo, changes ->
-        case get_context_from_changes(changes) do
+        case changes[:project] || changes[:space] do
           %{company_id: company_id} when company_id == changes.me.company_id ->
             case Operately.People.validate_active_company_members(company_id, person_ids) do
               :ok -> {:ok, :valid}
@@ -835,7 +850,7 @@ defmodule OperatelyWeb.Api.Tasks do
       new_assignee_ids = new_assignee_ids |> Enum.reject(&is_nil/1) |> Enum.uniq()
 
       multi
-      |> Ecto.Multi.run(:clear_existing_assignees, fn _repo, %{task: task} ->
+      |> Ecto.Multi.run(:clear_existing_assignees, fn _repo, %{locked_task: task} ->
         current_assignees = Operately.Tasks.list_task_assignees(task)
         new_assignee_set = MapSet.new(new_assignee_ids)
 
@@ -849,7 +864,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
         {:ok, :cleared}
       end)
-      |> Ecto.Multi.run(:updated_task, fn _repo, %{task: task} ->
+      |> Ecto.Multi.run(:updated_task, fn _repo, %{locked_task: task} ->
         current_assignee_ids =
           Operately.Tasks.list_task_assignees(task)
           |> MapSet.new(& &1.person_id)
@@ -869,7 +884,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
         {:ok, updated_task}
       end)
-      |> Ecto.Multi.run(:assignee_subscription, fn _repo, %{task: task} ->
+      |> Ecto.Multi.run(:assignee_subscription, fn _repo, %{locked_task: task} ->
         ensure_subscriptions(task.subscription_list_id, new_assignee_ids, :invited)
       end)
       |> maybe_add_assignee_contributors(new_assignee_ids)
@@ -878,10 +893,9 @@ defmodule OperatelyWeb.Api.Tasks do
     def delete_task(multi) do
       multi
       |> Operately.Search.IndexUpdates.delete(:search_task, "task", fn changes -> changes.task.id end)
-      |> Ecto.Multi.run(:delete_task, fn repo, %{task: task} ->
-        case repo.delete(task) do
-          {:ok, deleted_task} -> {:ok, deleted_task}
-          {:error, changeset} -> {:error, changeset}
+      |> Ecto.Multi.run(:delete_task, fn repo, %{locked_task: task, boards: boards} ->
+        with {:ok, _} <- Operately.Tasks.BoardSync.remove_task(boards[task.board_id], task) do
+          repo.delete(task)
         end
       end)
     end
@@ -947,6 +961,19 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
+    def sync_created_task(multi) do
+      Ecto.Multi.run(multi, :updated_space, fn _repo, changes ->
+        with {:ok, board} <- Operately.Tasks.BoardSync.add_task(changes[:board], changes.task) do
+          if board && changes[:space] do
+            space = if board.id == changes.space.default_task_board_id, do: %{changes.space | default_task_board: board}, else: Repo.preload(changes.space, :default_task_board)
+            {:ok, space}
+          else
+            {:ok, nil}
+          end
+        end
+      end)
+    end
+
     def create_task(multi, inputs) do
       assignee_ids = assignee_ids(inputs)
 
@@ -967,6 +994,7 @@ defmodule OperatelyWeb.Api.Tasks do
             milestone_id: milestone_id,
             project_id: project_id,
             space_id: space_id,
+            board_id: changes[:board] && changes.board.id,
             creator_id: changes.me.id,
             due_date: inputs.due_date,
             subscription_list_id: changes.subscription_list.id,
@@ -1086,8 +1114,8 @@ defmodule OperatelyWeb.Api.Tasks do
 
     defp get_context_from_changes(changes) do
       cond do
+        Map.has_key?(changes, :board) -> changes.board
         Map.has_key?(changes, :project) -> changes.project
-        Map.has_key?(changes, :space) -> changes.space
         true -> nil
       end
     end
@@ -1104,17 +1132,15 @@ defmodule OperatelyWeb.Api.Tasks do
       default_status =
         case context do
           %Operately.Projects.Project{} -> Operately.Projects.Project.get_default_task_status(context)
-          %Operately.Groups.Group{} -> Operately.Groups.Group.get_default_task_status(context)
+          %Operately.Tasks.TaskBoard{} -> Operately.Tasks.TaskBoard.get_default_task_status(context)
         end
 
-      {:ok, Map.from_struct(default_status)}
+      if default_status, do: {:ok, Map.from_struct(default_status)}, else: {:error, {:bad_request, gettext("Invalid status")}}
     end
 
     defp validate_or_get_default_status(context, status) when not is_nil(context) do
-      if Enum.any?(context.task_statuses, fn s -> s.id == status.id end) do
-        {:ok, status}
-      else
-        {:error, {:bad_request, gettext("Invalid status")}}
+      with {:ok, current} <- validate_task_status(context, status) do
+        {:ok, Map.from_struct(current)}
       end
     end
 
@@ -1133,6 +1159,15 @@ defmodule OperatelyWeb.Api.Tasks do
         e ->
           error_callback.(e)
       end
+    end
+
+    def broadcast_project_update(result) do
+      OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(result, fn changes ->
+        case changes[:project] do
+          %Operately.Projects.Project{id: id} -> id
+          _ -> nil
+        end
+      end)
     end
 
     def broadcast_review_count_update(result) do
@@ -1158,6 +1193,9 @@ defmodule OperatelyWeb.Api.Tasks do
 
     defp handle_error(reason) do
       case reason do
+        {:error, _step, {:bad_request, message, details}, _changes} ->
+          {:error, :bad_request, message, details}
+
         {:error, _failed_operation, {:not_found, message}, _changes} ->
           {:error, :not_found, message}
 

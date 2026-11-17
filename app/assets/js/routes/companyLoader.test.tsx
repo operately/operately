@@ -5,8 +5,9 @@ import Api from "@/api";
 import * as Socket from "@/api/socket";
 import { queryClient } from "@/api/queryClient";
 import { QueryClientProvider, focusManager } from "@tanstack/react-query";
-import { useRouteLoaderData } from "react-router";
+import { useLoaderData, useRouteLoaderData } from "react-router";
 import { act, renderHook, waitFor } from "@/__tests__/renderHook";
+import { loader as homeLoader, useLoadedData as useHomeData } from "@/pages/HomePage/loader";
 import { checkAuth } from "./pageRoute";
 import { companyLoader } from "./companyLoader";
 import { useCompanyLoaderData } from "./useCompanyLoaderData";
@@ -15,7 +16,7 @@ jest.mock("axios");
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/api/socket", () => ({ setHeaders: jest.fn() }));
 jest.mock("./pageRoute", () => ({ checkAuth: jest.fn() }));
-jest.mock("react-router", () => ({ useRouteLoaderData: jest.fn() }));
+jest.mock("react-router", () => ({ useLoaderData: jest.fn(), useRouteLoaderData: jest.fn() }));
 jest.mock("turboui", () => ({}));
 const wrapper = ({ children }: React.PropsWithChildren) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -72,6 +73,30 @@ it("observes invalidated company names and creation permissions", async () => {
   await waitFor(() => expect(result.current.company.name).toBe("Renamed"));
   expect(result.current.canAddProject).toBe(false);
   expect(result.current.canAddGoal).toBe(false);
+});
+
+it("keeps the home page's cached data when navigating from an old company name", async () => {
+  const company = { id: "my-demo-0b0k", name: "My Demo", setupCompleted: true };
+  jest.mocked(axios.get).mockImplementation(async (url) => ({
+    data: url.endsWith("/companies/get") ? { company } : url.endsWith("/spaces/list") ? { spaces: [] } : respond(url),
+  }));
+  const inputs = await load("demo-1-0b0k");
+  jest.mocked(useLoaderData).mockReturnValue(await homeLoader());
+  const { result, rerender } = renderHook(useHomeData, { initialProps: undefined, wrapper });
+  expect(result.current.company).toEqual(company);
+  jest.mocked(axios.get).mockClear();
+
+  await act(async () => {
+    await load(company.id);
+  });
+  rerender(undefined);
+
+  expect(result.current.company).toEqual(company);
+  expect(result.current.spaces).toEqual([]);
+  expect(inputs.companyId).toBe(company.id);
+  expect(Api.default.getHeaders()).toEqual({ "x-company-id": "0b0k" });
+  expect(Socket.setHeaders).toHaveBeenLastCalledWith({ "x-company-id": "0b0k" });
+  expect(axios.get).not.toHaveBeenCalled();
 });
 
 it("skips billing entirely when disabled", async () => {

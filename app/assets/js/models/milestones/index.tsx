@@ -15,7 +15,6 @@ interface ParsedMilestonesForTurboUi {
 export type { Milestone, MilestoneComment };
 
 export {
-  invalidateMilestoneLifecycleQueries,
   useCreateMilestoneComment,
   useDeleteMilestone,
   useUpdateMilestoneDescription,

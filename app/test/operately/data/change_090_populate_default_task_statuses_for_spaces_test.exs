@@ -3,11 +3,15 @@ defmodule Operately.Data.Change090PopulateDefaultTaskStatusesForSpacesTest do
   import Ecto.Query
 
   alias Operately.{Repo}
-  alias Operately.Groups.Group
+  alias Operately.Data.Change090PopulateDefaultTaskStatusesForSpaces.Group
   alias Operately.Data.Change090PopulateDefaultTaskStatusesForSpaces
   alias Operately.Support.Factory
 
   setup ctx do
+    # Recreate the legacy column required by this historical migration.
+    # The sandbox transaction rolls back this schema change after each test.
+    Repo.query!("ALTER TABLE groups ADD COLUMN task_statuses jsonb[] DEFAULT '{}'")
+
     Factory.setup(ctx)
   end
 
@@ -31,7 +35,7 @@ defmodule Operately.Data.Change090PopulateDefaultTaskStatusesForSpacesTest do
     ctx = Factory.add_space(ctx, :space)
 
     {:ok, _space} =
-      ctx.space
+      Repo.get!(Group, ctx.space.id)
       |> Ecto.Changeset.change(%{
         task_statuses: [
           %{id: Ecto.UUID.generate(), label: "My Custom Status", color: "blue", value: "custom_pending", index: 0, closed: false}
@@ -41,14 +45,14 @@ defmodule Operately.Data.Change090PopulateDefaultTaskStatusesForSpacesTest do
 
     space = Repo.get!(Group, ctx.space.id)
     assert length(space.task_statuses) == 1
-    assert hd(space.task_statuses).label == "My Custom Status"
+    assert hd(space.task_statuses)["label"] == "My Custom Status"
 
     Change090PopulateDefaultTaskStatusesForSpaces.run()
 
     updated_space = Repo.get!(Group, ctx.space.id)
     assert length(updated_space.task_statuses) == 1
-    assert hd(updated_space.task_statuses).label == "My Custom Status"
-    assert hd(updated_space.task_statuses).value == "custom_pending"
+    assert hd(updated_space.task_statuses)["label"] == "My Custom Status"
+    assert hd(updated_space.task_statuses)["value"] == "custom_pending"
   end
 
   test "handles multiple spaces with mixed states", ctx do
@@ -58,12 +62,12 @@ defmodule Operately.Data.Change090PopulateDefaultTaskStatusesForSpacesTest do
     ctx = Factory.add_space(ctx, :space_partial)
 
     {:ok, _} =
-      ctx.space_empty
+      Repo.get!(Group, ctx.space_empty.id)
       |> Ecto.Changeset.change(%{task_statuses: []})
       |> Repo.update()
 
     {:ok, _} =
-      ctx.space_custom
+      Repo.get!(Group, ctx.space_custom.id)
       |> Ecto.Changeset.change(%{
         task_statuses: [
           %{id: Ecto.UUID.generate(), label: "Backlog", color: "gray", value: "backlog", index: 0, closed: false},
@@ -73,7 +77,7 @@ defmodule Operately.Data.Change090PopulateDefaultTaskStatusesForSpacesTest do
       |> Repo.update()
 
     {:ok, _} =
-      ctx.space_partial
+      Repo.get!(Group, ctx.space_partial.id)
       |> Ecto.Changeset.change(%{
         task_statuses: [
           %{id: Ecto.UUID.generate(), label: "Todo", color: "gray", value: "todo", index: 0, closed: false}
@@ -89,15 +93,15 @@ defmodule Operately.Data.Change090PopulateDefaultTaskStatusesForSpacesTest do
 
     updated_custom = Repo.get!(Group, ctx.space_custom.id)
     assert length(updated_custom.task_statuses) == 2
-    assert hd(updated_custom.task_statuses).label == "Backlog"
+    assert hd(updated_custom.task_statuses)["label"] == "Backlog"
 
     updated_partial = Repo.get!(Group, ctx.space_partial.id)
     assert length(updated_partial.task_statuses) == 1
-    assert hd(updated_partial.task_statuses).label == "Todo"
+    assert hd(updated_partial.task_statuses)["label"] == "Todo"
   end
 
   defp assert_default_task_statuses(task_statuses) do
-    statuses_by_value = Enum.group_by(task_statuses, & &1.value)
+    statuses_by_value = Enum.group_by(task_statuses, & &1["value"])
 
     assert Map.has_key?(statuses_by_value, "pending")
     assert Map.has_key?(statuses_by_value, "in_progress")
@@ -105,27 +109,27 @@ defmodule Operately.Data.Change090PopulateDefaultTaskStatusesForSpacesTest do
     assert Map.has_key?(statuses_by_value, "canceled")
 
     pending = hd(statuses_by_value["pending"])
-    assert pending.label == "Not started"
-    assert pending.color == :gray
-    assert pending.index == 0
-    assert pending.closed == false
+    assert pending["label"] == "Not started"
+    assert pending["color"] == "gray"
+    assert pending["index"] == 0
+    assert pending["closed"] == false
 
     in_progress = hd(statuses_by_value["in_progress"])
-    assert in_progress.label == "In progress"
-    assert in_progress.color == :blue
-    assert in_progress.index == 1
-    assert in_progress.closed == false
+    assert in_progress["label"] == "In progress"
+    assert in_progress["color"] == "blue"
+    assert in_progress["index"] == 1
+    assert in_progress["closed"] == false
 
     done = hd(statuses_by_value["done"])
-    assert done.label == "Done"
-    assert done.color == :green
-    assert done.index == 2
-    assert done.closed == true
+    assert done["label"] == "Done"
+    assert done["color"] == "green"
+    assert done["index"] == 2
+    assert done["closed"] == true
 
     canceled = hd(statuses_by_value["canceled"])
-    assert canceled.label == "Canceled"
-    assert canceled.color == :red
-    assert canceled.index == 3
-    assert canceled.closed == true
+    assert canceled["label"] == "Canceled"
+    assert canceled["color"] == "red"
+    assert canceled["index"] == 3
+    assert canceled["closed"] == true
   end
 end

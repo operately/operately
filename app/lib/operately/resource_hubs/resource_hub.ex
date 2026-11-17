@@ -17,6 +17,7 @@ defmodule Operately.ResourceHubs.ResourceHub do
     has_many :nodes, Operately.ResourceHubs.Node, foreign_key: :resource_hub_id
 
     field :name, :string
+    field :position, :integer, default: 0
     field :description, :map
 
     # populated by after load hooks
@@ -76,8 +77,18 @@ defmodule Operately.ResourceHubs.ResourceHub do
     Map.put(resource_hub, :potential_subscribers, subscribers)
   end
 
+  def load_comments_count([]), do: []
+
   def load_comments_count(resource_hubs) when is_list(resource_hubs) do
-    Enum.map(resource_hubs, &load_comments_count/1)
+    nodes_by_id =
+      resource_hubs
+      |> Enum.flat_map(& &1.nodes)
+      |> Operately.ResourceHubs.Node.load_comments_count()
+      |> Map.new(&{&1.id, &1})
+
+    Enum.map(resource_hubs, fn hub ->
+      %{hub | nodes: Enum.map(hub.nodes, &Map.fetch!(nodes_by_id, &1.id))}
+    end)
   end
 
   def load_comments_count(resource_hub = %__MODULE__{}) do
@@ -96,6 +107,8 @@ defmodule Operately.ResourceHubs.ResourceHub do
 
   def set_permissions(resource_hub = %__MODULE__{}, company_read_only \\ false) do
     perms = Operately.ResourceHubs.Permissions.calculate(resource_hub.request_info.access_level, company_read_only: company_read_only)
+    space_owned? = not is_nil(resource_hub.space_id) and is_nil(resource_hub.project_id) and is_nil(resource_hub.goal_id)
+    perms = %{perms | can_rename_hub: perms.can_rename_hub and space_owned?}
     Map.put(resource_hub, :permissions, perms)
   end
 end

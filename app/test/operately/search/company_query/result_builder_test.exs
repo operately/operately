@@ -129,7 +129,7 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
     assert milestone.matched_field == :title
     assert milestone.navigation_target == %{milestone_id: milestone.id}
     assert task.matched_field == :description
-    assert task.navigation_target == %{task_id: task.id, project_id: project_id, space_id: space_id}
+    assert task.navigation_target == %{task_id: task.id, project_id: project_id, space_id: space_id, board_id: nil}
     assert person.matched_field == :title
     assert person.navigation_target == %{person_id: person.id}
   end

@@ -40,6 +40,27 @@ defmodule OperatelyWeb.Api.Companies.CreateMemberTest do
              mutation(ctx.conn, [:companies, :create_member], input)
   end
 
+  test "multiple invalid fields return a field validation error", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+    input = %{@add_company_member_input | full_name: "", email: "invalid-email"}
+
+    assert {400, %{error: "Bad request", details: %{field: field}}} =
+             mutation(ctx.conn, [:companies, :create_member], input)
+
+    assert field in ["full_name", "email"]
+    refute People.get_person_by_email(ctx.company, input.email)
+  end
+
+  test "multiple validation errors on email return an email validation error", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+    input = %{@add_company_member_input | email: String.duplicate("a", 161)}
+
+    assert {400, %{error: "Bad request", details: %{field: "email"}}} =
+             mutation(ctx.conn, [:companies, :create_member], input)
+
+    refute People.get_person_by_email(ctx.company, input.email)
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:companies, :create_member], %{})

@@ -38,6 +38,10 @@ function shouldCaptureAxiosError(error: unknown): boolean {
     return false;
   }
 
+  if (axios.isCancel(error)) {
+    return false;
+  }
+
   if (!axios.isAxiosError(error)) {
     return true;
   }
@@ -70,6 +74,11 @@ function captureAxiosError(error: unknown) {
       method: error.config?.method,
       url: error.config?.url,
       status: error.response?.status,
+      code: error.code,
+      timeout: error.config?.timeout,
+      signalAborted: error.config?.signal?.aborted,
+      online: window.navigator.onLine,
+      visibilityState: window.document.visibilityState,
     },
   });
 }

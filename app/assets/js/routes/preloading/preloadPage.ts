@@ -2,6 +2,7 @@ import Api from "@/api";
 import AdminApi from "@/ee/admin_api";
 import { hashKey } from "@tanstack/react-query";
 import { matchRoutes, type RouteMatch, type RouteObject } from "react-router";
+import { compareIds } from "../paths";
 import { isPreloadingEnabled, subscribePreloadSession } from "./preloadSession";
 import type { PageModule } from "../types";
 
@@ -135,7 +136,7 @@ function usesActiveCompany(matches: RouteMatch[], router: PreloadRouter) {
   if (!activeCompany) return false;
 
   return (
-    activeCompany.params.companyId === company.params.companyId &&
-    Api.default.getHeaders()["x-company-id"] === company.params.companyId
+    compareIds(activeCompany.params.companyId, company.params.companyId) &&
+    compareIds(Api.default.getHeaders()["x-company-id"], company.params.companyId)
   );
 }

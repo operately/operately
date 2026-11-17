@@ -3,6 +3,7 @@ defmodule Operately.Notifications.EmailWorker do
   use Oban.Worker
 
   alias Operately.Notifications.EmailDelivery
+  alias Operately.People.Person
 
   def perform(job) do
     notification_id = job.args["notification_id"]
@@ -21,9 +22,9 @@ defmodule Operately.Notifications.EmailWorker do
 
   def deliver(notification) do
     person = Operately.People.get_person!(notification.person_id)
-    activity = Operately.Activities.get_activity!(notification.activity_id)
 
-    if person.account_id != nil do
+    if Person.active?(person) and person.account_id != nil do
+      activity = Operately.Activities.get_activity!(notification.activity_id)
       module = email_module(activity)
 
       Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
