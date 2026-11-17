@@ -1751,6 +1751,7 @@
   "KPI URL copied to clipboard": "KPI-URL in die Zwischenablage kopiert",
   "KPI history line chart": "Liniendiagramm des KPI-Verlaufs",
   "KPI template": "KPI-Vorlage",
+  "KPI: <kpi>{{kpiName}}</kpi>": "KPI: <kpi>{{kpiName}}</kpi>",
   "KPI: {{kpiName}}": "KPI: {{kpiName}}",
   "KPI: {{oldValue}} → {{newValue}}": "KPI: {{oldValue}} → {{newValue}}",
   "KPI: {{title}}": "KPI: {{title}}",

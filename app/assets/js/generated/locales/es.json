@@ -1819,6 +1819,7 @@
   "KPI URL copied to clipboard": "URL de KPI copiada al portapapeles",
   "KPI history line chart": "Gráfico de líneas del historial de KPI",
   "KPI template": "Plantilla de KPI",
+  "KPI: <kpi>{{kpiName}}</kpi>": "KPI: <kpi>{{kpiName}}</kpi>",
   "KPI: {{kpiName}}": "KPI: {{kpiName}}",
   "KPI: {{oldValue}} → {{newValue}}": "KPI: {{oldValue}} → {{newValue}}",
   "KPI: {{title}}": "KPI: {{title}}",
