@@ -2813,7 +2813,8 @@ msgstr ""
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:161
 #: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:86
-#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:37
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:32
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:49
 msgid "%{completed}/%{total} completed (%{percentage}%)"
 msgstr ""
 
@@ -13677,7 +13678,7 @@ msgstr ""
 #: ../turboui/src/MilestoneList/index.tsx:119
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:260
 #: ../turboui/src/SearchPage/filterOptions.ts:12
-#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:33
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:44
 #: lib/operately/md/project.ex:77
 #: lib/operately/md/project.ex:104
 msgid "Milestones"
@@ -14548,7 +14549,7 @@ msgid "No milestone"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:18
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:59
 msgid "No milestones"
 msgstr ""
 
@@ -14799,6 +14800,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GlobalSearch/SearchOverlay.tsx:224
 msgid "No title or name matches for “%{query}”."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:40
+msgid "No tracked tasks"
 msgstr ""
 
 #.frontend
@@ -19659,6 +19665,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:426
 msgid "Task URL copied to clipboard"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:26
+msgid "Task completion"
 msgstr ""
 
 #.elixir

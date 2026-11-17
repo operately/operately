@@ -30,6 +30,7 @@ function convertToWorkMapItem(paths: Paths, item: WorkMapItem, editableSpaceIds:
     space: item.space ? parseSpaceForTurboUI(paths, item.space) : null,
     spacePath: item.spacePath,
     taskStatus: parseTaskStatusForTurboUi(item.taskStatus),
+    taskCompletion: item.taskCompletion ?? null,
     taskStatuses: parseTaskStatusesForTurboUi(item.taskStatuses),
     timeframe: convertTimeframe(item.timeframe),
     milestones: (item.milestones || []).map((milestone) => ({
@@ -119,6 +120,7 @@ export function useWorkMapItems(
       taskStatus: null,
       status: "pending",
       progress: 0,
+      taskCompletion: null,
       owner: null,
       ownerPath: null,
       reviewer: null,
@@ -182,6 +184,7 @@ export function useWorkMapItems(
       taskStatus: null,
       status: "pending",
       progress: 0,
+      taskCompletion: null,
       owner: null,
       ownerPath: null,
       reviewer: null,

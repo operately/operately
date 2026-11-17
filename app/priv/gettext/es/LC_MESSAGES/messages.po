@@ -2813,7 +2813,8 @@ msgstr "%{completed}/%{total} completados"
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:161
 #: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:86
-#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:37
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:32
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:49
 msgid "%{completed}/%{total} completed (%{percentage}%)"
 msgstr "%{completed}/%{total} completados (%{percentage}%)"
 
@@ -13840,7 +13841,7 @@ msgstr "Se cambió el nombre del hito a «%{newTitle}»"
 #: ../turboui/src/MilestoneList/index.tsx:119
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:260
 #: ../turboui/src/SearchPage/filterOptions.ts:12
-#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:33
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:44
 #: lib/operately/md/project.ex:77
 #: lib/operately/md/project.ex:104
 msgid "Milestones"
@@ -14721,7 +14722,7 @@ msgid "No milestone"
 msgstr "Sin hito"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:18
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:59
 msgid "No milestones"
 msgstr "Sin hitos"
 
@@ -14978,6 +14979,11 @@ msgstr "Aún no hay plantillas en esta pestaña."
 #: ../turboui/src/GlobalSearch/SearchOverlay.tsx:224
 msgid "No title or name matches for “%{query}”."
 msgstr "Ningún título o nombre coincide con «%{query}»."
+
+#.frontend
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:40
+msgid "No tracked tasks"
+msgstr "Ninguna tarea contabilizada"
 
 #.frontend
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:46
@@ -19914,6 +19920,11 @@ msgstr "URL de la tarea copiada al portapapeles"
 #~ #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:149
 #~ msgid "Task boards"
 #~ msgstr "Tableros de tareas"
+
+#.frontend
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:26
+msgid "Task completion"
+msgstr "Finalización de tareas"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:35

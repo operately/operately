@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { ProjectProgressSummary } from "./ProjectProgressSummary";
@@ -9,6 +9,26 @@ import { i18n, setupTestCatalog } from "../../../../test/i18n";
 setupTestCatalog();
 
 describe("ProjectProgressSummary", () => {
+  it("shows task completion without milestones", () => {
+    render(
+      <ProjectProgressSummary milestones={[]} taskCompletion={{ completedCount: 1, totalCount: 3, percentage: 33 }} />,
+    );
+    expect(screen.getByText("Task completion")).toBeInTheDocument();
+    expect(screen.getByTestId("task-completion-summary")).toHaveTextContent("1/3 completed (33%)");
+    expect(screen.getByText("No milestones")).toBeInTheDocument();
+  });
+
+  it("keeps task and milestone completion distinct", () => {
+    render(
+      <ProjectProgressSummary
+        milestones={mockProjectMilestones}
+        taskCompletion={{ completedCount: 2, totalCount: 3, percentage: 67 }}
+      />,
+    );
+    expect(within(screen.getByTestId("task-completion-summary")).getByText("2/3 completed (67%)")).toBeInTheDocument();
+    expect(screen.getByText("Milestones")).toBeInTheDocument();
+    expect(screen.getByText("1/2 completed (50%)")).toBeInTheDocument();
+  });
   it.each([0, 1, 2])("preserves English progress for %i milestones with missing Portuguese", async (count) => {
     i18n.removeResourceBundle("pt-BR", "translation");
     await i18n.changeLanguage("pt-BR");
@@ -37,6 +57,7 @@ describe("ProjectProgressSummary", () => {
     render(<ProjectProgressSummary milestones={[]} />);
 
     expect(screen.getByText("No milestones")).toBeInTheDocument();
+    expect(screen.getByTestId("task-completion-summary")).toHaveTextContent("No tracked tasks");
   });
 
   it("renders milestone completion summary and item states", () => {

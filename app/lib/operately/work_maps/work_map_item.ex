@@ -25,6 +25,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
           task_status: Status.t() | nil,
           state: String.t(),
           progress: float() | nil,
+          task_completion: map() | nil,
           space: map() | nil,
           owner: map() | nil,
           champion: map() | nil,
@@ -51,6 +52,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
     :task_status,
     :state,
     :progress,
+    :task_completion,
     :space,
     :project,
     :owner,
@@ -134,6 +136,8 @@ defmodule Operately.WorkMaps.WorkMapItem do
   end
 
   def build_item(project = %Project{}, children, include_assignees) do
+    task_completion = project_task_completion(project)
+
     %__MODULE__{
       id: project.id,
       parent_id: project.goal_id,
@@ -141,7 +145,8 @@ defmodule Operately.WorkMaps.WorkMapItem do
       status: Project.status(project),
       task_status: nil,
       state: Project.state(project),
-      progress: progress_percentage(project, Project),
+      progress: project_progress(project, task_completion),
+      task_completion: task_completion,
       space: project.group,
       project: nil,
       owner: project.champion,
@@ -173,6 +178,13 @@ defmodule Operately.WorkMaps.WorkMapItem do
     ]
     |> Enum.reject(&is_nil/1)
   end
+
+  defp project_task_completion(%{closed_at: nil, tasks: tasks}) when is_list(tasks), do: Operately.WorkMaps.TaskCompletion.calculate(tasks)
+  defp project_task_completion(_), do: nil
+
+  defp project_progress(%{closed_at: nil}, %{percentage: percentage}), do: percentage
+  defp project_progress(%{closed_at: nil}, nil), do: 0
+  defp project_progress(_, _), do: nil
 
   defp progress_percentage(%{closed_at: nil} = item, module), do: module.progress_percentage(item)
   defp progress_percentage(_item, _module), do: nil

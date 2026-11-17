@@ -51,7 +51,7 @@ function progressSummaryFor(item: WorkMap.Item): { content: React.ReactNode; tes
 
   if (item.type === "project") {
     return {
-      content: <ProjectProgressSummary milestones={item.milestones} />,
+      content: <ProjectProgressSummary milestones={item.milestones} taskCompletion={item.taskCompletion} />,
       testId: "project-progress-summary",
     };
   }

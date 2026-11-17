@@ -271,6 +271,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
       champion: c
     )
     |> preload_project_milestones()
+    |> preload_project_completion_tasks()
     |> maybe_preload_project_reviewer(include_reviewer || need_reviewer)
     |> maybe_preload_project_contributors(include_assignees || needs_contributor?(args))
     |> preload_space_if_authorized(person)
@@ -297,6 +298,21 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
       )
 
     preload(query, [], milestones: ^subquery)
+  end
+
+  defp preload_project_completion_tasks(query) do
+    # Load the whole project population, independently of assigned-task filters.
+    # Helper tasks exist only in the frontend; archived tasks remain counted there.
+    tasks =
+      from(t in Task,
+        join: project in assoc(t, :project),
+        left_join: milestone in assoc(t, :milestone),
+        where: is_nil(project.closed_at),
+        select: [:id, :project_id, :milestone_id, :task_status],
+        select_merge: %{milestone: struct(milestone, [:id, :status])}
+      )
+
+    preload(query, [], tasks: ^tasks)
   end
 
   defp preload_goal_associations(query, args, person) do
