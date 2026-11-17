@@ -83,7 +83,7 @@ describe("SpaceWorkMapPage creation readiness", () => {
     client = new QueryClient();
     root = createRoot(document.createElement("div"));
     loaded = {
-      data: { space, workMap: [], templates: [] },
+      data: { space, workMap: [], templates: [], editableSpaces: [space] },
       creationData: { isLoading: false, error: null, retry: jest.fn() },
     };
     jest.mocked(useLoadedData).mockImplementation(() => loaded);

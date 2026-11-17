@@ -5230,7 +5230,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/User.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:118
+#: ../turboui/src/CompanyNavigation/index.tsx:129
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:311
 msgid "Account"
 msgstr ""
@@ -5426,7 +5426,7 @@ msgstr ""
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:266
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
-#: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:210
+#: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:216
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:102
 msgid "Add"
 msgstr ""
@@ -8024,7 +8024,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:50
-#: ../turboui/src/CompanyNavigation/index.tsx:122
+#: ../turboui/src/CompanyNavigation/index.tsx:133
 msgid "Company Admin"
 msgstr ""
 
@@ -11093,12 +11093,12 @@ msgid "Failed to create the goal"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:307
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:305
 msgid "Failed to create the goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:307
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:305
 msgid "Failed to create the project."
 msgstr ""
 
@@ -12106,8 +12106,8 @@ msgstr ""
 #: ../turboui/src/AccountSecurityPage/index.tsx:21
 #: ../turboui/src/AccountSettingsPage/index.tsx:45
 #: ../turboui/src/CompanyAdminPage/index.tsx:53
-#: ../turboui/src/CompanyNavigation/index.tsx:94
-#: ../turboui/src/CompanyNavigation/index.tsx:194
+#: ../turboui/src/CompanyNavigation/index.tsx:105
+#: ../turboui/src/CompanyNavigation/index.tsx:205
 #: ../turboui/src/HomePage/index.tsx:20
 #: ../turboui/src/ProfileEditPage/index.tsx:81
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
@@ -13259,7 +13259,7 @@ msgid "Lobby"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:130
+#: ../turboui/src/CompanyNavigation/index.tsx:141
 msgid "Log Out"
 msgstr ""
 
@@ -13898,8 +13898,8 @@ msgid "My upcoming work"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:102
-#: ../turboui/src/CompanyNavigation/index.tsx:202
+#: ../turboui/src/CompanyNavigation/index.tsx:113
+#: ../turboui/src/CompanyNavigation/index.tsx:213
 msgid "My work"
 msgstr ""
 
@@ -13989,7 +13989,7 @@ msgid "Navbar update badge"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:80
+#: ../turboui/src/CompanyNavigation/index.tsx:90
 msgid "Navigation menu"
 msgstr ""
 
@@ -14025,7 +14025,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:183
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:306
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:314
 msgid "Network error"
 msgstr ""
 
@@ -14964,7 +14964,7 @@ msgstr ""
 #: ../turboui/src/AccountPage/index.tsx:61
 #: ../turboui/src/CompanyNavigation/Bell.tsx:26
 #: ../turboui/src/CompanyNavigation/User.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:114
+#: ../turboui/src/CompanyNavigation/index.tsx:125
 #: ../turboui/src/SidebarSection/index.tsx:34
 #: assets/js/pages/NotificationsPage/index.tsx:38
 #: assets/js/pages/NotificationsPage/index.tsx:41
@@ -17592,7 +17592,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/Review.tsx:18
-#: ../turboui/src/CompanyNavigation/index.tsx:106
+#: ../turboui/src/CompanyNavigation/index.tsx:117
 #: ../turboui/src/ReviewPage/index.tsx:83
 #: ../turboui/src/ReviewPage/index.tsx:132
 msgid "Review"
@@ -19519,7 +19519,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:126
+#: ../turboui/src/CompanyNavigation/index.tsx:137
 msgid "Switch Company"
 msgstr ""
 
@@ -23244,6 +23244,11 @@ msgstr ""
 msgid "You don't have any drafts."
 msgstr ""
 
+#.frontend
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:309
+msgid "You don't have permission to create goals or projects in this space. Choose another space or ask a space manager for Edit access."
+msgstr ""
+
 #.elixir
 #: lib/turbo_connect/plugs/dispatch.ex:38
 msgid "You don't have permission to perform this action"
@@ -23294,6 +23299,11 @@ msgstr ""
 #.elixir
 #: lib/operately_email/templates/company_owner_removing.text.eex:1
 msgid "You have been removed as a company owner by %{author}."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:210
+msgid "You need Edit access to this space to add goals and projects."
 msgstr ""
 
 #.frontend
@@ -25793,15 +25803,15 @@ msgid "Title"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:98
-#: ../turboui/src/CompanyNavigation/index.tsx:198
+#: ../turboui/src/CompanyNavigation/index.tsx:109
+#: ../turboui/src/CompanyNavigation/index.tsx:209
 msgctxt "navigation"
 msgid "Company"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:110
+#: ../turboui/src/CompanyNavigation/index.tsx:121
 #: assets/js/pages/PeoplePage/page.tsx:14
 msgctxt "navigation"
 msgid "People"

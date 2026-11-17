@@ -16,7 +16,7 @@ export function Page() {
   const navigate = useNavigate();
 
   const { data, creationData } = useLoadedData();
-  const { workMap, space, templates } = data;
+  const { workMap, space, templates, editableSpaces } = data;
   const hideCompanyAccessInQuickAdd = Boolean(space.privateSpace);
   const canAddItem = !creationData.isLoading && !creationData.error && Boolean(space.permissions?.canEdit);
 
@@ -44,7 +44,7 @@ export function Page() {
   }, [space.id, creationFailed]);
 
   const [items, addItem] = useWorkMapItems(workMap);
-  const spaceSearch = useSpaceSearch();
+  const spaceSearch = useSpaceSearch({ accessLevel: "edit_access" });
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const projectTemplates = React.useMemo(
@@ -70,7 +70,11 @@ export function Page() {
       addingEnabled={canAddItem}
       creationLoading={creationData.isLoading}
       creationError={creationFailed}
-      items={convertToWorkMapItems(paths, items)}
+      items={convertToWorkMapItems(
+        paths,
+        items,
+        editableSpaces.map((space) => space.id),
+      )}
       addItem={addItem}
       spaceSearch={spaceSearch}
       columnOptions={{ hideSpace: true, hideProject: true }}
