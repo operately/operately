@@ -7,6 +7,8 @@ defmodule Operately.Activities.Preloader do
 
   alias Operately.Repo
   alias Operately.Activities.Activity
+  alias Operately.Activities.Content.TaskAssigneeUpdating
+  alias Operately.People.Person
 
   def preload(activities) when is_list(activities) do
     activities
@@ -42,13 +44,54 @@ defmodule Operately.Activities.Preloader do
   def preload(activities, schema) do
     references = Enum.flat_map(activities, fn a -> references(a.id, a.content, schema) end)
 
-    ids = Enum.map(references, &elem(&1, 3)) |> Enum.uniq()
+    ids = (Enum.map(references, &elem(&1, 3)) ++ changed_assignee_ids(activities, schema)) |> Enum.uniq()
 
     query = from r in schema, where: r.id in ^ids
     opts = [with_deleted: true]
     records = Repo.all(query, opts) |> Enum.map(fn r -> {r.id, r} end) |> Map.new()
 
-    inject(activities, references, records)
+    activities
+    |> inject(references, records)
+    |> inject_changed_assignees(schema, records)
+  end
+
+  defp changed_assignee_ids(activities, Person) do
+    Enum.flat_map(activities, fn
+      %{content: %TaskAssigneeUpdating{} = content} ->
+        (content.added_assignee_ids || []) ++ (content.removed_assignee_ids || [])
+
+      _ ->
+        []
+    end)
+  end
+
+  defp changed_assignee_ids(_activities, _schema), do: []
+
+  defp inject_changed_assignees(activities, Person, people) do
+    Enum.map(activities, fn
+      %{content: %TaskAssigneeUpdating{} = content} = activity ->
+        content = %{
+          content
+          | added_assignees: people_in_order(content.added_assignee_ids, people),
+            removed_assignees: people_in_order(content.removed_assignee_ids, people)
+        }
+
+        %{activity | content: content}
+
+      activity ->
+        activity
+    end)
+  end
+
+  defp inject_changed_assignees(activities, _schema, _records), do: activities
+
+  defp people_in_order(ids, people) do
+    Enum.flat_map(ids || [], fn id ->
+      case Map.get(people, id) do
+        nil -> []
+        person -> [person]
+      end
+    end)
   end
 
   #
@@ -91,8 +134,10 @@ defmodule Operately.Activities.Preloader do
   defp references(_activity_id, content, _schema) when not is_map(content), do: []
 
   defp references(activity_id, content, schema) do
+    # Virtual fields hold loaded records, not content references to traverse.
     content
     |> Map.from_struct()
+    |> Map.drop(content.__struct__.__schema__(:virtual_fields))
     |> Enum.reduce([], fn {k, v}, acc ->
       cond do
         is_field_a_not_loaded_ref(k, v, schema) ->
