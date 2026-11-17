@@ -30,6 +30,7 @@ defmodule Operately.Activities.Preloader do
     |> preload(Operately.ResourceHubs.Node)
     |> preload(Operately.Comments.CommentThread)
     |> preload(Operately.Kpis.Kpi)
+    |> preload(Operately.Kpis.KpiEntry)
     |> preload(Operately.Kpis.KpiAnnotation)
     |> preload_sub_activities()
   end

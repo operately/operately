@@ -315,8 +315,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_kpi_entry_logged, for: Operately.Activities.Content.KpiEntryLogged do
-    field :space, :space, null: true
+    field :space, :space, null: false
     field :kpi, :kpi, null: true
+    field :entry, :kpi_entry, null: true
     field :value, :float, null: false
     field :period, :date, null: false
   end
