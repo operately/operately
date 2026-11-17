@@ -107,6 +107,67 @@ it("does not fetch resource options when adding a team member", async () => {
   expect(axios.get).not.toHaveBeenCalled();
 });
 
+describe.each([
+  ["team_member", "create_member"],
+  ["outside_collaborator", "invite_guest"],
+])("%s invitation", (memberType, endpoint) => {
+  it.each([
+    ["untouched", undefined, ""],
+    ["whitespace-only", "   ", ""],
+    ["supplied", "  Engineer  ", "Engineer"],
+  ])("submits with title %s and shows the invitation result", async (_description, title, expectedTitle) => {
+    mockMemberType = memberType;
+    jest.mocked(axios.post).mockResolvedValue({
+      data: { person_id: "person1", new_account: true, invite_link: { token: "invite-token" } },
+    });
+    jest.mocked(axios.get).mockImplementation(async (url) => {
+      if (url.endsWith("/spaces/list")) return { data: { spaces: [] } };
+      if (url.endsWith("/goals/list")) return { data: { goals: [] } };
+      if (url.endsWith("/projects/list")) return { data: { projects: [] } };
+      throw new Error(`Unexpected request: ${url}`);
+    });
+    renderHook(() => null, { initialProps: undefined, wrapper });
+    act(() => {
+      props().onFormChange("fullName", "  Person  ");
+      props().onFormChange("email", "  person@example.com  ");
+      if (title !== undefined) props().onFormChange("title", title);
+    });
+
+    await act(() => props().onSubmit());
+
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.post).toHaveBeenCalledWith(
+      `/api/v2/companies/${endpoint}`,
+      { full_name: "Person", email: "person@example.com", title: expectedTitle },
+      expect.anything(),
+    );
+    expect(props().formErrors).toEqual({});
+    expect(props().state).toEqual({
+      state: "invited",
+      fullName: "  Person  ",
+      personId: "person1",
+      inviteLink: expect.stringContaining("/join?token=invite-token"),
+    });
+    expect(props().isSubmitting).toBe(false);
+  });
+});
+
+it.each([
+  ["fullName", ""],
+  ["email", ""],
+  ["email", "invalid-email"],
+] as const)("prevents submission when %s is invalid (%s)", async (field, value) => {
+  renderHook(() => null, { initialProps: undefined, wrapper });
+  fillForm();
+  act(() => props().onFormChange(field, value));
+
+  await act(() => props().onSubmit());
+
+  expect(axios.post).not.toHaveBeenCalled();
+  expect(Object.keys(props().formErrors ?? {})).toEqual([field]);
+  expect(props().state.state).toBe("form");
+});
+
 it("updates navigation when the language changes while mounted", async () => {
   i18n.addResourceBundle(
     "pt-BR",

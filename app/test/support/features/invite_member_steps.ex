@@ -62,11 +62,14 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :invite_member, ctx, params do
-    ctx
-    |> UI.fill(testid: "fullname", with: params[:fullName])
-    |> UI.fill(testid: "email", with: params[:email])
-    |> UI.fill(testid: "title", with: params[:title])
-    |> UI.click_button("Invite Member")
+    ctx =
+      ctx
+      |> UI.fill(testid: "fullname", with: params[:fullName])
+      |> UI.fill(testid: "email", with: params[:email])
+
+    ctx = if params[:title], do: UI.fill(ctx, testid: "title", with: params[:title]), else: ctx
+
+    ctx |> UI.click(testid: "submit")
   end
 
   step :invite_collaborator, ctx, params do
@@ -114,6 +117,20 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :assert_member_invited, ctx do
     ctx |> UI.assert_text("/join?token=")
+  end
+
+  step :assert_member_invited_without_title, ctx, params do
+    person = Operately.People.get_person_by_email(ctx.company, params.email)
+    assert person
+    assert person.full_name == params.fullName
+    assert is_nil(person.title)
+    assert person.title_setup_pending
+
+    {:ok, invite_link} = InviteLinks.get_personal_invite_link_for_person(person.id)
+    assert invite_link.company_id == ctx.company.id
+    assert invite_link.author_id == ctx.admin.id
+
+    ctx |> UI.assert_text("/join?token=#{invite_link.token}")
   end
 
   step :assert_member_invited_email_sent, ctx, email do
