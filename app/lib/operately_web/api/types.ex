@@ -3078,6 +3078,12 @@ defmodule OperatelyWeb.Api.Types do
     field :timeframe, :timeframe, null: true
   end
 
+  object :project_task_completion do
+    field :completed_count, :integer, null: false
+    field :total_count, :integer, null: false
+    field :percentage, :integer, null: false
+  end
+
   object :work_map_item, for: Operately.WorkMaps.WorkMapItem do
     field :id, :string, null: false
     field :parent_id, :string, null: true
@@ -3088,6 +3094,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :task_statuses, list_of(:task_status), null: true
     field? :can_edit_task, :boolean, null: true
     field :progress, :float, null: true
+    field? :task_completion, :project_task_completion, null: true
     field :space, :space, null: true
     field :space_path, :string, null: true
     field :project, :project, null: true

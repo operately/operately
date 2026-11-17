@@ -6,6 +6,21 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMapTest do
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
 
+  test "serializes project task completion separately from milestones", ctx do
+    ctx =
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.log_in_person(:creator)
+
+    ctx = Factory.add_project_task(ctx, :task, nil, project_id: ctx.project.id)
+    assert {200, %{work_map: [project]}} = query(ctx.conn, [:companies, :get_work_map], %{})
+    assert project.task_completion == %{completed_count: 0, total_count: 1, percentage: 0}
+    assert project.progress == 0
+    assert project.milestones == []
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:companies, :get_work_map], %{})

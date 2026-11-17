@@ -13,6 +13,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       task_status: OperatelyWeb.Api.Serializer.serialize(item.task_status),
       state: item.state,
       progress: item.progress,
+      task_completion: item.task_completion,
       type: item.type,
       item_path: item_path(item),
       space: OperatelyWeb.Api.Serializer.serialize(item.space),

@@ -9,6 +9,7 @@ export async function invalidateMilestoneLifecycleQueries(
 ): Promise<void> {
   await Promise.all([
     queryClient.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix(), refetchType }),
+    queryClient.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.projects.getQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.tasks.listQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.tasks.getBoardQueryKeyPrefix(), refetchType }),

@@ -226,7 +226,7 @@ export const GoalProgressHoverSummary: Story = {
 };
 
 /**
- * Project progress bar hover shows milestones summary
+ * Project progress bar hover separates task completion from milestones
  */
 export const ProjectProgressHoverSummary: Story = {
   render: (args) => (
@@ -238,7 +238,11 @@ export const ProjectProgressHoverSummary: Story = {
     </>
   ),
   args: {
-    item: data.mockProjectOnTrack,
+    item: {
+      ...data.mockProjectOnTrack,
+      progress: 33,
+      taskCompletion: { completedCount: 1, totalCount: 3, percentage: 33 },
+    },
     level: 0,
     isLast: false,
     tab: "all",
@@ -249,7 +253,7 @@ export const ProjectProgressHoverSummary: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await step("Hover progress bar to reveal milestones summary", async () => {
+    await step("Hover progress bar to reveal task and milestone summaries", async () => {
       const trigger = canvas.getByTestId("project-progress-summary");
       await userEvent.hover(trigger);
 
@@ -260,6 +264,8 @@ export const ProjectProgressHoverSummary: Story = {
         const firstSummary = summaries[0];
         if (!firstSummary) throw new Error("Goal progress summary is missing");
         const summary = within(firstSummary);
+        expect(summary.getByTestId("task-completion-summary")).toHaveTextContent("1/3 completed (33%)");
+        expect(summary.getByText("Task completion")).toBeInTheDocument();
         expect(summary.getByText("Milestones")).toBeInTheDocument();
         expect(summary.getByText("1/2 completed (50%)")).toBeInTheDocument();
         expect(summary.getByText("Ship design")).toBeInTheDocument();

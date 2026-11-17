@@ -900,6 +900,10 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_project_milestone(:milestone1, :project)
       |> Factory.add_project_milestone(:milestone2, :project)
       |> Factory.add_project_milestone(:milestone3, :project)
+      |> Factory.add_project_task(:task1, :milestone1)
+      |> Factory.add_project_task(:task2, :milestone2)
+      |> Factory.add_project_task(:task3, :milestone3)
+      |> Factory.add_task_assignee(:assignment, :task3, :creator)
     end
 
     test "0% progress", ctx do
@@ -910,23 +914,48 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
     test "100% progress", ctx do
       ctx
-      |> Factory.close_project_milestone(:milestone1)
-      |> Factory.close_project_milestone(:milestone2)
-      |> Factory.close_project_milestone(:milestone3)
+      |> complete_progress_task(:task1)
+      |> complete_progress_task(:task2)
+      |> complete_progress_task(:task3)
 
       {:ok, [project]} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id })
 
       assert project.progress == 100
     end
 
-    test "66% progress", ctx do
+    test "task completion updates both query shapes independently of assigned task inclusion", ctx do
       ctx
-      |> Factory.close_project_milestone(:milestone1)
-      |> Factory.close_project_milestone(:milestone2)
+      |> complete_progress_task(:task1)
 
       {:ok, [project]} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id })
+      assert project.progress == 33
+      assert project.task_completion == %{completed_count: 1, total_count: 3, percentage: 33}
 
-      assert floor(project.progress) == 66
+      complete_progress_task(ctx, :task2)
+
+      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
+      assert project.progress == 67
+      assert project.task_completion == %{completed_count: 2, total_count: 3, percentage: 67}
+
+      for include_tasks <- [false, true] do
+        {:ok, items} = GetWorkMapQuery.execute(ctx.creator, %{company_id: ctx.company.id, include_tasks: include_tasks}, :flat)
+        flat_project = Enum.find(items, &(&1.id == ctx.project.id))
+        assert flat_project.progress == project.progress
+        assert flat_project.task_completion == project.task_completion
+      end
+    end
+
+    test "counts archived tasks and tasks without milestones, excluding unfinished historical tasks", ctx do
+      ctx =
+        ctx
+        |> complete_progress_task(:task1)
+        |> Factory.add_project_task(:unattached, nil, project_id: ctx.project.id, archived_at: ~N[2026-01-01 00:00:00])
+
+      Operately.Repo.update!(Ecto.Changeset.change(ctx.milestone2, status: :done))
+      Operately.Repo.update!(Ecto.Changeset.change(ctx.milestone1, status: :done))
+
+      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
+      assert project.task_completion == %{completed_count: 1, total_count: 3, percentage: 33}
     end
   end
 
@@ -967,11 +996,22 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
       assert Enum.map(open_project.resource.milestones, & &1.id) == [ctx.open_milestone.id]
       assert open_project.status == :caution
+      assert open_project.progress == 0
+      assert open_project.task_completion == nil
       assert %Ecto.Association.NotLoaded{} = open_project.resource.last_check_in
       assert closed_project.resource.milestones == []
       assert closed_project.progress == nil
+      assert closed_project.task_completion == nil
       assert closed_project.next_step == ""
     end
+  end
+
+  defp complete_progress_task(ctx, key) do
+    task = Map.fetch!(ctx, key)
+    status = Enum.find(Operately.Tasks.Status.default_task_statuses(), &(&1.value == "done"))
+    attrs = Operately.Tasks.Task.status_change_attrs(task, status)
+    Operately.Repo.update!(Operately.Tasks.Task.changeset(task, attrs))
+    ctx
   end
 
   describe "permissions - query root projects" do

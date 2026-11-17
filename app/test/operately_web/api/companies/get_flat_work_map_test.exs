@@ -4,6 +4,14 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMapTest do
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
 
+  test "serializes project-wide task completion without assigned tasks", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:project, :space)
+    ctx = ctx |> Factory.add_project_task(:task, nil, project_id: ctx.project.id) |> Factory.log_in_person(:creator)
+    assert {200, %{work_map: [project]}} = query(ctx.conn, [:companies, :get_flat_work_map], %{include_tasks: false})
+    assert project.task_completion == %{completed_count: 0, total_count: 1, percentage: 0}
+    assert project.progress == 0
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:companies, :get_flat_work_map], %{})
