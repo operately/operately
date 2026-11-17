@@ -368,7 +368,10 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
         actions: ["task_assignee_updating"]
       })
 
-      assert [%{action: "task_assignee_updating"}] = res.activities
+      assert [%{action: "task_assignee_updating", content: content}] = res.activities
+      assert content.added_assignees == [Serializer.serialize(ctx.creator)]
+      assert content.removed_assignees == []
+      assert content.new_assignee == Serializer.serialize(ctx.creator)
     end
 
     test "resource hub activities for deleted resources are not listed", ctx do

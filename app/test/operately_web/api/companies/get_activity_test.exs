@@ -118,6 +118,28 @@ defmodule OperatelyWeb.Api.Companies.GetActivityTest do
       |> Factory.add_goal(:goal, :space, reviewer: :reviewer)
     end
 
+    test "task assignee arrays are loaded for an individual activity", ctx do
+      ctx = ctx |> Factory.preload(:space, :access_context) |> Factory.create_space_task(:task, :space)
+
+      activity =
+        Repo.insert!(%Operately.Activities.Activity{
+          action: "task_assignee_updating",
+          author_id: ctx.creator.id,
+          access_context_id: ctx.space.access_context.id,
+          content: %{
+            company_id: ctx.company.id,
+            space_id: ctx.space.id,
+            task_id: ctx.task.id,
+            added_assignee_ids: [ctx.reviewer.id],
+            removed_assignee_ids: [ctx.creator.id]
+          }
+        })
+
+      assert {200, res} = query(ctx.conn, [:companies, :get_activity], %{id: Paths.activity_id(activity)})
+      assert res.activity.content.added_assignees == [Serializer.serialize(ctx.reviewer)]
+      assert res.activity.content.removed_assignees == [Serializer.serialize(ctx.creator)]
+    end
+
     test "with no includes", ctx do
       {:ok, _} = Operately.Operations.GoalClosing.run(ctx.creator, ctx.goal, %{
         success: "success",
