@@ -16,6 +16,7 @@ type HarnessArgs = {
   canManage?: boolean;
   emptySpace?: boolean;
   failMutations?: boolean;
+  unorderedChampionCandidates?: boolean;
 };
 
 function kpiRoute(kpiId?: string) {
@@ -52,7 +53,12 @@ function Harness(args: HarnessArgs) {
       kpis={demo.kpis}
       selectedKpi={selectedKpi}
       currentUser={demo.currentUser}
-      championSearch={demo.championSearch}
+      championSearch={
+        args.unorderedChampionCandidates
+          ? async (query) =>
+              (await demo.championSearch(query)).filter((person) => person.id !== demo.currentUser.id).reverse()
+          : demo.championSearch
+      }
       richTextHandlers={demo.richTextHandlers}
       loading={args.loading}
       error={args.error}
@@ -83,6 +89,15 @@ function Harness(args: HarnessArgs) {
 // The default list view with a healthy set of KPIs across both cadences.
 export const Default: Story = {
   args: {},
+};
+
+// The current user is missing from these unordered search results, as can happen
+// with the API's result limit. The create picker still offers them first.
+export const NewKpiChampion: Story = {
+  args: { unorderedChampionCandidates: true },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    canvasElement.querySelector<HTMLButtonElement>('[data-test-id="new-kpi"]')?.click();
+  },
 };
 
 // A single KPI's page, opened on one with lots of history — shows the line

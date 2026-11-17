@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { showErrorToast, SpaceKpisPage, type SpaceKpisPageTypes } from "turboui";
 
 import Api from "@/api";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import * as Comments from "@/models/comments";
 import * as People from "@/models/people";
 import * as Kpis from "@/models/kpis";
@@ -21,6 +22,7 @@ import { KpiEntryComments } from "./KpiEntryComments";
 export function Page() {
   const formattedTimePreferences = useFormattedTimePreferences();
   const paths = usePaths();
+  const me = useMe();
   const navigate = useNavigate();
   const refresh = useRefresh();
   const queryClient = useQueryClient();
@@ -188,7 +190,7 @@ export function Page() {
       kpisLink={kpisLink}
       kpis={parsedKpis}
       selectedKpi={selectedKpi}
-      currentUser={null}
+      currentUser={People.parsePersonForTurboUi(paths, me)}
       canManage={space.permissions?.canEdit ?? false}
       subscriptions={subscriptions}
       championSearch={championSearch}
