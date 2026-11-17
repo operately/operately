@@ -29,7 +29,7 @@ export default function CompanyLayout() {
   const outletDiv = React.useRef<HTMLDivElement>(null);
   const keyboardShortcutsModal = useKeyboardShortcutsModal();
   const refresh = useRefreshCompanyLoader();
-  const productRelease = useProductRelease();
+  const { productRelease, canAnnounce } = useProductRelease();
 
   useScrollToTopOnNavigationChange({ outletDiv });
   Billing.useBillingUpdatedSignal(refresh);
@@ -37,7 +37,7 @@ export default function CompanyLayout() {
   return (
     <div className="flex flex-col h-screen">
       <SiteMessageBanner />
-      <ProductReleaseAnnouncementBanner productRelease={productRelease} />
+      <ProductReleaseAnnouncementBanner productRelease={productRelease} canAnnounce={canAnnounce} />
       <Navigation onOpenKeyboardShortcuts={keyboardShortcutsModal.open} productRelease={productRelease} />
       <SupportSessionBanner />
 
@@ -59,7 +59,7 @@ function Navigation({
   productRelease,
 }: {
   onOpenKeyboardShortcuts: () => void;
-  productRelease: ReturnType<typeof useProductRelease>;
+  productRelease: ReturnType<typeof useProductRelease>["productRelease"];
 }) {
   const { company, canAddGoal, canAddProject } = useCompanyLoaderData();
   const me = useMe()!;

@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.ProductReleases.GetLatestTest do
 
     test "returns null when the cache is empty", ctx do
       with_mock Fetcher, [], fetch: fn -> {:ok, nil} end do
-        assert {200, %{product_release: nil}} = query(ctx.conn, [:product_releases, :get_latest], %{})
+        assert {200, %{product_release: nil, can_announce: false}} = query(ctx.conn, [:product_releases, :get_latest], %{})
       end
     end
 
@@ -68,6 +68,40 @@ defmodule OperatelyWeb.Api.ProductReleases.GetLatestTest do
         assert returned.id == @release_with_version.id
         assert returned.version == "1.9.0"
         assert returned.title == @release_with_version.title
+      end
+    end
+
+    test "only announces releases published strictly after account creation, retaining the release payload", ctx do
+      assert :ok = Cache.put(@release, 60)
+
+      for {created_at, eligible?} <- [
+            {~N[2026-07-16 23:59:59], true},
+            {~N[2026-07-17 00:00:00], false},
+            {~N[2026-07-17 00:00:01], false}
+          ] do
+        Operately.People.Account
+        |> Repo.get!(ctx.creator.account_id)
+        |> Ecto.Changeset.change(inserted_at: created_at)
+        |> Repo.update!()
+
+        assert {200, %{product_release: returned, can_announce: can_announce}} = query(ctx.conn, [:product_releases, :get_latest], %{})
+        assert can_announce == eligible?
+        assert returned == Serializer.serialize(@release)
+      end
+    end
+
+    test "does not announce when the account creation cutoff is unavailable", ctx do
+      assert :ok = Cache.put(@release, 60)
+
+      for account <- [nil, %Operately.People.Account{inserted_at: nil}] do
+        conn =
+          ctx.conn
+          |> assign(:current_company, ctx.company)
+          |> assign(:current_person, ctx.creator)
+          |> assign(:current_account, account)
+
+        assert {:ok, %{product_release: returned, can_announce: false}} = OperatelyWeb.Api.ProductReleases.GetLatest.call(conn, %{})
+        assert returned == Serializer.serialize(@release)
       end
     end
   end

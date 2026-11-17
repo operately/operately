@@ -40,10 +40,10 @@ function stubMe(dismissedProductReleaseId: string | null) {
   mockUseMe.mockReturnValue({ dismissedProductReleaseId } as ReturnType<typeof useMe>);
 }
 
-function renderBanner(productRelease: typeof release | null = release) {
+function renderBanner(productRelease: typeof release | null = release, canAnnounce = true) {
   return renderToStaticMarkup(
     <MemoryRouter>
-      <ProductReleaseAnnouncementBanner productRelease={productRelease} />
+      <ProductReleaseAnnouncementBanner productRelease={productRelease} canAnnounce={canAnnounce} />
     </MemoryRouter>,
   );
 }
@@ -63,6 +63,12 @@ describe("ProductReleaseAnnouncementBanner", () => {
     stubMe(release.id);
 
     expect(renderBanner()).toBe("");
+  });
+
+  it("does not render when the release is ineligible for announcement", () => {
+    stubMe(null);
+
+    expect(renderBanner(release, false)).not.toContain("product-release-toast");
   });
 
   it("renders the toast when the release has not been dismissed", () => {

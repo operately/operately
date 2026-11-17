@@ -4083,6 +4083,7 @@ export interface ProductReleasesGetLatestInput {}
 
 export interface ProductReleasesGetLatestResult {
   productRelease?: ProductRelease | null;
+  canAnnounce: boolean;
 }
 
 export interface ProjectTemplatesGetInput {
