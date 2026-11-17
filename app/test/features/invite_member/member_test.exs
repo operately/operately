@@ -26,6 +26,18 @@ defmodule Operately.Features.InviteMember.MemberTest do
     |> Steps.assert_member_invited_email_sent(params.email)
   end
 
+  feature "admin account can invite a member without a title", ctx do
+    params = %{fullName: "John Doe", email: "john@some-company.com"}
+
+    ctx
+    |> Steps.log_in_as_admin()
+    |> Steps.navigate_to_invitation_page()
+    |> Steps.invite_member(params)
+    |> Steps.assert_member_invited()
+    |> Steps.assert_member_invited_email_sent(params.email)
+    |> Steps.assert_member_invited_without_title(params)
+  end
+
   feature "admin account can add members with existing account", ctx do
     params = %{
       fullName: "John Doe",
