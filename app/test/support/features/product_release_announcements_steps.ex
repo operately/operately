@@ -23,7 +23,12 @@ defmodule Operately.Support.Features.ProductReleaseAnnouncementsSteps do
 
     ctx
     |> Factory.setup()
+    |> set_account_creation(~N[2026-07-01 00:00:00])
     |> Factory.log_in_person(:creator)
+  end
+
+  step :given_an_account_created_after_the_existing_release, ctx do
+    set_account_creation(ctx, ~N[2026-07-20 00:00:00])
   end
 
   step :given_a_cached_release, ctx do
@@ -63,7 +68,9 @@ defmodule Operately.Support.Features.ProductReleaseAnnouncementsSteps do
   end
 
   step :refute_toast_visible, ctx do
-    UI.refute_has(ctx, testid: "product-release-toast")
+    ctx
+    |> UI.assert_has(testid: "update-available-badge")
+    |> UI.refute_has(testid: "product-release-toast")
   end
 
   step :dismiss_toast, ctx do
@@ -71,5 +78,14 @@ defmodule Operately.Support.Features.ProductReleaseAnnouncementsSteps do
     |> UI.wait_until_testid(testid: "product-release-toast-dismiss")
     |> UI.click(testid: "product-release-toast-dismiss")
     |> UI.refute_has(testid: "product-release-toast")
+  end
+
+  defp set_account_creation(ctx, created_at) do
+    Operately.People.Account
+    |> Operately.Repo.get!(ctx.creator.account_id)
+    |> Ecto.Changeset.change(inserted_at: created_at)
+    |> Operately.Repo.update!()
+
+    ctx
   end
 end

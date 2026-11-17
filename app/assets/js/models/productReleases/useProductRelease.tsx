@@ -1,8 +1,8 @@
 import Api, { type ProductRelease } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 
-export function useProductRelease(): ProductRelease | null {
+export function useProductRelease(): { productRelease: ProductRelease | null; canAnnounce: boolean } {
   const { data } = useQuery(Api.product_releases.getLatestQueryOptions({}));
 
-  return data?.productRelease ?? null;
+  return { productRelease: data?.productRelease ?? null, canAnnounce: data?.canAnnounce ?? false };
 }

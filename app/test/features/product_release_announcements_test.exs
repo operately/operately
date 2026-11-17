@@ -5,7 +5,13 @@ defmodule Operately.Features.ProductReleaseAnnouncementsTest do
   alias Operately.ProductReleases.Fetcher
   alias Operately.Support.Features.ProductReleaseAnnouncementsSteps, as: Steps
 
-  setup_with_mocks([{Fetcher, [], [fetch: fn -> {:error, :skipped} end]}], ctx) do
+  setup_with_mocks(
+    [
+      {Fetcher, [], [fetch: fn -> {:error, :skipped} end]},
+      {Operately, [:passthrough], [release_version: fn -> "1.0.0" end]}
+    ],
+    ctx
+  ) do
     Steps.setup(ctx)
   end
 
@@ -14,6 +20,19 @@ defmodule Operately.Features.ProductReleaseAnnouncementsTest do
     |> Steps.given_a_cached_release()
     |> Steps.visit_company_home()
     |> Steps.assert_toast_visible()
+  end
+
+  feature "a new account skips existing releases after reload but sees a later release", ctx do
+    ctx
+    |> Steps.given_an_account_created_after_the_existing_release()
+    |> Steps.given_a_cached_release()
+    |> Steps.visit_company_home()
+    |> Steps.refute_toast_visible()
+    |> Steps.reload_company_home()
+    |> Steps.refute_toast_visible()
+    |> Steps.given_a_newer_cached_release()
+    |> Steps.reload_company_home()
+    |> Steps.assert_newer_toast_visible()
   end
 
   feature "dismissing the toast hides it after reload", ctx do
