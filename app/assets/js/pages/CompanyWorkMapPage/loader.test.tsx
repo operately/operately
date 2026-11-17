@@ -13,7 +13,7 @@ jest.mock("@/components/Pages", () => ({
   useLoadedData: () => ({
     companyInput: { includeGeneralSpace: true },
     workMapInput: {},
-    spacesCountInput: { accessLevel: "edit_access" },
+    editableSpacesInput: { query: "", accessLevel: "edit_access" },
     templatesInput: { archiveStatus: "active" },
   }),
 }));
@@ -104,14 +104,14 @@ describe("CompanyWorkMapPage loading", () => {
     expect(loaded.data.workMap).toEqual([{ id: "project-1" }]);
     expect(loaded.creationData.isLoading).toBe(true);
 
-    const responses = [{ company }, { count: 0 }, { templates: [] }];
+    const responses = [{ company }, { spaces: [] }, { templates: [] }];
     for (const [index, request] of requests.entries()) {
       await act(async () => request.resolve({ data: responses[index] }));
       await flush();
       expect(loaded.creationData.isLoading).toBe(index < 2);
     }
     expect(loaded.creationData.error).toBeNull();
-    expect(loaded.data.spacesCount).toBe(0);
+    expect(loaded.data.editableSpaces).toEqual([]);
     expect(loaded.data.templates).toEqual([]);
   });
 
@@ -119,7 +119,7 @@ describe("CompanyWorkMapPage loading", () => {
     jest
       .mocked(axios.get)
       .mockResolvedValueOnce({ data: { company } })
-      .mockResolvedValueOnce({ data: { count: 1 } })
+      .mockResolvedValueOnce({ data: { spaces: [company.general_space] } })
       .mockRejectedValue(new Error("Templates unavailable"));
     await mount();
     await flush();
@@ -150,7 +150,7 @@ describe("CompanyWorkMapPage loading", () => {
     jest
       .mocked(axios.get)
       .mockResolvedValueOnce({ data: { company } })
-      .mockResolvedValueOnce({ data: { count: 1 } })
+      .mockResolvedValueOnce({ data: { spaces: [company.general_space] } })
       .mockResolvedValueOnce({ data: { templates: [] } });
     await mount();
     await flush();
@@ -173,12 +173,12 @@ describe("CompanyWorkMapPage loading", () => {
     expect(loaded.data.company?.generalSpace?.id).toBe("general");
   });
 
-  it.each(["/companies/get", "/spaces/count_by_access_level", "/project_templates/list"])(
+  it.each(["/companies/get", "/spaces/search", "/project_templates/list"])(
     "automatically recovers a transient failure of %s",
     async (failingEndpoint) => {
       const responses = {
         "/companies/get": { company },
-        "/spaces/count_by_access_level": { count: 1 },
+        "/spaces/search": { spaces: [company.general_space] },
         "/project_templates/list": { templates: [] },
       };
       let attempts = 0;
@@ -213,7 +213,7 @@ describe("CompanyWorkMapPage loading", () => {
     jest
       .mocked(axios.get)
       .mockResolvedValueOnce({ data: { company: { id: "company-1", name: "Company" } } })
-      .mockResolvedValueOnce({ data: { count: 0 } })
+      .mockResolvedValueOnce({ data: { spaces: [] } })
       .mockResolvedValueOnce({ data: { templates: [] } });
     await mount();
     await flush();

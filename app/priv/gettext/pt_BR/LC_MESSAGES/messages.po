@@ -5348,7 +5348,7 @@ msgstr "Modo de acesso do novo token"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/User.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:118
+#: ../turboui/src/CompanyNavigation/index.tsx:129
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:311
 msgid "Account"
 msgstr "Conta"
@@ -5544,7 +5544,7 @@ msgstr "A atividade dos seus espaços, objetivos e projetos aparecerá aqui."
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:266
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
-#: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:210
+#: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:216
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:102
 msgid "Add"
 msgstr "Adicionar"
@@ -8267,7 +8267,7 @@ msgstr "Empresa"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:50
-#: ../turboui/src/CompanyNavigation/index.tsx:122
+#: ../turboui/src/CompanyNavigation/index.tsx:133
 msgid "Company Admin"
 msgstr "Administração da empresa"
 
@@ -11509,12 +11509,12 @@ msgid "Failed to create the goal"
 msgstr "Falha ao criar o objetivo"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:307
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:305
 msgid "Failed to create the goal."
 msgstr "Falha ao criar o objetivo."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:307
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:305
 msgid "Failed to create the project."
 msgstr "Falha ao criar o projeto."
 
@@ -12533,8 +12533,8 @@ msgstr "Há algo de errado com este link. Confira o endereço ou peça um novo l
 #: ../turboui/src/AccountSecurityPage/index.tsx:21
 #: ../turboui/src/AccountSettingsPage/index.tsx:45
 #: ../turboui/src/CompanyAdminPage/index.tsx:53
-#: ../turboui/src/CompanyNavigation/index.tsx:94
-#: ../turboui/src/CompanyNavigation/index.tsx:194
+#: ../turboui/src/CompanyNavigation/index.tsx:105
+#: ../turboui/src/CompanyNavigation/index.tsx:205
 #: ../turboui/src/HomePage/index.tsx:20
 #: ../turboui/src/ProfileEditPage/index.tsx:81
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
@@ -13721,7 +13721,7 @@ msgid "Lobby"
 msgstr "Recepção"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:130
+#: ../turboui/src/CompanyNavigation/index.tsx:141
 msgid "Log Out"
 msgstr "Sair"
 
@@ -14390,8 +14390,8 @@ msgid "My upcoming work"
 msgstr "Meu próximo trabalho"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:102
-#: ../turboui/src/CompanyNavigation/index.tsx:202
+#: ../turboui/src/CompanyNavigation/index.tsx:113
+#: ../turboui/src/CompanyNavigation/index.tsx:213
 msgid "My work"
 msgstr "Meu trabalho"
 
@@ -14501,7 +14501,7 @@ msgid "Navbar update badge"
 msgstr "Indicador de atualização na barra de navegação"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:80
+#: ../turboui/src/CompanyNavigation/index.tsx:90
 msgid "Navigation menu"
 msgstr "Menu de navegação"
 
@@ -14537,7 +14537,7 @@ msgstr "Erro de rede"
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:183
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:306
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:314
 msgid "Network error"
 msgstr "Erro de rede"
 
@@ -15509,7 +15509,7 @@ msgstr "Configurações de notificação"
 #: ../turboui/src/AccountPage/index.tsx:61
 #: ../turboui/src/CompanyNavigation/Bell.tsx:26
 #: ../turboui/src/CompanyNavigation/User.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:114
+#: ../turboui/src/CompanyNavigation/index.tsx:125
 #: ../turboui/src/SidebarSection/index.tsx:34
 #: assets/js/pages/NotificationsPage/index.tsx:38
 #: assets/js/pages/NotificationsPage/index.tsx:41
@@ -18266,7 +18266,7 @@ msgstr "A data de início voltou ao valor anterior."
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/Review.tsx:18
-#: ../turboui/src/CompanyNavigation/index.tsx:106
+#: ../turboui/src/CompanyNavigation/index.tsx:117
 #: ../turboui/src/ReviewPage/index.tsx:83
 #: ../turboui/src/ReviewPage/index.tsx:132
 msgid "Review"
@@ -20244,7 +20244,7 @@ msgstr "Contas suspensas não podem ser convertidas em colaboradores externos"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:126
+#: ../turboui/src/CompanyNavigation/index.tsx:137
 msgid "Switch Company"
 msgstr "Trocar de empresa"
 
@@ -24122,6 +24122,11 @@ msgstr "Você ainda não tem acesso para gerenciar o faturamento de nenhuma empr
 msgid "You don't have any drafts."
 msgstr "Você não tem rascunhos."
 
+#.frontend
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:309
+msgid "You don't have permission to create goals or projects in this space. Choose another space or ask a space manager for Edit access."
+msgstr "Você não tem permissão para criar objetivos ou projetos neste espaço. Escolha outro espaço ou peça acesso de edição a um administrador do espaço."
+
 #.elixir
 #: lib/turbo_connect/plugs/dispatch.ex:38
 msgid "You don't have permission to perform this action"
@@ -24178,6 +24183,11 @@ msgstr "Você foi removido como proprietário da empresa por %{author}"
 #: lib/operately_email/templates/company_owner_removing.text.eex:1
 msgid "You have been removed as a company owner by %{author}."
 msgstr "Você foi removido como proprietário da empresa por %{author}."
+
+#.frontend
+#: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:210
+msgid "You need Edit access to this space to add goals and projects."
+msgstr "Você precisa de acesso de edição a este espaço para adicionar objetivos e projetos."
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:78
@@ -26809,15 +26819,15 @@ msgid "Title"
 msgstr "Título"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:98
-#: ../turboui/src/CompanyNavigation/index.tsx:198
+#: ../turboui/src/CompanyNavigation/index.tsx:109
+#: ../turboui/src/CompanyNavigation/index.tsx:209
 msgctxt "navigation"
 msgid "Company"
 msgstr "Empresa"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:110
+#: ../turboui/src/CompanyNavigation/index.tsx:121
 #: assets/js/pages/PeoplePage/page.tsx:14
 msgctxt "navigation"
 msgid "People"
