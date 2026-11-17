@@ -19,6 +19,14 @@ defmodule OperatelyWeb.Mcp.Tools.Kpis.AddKpiAnnotationTest do
     assert annotation.date == "2026-02-01"
   end
 
+  test "overlong titles return a normal tool error", ctx do
+    assert {:ok, definition} = OperatelyWeb.Mcp.Executor.fetch_definition("add_kpi_annotation")
+    arguments = %{"kpi_id" => Paths.kpi_id(ctx.kpi), "date" => "2026-02-01", "title" => String.duplicate("a", 81)}
+
+    assert {:ok, %{"isError" => true}} =
+             OperatelyWeb.Mcp.Executor.execute(ToolConnHelper.conn(ctx), definition, arguments)
+  end
+
   test "rejects malformed identifiers", ctx do
     arguments = %{"kpi_id" => Paths.kpi_id(ctx.kpi), "date" => "2026-02-01", "title" => "Launch"} |> Map.put("kpi_id", "invalid-%%")
     assert {:error, :invalid_arguments} = AddKpiAnnotation.call(ToolConnHelper.conn(ctx), arguments)
