@@ -5,12 +5,18 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useDismissProductRelease } from "@/models/productReleases/productReleaseLifecycle";
 import { ProductReleaseAnnouncement } from "turboui";
 
-export function ProductReleaseAnnouncementBanner({ productRelease }: { productRelease: ProductRelease | null }) {
+export function ProductReleaseAnnouncementBanner({
+  productRelease,
+  canAnnounce,
+}: {
+  productRelease: ProductRelease | null;
+  canAnnounce: boolean;
+}) {
   const me = useMe();
   const [hidden, setHidden] = React.useState(false);
   const dismissProductRelease = useDismissProductRelease();
 
-  if (hidden || !productRelease?.id) {
+  if (hidden || !canAnnounce || !productRelease?.id) {
     return null;
   }
 
