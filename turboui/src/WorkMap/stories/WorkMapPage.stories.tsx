@@ -68,6 +68,38 @@ export const Default: Story = {
   },
 };
 
+export const MixedSpacePermissions: Story = {
+  args: {
+    ...Default.args,
+    spaceSearch: async () => mockSpaces.filter((space) => space.id === "space1"),
+    items: [
+      {
+        ...mockSingleItem,
+        id: "view-goal",
+        name: "Goal in a view-only space",
+        space: { id: "space2", name: "View-only space", link: "/spaces/space2" },
+        canAddChildren: false,
+        children: [],
+      },
+      {
+        ...mockSingleItem,
+        id: "edit-goal",
+        name: "Goal in an editable space",
+        space: { id: "space1", name: "Editable space", link: "/spaces/space1" },
+        canAddChildren: true,
+        children: [],
+      },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const viewRow = canvas.getByRole("row", { name: /Goal in a view-only space/ });
+    const editRow = canvas.getByRole("row", { name: /Goal in an editable space/ });
+    await expect(within(viewRow).getByRole("button", { name: "Add" })).toBeDisabled();
+    await expect(within(editRow).getByRole("button", { name: "Add" })).toBeEnabled();
+  },
+};
+
 /**
  * WorkMap with a single item (no children)
  */

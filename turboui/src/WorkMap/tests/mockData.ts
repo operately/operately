@@ -52,6 +52,7 @@ function withDefaults(item: any): WorkMap.Item {
     assignedAt: null,
     nextStep: "",
     taskStatus: null,
+    canAddChildren: true,
     milestones: [],
     targets: [],
     checklist: [],

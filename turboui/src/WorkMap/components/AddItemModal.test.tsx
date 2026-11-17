@@ -4,9 +4,12 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 
 import { AddItemModal } from "./AddItemModal";
+import { showErrorToast } from "../../Toasts";
 import { i18n, setupTestCatalog } from "../../../test/i18n";
 
 setupTestCatalog();
+
+jest.mock("../../Toasts", () => ({ showErrorToast: jest.fn() }));
 
 jest.mock("react-select", () => {
   return function MockSelect({
@@ -41,6 +44,43 @@ const templates = [
 ];
 
 describe("AddItemModal", () => {
+  it.each(["goal", "project"] as const)("explains a denied %s creation and preserves the draft", async (type) => {
+    const user = userEvent.setup();
+    const close = jest.fn();
+    const save = jest.fn().mockRejectedValue({ response: { status: 403 } });
+    const consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      render(
+        <AddItemModal
+          isOpen
+          close={close}
+          parentGoal={null}
+          spaceSearch={async () => [generalSpace]}
+          save={save}
+          space={generalSpace}
+          initialItemType={type}
+        />,
+      );
+      const name = screen.getByRole("textbox");
+      await user.type(name, "Launch portal");
+      const submit = screen.getByRole("button", { name: type === "goal" ? "Add Goal" : "Add Project" });
+      await user.click(submit);
+
+      await waitFor(() =>
+        expect(showErrorToast).toHaveBeenCalledWith(
+          type === "goal" ? "Failed to create the goal." : "Failed to create the project.",
+          "You don't have permission to create goals or projects in this space. Choose another space or ask a space manager for Edit access.",
+        ),
+      );
+      expect(name).toHaveValue("Launch portal");
+      expect(screen.getByRole("button", { name: "General" })).toBeInTheDocument();
+      expect(submit).toBeEnabled();
+      expect(close).not.toHaveBeenCalled();
+    } finally {
+      consoleError.mockRestore();
+    }
+  });
+
   it("looks up the complete project action and its validation message", async () => {
     i18n.addResourceBundle(
       "en",

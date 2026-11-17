@@ -8,6 +8,7 @@ import { BlackLink } from "../../../Link";
 import { PrivacyIndicator } from "../../../PrivacyIndicator";
 import type { ProjectTemplateSelection } from "../../../ProjectTemplateSelection";
 import { SpaceField } from "../../../SpaceField";
+import { Tooltip } from "../../../Tooltip";
 import { createTestId } from "../../../TestableElement";
 import classNames from "../../../utils/classnames";
 import { useItemStatus } from "../../hooks/useItemStatus";
@@ -20,7 +21,6 @@ interface Props {
   showIndentation: boolean;
   expanded: boolean;
   setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
-  canAddChildren: boolean;
   addingEnabled?: boolean;
   addItem?: WorkMap.AddNewItemFn;
   spaceSearch?: SpaceField.SearchSpaceFn;
@@ -36,7 +36,7 @@ export function ItemNameCell({
   expanded,
   setExpanded,
   showIndentation,
-  canAddChildren,
+  addingEnabled,
   addItem,
   spaceSearch,
   hideCompanyAccess,
@@ -53,11 +53,11 @@ export function ItemNameCell({
         <Name item={item} />
         <PrivacyIndicatorWrapper item={item} />
 
-        {canAddChildren && (
+        {addingEnabled && addItem && spaceSearch && (
           <AddButton
             item={item}
-            addItem={addItem!}
-            spaceSearch={spaceSearch!}
+            addItem={addItem}
+            spaceSearch={spaceSearch}
             hideCompanyAccess={hideCompanyAccess}
             projectTemplates={projectTemplates}
             onCreateProjectTemplate={onCreateProjectTemplate}
@@ -197,18 +197,26 @@ function AddButton({
   onCreateProjectTemplate?: (spaceId: string) => void;
 }) {
   const { t } = useTranslation();
-  if (item.type !== "goal") return null;
-  if (!item.space) return null;
-
   const [isOpen, setIsOpen] = React.useState(false);
+  if (item.type !== "goal" || !item.space) return null;
+
+  const disabled = !item.canAddChildren;
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
   return (
-    <div className="-mt-[2px] ml-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
-      <SecondaryButton size="xxs" onClick={open} testId="add-subitem">
-        {t("Add")}
-      </SecondaryButton>
+    <div className="-mt-[2px] ml-2 opacity-0 group-hover/row:opacity-100 focus-within:opacity-100 transition-opacity">
+      <Tooltip
+        content={t("You need Edit access to this space to add goals and projects.")}
+        disabled={!disabled}
+        size="sm"
+      >
+        <span tabIndex={disabled ? 0 : undefined}>
+          <SecondaryButton size="xxs" onClick={open} testId="add-subitem" disabled={disabled}>
+            {t("Add")}
+          </SecondaryButton>
+        </span>
+      </Tooltip>
 
       <AddItemModal
         isOpen={isOpen}

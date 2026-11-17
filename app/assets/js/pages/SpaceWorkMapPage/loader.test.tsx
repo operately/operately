@@ -14,6 +14,7 @@ jest.mock("@/components/Pages", () => ({
     workMapInput: { spaceId: "space-1" },
     spaceInput: { id: "space-1", includeAccessLevels: true, includePermissions: true },
     templatesInput: { archiveStatus: "active" },
+    editableSpacesInput: { query: "", accessLevel: "edit_access" },
   }),
 }));
 
@@ -41,6 +42,10 @@ describe("SpaceWorkMapPage loading", () => {
     root = createRoot(document.createElement("div"));
     queryClient.clear();
     jest.resetAllMocks();
+    // These cases exercise template loading; the editable-space lookup is already available.
+    const editableSpacesKey = Api.spaces.searchQueryKey({ query: "", accessLevel: "edit_access" });
+    queryClient.setQueryDefaults(editableSpacesKey, { staleTime: Infinity });
+    queryClient.setQueryData(editableSpacesKey, { spaces: [space] });
   });
 
   afterEach(async () => {
@@ -97,6 +102,7 @@ describe("SpaceWorkMapPage loading", () => {
         workMapInput: { spaceId: space.id },
         spaceInput,
         templatesInput: { archiveStatus: "active" },
+        editableSpacesInput: { query: "", accessLevel: "edit_access" },
       });
       expect(axios.get).toHaveBeenCalledTimes(2);
     },
@@ -118,6 +124,28 @@ describe("SpaceWorkMapPage loading", () => {
       expect(loaded.data.templates).toEqual([]);
     },
   );
+
+  it("waits for editable spaces before allowing creation", async () => {
+    queryClient.removeQueries({ queryKey: Api.spaces.searchQueryKeyPrefix() });
+    const request = deferred();
+    jest
+      .mocked(axios.get)
+      .mockImplementation((url) =>
+        url.endsWith("/spaces/search") ? request.promise : Promise.resolve({ data: { templates: [] } }),
+      );
+    await mount();
+    await advance();
+    expect(loaded.creationData.isLoading).toBe(true);
+    expect(loaded.data.editableSpaces).toEqual([]);
+    await act(async () => request.resolve({ data: { spaces: [space] } }));
+    await advance();
+    expect(loaded.creationData).toMatchObject({ isLoading: false, error: null });
+    expect(loaded.data.editableSpaces).toEqual([space]);
+    expect(axios.get).toHaveBeenCalledWith(
+      expect.stringContaining("/spaces/search"),
+      expect.objectContaining({ params: expect.objectContaining({ access_level: "edit_access" }) }),
+    );
+  });
 
   it("reports only the third failure and retries only templates", async () => {
     jest.mocked(axios.get).mockRejectedValue(new Error("Offline"));
