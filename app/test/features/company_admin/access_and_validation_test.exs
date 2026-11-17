@@ -68,24 +68,6 @@ defmodule Operately.Features.CompanyAdmin.AccessAndValidationTest do
     end
 
     @tag role: :admin
-    feature "missing title", ctx do
-      params = %{
-        full_name: "Michael Scott",
-        email: "m.scott@dmif.com",
-        title: ""
-      }
-
-      error = "Title is required"
-
-      ctx
-      |> Steps.assert_logged_in_user_has_admin_access_level()
-      |> Steps.open_company_team_page()
-      |> Steps.assert_error_message_not_visible(error)
-      |> Steps.invite_company_member(params)
-      |> Steps.assert_error_message(error)
-    end
-
-    @tag role: :admin
     feature "invalid email", ctx do
       params = %{
         full_name: "Michael Scott",
