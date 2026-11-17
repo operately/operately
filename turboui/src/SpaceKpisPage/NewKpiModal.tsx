@@ -10,22 +10,24 @@ interface NewKpiModalProps {
   isOpen: boolean;
   onClose: () => void;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
+  currentUser: SpaceKpisPage.Person | null;
   onCreate: (input: SpaceKpisPage.NewKpiInput) => Promise<SpaceKpisPage.MutationResult>;
 }
 
 // New KPI form → calls the `createKpi` mutation via the onCreate callback.
 // Mirrors the goal add form: presentational form, no direct data access. There
 // is no edit mode: an existing KPI's fields are edited in place on its own page.
-export function NewKpiModal({ isOpen, onClose, championSearch, onCreate }: NewKpiModalProps) {
+export function NewKpiModal({ isOpen, onClose, championSearch, currentUser, onCreate }: NewKpiModalProps) {
   const { t } = useTranslation();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   const searchFn = React.useCallback(
     async (query: string) => {
-      const people = await championSearch(query);
+      const results = await championSearch(query);
+      const people = prioritizeCurrentUser(results, currentUser, query);
       return people.map((p) => ({ id: p.id, fullName: p.fullName, avatarUrl: p.avatarUrl, title: p.title ?? null }));
     },
-    [championSearch],
+    [championSearch, currentUser],
   );
 
   const form = useForm<{ name: string; unit: string; cadence: string; championId: string | null }>({
@@ -105,4 +107,19 @@ export function NewKpiModal({ isOpen, onClose, championSearch, onCreate }: NewKp
       </Form>
     </Modal>
   );
+}
+
+function prioritizeCurrentUser(
+  people: SpaceKpisPage.Person[],
+  currentUser: SpaceKpisPage.Person | null,
+  query: string,
+) {
+  if (!currentUser) return people;
+
+  const search = query.toLowerCase();
+  const matches =
+    currentUser.fullName.toLowerCase().includes(search) || (currentUser.title ?? "").toLowerCase().includes(search);
+  const otherPeople = people.filter((person) => person.id !== currentUser.id);
+
+  return matches ? [currentUser, ...otherPeople] : otherPeople;
 }

@@ -106,6 +106,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
           isOpen={isNewOpen}
           onClose={() => setIsNewOpen(false)}
           championSearch={props.championSearch}
+          currentUser={props.currentUser}
           onCreate={props.onCreateKpi}
         />
 
