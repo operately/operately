@@ -1751,6 +1751,7 @@
   "KPI URL copied to clipboard": "KPI URL copied to clipboard",
   "KPI history line chart": "KPI history line chart",
   "KPI template": "KPI template",
+  "KPI: <kpi>{{kpiName}}</kpi>": "KPI: <kpi>{{kpiName}}</kpi>",
   "KPI: {{kpiName}}": "KPI: {{kpiName}}",
   "KPI: {{oldValue}} → {{newValue}}": "KPI: {{oldValue}} → {{newValue}}",
   "KPI: {{title}}": "KPI: {{title}}",

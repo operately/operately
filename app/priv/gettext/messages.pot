@@ -1267,12 +1267,12 @@ msgid "%{author} converted your account in %{company_name} to an outside collabo
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/KpiCreated/index.tsx:43
+#: assets/js/features/activities/KpiCreated/index.tsx:44
 msgid "%{author} created a KPI"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/KpiCreated/index.tsx:47
+#: assets/js/features/activities/KpiCreated/index.tsx:48
 msgid "%{author} created a KPI in the <space>%{spaceName}</space> space"
 msgstr ""
 
@@ -8959,7 +8959,7 @@ msgid "Created At"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/KpiCreated/index.tsx:72
+#: assets/js/features/activities/KpiCreated/index.tsx:87
 msgid "Created KPI: %{kpiName}"
 msgstr ""
 
@@ -12758,7 +12758,7 @@ msgid "KPI template"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/KpiCreated/index.tsx:56
+#: assets/js/features/activities/KpiCreated/index.tsx:62
 #: assets/js/features/activities/KpiDeleted/index.tsx:51
 #: assets/js/features/activities/KpiEdited/index.tsx:55
 msgid "KPI: %{kpiName}"
@@ -12778,6 +12778,11 @@ msgstr ""
 #: assets/js/features/activities/KpiEntryDeleted/index.tsx:58
 #: assets/js/features/activities/KpiEntryLogged/index.tsx:59
 msgid "KPI: %{value}"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/KpiCreated/index.tsx:66
+msgid "KPI: <kpi>%{kpiName}</kpi>"
 msgstr ""
 
 #.frontend

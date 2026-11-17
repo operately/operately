@@ -1267,12 +1267,12 @@ msgid "%{author} converted your account in %{company_name} to an outside collabo
 msgstr "%{author} cambió tu cuenta en %{company_name} al rol de colaborador externo."
 
 #.frontend
-#: assets/js/features/activities/KpiCreated/index.tsx:43
+#: assets/js/features/activities/KpiCreated/index.tsx:44
 msgid "%{author} created a KPI"
 msgstr "%{author} creó un KPI"
 
 #.frontend
-#: assets/js/features/activities/KpiCreated/index.tsx:47
+#: assets/js/features/activities/KpiCreated/index.tsx:48
 msgid "%{author} created a KPI in the <space>%{spaceName}</space> space"
 msgstr "%{author} creó un KPI en el espacio <space>%{spaceName}</space>"
 
@@ -9065,7 +9065,7 @@ msgid "Created At"
 msgstr "Creado en"
 
 #.frontend
-#: assets/js/features/activities/KpiCreated/index.tsx:72
+#: assets/js/features/activities/KpiCreated/index.tsx:87
 msgid "Created KPI: %{kpiName}"
 msgstr "KPI creado: %{kpiName}"
 
@@ -12896,7 +12896,7 @@ msgid "KPI template"
 msgstr "Plantilla de KPI"
 
 #.frontend
-#: assets/js/features/activities/KpiCreated/index.tsx:56
+#: assets/js/features/activities/KpiCreated/index.tsx:62
 #: assets/js/features/activities/KpiDeleted/index.tsx:51
 #: assets/js/features/activities/KpiEdited/index.tsx:55
 msgid "KPI: %{kpiName}"
@@ -12917,6 +12917,11 @@ msgstr "KPI: %{title}"
 #: assets/js/features/activities/KpiEntryLogged/index.tsx:59
 msgid "KPI: %{value}"
 msgstr "KPI: %{value}"
+
+#.frontend
+#: assets/js/features/activities/KpiCreated/index.tsx:66
+msgid "KPI: <kpi>%{kpiName}</kpi>"
+msgstr "KPI: <kpi>%{kpiName}</kpi>"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:25
