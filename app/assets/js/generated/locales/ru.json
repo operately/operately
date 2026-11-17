@@ -1887,6 +1887,7 @@
   "KPI URL copied to clipboard": "Ссылка на KPI скопирована в буфер обмена",
   "KPI history line chart": "Линейный график истории KPI",
   "KPI template": "Шаблон KPI",
+  "KPI: <kpi>{{kpiName}}</kpi>": "KPI: <kpi>{{kpiName}}</kpi>",
   "KPI: {{kpiName}}": "KPI: {{kpiName}}",
   "KPI: {{oldValue}} → {{newValue}}": "KPI: {{oldValue}} → {{newValue}}",
   "KPI: {{title}}": "KPI: {{title}}",
