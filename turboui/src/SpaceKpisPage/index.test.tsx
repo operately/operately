@@ -567,6 +567,79 @@ describe("SpaceKpisPage edit & delete", () => {
 // creating a KPI, and logging a single entry (value + period) that refreshes
 // the detail chart.
 describe("SpaceKpisPage create & log", () => {
+  const currentUser: SpaceKpisPageNS.Person = {
+    id: "signed-in-person",
+    fullName: "Morgan Chen",
+    title: "Growth Lead",
+    avatarUrl: null,
+  };
+  const candidates: SpaceKpisPageNS.Person[] = [
+    { id: "zoe", fullName: "Zoe Chen", title: "Growth Analyst", avatarUrl: null },
+    { id: "alex", fullName: "Alex Chen", avatarUrl: null },
+  ];
+
+  async function openChampionPicker(overrides: Partial<SpaceKpisPageNS.Props>) {
+    const user = userEvent.setup();
+    renderPage(overrides);
+    await user.click(await findByTestId("new-kpi"));
+    const championField = await findByTestId("championid");
+    const input = within(championField).getByRole("combobox");
+    await user.click(input);
+    await findByTestId("person-option-nobody");
+    return { user, input };
+  }
+
+  function championOptionIds() {
+    return Array.from(document.querySelectorAll('[data-test-id^="person-option"]'), (option) =>
+      option.getAttribute("data-test-id"),
+    );
+  }
+
+  function expectedChampionOptionIds(people: SpaceKpisPageNS.Person[]) {
+    return [...people.map((person) => createTestId("person-option", person.fullName)), "person-option-nobody"];
+  }
+
+  test.each([false, true])("offers the current user first exactly once (included in search: %s)", async (included) => {
+    const championSearch = jest.fn().mockResolvedValue(included ? [...candidates, currentUser] : candidates);
+    const onCreateKpi = jest.fn().mockResolvedValue({ success: true, id: "new" });
+    const { user } = await openChampionPicker({ currentUser, championSearch, onCreateKpi });
+
+    expect(championOptionIds()).toEqual(expectedChampionOptionIds([currentUser, ...candidates]));
+    await user.click(await findByTestId(createTestId("person-option", currentUser.fullName)));
+    fireEvent.change(await findByTestId("name"), { target: { value: "Weekly Sign-ups" } });
+    fireEvent.change(await findByTestId("unit"), { target: { value: "users" } });
+    await user.click(await findByTestId("submit"));
+
+    await waitFor(() =>
+      expect(onCreateKpi).toHaveBeenCalledWith(expect.objectContaining({ championId: currentUser.id })),
+    );
+  });
+
+  test.each([
+    { query: "cHeN", matches: true, matchingCandidates: candidates },
+    { query: "gRoWtH", matches: true, matchingCandidates: candidates.slice(0, 1) },
+    { query: "unrelated", matches: false, matchingCandidates: [] },
+  ])(
+    "only prepends the current user when the search matches their name or title ($query)",
+    async ({ query, matches, matchingCandidates }) => {
+      const championSearch = jest.fn().mockResolvedValueOnce(candidates).mockResolvedValue(matchingCandidates);
+      const { user, input } = await openChampionPicker({ currentUser, championSearch });
+      await user.type(input, query);
+
+      await waitFor(() => expect(championSearch).toHaveBeenLastCalledWith(query));
+      await waitFor(() =>
+        expect(championOptionIds()).toEqual(
+          expectedChampionOptionIds(matches ? [currentUser, ...matchingCandidates] : matchingCandidates),
+        ),
+      );
+    },
+  );
+
+  test("keeps the search order when current-user data is absent", async () => {
+    await openChampionPicker({ currentUser: null, championSearch: async () => candidates });
+    expect(championOptionIds()).toEqual(expectedChampionOptionIds(candidates));
+  });
+
   test("creating a KPI submits the entered fields to onCreateKpi", async () => {
     const user = userEvent.setup();
     const onCreateKpi = jest.fn().mockResolvedValue({ success: true, id: "new" });
