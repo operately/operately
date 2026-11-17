@@ -87,7 +87,7 @@ export function TableRow(props: Props) {
           expanded={expanded}
           setExpanded={handleSetExpanded}
           showIndentation={props.showIndentation}
-          canAddChildren={Boolean(props.addingEnabled) && tab !== "completed"}
+          addingEnabled={props.addingEnabled && tab !== "completed"}
           spaceSearch={props.spaceSearch}
           addItem={props.addItem}
           hideCompanyAccess={props.hideCompanyAccessInQuickAdd}

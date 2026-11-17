@@ -26,7 +26,7 @@ export function Page() {
   const companyLoaderData = useCompanyLoaderData();
 
   const { data, creationData } = useLoadedData();
-  const { workMap, spacesCount, templates } = data;
+  const { workMap, editableSpaces, templates } = data;
   const company = data.company ?? companyLoaderData.company;
 
   const creationFailed = Boolean(creationData.error);
@@ -54,13 +54,16 @@ export function Page() {
 
   const title = t("{{company}} Work Map", { company: company.name });
 
-  const canAddItem = !creationData.isLoading && !creationData.error && (spacesCount ?? 0) > 0;
+  const canAddItem = !creationData.isLoading && !creationData.error && editableSpaces.length > 0;
+  const editableSpaceIds = editableSpaces.map((space) => space.id);
+  const defaultSpace = data.company?.generalSpace;
+  const editableDefaultSpace = defaultSpace && includesId(editableSpaceIds, defaultSpace.id) ? defaultSpace : undefined;
   const ownerIds = companyLoaderData.company.owners?.map((owner) => owner.id) ?? [];
   const firstProjectStateVisible = shouldShowFirstProjectOnboarding({
     isOwner: includesId(ownerIds, me?.id),
     setupCompleted: company.setupCompleted,
     hasWorkItems: workMap.length > 0,
-    canAddItem: canAddItem && Boolean(data.company?.generalSpace),
+    canAddItem: canAddItem && Boolean(editableDefaultSpace),
   });
   const [items, addItem] = useWorkMapItems(workMap, {
     projectChampionId: firstProjectStateVisible ? me?.id : undefined,
@@ -101,13 +104,13 @@ export function Page() {
   return (
     <WorkMapPage
       title={title}
-      items={convertToWorkMapItems(paths, visibleItems)}
+      items={convertToWorkMapItems(paths, visibleItems, editableSpaceIds)}
       addItem={addItem}
       spaceSearch={spaceSearch}
       addingEnabled={canAddItem}
       creationLoading={creationData.isLoading}
       creationError={Boolean(creationData.error)}
-      addItemDefaultSpace={data.company?.generalSpace && Spaces.parseSpaceForTurboUI(paths, data.company.generalSpace)}
+      addItemDefaultSpace={editableDefaultSpace && Spaces.parseSpaceForTurboUI(paths, editableDefaultSpace)}
       columnOptions={{ hideProject: true }}
       formattedTimePreferences={formattedTimePreferences}
       emptyStateVariant={firstProjectStateVisible ? "first-project" : "standard"}

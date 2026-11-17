@@ -1,4 +1,4 @@
-import Api, { type Company, type ProjectTemplate, type WorkMapItem } from "@/api";
+import Api, { type Company, type ProjectTemplate, type Space, type WorkMapItem } from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import { useQuery } from "@tanstack/react-query";
@@ -7,7 +7,7 @@ interface LoadedData {
   data: {
     workMap: WorkMapItem[];
     company: Company | undefined;
-    spacesCount: number | undefined;
+    editableSpaces: Space[];
     templates: ProjectTemplate[];
   };
   creationData: {
@@ -20,22 +20,22 @@ interface LoadedData {
 export async function loader() {
   const companyInput = { includeGeneralSpace: true };
   const workMapInput = {};
-  const spacesCountInput = { accessLevel: "edit_access" as const };
+  const editableSpacesInput = { query: "", accessLevel: "edit_access" as const };
   const templatesInput = { archiveStatus: "active" as const };
 
   await Api.companies.getWorkMapQuery(workMapInput);
 
-  return { companyInput, workMapInput, spacesCountInput, templatesInput };
+  return { companyInput, workMapInput, editableSpacesInput, templatesInput };
 }
 
 type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
 export function useLoadedData(): LoadedData {
-  const { companyInput, workMapInput, spacesCountInput, templatesInput } = Pages.useLoadedData<LoaderResult>();
+  const { companyInput, workMapInput, editableSpacesInput, templatesInput } = Pages.useLoadedData<LoaderResult>();
   const { data: workMapData } = useLoadedQuery(Api.companies.getWorkMapQueryOptions(workMapInput));
 
   const companyQuery = useQuery({ ...Api.companies.getQueryOptions(companyInput), retry: 2 });
-  const spacesCountQuery = useQuery({ ...Api.spaces.countByAccessLevelQueryOptions(spacesCountInput), retry: 2 });
+  const editableSpacesQuery = useQuery({ ...Api.spaces.searchQueryOptions(editableSpacesInput), retry: 2 });
   const templatesQuery = useQuery({ ...Api.project_templates.listQueryOptions(templatesInput), retry: 2 });
 
   if (!workMapData) {
@@ -44,7 +44,7 @@ export function useLoadedData(): LoadedData {
 
   const missingQueries = [
     ...(!companyQuery.data?.company ? [companyQuery] : []),
-    ...(spacesCountQuery.data?.count == null ? [spacesCountQuery] : []),
+    ...(!editableSpacesQuery.data ? [editableSpacesQuery] : []),
     ...(!templatesQuery.data ? [templatesQuery] : []),
   ];
   const failedQuery = missingQueries.find((query) => !query.isFetching && !query.isPending);
@@ -54,7 +54,7 @@ export function useLoadedData(): LoadedData {
     data: {
       company: companyQuery.data?.company,
       workMap: workMapData.workMap,
-      spacesCount: spacesCountQuery.data?.count,
+      editableSpaces: editableSpacesQuery.data?.spaces ?? [],
       templates: templatesQuery.data?.templates ?? [],
     },
     creationData: {

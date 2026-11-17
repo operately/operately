@@ -173,6 +173,7 @@ export namespace WorkMap {
     taskStatus: StatusSelector.StatusOption | null;
     taskStatuses?: StatusSelector.StatusOption[];
     canEditTask?: boolean | null;
+    canAddChildren?: boolean;
     progress: number | null;
     project: { id: string; name: string } | null;
     projectPath: string | null;
