@@ -52,6 +52,10 @@ function withDefaults(item: any): WorkMap.Item {
     assignedAt: null,
     nextStep: "",
     taskStatus: null,
+    taskCompletion:
+      item.type === "project" && item.progress != null
+        ? { completedCount: item.progress, totalCount: 100, percentage: item.progress }
+        : null,
     canAddChildren: true,
     milestones: [],
     targets: [],

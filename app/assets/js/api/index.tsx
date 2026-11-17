@@ -2271,6 +2271,12 @@ export interface ProjectReviewRequest {
   author?: Person | null;
 }
 
+export interface ProjectTaskCompletion {
+  completedCount: number;
+  totalCount: number;
+  percentage: number;
+}
+
 export interface ProjectTemplate {
   __typename: "project_template";
   id: string;
@@ -3044,6 +3050,7 @@ export interface WorkMapItem {
   taskStatuses?: TaskStatus[] | null;
   canEditTask?: boolean | null;
   progress: number | null;
+  taskCompletion?: ProjectTaskCompletion | null;
   space: Space | null;
   spacePath: string | null;
   project: Project | null;

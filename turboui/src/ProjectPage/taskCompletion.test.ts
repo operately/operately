@@ -46,6 +46,18 @@ function task(id: string, status: Types.Status | null, extras: Partial<Types.Tas
 }
 
 describe("getTaskCompletionStats", () => {
+  it("counts custom completion, missing statuses, and archived tasks with cancellation taking precedence", () => {
+    expect(
+      getTaskCompletionStats([
+        task("custom-done", { ...done, value: "shipped" }),
+        task("archived-done", done, { archivedAt: new Date("2026-01-01") }),
+        task("missing-status", null),
+        task("custom-canceled", { ...canceled, value: "done" }),
+        task("canceled-green", { ...done, value: "canceled" }),
+      ]),
+    ).toEqual({ completedCount: 2, totalCount: 3, percentage: 67 });
+  });
+
   it("returns null when there are no tracked tasks", () => {
     expect(getTaskCompletionStats([])).toBeNull();
     expect(getTaskCompletionStats([task("helper", todo, { _isHelperTask: true })])).toBeNull();

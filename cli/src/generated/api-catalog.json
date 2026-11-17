@@ -4095,6 +4095,17 @@
           },
           {
             "default": null,
+            "name": "task_completion",
+            "type": {
+              "name": "project_task_completion",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "space",
             "type": {
               "name": "space",
@@ -25263,6 +25274,43 @@
             "name": "templates_enabled",
             "type": {
               "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "project_task_completion": {
+        "fields": [
+          {
+            "default": null,
+            "name": "completed_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "total_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "percentage",
+            "type": {
+              "name": "integer",
               "kind": "named"
             },
             "optional": false,
