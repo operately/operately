@@ -540,6 +540,8 @@
   "A change to your Operately email was requested. The proposed new address is <email/>.": "Запрошено изменение вашего адреса электронной почты в Operately. Новый адрес: <email/>.",
   "A change to your Operately email was requested. The proposed new address is {{email}}.": "Запрошено изменение вашего адреса электронной почты в Operately. Новый адрес: {{email}}.",
   "A folder cannot be moved into itself": "Папка не может быть перемещена в себя",
+  "A new KPI update will be due every Monday.": "Каждый понедельник нужно будет записывать новое значение KPI.",
+  "A new KPI update will be due on the first day of each month.": "Новое значение KPI нужно будет записывать в первый день каждого месяца.",
   "A new invitation URL will be generated for {{name}}.": "Для {{name}} будет создан новый URL приглашения.",
   "A new milestone \"{{milestoneName}}\" was created": "Создана новая веха «{{milestoneName}}»",
   "A new milestone was added to {{project_name}}.": "В проект «{{project_name}}» добавлена новая веха.",

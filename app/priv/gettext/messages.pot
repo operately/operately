@@ -5079,6 +5079,16 @@ msgid "A folder cannot be moved into itself"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:91
+msgid "A new KPI update will be due every Monday."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:92
+msgid "A new KPI update will be due on the first day of each month."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ReissueInvitationModal.tsx:35
 msgid "A new invitation URL will be generated for %{name}."
 msgstr ""
@@ -6893,7 +6903,7 @@ msgid "Bold"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/index.tsx:213
+#: ../turboui/src/SpaceKpisPage/index.tsx:214
 msgid "Breadcrumb"
 msgstr ""
 
@@ -6946,7 +6956,7 @@ msgstr ""
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:42
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:38
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:242
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:80
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:82
 msgid "Cadence"
 msgstr ""
 
@@ -7071,7 +7081,7 @@ msgstr ""
 #: ../turboui/src/SpaceKpisPage/DeleteKpiModal.tsx:76
 #: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:114
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:194
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:104
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:111
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:103
 #: ../turboui/src/StatusCustomization/index.tsx:205
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:135
@@ -7210,7 +7220,7 @@ msgstr ""
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:168
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:222
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:36
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:89
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:96
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:163
 #: ../turboui/src/TemplateProjectPage/People.tsx:37
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:27
@@ -7542,7 +7552,7 @@ msgid "Choose a Company"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:42
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:44
 msgid "Choose a cadence"
 msgstr ""
 
@@ -8694,7 +8704,7 @@ msgid "Couldn't delete the draft. Please try again."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/index.tsx:276
+#: ../turboui/src/SpaceKpisPage/index.tsx:277
 msgid "Couldn't load KPIs"
 msgstr ""
 
@@ -8762,7 +8772,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:66
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:104
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:111
 msgid "Create KPI"
 msgstr ""
 
@@ -10648,7 +10658,7 @@ msgstr ""
 #: assets/js/pages/ProjectPage/index.tsx:793
 #: assets/js/pages/ProjectPage/index.tsx:822
 #: assets/js/pages/SpaceKanbanPage/useSpaceTaskStatuses.tsx:67
-#: assets/js/pages/SpaceKpisPage/page.tsx:102
+#: assets/js/pages/SpaceKpisPage/page.tsx:104
 #: assets/js/pages/SpacePage/page.tsx:119
 #: assets/js/pages/TaskPage/index.tsx:84
 #: assets/js/pages/TaskPage/index.tsx:93
@@ -11305,7 +11315,7 @@ msgid "Failed to unsubscribe from task notifications."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceKpisPage/page.tsx:102
+#: assets/js/pages/SpaceKpisPage/page.tsx:104
 msgid "Failed to update KPI description."
 msgstr ""
 
@@ -12791,9 +12801,9 @@ msgstr ""
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:70
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:116
 #: ../turboui/src/SpaceKpisPage/index.tsx:75
-#: ../turboui/src/SpaceKpisPage/index.tsx:193
-#: ../turboui/src/SpaceKpisPage/index.tsx:230
-#: ../turboui/src/SpaceKpisPage/index.tsx:233
+#: ../turboui/src/SpaceKpisPage/index.tsx:194
+#: ../turboui/src/SpaceKpisPage/index.tsx:231
+#: ../turboui/src/SpaceKpisPage/index.tsx:234
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:70
 msgid "KPIs"
 msgstr ""
@@ -13933,7 +13943,7 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:176
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:53
 #: ../turboui/src/SortControl/index.tsx:18
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:71
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:73
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:393
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:120
@@ -13953,7 +13963,7 @@ msgstr ""
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:25
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:154
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:25
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:39
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:41
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:370
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
 #: lib/operately_web/api/resource_hubs/create.ex:27
@@ -14081,7 +14091,7 @@ msgid "New Document"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:66
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:68
 #: ../turboui/src/SpaceKpisPage/index.tsx:70
 msgid "New KPI"
 msgstr ""
@@ -14345,7 +14355,7 @@ msgstr ""
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:201
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:229
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:236
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:92
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:99
 #: ../turboui/src/TemplateProjectPage/People.tsx:96
 msgid "No champion"
 msgstr ""
@@ -14909,7 +14919,7 @@ msgid "Note (optional)"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceKpisPage/page.tsx:132
+#: assets/js/pages/SpaceKpisPage/page.tsx:134
 msgid "Note not posted"
 msgstr ""
 
@@ -18945,13 +18955,13 @@ msgstr ""
 #: ../turboui/src/SpaceKpisPage/DeleteKpiModal.tsx:36
 #: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:49
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:72
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:59
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:61
 #: ../turboui/src/TitleSetupPrompt/index.tsx:90
 #: assets/js/models/projects/useProjectContributorActions.tsx:91
 #: assets/js/models/projects/useProjectContributorActions.tsx:102
 #: assets/js/models/projects/useProjectContributorActions.tsx:150
 #: assets/js/models/projects/useProjectContributorActions.tsx:171
-#: assets/js/pages/SpaceKpisPage/page.tsx:230
+#: assets/js/pages/SpaceKpisPage/page.tsx:232
 msgid "Something went wrong. Please try again."
 msgstr ""
 
@@ -20618,7 +20628,7 @@ msgid "The uploaded file is unavailable"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceKpisPage/page.tsx:132
+#: assets/js/pages/SpaceKpisPage/page.tsx:134
 msgid "The value was recorded, but the note wasn't saved."
 msgstr ""
 
@@ -21404,7 +21414,6 @@ msgstr ""
 #: ../turboui/src/LinkEditPage/index.tsx:24
 #: ../turboui/src/LinkNewPage/index.tsx:28
 #: ../turboui/src/NewDocumentPage/index.tsx:61
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:238
 msgid "Title is required"
 msgstr ""
 
@@ -21773,13 +21782,13 @@ msgstr ""
 #: ../turboui/src/GoalTargetList/index.tsx:274
 #: ../turboui/src/GoalTargetList/index.tsx:400
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:250
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:77
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:79
 #: assets/js/features/goals/GoalTargetsV2/EditTargetCard.tsx:66
 msgid "Unit"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:40
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:42
 msgid "Unit is required"
 msgstr ""
 
@@ -24190,7 +24199,7 @@ msgid "e.g. Marketing"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:72
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:74
 msgid "e.g. Monthly Recurring Revenue"
 msgstr ""
 
@@ -24215,7 +24224,7 @@ msgid "e.g. Software Engineer"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:77
+#: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:79
 msgid "e.g. USD, %, users"
 msgstr ""
 
