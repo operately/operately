@@ -38,6 +38,7 @@ jest.mock("react-select", () => {
 });
 
 const generalSpace = { id: "general", name: "General", link: "/spaces/general" };
+const otherSpace = { id: "other", name: "Other", link: "/spaces/other" };
 const templates = [
   { id: "tpl-general", name: "General campaign", spaceId: "general" },
   { id: "tpl-other", name: "Other space template", spaceId: "other" },
@@ -252,6 +253,62 @@ describe("AddItemModal", () => {
         }),
       );
     });
+  });
+
+  it("clears and refocuses only the name when creating more projects", async () => {
+    const user = userEvent.setup();
+    const save = jest
+      .fn()
+      .mockResolvedValueOnce({ id: "project-1" })
+      .mockResolvedValueOnce({ id: "project-2" });
+
+    render(
+      <AddItemModal
+        isOpen
+        close={jest.fn()}
+        parentGoal={null}
+        spaceSearch={jest.fn().mockResolvedValue([otherSpace])}
+        save={save}
+        space={generalSpace}
+        initialItemType="project"
+        hideTypeSelector
+        templates={templates}
+      />,
+    );
+
+    const nameInput = screen.getByPlaceholderText("e.g. Implement new website design");
+    await user.type(nameInput, "First project");
+    await user.click(screen.getByRole("button", { name: "General" }));
+    await user.click(await screen.findByRole("button", { name: "Other" }));
+    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "tpl-other" } });
+    selectCurrentDate("Project start date");
+    await user.click(screen.getByRole("switch", { name: "Create more" }));
+    await user.click(screen.getByRole("button", { name: "Add Project" }));
+
+    await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
+    const firstProjectSettings = expect.objectContaining({
+      name: "First project",
+      space: otherSpace,
+      templateId: "tpl-other",
+      startDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+    });
+    expect(save).toHaveBeenNthCalledWith(1, firstProjectSettings);
+    expect(nameInput).toHaveValue("");
+    await waitFor(() => expect(nameInput).toHaveFocus());
+
+    await user.type(nameInput, "Second project");
+    await user.click(screen.getByRole("button", { name: "Add Project" }));
+
+    await waitFor(() => expect(save).toHaveBeenCalledTimes(2));
+    expect(save).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        name: "Second project",
+        space: otherSpace,
+        templateId: "tpl-other",
+        startDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+      }),
+    );
   });
 });
 
