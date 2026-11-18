@@ -160,7 +160,7 @@ export function useEditor(props: UseEditorProps): EditorState {
       if (!props.onBlur) return;
 
       props.onBlur({
-        json: props.editable ? restoreRichTextSource(editor.getJSON()) : editor.getJSON(),
+        json: normalizeEditorJson(editor.getJSON(), props.editable),
         html: editor.getHTML(),
       });
     },
@@ -174,7 +174,7 @@ export function useEditor(props: UseEditorProps): EditorState {
       setUploading(isUploading);
       setSubmittable(!isUploading);
 
-      const json = props.editable ? restoreRichTextSource(editor.getJSON()) : editor.getJSON();
+      const json = normalizeEditorJson(editor.getJSON(), props.editable);
 
       setEmpty(editor.state.doc.childCount === 1 && editor.state.doc.firstChild?.childCount === 0);
 
@@ -266,7 +266,7 @@ export function useEditor(props: UseEditorProps): EditorState {
 
   const getJson = React.useCallback(() => {
     if (!editor) return null;
-    return props.editable ? restoreRichTextSource(editor.getJSON()) : editor.getJSON();
+    return normalizeEditorJson(editor.getJSON(), props.editable);
   }, [editor, props.editable]);
 
   const clearDraft = React.useCallback(() => {
@@ -297,4 +297,8 @@ export function useEditor(props: UseEditorProps): EditorState {
     localDraftRestored: Boolean(restoredDraft),
     clearLocalDraft: clearDraft,
   };
+}
+
+function normalizeEditorJson(content: any, editable?: boolean) {
+  return normalizeRichTextContent(editable ? restoreRichTextSource(content) : content);
 }
