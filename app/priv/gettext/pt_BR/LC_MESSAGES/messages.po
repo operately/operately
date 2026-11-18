@@ -7294,7 +7294,7 @@ msgstr "Não pode ser a mesma pessoa que o champion"
 #: assets/js/pages/ProjectCheckInPage/page.tsx:230
 #: assets/js/pages/ProjectDiscussionEditPage/page.tsx:101
 #: assets/js/pages/ProjectDiscussionNewPage/page.tsx:100
-#: assets/js/pages/SpacePage/page.tsx:263
+#: assets/js/pages/SpacePage/page.tsx:256
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:157
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:112
 #: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:82
@@ -8532,7 +8532,7 @@ msgid "Configure the email provider used by all companies. Secrets are never dis
 msgstr "Configure o provedor de e-mail usado por todas as empresas. Os dados secretos nunca são exibidos; insira um novo valor para substituí-los."
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:236
+#: assets/js/pages/SpacePage/page.tsx:229
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:83
 msgid "Configure tools"
 msgstr "Configurar ferramentas"
@@ -9523,7 +9523,7 @@ msgstr "Padrão"
 #: assets/js/pages/ResourceHubDocumentPage/Options.tsx:80
 #: assets/js/pages/ResourceHubFilePage/Options.tsx:47
 #: assets/js/pages/ResourceHubLinkPage/Options.tsx:36
-#: assets/js/pages/SpacePage/page.tsx:241
+#: assets/js/pages/SpacePage/page.tsx:234
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:158
 msgid "Delete"
 msgstr "Excluir"
@@ -9626,7 +9626,7 @@ msgid "Delete draft"
 msgstr "Excluir rascunho"
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:266
+#: assets/js/pages/SpacePage/page.tsx:259
 msgid "Delete everything"
 msgstr "Excluir tudo"
 
@@ -9653,7 +9653,7 @@ msgid "Delete row"
 msgstr "Excluir linha"
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:248
+#: assets/js/pages/SpacePage/page.tsx:241
 msgid "Delete space"
 msgstr "Excluir espaço"
 
@@ -9821,7 +9821,7 @@ msgid "Deleting a task is permanent and cannot be undone. Please confirm that yo
 msgstr "Excluir uma tarefa é permanente e não pode ser desfeito. Confirme que você deseja excluir esta tarefa."
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:256
+#: assets/js/pages/SpacePage/page.tsx:249
 msgid "Deleting this space will permanently remove everything in it. This includes all projects, goals, and discussions."
 msgstr "Excluir este espaço remove de forma permanente tudo o que há nele. Isso inclui todos os projetos, objetivos e discussões."
 
@@ -10437,7 +10437,7 @@ msgstr "Versão anterior"
 #: assets/js/pages/ResourceHubLinkPage/Options.tsx:27
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:97
 #: assets/js/pages/SpaceAddPage/index.tsx:157
-#: assets/js/pages/SpacePage/page.tsx:228
+#: assets/js/pages/SpacePage/page.tsx:221
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:155
 msgid "Edit"
 msgstr "Editar"
@@ -11557,7 +11557,7 @@ msgid "Failed to delete project"
 msgstr "Falha ao excluir o projeto"
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:186
+#: assets/js/pages/SpacePage/page.tsx:179
 msgid "Failed to delete space"
 msgstr "Falha ao excluir o espaço"
 
@@ -13184,9 +13184,14 @@ msgid "Join Company"
 msgstr "Participar da empresa"
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:137
+#: ../turboui/src/JoinSpacePrompt/index.tsx:24
 msgid "Join this Space"
 msgstr "Participar deste espaço"
+
+#.frontend
+#: ../turboui/src/JoinSpacePrompt/index.tsx:17
+msgid "Joining adds you to the member list. You’ll get the access and notifications set for space members."
+msgstr "Ao entrar, você será adicionado à lista de membros. Você terá o acesso e as notificações definidos para os membros do espaço."
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:18
@@ -13857,7 +13862,7 @@ msgstr "Gerenciar membros da equipe"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:359
-#: assets/js/pages/SpacePage/page.tsx:153
+#: assets/js/pages/SpacePage/page.tsx:146
 msgid "Manage access"
 msgstr "Gerenciar acesso"
 
@@ -16565,7 +16570,7 @@ msgstr "Tente novamente"
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:185
 #: assets/js/pages/CompanyExportPage/index.tsx:31
 #: assets/js/pages/HomePage/index.tsx:69
-#: assets/js/pages/SpacePage/page.tsx:186
+#: assets/js/pages/SpacePage/page.tsx:179
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:51
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:73
 #: ee/assets/js/pages/SaasAdminCompanyPage/FeatureFlagsSection.tsx:43
@@ -19761,7 +19766,7 @@ msgid "Space Task"
 msgstr "Tarefa de espaço"
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:182
+#: assets/js/pages/SpacePage/page.tsx:175
 msgid "Space deleted"
 msgstr "Espaço excluído"
 
@@ -21241,7 +21246,7 @@ msgid "The service is temporarily unavailable. Please try again."
 msgstr "O serviço está temporariamente indisponível. Tente novamente."
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:182
+#: assets/js/pages/SpacePage/page.tsx:175
 msgid "The space and its content were deleted."
 msgstr "O espaço e o conteúdo foram excluídos."
 
@@ -21501,7 +21506,7 @@ msgstr "Esta ação não pode ser desfeita"
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:223
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:112
-#: assets/js/pages/SpacePage/page.tsx:255
+#: assets/js/pages/SpacePage/page.tsx:248
 msgid "This action cannot be undone."
 msgstr "Esta ação não pode ser desfeita."
 

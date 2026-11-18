@@ -13,8 +13,8 @@ import {
   IconPencil,
   IconSettings,
   IconTrash,
+  JoinSpacePrompt,
   Modal,
-  PrimaryButton,
   SecondaryButton,
   showErrorToast,
   showSuccessToast,
@@ -121,8 +121,7 @@ function SpaceActivity({ space }: { space: Spaces.Space }) {
   return <Feed pagination={pagination} items={data?.activities || []} testId="space-feed" page="space" />;
 }
 
-function JoinButton({ space }) {
-  const { t } = useTranslation();
+function JoinButton({ space }: { space: Spaces.Space }) {
   const { mutateAsync: join, isPending } = useJoinSpace();
 
   if (space.isMember) return null;
@@ -131,13 +130,7 @@ function JoinButton({ space }) {
     await join({ spaceId: space.id });
   };
 
-  return (
-    <div className="flex justify-center mb-8 mt-6">
-      <PrimaryButton size="sm" onClick={handleClick} loading={isPending} testId="join-space-button">
-        {t("Join this Space")}
-      </PrimaryButton>
-    </div>
-  );
+  return <JoinSpacePrompt joining={isPending} onJoin={handleClick} />;
 }
 
 function ManageAccessButton({ space }: { space: Spaces.Space }) {

@@ -82,6 +82,7 @@ export { GoalPage } from "./GoalPage";
 export { HomePage } from "./HomePage";
 export { LastCheckIn } from "./LastCheckIn";
 export { InviteLinkJoinPage } from "./InviteLinkJoinPage";
+export { JoinSpacePrompt } from "./JoinSpacePrompt";
 export { LobbyPage } from "./LobbyPage";
 export { InviteMemberForm } from "./InviteMemberForm";
 export { InvitePeoplePage } from "./InvitePeoplePage";
