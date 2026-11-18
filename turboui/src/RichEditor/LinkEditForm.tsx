@@ -41,8 +41,9 @@ export function LinkEditForm({ editor }): JSX.Element {
   }, [editor]);
 
   const cancel = React.useCallback(() => {
+    editor.chain().focus().run();
     setLinkEditActive(false);
-  }, []);
+  }, [editor]);
 
   const save = React.useCallback(() => {
     const hasError = link.trim().length === 0 || !link.trim().match(/^(https?:\/\/|mailto:)/);
