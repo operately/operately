@@ -117,6 +117,7 @@ export function AddItemModal(props: AddItemModal.Props) {
           <div className="flex flex-col gap-4">
             <TextField
               autofocus
+              inputRef={state.nameInputRef}
               label={t("Name")}
               variant="form-field"
               placeholder={
@@ -185,6 +186,7 @@ export function AddItemModal(props: AddItemModal.Props) {
 
 function useAddItemModalState(props: AddItemModal.Props) {
   const { t } = useTranslation();
+  const nameInputRef = React.useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const [itemType, setItemType] = React.useState<"goal" | "project">(props.initialItemType || "goal");
   const [name, setName] = React.useState("");
   const [space, setSpace] = React.useState<SpaceField.Space | null>(props.space || null);
@@ -284,16 +286,21 @@ function useAddItemModalState(props: AddItemModal.Props) {
       });
 
       setName("");
-      setSpace(props.space || null);
-      setTemplateId("");
-      setStartDate("");
       setNameError(undefined);
       setSpaceError(undefined);
       setStartDateError(undefined);
 
+      if (!createMore) {
+        setSpace(props.space || null);
+        setTemplateId("");
+        setStartDate("");
+      }
+
       await props.onSaved?.(itemType, result.id);
 
-      if (!createMore && !props.keepOpenAfterSave) {
+      if (createMore) {
+        requestAnimationFrame(() => nameInputRef.current?.focus());
+      } else if (!props.keepOpenAfterSave) {
         props.close();
       }
 
@@ -321,6 +328,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
     createMore,
     setCreateMore,
 
+    nameInputRef,
     name,
     setName,
     itemType,
