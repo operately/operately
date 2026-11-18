@@ -1,8 +1,16 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 
+const localHosts = ["localhost", "127.0.0.1"];
+const remoteDevHost = process.env.OPERATELY_DEV_HOST;
+const allowedHosts = remoteDevHost ? [...localHosts, remoteDevHost] : localHosts;
+
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: ["@storybook/addon-docs", "@storybook/addon-themes"],
+
+  core: {
+    allowedHosts,
+  },
 
   framework: {
     name: "@storybook/react-vite",
