@@ -20,7 +20,7 @@
     "dev": "node scripts/build.mjs --watch",
     "lint": "tsc --noEmit -p tsconfig.json",
     "clean": "rm -rf node_modules && rm -rf dist",
-    "storybook": "storybook dev -p $PORT_STORYBOOK_SERVER",
+    "storybook": "storybook dev -p $PORT_STORYBOOK_SERVER --host 0.0.0.0",
     "build-storybook": "storybook build",
     "test": "jest",
     "test-storybook": "test-storybook",
