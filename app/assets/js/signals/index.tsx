@@ -11,6 +11,7 @@ enum ApiSignal {
   UnreadNotificationCount = "api:unread_notifications_count",
   ProfileUpdated = "api:profile_updated",
   ProjectUpdated = "api:project_updated",
+  DocumentUpdated = "api:document_updated",
   BillingUpdated = "api:billing_updated",
 }
 
@@ -45,6 +46,10 @@ export function useProjectUpdatedSignal(callback: () => void, payload: { project
 
 export function useBillingUpdatedSignal(callback: () => void) {
   return Api.useSubscription(ApiSignal.BillingUpdated, callback);
+}
+
+export function useDocumentUpdatedSignal(callback: () => void, payload: { documentId: string }, onJoined: () => void) {
+  return Api.useSubscription(ApiSignal.DocumentUpdated, callback, payload, onJoined);
 }
 
 export function useReviewRefreshSignal(callback: () => void) {

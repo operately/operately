@@ -31,6 +31,7 @@ defmodule Operately.Operations.ResourceHubDocumentEditing do
       end
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.DocumentUpdated.broadcast_result(document.id)
     |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(document.resource_hub.project_id)
     |> case do
       {:ok, %{document: document}} -> {:ok, document}
