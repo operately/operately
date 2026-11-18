@@ -105,7 +105,9 @@ function PrivacyPickerPopover(props: PrivacyField.State) {
     >
       <div className="p-4">
         <div className="mb-3">
-          <div className="text-sm font-medium">{t("Privacy Settings")}</div>
+          <div className="text-sm font-medium">
+            {props.resourceType === "goal" ? t("Access") : t("Privacy Settings")}
+          </div>
         </div>
 
         <AccessLevelOptions {...props} accessLevels={tempAccessLevels} setAccessLevels={setTempAccessLevels} />
