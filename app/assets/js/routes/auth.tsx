@@ -3,6 +3,7 @@ import { disablePreloading } from "./preloading/preloadSession";
 import { queryClient } from "@/api/queryClient";
 
 import { resetAnalytics } from "@/analytics/session";
+import { teardownApplication } from "@/applicationTeardown";
 
 type LogOutResult = "success" | "failure";
 type LogInResult = "success" | "failure";
@@ -16,9 +17,16 @@ export async function logOut(): Promise<LogOutResult> {
 
   resetAnalytics();
   disablePreloading();
+  teardownApplication();
   queryClient.clear();
 
   return "success";
+}
+
+export async function logOutAndRedirect() {
+  if ((await logOut()) === "success") {
+    window.location.href = "/";
+  }
 }
 
 interface LogInOptions {
