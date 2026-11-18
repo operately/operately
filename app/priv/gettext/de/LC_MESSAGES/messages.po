@@ -7183,7 +7183,7 @@ msgstr "Darf nicht dieselbe Person wie der Champion sein"
 #: assets/js/pages/ProjectCheckInPage/page.tsx:230
 #: assets/js/pages/ProjectDiscussionEditPage/page.tsx:101
 #: assets/js/pages/ProjectDiscussionNewPage/page.tsx:100
-#: assets/js/pages/SpacePage/page.tsx:263
+#: assets/js/pages/SpacePage/page.tsx:256
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:157
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:112
 #: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:82
@@ -8386,7 +8386,7 @@ msgid "Configure the email provider used by all companies. Secrets are never dis
 msgstr "Konfiguriere den E-Mail-Anbieter für alle Unternehmen. Geheimnisse werden nie angezeigt; gib einen neuen Wert ein, um sie zu ersetzen."
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:236
+#: assets/js/pages/SpacePage/page.tsx:229
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:83
 msgid "Configure tools"
 msgstr "Werkzeuge konfigurieren"
@@ -9357,7 +9357,7 @@ msgstr "Standard"
 #: assets/js/pages/ResourceHubDocumentPage/Options.tsx:80
 #: assets/js/pages/ResourceHubFilePage/Options.tsx:47
 #: assets/js/pages/ResourceHubLinkPage/Options.tsx:36
-#: assets/js/pages/SpacePage/page.tsx:241
+#: assets/js/pages/SpacePage/page.tsx:234
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:158
 msgid "Delete"
 msgstr "Löschen"
@@ -9460,7 +9460,7 @@ msgid "Delete draft"
 msgstr "Entwurf löschen"
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:266
+#: assets/js/pages/SpacePage/page.tsx:259
 msgid "Delete everything"
 msgstr "Alles löschen"
 
@@ -9487,7 +9487,7 @@ msgid "Delete row"
 msgstr "Zeile löschen"
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:248
+#: assets/js/pages/SpacePage/page.tsx:241
 msgid "Delete space"
 msgstr "Arbeitsbereich löschen"
 
@@ -9630,7 +9630,7 @@ msgid "Deleting a task is permanent and cannot be undone. Please confirm that yo
 msgstr "Das Löschen einer Aufgabe ist endgültig und kann nicht rückgängig gemacht werden. Bitte bestätige, dass du diese Aufgabe löschen möchtest."
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:256
+#: assets/js/pages/SpacePage/page.tsx:249
 msgid "Deleting this space will permanently remove everything in it. This includes all projects, goals, and discussions."
 msgstr "Das Löschen dieses Arbeitsbereichs entfernt dauerhaft alle darin enthaltenen Inhalte. Dazu gehören alle Projekte, Ziele und Diskussionen."
 
@@ -10231,7 +10231,7 @@ msgstr "Frühere Version"
 #: assets/js/pages/ResourceHubLinkPage/Options.tsx:27
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:97
 #: assets/js/pages/SpaceAddPage/index.tsx:157
-#: assets/js/pages/SpacePage/page.tsx:228
+#: assets/js/pages/SpacePage/page.tsx:221
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:155
 msgid "Edit"
 msgstr "Bearbeiten"
@@ -11259,7 +11259,7 @@ msgid "Failed to delete project"
 msgstr "Projekt konnte nicht gelöscht werden"
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:186
+#: assets/js/pages/SpacePage/page.tsx:179
 msgid "Failed to delete space"
 msgstr "Arbeitsbereich konnte nicht gelöscht werden"
 
@@ -12881,9 +12881,14 @@ msgid "Join Company"
 msgstr "Unternehmen beitreten"
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:137
+#: ../turboui/src/JoinSpacePrompt/index.tsx:24
 msgid "Join this Space"
 msgstr "Diesem Arbeitsbereich beitreten"
+
+#.frontend
+#: ../turboui/src/JoinSpacePrompt/index.tsx:17
+msgid "Joining adds you to the member list. You’ll get the access and notifications set for space members."
+msgstr "Beim Beitritt wirst du zur Mitgliederliste hinzugefügt. Du erhältst den Zugriff und die Benachrichtigungen, die für Mitglieder des Arbeitsbereichs festgelegt sind."
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:18
@@ -13539,7 +13544,7 @@ msgstr "Teammitglieder verwalten"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:359
-#: assets/js/pages/SpacePage/page.tsx:153
+#: assets/js/pages/SpacePage/page.tsx:146
 msgid "Manage access"
 msgstr "Zugriff verwalten"
 
@@ -16153,7 +16158,7 @@ msgstr "Versuche es erneut"
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:185
 #: assets/js/pages/CompanyExportPage/index.tsx:31
 #: assets/js/pages/HomePage/index.tsx:69
-#: assets/js/pages/SpacePage/page.tsx:186
+#: assets/js/pages/SpacePage/page.tsx:179
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:51
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:73
 #: ee/assets/js/pages/SaasAdminCompanyPage/FeatureFlagsSection.tsx:43
@@ -19296,7 +19301,7 @@ msgid "Space Task"
 msgstr "Aufgabe im Arbeitsbereich"
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:182
+#: assets/js/pages/SpacePage/page.tsx:175
 msgid "Space deleted"
 msgstr "Arbeitsbereich gelöscht"
 
@@ -20756,7 +20761,7 @@ msgid "The service is temporarily unavailable. Please try again."
 msgstr "Der Dienst ist vorübergehend nicht verfügbar. Bitte versuche es erneut."
 
 #.frontend
-#: assets/js/pages/SpacePage/page.tsx:182
+#: assets/js/pages/SpacePage/page.tsx:175
 msgid "The space and its content were deleted."
 msgstr "Der Arbeitsbereich und seine Inhalte wurden gelöscht."
 
@@ -21006,7 +21011,7 @@ msgstr "Diese Aktion kann nicht rückgängig gemacht werden"
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:223
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:112
-#: assets/js/pages/SpacePage/page.tsx:255
+#: assets/js/pages/SpacePage/page.tsx:248
 msgid "This action cannot be undone."
 msgstr "Diese Aktion kann nicht rückgängig gemacht werden."
 
