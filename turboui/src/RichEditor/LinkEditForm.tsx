@@ -4,6 +4,7 @@ import React from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import classNames from "../utils/classnames";
 import { useLinkState, useTipTapEditor } from "./EditorContext";
+import { AUTO_LINK_SUPPRESSION_MARK } from "./extensions/Link/AutoLinkSuppression";
 
 export function useLinkEditFormClose() {
   const editor = useTipTapEditor();
@@ -35,20 +36,27 @@ export function LinkEditForm({ editor }): JSX.Element {
   const isSelectionLink = editor?.isActive("link");
 
   const unlink = React.useCallback(() => {
-    editor.chain().focus().extendMarkRange("link").unsetLink().run();
+    editor.chain().focus().extendMarkRange("link").unsetLink().setMark(AUTO_LINK_SUPPRESSION_MARK).run();
     setLinkEditActive(false);
   }, [editor]);
+
+  const cancel = React.useCallback(() => {
+    setLinkEditActive(false);
+  }, []);
 
   const save = React.useCallback(() => {
     const hasError = link.trim().length === 0 || !link.trim().match(/^(https?:\/\/|mailto:)/);
     setError(hasError);
     if (hasError) return;
 
-    if (editor.isActive("link")) {
-      editor.chain().focus().extendMarkRange("link").setLink({ href: link.trim() }).run();
-    } else {
-      editor.chain().focus().setLink({ href: link.trim() }).run();
+    const chain = editor.chain().focus();
+
+    if (editor.isActive("link")) chain.extendMarkRange("link");
+    if (editor.state.selection.empty && editor.isActive(AUTO_LINK_SUPPRESSION_MARK)) {
+      chain.extendMarkRange(AUTO_LINK_SUPPRESSION_MARK);
     }
+
+    chain.unsetMark(AUTO_LINK_SUPPRESSION_MARK).setLink({ href: link.trim() }).run();
 
     setLinkEditActive(false);
   }, [editor, link]);
@@ -107,7 +115,7 @@ export function LinkEditForm({ editor }): JSX.Element {
                 {t("Add")}
               </PrimaryButton>
 
-              <SecondaryButton onClick={unlink} size="xxs">
+              <SecondaryButton onClick={cancel} size="xxs">
                 {t("Cancel")}
               </SecondaryButton>
             </>

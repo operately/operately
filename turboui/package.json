@@ -121,6 +121,7 @@
     "@tiptap/suggestion": "^3.30.5",
     "canvas-confetti": "^1.9.3",
     "hotkeys-js": "^3.13.15",
+    "linkifyjs": "^4.3.3",
     "react-hook-form": "^7.56.1",
     "react-hot-toast": "^2.5.2",
     "@tiptap/extension-list": "^3.30.5",
