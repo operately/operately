@@ -5255,6 +5255,8 @@ msgstr "À propos de moi"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:251
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:109
+#: ../turboui/src/GoalPage/Sidebar.tsx:348
+#: ../turboui/src/PrivacyField/index.tsx:109
 msgid "Access"
 msgstr "Accès"
 
@@ -7136,7 +7138,7 @@ msgstr "Cette personne ne peut pas être aussi responsable"
 #: ../turboui/src/MilestonePage/components/DeleteModal.tsx:51
 #: ../turboui/src/Modal/MoveModal.tsx:73
 #: ../turboui/src/PageDescription/index.tsx:198
-#: ../turboui/src/PrivacyField/index.tsx:115
+#: ../turboui/src/PrivacyField/index.tsx:117
 #: ../turboui/src/ProfileEditPage/index.tsx:147
 #: ../turboui/src/ProjectPage/DeleteModal.tsx:50
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:89
@@ -8019,7 +8021,7 @@ msgstr "Colonne supprimée"
 #: ../turboui/src/AccessLevelBadge/index.tsx:40
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:137
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:22
-#: ../turboui/src/PrivacyField/index.tsx:189
+#: ../turboui/src/PrivacyField/index.tsx:191
 #: assets/js/components/Badges/AccessLevelBadges.tsx:131
 #: assets/js/features/Permissions/index.tsx:26
 #: assets/js/features/Permissions/index.tsx:48
@@ -8169,7 +8171,7 @@ msgid "Company Import"
 msgstr "Import de l’entreprise"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:239
+#: ../turboui/src/PrivacyField/index.tsx:241
 msgid "Company Members"
 msgstr "Membres de l’entreprise"
 
@@ -8200,17 +8202,17 @@ msgid "Company members"
 msgstr "Membres de l’entreprise"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:171
+#: ../turboui/src/PrivacyField/index.tsx:173
 msgid "Company members can comment, space members can edit"
 msgstr "Les membres de l’entreprise peuvent commenter, ceux de l’espace peuvent modifier"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:172
+#: ../turboui/src/PrivacyField/index.tsx:174
 msgid "Company members can comment, space members have full access"
 msgstr "Les membres de l’entreprise peuvent commenter, ceux de l’espace disposent d’un accès complet"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:174
+#: ../turboui/src/PrivacyField/index.tsx:176
 msgid "Company members can edit, space members have full access"
 msgstr "Les membres de l’entreprise peuvent modifier, ceux de l’espace disposent d’un accès complet"
 
@@ -8220,17 +8222,17 @@ msgid "Company members can view and comment."
 msgstr "Les membres de l’entreprise peuvent consulter et commenter."
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:167
+#: ../turboui/src/PrivacyField/index.tsx:169
 msgid "Company members can view, space members can comment"
 msgstr "Les membres de l’entreprise peuvent consulter, ceux de l’espace peuvent commenter"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:168
+#: ../turboui/src/PrivacyField/index.tsx:170
 msgid "Company members can view, space members can edit"
 msgstr "Les membres de l’entreprise peuvent consulter, ceux de l’espace peuvent modifier"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:169
+#: ../turboui/src/PrivacyField/index.tsx:171
 msgid "Company members can view, space members have full access"
 msgstr "Les membres de l’entreprise peuvent consulter, ceux de l’espace disposent d’un accès complet"
 
@@ -10240,7 +10242,7 @@ msgstr "Modifier"
 #: ../turboui/src/AccessLevelBadge/index.tsx:38
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:136
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:28
-#: ../turboui/src/PrivacyField/index.tsx:192
+#: ../turboui/src/PrivacyField/index.tsx:194
 #: assets/js/components/Badges/AccessLevelBadges.tsx:116
 #: assets/js/features/Permissions/index.tsx:33
 #: assets/js/features/Permissions/index.tsx:47
@@ -10824,17 +10826,17 @@ msgid "Every deleted task status in use requires a replacement"
 msgstr "Chaque statut de tâche supprimé encore utilisé doit être remplacé"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:170
+#: ../turboui/src/PrivacyField/index.tsx:172
 msgid "Everyone in the company can comment"
 msgstr "Tous les membres de l’entreprise peuvent commenter"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:173
+#: ../turboui/src/PrivacyField/index.tsx:175
 msgid "Everyone in the company can edit"
 msgstr "Tous les membres de l’entreprise peuvent modifier"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:166
+#: ../turboui/src/PrivacyField/index.tsx:168
 msgid "Everyone in the company can view"
 msgstr "Tous les membres de l’entreprise peuvent consulter"
 
@@ -10884,7 +10886,7 @@ msgid "Everyone in the company can view this space."
 msgstr "Tous les membres de l’entreprise peuvent consulter cet espace."
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:175
+#: ../turboui/src/PrivacyField/index.tsx:177
 msgid "Everyone in the company has full access"
 msgstr "Tous les membres de l’entreprise disposent d’un accès complet"
 
@@ -11876,7 +11878,7 @@ msgstr "Du %{start_date} au %{end_date}"
 #: ../turboui/src/AccessLevelBadge/index.tsx:34
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:135
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:34
-#: ../turboui/src/PrivacyField/index.tsx:195
+#: ../turboui/src/PrivacyField/index.tsx:197
 #: assets/js/components/Badges/AccessLevelBadges.tsx:101
 #: assets/js/features/Permissions/index.tsx:40
 #: assets/js/features/Permissions/index.tsx:46
@@ -14435,7 +14437,7 @@ msgstr "Aucun jeton API créé pour le moment."
 #.elixir
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:45
-#: ../turboui/src/PrivacyField/index.tsx:183
+#: ../turboui/src/PrivacyField/index.tsx:185
 #: assets/js/components/Badges/AccessLevelBadges.tsx:161
 #: assets/js/features/Permissions/index.tsx:19
 #: assets/js/features/Permissions/index.tsx:61
@@ -15254,7 +15256,7 @@ msgid "Only %{spaceName} members"
 msgstr "Uniquement les membres de l’espace %{spaceName}"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:161
+#: ../turboui/src/PrivacyField/index.tsx:163
 msgid "Only assigned people have access"
 msgstr "Seules les personnes assignées ont accès"
 
@@ -15332,17 +15334,17 @@ msgid "Only public OAuth clients using token_endpoint_auth_method=none are suppo
 msgstr "Seuls les clients OAuth publics utilisant token_endpoint_auth_method=none sont pris en charge."
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:163
+#: ../turboui/src/PrivacyField/index.tsx:165
 msgid "Only space members can comment"
 msgstr "Seuls les membres de l’espace peuvent commenter"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:164
+#: ../turboui/src/PrivacyField/index.tsx:166
 msgid "Only space members can edit"
 msgstr "Seuls les membres de l’espace peuvent modifier"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:162
+#: ../turboui/src/PrivacyField/index.tsx:164
 msgid "Only space members can view"
 msgstr "Seuls les membres de l’espace peuvent consulter"
 
@@ -16444,14 +16446,13 @@ msgstr "Priorité"
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:117
-#: ../turboui/src/GoalPage/Sidebar.tsx:348
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:265
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:159
 msgid "Privacy"
 msgstr "Visibilité"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:108
+#: ../turboui/src/PrivacyField/index.tsx:109
 msgid "Privacy Settings"
 msgstr "Paramètres de visibilité"
 
@@ -18086,7 +18087,7 @@ msgstr "Suivre le système"
 #: ../turboui/src/LinkEditPage/index.tsx:71
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:128
 #: ../turboui/src/PageDescription/index.tsx:195
-#: ../turboui/src/PrivacyField/index.tsx:118
+#: ../turboui/src/PrivacyField/index.tsx:120
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:97
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:396
 #: ../turboui/src/TitleSetupPrompt/index.tsx:63
@@ -19280,7 +19281,7 @@ msgid "Space Managers"
 msgstr "Administrateurs de l’espace"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:261
+#: ../turboui/src/PrivacyField/index.tsx:263
 msgid "Space Members"
 msgstr "Membres de l’espace"
 
@@ -19321,7 +19322,7 @@ msgid "Space members have edit access."
 msgstr "Les membres de l’espace peuvent modifier."
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:165
+#: ../turboui/src/PrivacyField/index.tsx:167
 msgid "Space members have full access"
 msgstr "Les membres de l’espace disposent d’un accès complet"
 
@@ -22677,7 +22678,7 @@ msgstr "Consulter les instructions d’utilisation de l’API"
 #: ../turboui/src/AccessLevelBadge/index.tsx:42
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:138
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:16
-#: ../turboui/src/PrivacyField/index.tsx:186
+#: ../turboui/src/PrivacyField/index.tsx:188
 #: assets/js/components/Badges/AccessLevelBadges.tsx:146
 #: assets/js/features/Permissions/index.tsx:12
 #: assets/js/features/Permissions/index.tsx:49

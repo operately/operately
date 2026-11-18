@@ -345,7 +345,7 @@ function OverdueWarning(props: GoalPage.State) {
 function Privacy(props: GoalPage.State) {
   const { t } = useTranslation();
   return (
-    <SidebarSection title={t("Privacy")}>
+    <SidebarSection title={t("Access")}>
       <PrivacyField
         testId="goal-privacy-field"
         accessLevels={props.accessLevels}
