@@ -86,6 +86,11 @@ export function NewKpiModal({ isOpen, onClose, championSearch, currentUser, onCr
               ]}
             />
           </div>
+          <p className="text-sm text-content-subtle" aria-live="polite">
+            {form.values.cadence === "weekly"
+              ? t("A new KPI update will be due every Monday.")
+              : t("A new KPI update will be due on the first day of each month.")}
+          </p>
           <SelectPerson
             field="championId"
             label={t("Champion")}
