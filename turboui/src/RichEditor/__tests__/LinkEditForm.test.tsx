@@ -6,6 +6,8 @@ import Link from "@tiptap/extension-link";
 import { LinkEditForm } from "../LinkEditForm";
 import { EditorContext } from "../EditorContext";
 import FakeTextSelection from "../extensions/FakeTextSelection";
+import { AutoLinkSuppression } from "../extensions/Link/AutoLinkSuppression";
+import { normalizeRichTextContent } from "../richTextContent";
 
 // Wrapper component to provide the editor context
 function TestEditor({ content, onEditorReady }: { content: string; onEditorReady: (editor: Editor) => void }) {
@@ -14,6 +16,7 @@ function TestEditor({ content, onEditorReady }: { content: string; onEditorReady
     extensions: [
       StarterKit.configure({ link: false }),
       Link.extend({ inclusive: false }).configure({ openOnClick: false }),
+      AutoLinkSuppression,
       FakeTextSelection,
     ],
     content,
@@ -96,7 +99,9 @@ describe("LinkEditForm", () => {
     fireEvent.change(input, { target: { value: "https://new.com" } });
     fireEvent.click(screen.getByText("Save"));
 
-    expect(editorRef?.getHTML()).toContain('<a target="_blank" rel="noopener noreferrer nofollow" href="https://new.com">Linked Word</a>');
+    expect(editorRef?.getHTML()).toContain(
+      '<a target="_blank" rel="noopener noreferrer nofollow" href="https://new.com">Linked Word</a>',
+    );
     expect(editorRef?.getHTML()).not.toContain("https://old.com");
   });
 
@@ -138,6 +143,22 @@ describe("LinkEditForm", () => {
 
     // FakeTextSelection might leave a mark, so we check for absence of link
     expect(editorRef?.getHTML()).not.toContain("<a href=");
+  });
+
+  it("preserves an explicitly unlinked URL when saving and loading", async () => {
+    setup('<p><a href="https://example.com">https://example.com</a></p>');
+
+    await screen.findByText("https://example.com");
+    act(() => {
+      editorRef?.commands.setTextSelection(5);
+    });
+
+    fireEvent.click(screen.getByText("Unlink"));
+
+    const saved = normalizeRichTextContent(editorRef?.getJSON());
+    expect(JSON.stringify(saved)).not.toContain('"type":"link"');
+    expect(JSON.stringify(saved)).toContain('"type":"autoLinkSuppression"');
+    expect(normalizeRichTextContent(saved)).toBe(saved);
   });
 
   it("unlinks the entire link when only part of the link is selected", async () => {
@@ -191,7 +212,7 @@ describe("LinkEditForm", () => {
 
     await screen.findByText("First paragraph with some content.");
     expect(editorRef?.getHTML()).toContain("https://old.com");
-    
+
     // Calculate position:
     // Pos 0: doc start
     // Pos 1: p1 start

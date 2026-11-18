@@ -137,6 +137,16 @@ describe("RichContent", () => {
     });
   });
 
+  it("renders an unmarked URL from API content as a link", async () => {
+    const url = "https://example.com/launch-plan";
+    renderRichContent({
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "text", text: `Read ${url} for details.` }] }],
+    });
+
+    expect(await screen.findByRole("link", { name: url })).toHaveAttribute("href", url);
+  });
+
   it("renders mention nodes when only mentionedPersonLookup is provided", async () => {
     const { container } = renderRichContent(contentWithMention);
 

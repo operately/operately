@@ -59,4 +59,58 @@ describe("normalizeRichTextContent", () => {
   it("leaves valid rich text, empty paragraphs, mentions, attributes, and marks unchanged", () => {
     expect(normalizeRichTextContent(validRichDescription)).toBe(validRichDescription);
   });
+
+  it("links a URL across formatted text nodes without losing their marks", () => {
+    const content = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "https://example.com/" },
+            { type: "text", text: "launch-plan", marks: [{ type: "bold" }] },
+          ],
+        },
+      ],
+    };
+
+    expect(normalizeRichTextContent(content)).toEqual({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: "https://example.com/",
+              marks: [{ type: "link", attrs: { href: "https://example.com/launch-plan" } }],
+            },
+            {
+              type: "text",
+              text: "launch-plan",
+              marks: [{ type: "bold" }, { type: "link", attrs: { href: "https://example.com/launch-plan" } }],
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it("keeps Markdown link syntax literal when formatting splits it across text nodes", () => {
+    const content = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "[Launch plan](" },
+            { type: "text", text: "https://example.com", marks: [{ type: "bold" }] },
+            { type: "text", text: ")" },
+          ],
+        },
+      ],
+    };
+
+    expect(normalizeRichTextContent(content)).toBe(content);
+  });
 });
