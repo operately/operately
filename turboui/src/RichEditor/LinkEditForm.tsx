@@ -52,7 +52,9 @@ export function LinkEditForm({ editor }): JSX.Element {
     const chain = editor.chain().focus();
 
     if (editor.isActive("link")) chain.extendMarkRange("link");
-    if (editor.isActive(AUTO_LINK_SUPPRESSION_MARK)) chain.extendMarkRange(AUTO_LINK_SUPPRESSION_MARK);
+    if (editor.state.selection.empty && editor.isActive(AUTO_LINK_SUPPRESSION_MARK)) {
+      chain.extendMarkRange(AUTO_LINK_SUPPRESSION_MARK);
+    }
 
     chain.unsetMark(AUTO_LINK_SUPPRESSION_MARK).setLink({ href: link.trim() }).run();
 

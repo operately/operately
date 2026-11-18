@@ -161,6 +161,36 @@ describe("LinkEditForm", () => {
     expect(normalizeRichTextContent(saved)).toBe(saved);
   });
 
+  it("links only the selected text inside an explicitly unlinked range", async () => {
+    setup('<p><a href="https://old.com">Linked Word</a></p>');
+
+    await screen.findByText("Linked Word");
+    act(() => {
+      editorRef?.commands.setTextSelection(5);
+    });
+    fireEvent.click(screen.getByText("Unlink"));
+
+    act(() => {
+      editorRef?.commands.setTextSelection({ from: 8, to: 12 });
+    });
+
+    const input = screen.getByPlaceholderText("ex. https://example.com");
+    fireEvent.change(input, { target: { value: "https://new.com" } });
+    fireEvent.click(screen.getByText("Add"));
+
+    const paragraph = editorRef?.getJSON().content?.[0];
+    const linkedNodes = paragraph?.content?.filter((node) => node.marks?.some((mark) => mark.type === "link"));
+
+    expect(linkedNodes).toEqual([
+      expect.objectContaining({
+        text: "Word",
+        marks: expect.arrayContaining([
+          expect.objectContaining({ type: "link", attrs: expect.objectContaining({ href: "https://new.com" }) }),
+        ]),
+      }),
+    ]);
+  });
+
   it("unlinks the entire link when only part of the link is selected", async () => {
     setup('<p><a href="https://old.com">Linked Word</a></p>');
 
