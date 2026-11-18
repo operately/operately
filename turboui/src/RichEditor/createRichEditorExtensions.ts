@@ -12,6 +12,7 @@ import FakeTextSelection from "./extensions/FakeTextSelection";
 import { HeadingExtension } from "./extensions/Heading";
 import Highlight from "./extensions/Highlight";
 import { LinkExtension } from "./extensions/Link";
+import { AutoLinkSuppression } from "./extensions/Link/AutoLinkSuppression";
 import { mentionExtensions } from "./mentionExtensions";
 import type { RichEditorHandlers } from "./useEditor";
 
@@ -59,6 +60,7 @@ export function createRichEditorExtensions(
       editable,
       thumbnail: options.thumbnailBlobs,
     }),
+    AutoLinkSuppression,
     LinkExtension,
   ];
 
