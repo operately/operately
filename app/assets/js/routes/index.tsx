@@ -7,6 +7,7 @@ import { legacyLoader as legacyKanbanLoader } from "@/pages/SpaceKanbanPage/lega
 import { createBrowserRouter, ShouldRevalidateFunction } from "react-router";
 import { companyLoader } from "./companyLoader";
 import { pageRoute } from "./pageRoute";
+import { CompanyDataBoundary } from "./useCompanyLoaderData";
 
 import { CurrentCompanyProvider } from "@/contexts/CurrentCompanyContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -30,7 +31,9 @@ function CompanyRoutes() {
     <CurrentCompanyProvider>
       <TimezoneProvider>
         <LanguageProvider>
-          <CompanyLayout />
+          <CompanyDataBoundary>
+            <CompanyLayout />
+          </CompanyDataBoundary>
         </LanguageProvider>
       </TimezoneProvider>
     </CurrentCompanyProvider>

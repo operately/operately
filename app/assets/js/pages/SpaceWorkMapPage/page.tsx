@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import * as React from "react";
 
-import { dismissToast, showErrorToast, WorkMapPage } from "turboui";
-import { useLoadedData } from "./loader";
+import { ContentListState, dismissToast, showErrorToast, WorkMapPage } from "turboui";
+import { useLoadedData, type ReadyData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
 import { useSpaceSearch } from "../../models/spaces";
@@ -11,11 +11,23 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 import { useNavigate } from "react-router";
 
 export function Page() {
+  const loaded = useLoadedData();
+  if (loaded.status === "pending") {
+    return (
+      <ContentListState name="related-work" loading className="m-8">
+        {null}
+      </ContentListState>
+    );
+  }
+
+  return <ReadyPage {...loaded} />;
+}
+
+function ReadyPage({ data, creationData }: ReadyData) {
   const { t } = useTranslation();
   const paths = usePaths();
   const navigate = useNavigate();
 
-  const { data, creationData } = useLoadedData();
   const { workMap, space, templates, editableSpaces } = data;
   const hideCompanyAccessInQuickAdd = Boolean(space.privateSpace);
   const canAddItem = !creationData.isLoading && !creationData.error && Boolean(space.permissions?.canEdit);
