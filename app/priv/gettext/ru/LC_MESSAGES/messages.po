@@ -5422,6 +5422,8 @@ msgstr "Обо мне"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:251
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:109
+#: ../turboui/src/GoalPage/Sidebar.tsx:348
+#: ../turboui/src/PrivacyField/index.tsx:109
 msgid "Access"
 msgstr "Доступ"
 
@@ -7305,7 +7307,7 @@ msgstr "Куратор и ответственный не могут быть о
 #: ../turboui/src/MilestonePage/components/DeleteModal.tsx:51
 #: ../turboui/src/Modal/MoveModal.tsx:73
 #: ../turboui/src/PageDescription/index.tsx:198
-#: ../turboui/src/PrivacyField/index.tsx:115
+#: ../turboui/src/PrivacyField/index.tsx:117
 #: ../turboui/src/ProfileEditPage/index.tsx:147
 #: ../turboui/src/ProjectPage/DeleteModal.tsx:50
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:89
@@ -8190,7 +8192,7 @@ msgstr "Столбец удалён"
 #: ../turboui/src/AccessLevelBadge/index.tsx:40
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:137
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:22
-#: ../turboui/src/PrivacyField/index.tsx:189
+#: ../turboui/src/PrivacyField/index.tsx:191
 #: assets/js/components/Badges/AccessLevelBadges.tsx:131
 #: assets/js/features/Permissions/index.tsx:26
 #: assets/js/features/Permissions/index.tsx:48
@@ -8340,7 +8342,7 @@ msgid "Company Import"
 msgstr "Импорт компании"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:239
+#: ../turboui/src/PrivacyField/index.tsx:241
 msgid "Company Members"
 msgstr "Участники компании"
 
@@ -8371,17 +8373,17 @@ msgid "Company members"
 msgstr "Участники компании"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:171
+#: ../turboui/src/PrivacyField/index.tsx:173
 msgid "Company members can comment, space members can edit"
 msgstr "Участники компании могут комментировать, участники пространства — редактировать"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:172
+#: ../turboui/src/PrivacyField/index.tsx:174
 msgid "Company members can comment, space members have full access"
 msgstr "Участники компании могут комментировать, участники пространства имеют полный доступ"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:174
+#: ../turboui/src/PrivacyField/index.tsx:176
 msgid "Company members can edit, space members have full access"
 msgstr "Участники компании могут редактировать, участники пространства имеют полный доступ"
 
@@ -8391,17 +8393,17 @@ msgid "Company members can view and comment."
 msgstr "Участники компании могут просматривать и комментировать."
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:167
+#: ../turboui/src/PrivacyField/index.tsx:169
 msgid "Company members can view, space members can comment"
 msgstr "Участники компании могут просматривать, участники пространства — комментировать"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:168
+#: ../turboui/src/PrivacyField/index.tsx:170
 msgid "Company members can view, space members can edit"
 msgstr "Участники компании могут просматривать, участники пространства — редактировать"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:169
+#: ../turboui/src/PrivacyField/index.tsx:171
 msgid "Company members can view, space members have full access"
 msgstr "Участники компании могут просматривать, участники пространства имеют полный доступ"
 
@@ -10415,7 +10417,7 @@ msgstr "Редактировать"
 #: ../turboui/src/AccessLevelBadge/index.tsx:38
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:136
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:28
-#: ../turboui/src/PrivacyField/index.tsx:192
+#: ../turboui/src/PrivacyField/index.tsx:194
 #: assets/js/components/Badges/AccessLevelBadges.tsx:116
 #: assets/js/features/Permissions/index.tsx:33
 #: assets/js/features/Permissions/index.tsx:47
@@ -11001,17 +11003,17 @@ msgid "Every deleted task status in use requires a replacement"
 msgstr "Для каждого удаляемого статуса, используемого задачами, требуется замена"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:170
+#: ../turboui/src/PrivacyField/index.tsx:172
 msgid "Everyone in the company can comment"
 msgstr "Все участники компании могут комментировать"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:173
+#: ../turboui/src/PrivacyField/index.tsx:175
 msgid "Everyone in the company can edit"
 msgstr "Все участники компании могут редактировать"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:166
+#: ../turboui/src/PrivacyField/index.tsx:168
 msgid "Everyone in the company can view"
 msgstr "Все участники компании могут просматривать"
 
@@ -11061,7 +11063,7 @@ msgid "Everyone in the company can view this space."
 msgstr "Все участники компании могут просматривать это пространство."
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:175
+#: ../turboui/src/PrivacyField/index.tsx:177
 msgid "Everyone in the company has full access"
 msgstr "Все участники компании имеют полный доступ"
 
@@ -12055,7 +12057,7 @@ msgstr "От: %{start_date} до %{end_date}"
 #: ../turboui/src/AccessLevelBadge/index.tsx:34
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:135
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:34
-#: ../turboui/src/PrivacyField/index.tsx:195
+#: ../turboui/src/PrivacyField/index.tsx:197
 #: assets/js/components/Badges/AccessLevelBadges.tsx:101
 #: assets/js/features/Permissions/index.tsx:40
 #: assets/js/features/Permissions/index.tsx:46
@@ -14609,7 +14611,7 @@ msgstr "API-токены ещё не созданы."
 #.elixir
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:45
-#: ../turboui/src/PrivacyField/index.tsx:183
+#: ../turboui/src/PrivacyField/index.tsx:185
 #: assets/js/components/Badges/AccessLevelBadges.tsx:161
 #: assets/js/features/Permissions/index.tsx:19
 #: assets/js/features/Permissions/index.tsx:61
@@ -15428,7 +15430,7 @@ msgid "Only %{spaceName} members"
 msgstr "Только участники пространства «%{spaceName}»"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:161
+#: ../turboui/src/PrivacyField/index.tsx:163
 msgid "Only assigned people have access"
 msgstr "Только назначенные люди имеют доступ"
 
@@ -15506,17 +15508,17 @@ msgid "Only public OAuth clients using token_endpoint_auth_method=none are suppo
 msgstr "Поддерживаются только публичные клиенты OAuth, использующие token_endpoint_auth_method=none."
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:163
+#: ../turboui/src/PrivacyField/index.tsx:165
 msgid "Only space members can comment"
 msgstr "Комментировать могут только участники пространства"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:164
+#: ../turboui/src/PrivacyField/index.tsx:166
 msgid "Only space members can edit"
 msgstr "Редактировать могут только участники пространства"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:162
+#: ../turboui/src/PrivacyField/index.tsx:164
 msgid "Only space members can view"
 msgstr "Просматривать могут только участники пространства"
 
@@ -16622,14 +16624,13 @@ msgstr "Приоритет"
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:117
-#: ../turboui/src/GoalPage/Sidebar.tsx:348
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:265
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:159
 msgid "Privacy"
 msgstr "Видимость"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:108
+#: ../turboui/src/PrivacyField/index.tsx:109
 msgid "Privacy Settings"
 msgstr "Настройки видимости"
 
@@ -18264,7 +18265,7 @@ msgstr "Как в системе"
 #: ../turboui/src/LinkEditPage/index.tsx:71
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:128
 #: ../turboui/src/PageDescription/index.tsx:195
-#: ../turboui/src/PrivacyField/index.tsx:118
+#: ../turboui/src/PrivacyField/index.tsx:120
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:97
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:396
 #: ../turboui/src/TitleSetupPrompt/index.tsx:63
@@ -19469,7 +19470,7 @@ msgid "Space Managers"
 msgstr "Администраторы пространства"
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:261
+#: ../turboui/src/PrivacyField/index.tsx:263
 msgid "Space Members"
 msgstr "Участники пространства"
 
@@ -19510,7 +19511,7 @@ msgid "Space members have edit access."
 msgstr "Участники пространства имеют доступ на редактирование."
 
 #.frontend
-#: ../turboui/src/PrivacyField/index.tsx:165
+#: ../turboui/src/PrivacyField/index.tsx:167
 msgid "Space members have full access"
 msgstr "Участники пространства имеют полный доступ"
 
@@ -22904,7 +22905,7 @@ msgstr "Посмотреть инструкции по использовани�
 #: ../turboui/src/AccessLevelBadge/index.tsx:42
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:138
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:16
-#: ../turboui/src/PrivacyField/index.tsx:186
+#: ../turboui/src/PrivacyField/index.tsx:188
 #: assets/js/components/Badges/AccessLevelBadges.tsx:146
 #: assets/js/features/Permissions/index.tsx:12
 #: assets/js/features/Permissions/index.tsx:49
