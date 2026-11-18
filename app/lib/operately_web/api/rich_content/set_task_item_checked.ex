@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemChecked do
   def call(conn, inputs) do
     with {:ok, _} <- find_me(conn) do
       Repo.transaction(fn -> update(conn, inputs) end)
+      |> broadcast_document_update(inputs)
       |> respond()
     else
       _ -> {:error, :unauthorized}
@@ -46,6 +47,12 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemChecked do
       Resources.save(conn, inputs.resource_type, record, content)
     end
   end
+
+  defp broadcast_document_update(result, %{resource_type: :document, resource_id: id}) do
+    OperatelyWeb.Api.Subscriptions.DocumentUpdated.broadcast_result(result, id)
+  end
+
+  defp broadcast_document_update(result, _inputs), do: result
 
   defp respond({:ok, result}), do: {:ok, result}
   defp respond({:error, {:error, :content_conflict}}), do: {:error, :bad_request, gettext("The content has changed. Refresh and try again."), %{reason: "content_conflict"}}

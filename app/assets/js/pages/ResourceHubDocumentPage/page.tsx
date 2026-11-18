@@ -23,6 +23,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { assertPresent } from "@/utils/assertions";
 import { DocumentPage, DocumentPublicSharingModal, displayDate } from "turboui";
 import { useUpdateDocumentPublicSharing } from "@/models/resourceHubs/documentPublicSharingLifecycle";
+import { useDocumentUpdates } from "@/models/resourceHubs/useDocumentUpdates";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { buildDocumentPageNavigation } from "./navigation";
@@ -31,6 +32,7 @@ import { useDocumentInlineComments } from "./useInlineComments";
 
 export function Page() {
   const { document, folder, resourceHub, isCurrentUserSubscribed } = useLoadedData();
+  useDocumentUpdates(document.id);
   const inlineComments = useDocumentInlineComments(document);
   const me = useMe();
   const paths = usePaths();

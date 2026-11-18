@@ -130,10 +130,13 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemCheckedTest do
 
   test "published documents create exactly one version per change", ctx do
     document = target(ctx, :document) |> Ecto.Changeset.change(content: content(), state: :published) |> Repo.update!()
+    topic = "api:document_updated:#{document.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
     previous_versions = Repo.all(from(v in DocumentVersion, where: v.document_id == ^document.id))
     before = length(previous_versions)
     inputs = inputs(document, :document, :content, document.content)
     assert {200, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs)
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
     assert {200, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs)
     assert Repo.aggregate(from(v in DocumentVersion, where: v.document_id == ^document.id), :count) == before + 1
     version = Repo.one!(from(v in DocumentVersion, where: v.document_id == ^document.id, order_by: [desc: v.version_number], limit: 1))
