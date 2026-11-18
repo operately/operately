@@ -7,6 +7,7 @@ import { legacyLoader as legacyKanbanLoader } from "@/pages/SpaceKanbanPage/lega
 import { createBrowserRouter, ShouldRevalidateFunction } from "react-router";
 import { companyLoader } from "./companyLoader";
 import { pageRoute } from "./pageRoute";
+import { useLogoutTransition } from "./logoutTransition";
 
 import { CurrentCompanyProvider } from "@/contexts/CurrentCompanyContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -26,6 +27,9 @@ function NonCompanyRoutes() {
 }
 
 function CompanyRoutes() {
+  const loggingOut = useLogoutTransition();
+  if (loggingOut) return null;
+
   return (
     <CurrentCompanyProvider>
       <TimezoneProvider>
