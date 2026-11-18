@@ -478,6 +478,8 @@
   "A change to your Operately email was requested. The proposed new address is <email/>.": "Une demande de changement de votre adresse e-mail Operately a été effectuée. La nouvelle adresse proposée est <email/>.",
   "A change to your Operately email was requested. The proposed new address is {{email}}.": "Une demande de changement de votre adresse e-mail Operately a été effectuée. La nouvelle adresse proposée est {{email}}.",
   "A folder cannot be moved into itself": "Un dossier ne peut pas être déplacé dans lui-même",
+  "A new KPI update will be due every Monday.": "Une nouvelle valeur du KPI devra être enregistrée chaque lundi.",
+  "A new KPI update will be due on the first day of each month.": "Une nouvelle valeur du KPI devra être enregistrée le premier jour de chaque mois.",
   "A new invitation URL will be generated for {{name}}.": "Un nouveau lien d’invitation sera généré pour {{name}}.",
   "A new milestone \"{{milestoneName}}\" was created": "Un nouveau jalon « {{milestoneName}} » a été créé",
   "A new milestone was added to {{project_name}}.": "Un nouveau jalon a été ajouté au projet {{project_name}}.",

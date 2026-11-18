@@ -59,6 +59,21 @@ test("uses a translated error heading with the supplied KPI load error", () => {
   expect(screen.getByText("Service unavailable")).toBeInTheDocument();
 });
 
+test("explains when KPI updates are due for the selected cadence", async () => {
+  const user = userEvent.setup();
+  renderPage();
+
+  await user.click(screen.getByRole("button", { name: "New KPI" }));
+  expect(screen.getByText("A new KPI update will be due on the first day of each month.")).toBeInTheDocument();
+
+  const cadence = within(await findByTestId("cadence")).getByRole("combobox");
+  await user.click(cadence);
+  await user.click(screen.getByText("Weekly"));
+
+  expect(screen.getByText("A new KPI update will be due every Monday.")).toBeInTheDocument();
+  expect(screen.queryByText("A new KPI update will be due on the first day of each month.")).not.toBeInTheDocument();
+});
+
 // This codebase tags elements with `data-test-id` (not the default
 // `data-testid`), so we resolve them via the attribute selector, polling until
 // they appear for menu/modal content that mounts asynchronously.

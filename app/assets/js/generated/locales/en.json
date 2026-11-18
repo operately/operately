@@ -416,6 +416,8 @@
   "A change to your Operately email was requested. The proposed new address is <email/>.": "A change to your Operately email was requested. The proposed new address is <email/>.",
   "A change to your Operately email was requested. The proposed new address is {{email}}.": "A change to your Operately email was requested. The proposed new address is {{email}}.",
   "A folder cannot be moved into itself": "A folder cannot be moved into itself",
+  "A new KPI update will be due every Monday.": "A new KPI update will be due every Monday.",
+  "A new KPI update will be due on the first day of each month.": "A new KPI update will be due on the first day of each month.",
   "A new invitation URL will be generated for {{name}}.": "A new invitation URL will be generated for {{name}}.",
   "A new milestone \"{{milestoneName}}\" was created": "A new milestone \"{{milestoneName}}\" was created",
   "A new milestone was added to {{project_name}}.": "A new milestone was added to {{project_name}}.",
