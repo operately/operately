@@ -90,7 +90,40 @@ describe("CheckInMetadata", () => {
     expect(screen.getAllByText("·")).toHaveLength(2);
   });
 
-  it("renders published project check-in metadata with text separators", () => {
+  it("shows pending project acknowledgement by default", () => {
+    render(
+      <CheckInMetadata
+        resourceType="project"
+        author={author}
+        state="published"
+        postedAt="2025-07-13T18:42:00Z"
+        formattedTimePreferences={formattedTimePreferences}
+      />,
+    );
+
+    expect(screen.getByText("Not yet acknowledged")).toBeInTheDocument();
+    expect(screen.getAllByText("·")).toHaveLength(2);
+  });
+
+  it("hides pending acknowledgement and its separator while preserving author and posting time", () => {
+    render(
+      <CheckInMetadata
+        resourceType="project"
+        author={author}
+        state="published"
+        postedAt="2025-07-13T18:42:00Z"
+        showPendingAcknowledgement={false}
+        formattedTimePreferences={formattedTimePreferences}
+      />,
+    );
+
+    expect(screen.queryByText("Not yet acknowledged")).not.toBeInTheDocument();
+    expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
+    expect(screen.getByText("18:42")).toBeInTheDocument();
+    expect(screen.getAllByText("·")).toHaveLength(1);
+  });
+
+  it("keeps completed acknowledgement visible when pending acknowledgement is disabled", () => {
     render(
       <CheckInMetadata
         resourceType="project"
@@ -98,6 +131,7 @@ describe("CheckInMetadata", () => {
         state="published"
         postedAt="2025-07-13T18:42:00Z"
         acknowledgedBy={{ fullName: "Grace Hopper" }}
+        showPendingAcknowledgement={false}
         formattedTimePreferences={formattedTimePreferences}
       />,
     );
@@ -138,6 +172,24 @@ describe("CheckInMetadata", () => {
 
     expect(screen.getByText(/Will be posted on July 14th, 2025 at 09:00/)).toBeInTheDocument();
     expect(screen.queryByText("Not yet acknowledged")).not.toBeInTheDocument();
+  });
+
+  it("renders only the author for a draft even when pending acknowledgement is enabled", () => {
+    render(
+      <CheckInMetadata
+        resourceType="project"
+        author={author}
+        state="draft"
+        postedAt="2025-07-13T18:42:00Z"
+        showPendingAcknowledgement
+        formattedTimePreferences={formattedTimePreferences}
+      />,
+    );
+
+    expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
+    expect(screen.queryByText("18:42")).not.toBeInTheDocument();
+    expect(screen.queryByText("Not yet acknowledged")).not.toBeInTheDocument();
+    expect(screen.queryByText("·")).not.toBeInTheDocument();
   });
 
   it("uses the scheduled posting instant when the configured timezone changes the calendar date", () => {

@@ -30,9 +30,11 @@ const formattedTimePreferences = {
 function HeaderPreview({
   resourceType,
   state,
+  showPendingAcknowledgement,
 }: {
   resourceType: CheckInResourceType;
   state: "draft" | "scheduled" | "published";
+  showPendingAcknowledgement?: boolean;
 }) {
   const postedAt = "2025-07-13T18:42:00Z";
   const scheduledAt = state === "scheduled" ? "2025-07-14T12:00:00Z" : null;
@@ -48,6 +50,7 @@ function HeaderPreview({
         resourceType={resourceType}
         author={author}
         acknowledgedBy={resourceType === "goal" ? { fullName: "Grace Hopper" } : null}
+        showPendingAcknowledgement={showPendingAcknowledgement}
         state={state}
         postedAt={postedAt}
         scheduledAt={scheduledAt}
@@ -63,6 +66,10 @@ export const GoalPublished: Story = {
 
 export const ProjectPublished: Story = {
   render: () => <HeaderPreview resourceType="project" state="published" />,
+};
+
+export const ProjectPublishedWithoutReviewer: Story = {
+  render: () => <HeaderPreview resourceType="project" state="published" showPendingAcknowledgement={false} />,
 };
 
 export const Scheduled: Story = {
