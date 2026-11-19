@@ -13,7 +13,6 @@ import FormattedTime, { type FormattedTimePreferences } from "../FormattedTime";
 import { GhostButton } from "../Button";
 import { InfoCallout } from "../Callouts";
 import RichContent from "../RichContent";
-import { isRichTextEmpty } from "../RichEditor/localDrafts";
 import type { MentionedPersonLookupFn, RichEditorHandlers } from "../RichEditor/useEditor";
 import { ScheduleFlowControls } from "../SchedulePosting";
 import { useScheduleFlowState } from "../SchedulePosting/useScheduleFlowState";
@@ -88,10 +87,6 @@ export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
     initialScheduledAt: props.mode === "edit" && canSchedule ? props.checkIn.scheduledAt : null,
   });
 
-  const [savedContentKey, setSavedContentKey] = React.useState(() =>
-    checkInContentKey({ status: null, description: null }),
-  );
-
   const form = Forms.useForm<ProjectCheckInFormPage.Values>({
     fields: {
       status: props.mode === "create" ? null : props.checkIn.status,
@@ -116,14 +111,11 @@ export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
         const shouldSchedule =
           createAction === "schedule" || (createAction === "submit" && scheduleFlow.isScheduledLocally);
 
-        const submittedContentKey = checkInContentKey(form.values);
-        const succeeded = await props.onSubmit(form.values, {
+        return props.onSubmit(form.values, {
           mode: "create",
           action: createAction,
           scheduledAt: shouldSchedule ? scheduleFlow.scheduledAtIso : null,
         });
-        if (succeeded) setSavedContentKey(submittedContentKey);
-        return;
       }
 
       const editAction = (action || "save") as ProjectCheckInFormPage.EditAction;
@@ -132,27 +124,13 @@ export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
         editAction === "save-changes" ||
         (editAction === "publish" && scheduleFlow.isScheduledLocally);
 
-      await props.onSubmit(form.values, {
+      return props.onSubmit(form.values, {
         mode: "edit",
         action: editAction,
         scheduledAt: shouldSchedule ? scheduleFlow.scheduledAtIso : null,
       });
     },
   });
-
-  const hasUnsavedContent = props.mode === "create" && checkInContentKey(form.values) !== savedContentKey;
-
-  React.useEffect(() => {
-    if (!hasUnsavedContent) return;
-
-    const warnBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", warnBeforeUnload);
-    return () => window.removeEventListener("beforeunload", warnBeforeUnload);
-  }, [hasUnsavedContent]);
 
   return (
     <Page
@@ -198,10 +176,6 @@ export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
       </main>
     </Page>
   );
-}
-
-function checkInContentKey(values: ProjectCheckInFormPage.Values): string {
-  return JSON.stringify([values.status, isRichTextEmpty(values.description) ? null : values.description]);
 }
 
 function Header({ props }: { props: ProjectCheckInFormPage.Props }) {

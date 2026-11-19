@@ -10,31 +10,26 @@ function storyUrl() {
   return url.href;
 }
 
-describe("new project check-in unload warning", () => {
-  test("dismissing the native reload confirmation preserves text and status", async () => {
+describe("new project check-in local autosave", () => {
+  test("reload restores text without a confirmation and later edits survive another reload", async () => {
     page.setDefaultTimeout(5000);
     await page.goto(storyUrl());
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
     const editor = page.locator('[contenteditable="true"]');
     await editor.fill("Progress that has not been submitted");
-    const status = page.locator('[data-test-id="status-dropdown"]');
-    await status.click();
-    const option = page.locator('[data-test-id="status-dropdown-caution"]');
-    const selectedStatus = await option.locator("p").textContent();
-    await option.click();
-    assert.equal(await status.locator("p").textContent(), selectedStatus);
-    const currentUrl = page.url();
-
-    const dialogPromise = page.waitForEvent("dialog");
-    await page.evaluate(() => {
-      // Start the reload without waiting for a navigation that choosing to stay cancels.
-      window.setTimeout(() => window.location.reload(), 0);
+    const dialogs: string[] = [];
+    page.on("dialog", async (dialog) => {
+      dialogs.push(dialog.type());
+      await dialog.accept();
     });
-    const dialog = await dialogPromise;
-    assert.equal(dialog.type(), "beforeunload");
-    await dialog.dismiss();
-
-    assert.equal(page.url(), currentUrl);
+    await page.reload();
+    await editor.waitFor();
     assert.equal(await editor.textContent(), "Progress that has not been submitted");
-    assert.equal(await status.locator("p").textContent(), selectedStatus);
+    await editor.fill("More progress after recovery");
+    await page.reload();
+    await editor.waitFor();
+    assert.equal(await editor.textContent(), "More progress after recovery");
+    assert.deepEqual(dialogs, []);
   });
 });

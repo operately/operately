@@ -1,5 +1,5 @@
 import React from "react";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
@@ -10,39 +10,6 @@ import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { setupTestCatalog } from "../../test/i18n";
 
 setupTestCatalog();
-
-jest.mock("../RichEditor", () => {
-  const React = jest.requireActual<typeof import("react")>("react");
-  const { readLocalDraft } =
-    jest.requireActual<typeof import("../RichEditor/localDrafts")>("../RichEditor/localDrafts");
-
-  return {
-    Editor: ({ editor }: { editor: { onUpdate: (update: { json: unknown }) => void } }) => (
-      <textarea
-        data-testid="rich-editor"
-        onChange={(event) => editor.onUpdate({ json: JSON.parse(event.target.value) })}
-      />
-    ),
-    Content: () => <div data-testid="rich-content" />,
-    useEditor: (options: {
-      content: unknown;
-      localDraft?: import("../RichEditor/localDrafts").LocalDraftOptions;
-      onUpdate: (update: { json: unknown }) => void;
-    }) => {
-      const [restored] = React.useState(() => readLocalDraft(options.localDraft, options.content));
-      const editor = React.useRef({
-        commands: { setContent: jest.fn() },
-        getJSON: () => restored,
-      });
-      return {
-        editor: editor.current,
-        localDraftRestored: restored !== null,
-        clearLocalDraft: () => undefined,
-        onUpdate: options.onUpdate,
-      };
-    },
-  };
-});
 
 const previousCheckIn: ProjectCheckInFormPage.PreviousCheckIn = {
   link: "/projects/project-1/check-ins/check-in-1",
@@ -115,24 +82,15 @@ describe("ProjectCheckInFormPage", () => {
 
     expect(screen.getByText("2. What's new since the last check-in?")).toBeInTheDocument();
     expect(screen.queryByText("2. What is the current progress on the project?")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("rich-content")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "View original" })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByText("Show previous check-in"));
-    expect(screen.getByTestId("rich-content")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "View original" })).toHaveAttribute("href", previousCheckIn.link);
 
     fireEvent.click(screen.getByText("Hide previous check-in"));
-    expect(screen.queryByTestId("rich-content")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "View original" })).not.toBeInTheDocument();
   });
 });
-
-function description(text: string) {
-  return { type: "doc", content: [{ type: "paragraph", ...(text ? { content: [{ type: "text", text }] } : {}) }] };
-}
-
-function editDescription(text: string) {
-  fireEvent.change(screen.getByTestId("rich-editor"), { target: { value: JSON.stringify(description(text)) } });
-}
 
 function control(testId: string) {
   const element = document.querySelector(`[data-test-id="${testId}"]`);
@@ -140,153 +98,77 @@ function control(testId: string) {
   return element;
 }
 
-function selectStatus(status = "on_track") {
+function editDescription(text: string) {
+  const editor = document.querySelector('[contenteditable="true"]');
+  if (!editor) throw new Error("Editor did not mount");
+  fireEvent.paste(editor, {
+    clipboardData: { getData: (type: string) => (type === "text/plain" ? text : ""), items: [], files: [] },
+  });
+}
+
+function selectStatus() {
   fireEvent.click(control("status-dropdown"));
-  fireEvent.click(control(`status-dropdown-${status}`));
+  fireEvent.click(control("status-dropdown-on_track"));
 }
 
-function requestsUnloadConfirmation() {
-  const event = new Event("beforeunload", { cancelable: true });
-  window.dispatchEvent(event);
-  return event.defaultPrevented;
+function currentEditorText() {
+  return document.querySelector('[contenteditable="true"]')?.textContent;
 }
 
-describe("create-mode unload protection", () => {
+describe("local check-in content recovery", () => {
+  beforeEach(() => localStorage.clear());
   afterEach(() => localStorage.clear());
 
-  test("protects meaningful text and stops protecting when it is cleared", () => {
-    renderCreateForm();
-    expect(requestsUnloadConfirmation()).toBe(false);
-    editDescription("");
-    expect(requestsUnloadConfirmation()).toBe(false);
+  test("restores unsaved text on reopening and allows further edits", async () => {
+    const first = renderCreateForm();
     editDescription("Unsaved progress");
-    expect(requestsUnloadConfirmation()).toBe(true);
-    editDescription("");
-    expect(requestsUnloadConfirmation()).toBe(false);
-  });
-
-  test("protects a selected status alone and removes the listener on unmount", () => {
-    const { unmount } = renderCreateForm();
+    first.unmount();
+    const second = renderCreateForm();
+    expect(currentEditorText()).toContain("Unsaved progress");
+    editDescription(" More progress");
     selectStatus();
-    expect(requestsUnloadConfirmation()).toBe(true);
-    unmount();
-    expect(requestsUnloadConfirmation()).toBe(false);
-  });
-
-  test("does not protect edit-mode check-ins", () => {
-    const handlers = createMockRichEditorHandlers();
-    const addListener = jest.spyOn(window, "addEventListener");
-    render(
-      <MemoryRouter>
-        <ProjectCheckInFormPage
-          mode="edit"
-          checkIn={previousCheckIn.checkIn}
-          allowFullEdit
-          pageTitle={["Check-In"]}
-          navigation={[]}
-          cancelLink="/project"
-          richTextHandlers={handlers}
-          mentionedPersonLookup={handlers.mentionedPersonLookup}
-          formattedTimePreferences={defaultFormattedTimePreferences}
-          onSubmit={jest.fn().mockResolvedValue(true)}
-        />
-      </MemoryRouter>,
-    );
-    editDescription("Edited progress");
-    expect(requestsUnloadConfirmation()).toBe(false);
-    expect(addListener.mock.calls.some(([type]) => type === "beforeunload")).toBe(false);
-    addListener.mockRestore();
-  });
-
-  test("protects nonempty text restored by the editor", async () => {
-    localStorage.setItem(
-      `operately:rich-text-draft:form:${window.location.pathname}:description`,
-      JSON.stringify({
-        content: description("Recovered progress"),
-        baseContent: null,
-        updatedAt: Date.now(),
-      }),
-    );
-    renderCreateForm();
-    await waitFor(() => expect(requestsUnloadConfirmation()).toBe(true));
-  });
-
-  test("retains protection after validation fails", async () => {
+    expect(currentEditorText()).toContain("More progress");
+    second.unmount();
     const onSubmit = jest.fn().mockResolvedValue(true);
     renderCreateForm({ onSubmit });
-    editDescription("Status still missing");
-    fireEvent.click(control("submit"));
-    await waitFor(() => expect(document.getElementById("status-error")).toBeInTheDocument());
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(requestsUnloadConfirmation()).toBe(true);
-  });
-
-  test.each(["submit", "draft", "schedule"] as const)(
-    "protects pending %s and only clears the saved values on success",
-    async (action) => {
-      let resolveSubmit: (success: boolean) => void = () => undefined;
-      const onSubmit = jest.fn(
-        (_values: ProjectCheckInFormPage.Values, _meta: ProjectCheckInFormPage.SubmitMeta) =>
-          new Promise<boolean>((resolve) => {
-            resolveSubmit = resolve;
-          }),
-      );
-      renderCreateForm({ onSubmit });
-      if (action === "schedule") {
-        fireEvent.keyDown(control("submit-options"), { key: "ArrowDown" });
-        fireEvent.click(control("schedule-for-later"));
-        fireEvent.click(screen.getByTestId("date-field-next-month"));
-        fireEvent.click(control("date-field-day-1"));
-        fireEvent.click(control("confirm-schedule"));
-        expect(requestsUnloadConfirmation()).toBe(false);
-      }
-      selectStatus();
-      editDescription("Ready to save");
-      fireEvent.click(control(action === "draft" ? "save-as-draft" : "submit"));
-      await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-      expect(onSubmit.mock.calls[0]).toEqual([expect.anything(), expect.objectContaining({ action })]);
-      expect(requestsUnloadConfirmation()).toBe(true);
-      await act(async () => resolveSubmit(true));
-      expect(requestsUnloadConfirmation()).toBe(false);
-      editDescription("Another update");
-      expect(requestsUnloadConfirmation()).toBe(true);
-      editDescription("Ready to save");
-      expect(requestsUnloadConfirmation()).toBe(false);
-      selectStatus("caution");
-      expect(requestsUnloadConfirmation()).toBe(true);
-    },
-  );
-
-  test("a successful response does not mark changes made during the request as saved", async () => {
-    let resolveSubmit: (success: boolean) => void = () => undefined;
-    renderCreateForm({
-      onSubmit: () =>
-        new Promise<boolean>((resolve) => {
-          resolveSubmit = resolve;
-        }),
-    });
     selectStatus();
-    editDescription("Submitted progress");
     fireEvent.click(control("submit"));
-    editDescription("More progress while saving");
-    await act(async () => resolveSubmit(true));
-    expect(requestsUnloadConfirmation()).toBe(true);
-    editDescription("Submitted progress");
-    expect(requestsUnloadConfirmation()).toBe(false);
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(JSON.stringify(onSubmit.mock.calls[0][0].description)).toContain("More progress");
   });
 
-  test.each(["false", "rejected"])("retains protection after a %s submission", async (result) => {
+  test.each(["false", "rejected"])("retains the local draft after a %s submission", async (result) => {
     const errorLog = jest.spyOn(console, "error").mockImplementation(() => undefined);
     const onSubmit = jest.fn(() =>
       result === "false" ? Promise.resolve(false) : Promise.reject(new Error("Request failed")),
     );
-    renderCreateForm({ onSubmit });
-    selectStatus();
+    const first = renderCreateForm({ onSubmit });
     editDescription("Still unsaved");
+    selectStatus();
     fireEvent.click(control("submit"));
-    await waitFor(() => expect(document.querySelector('[data-test-id="submit"]')).not.toBeDisabled());
+    await waitFor(() => expect(control("submit")).not.toBeDisabled());
     expect(onSubmit).toHaveBeenCalledTimes(1);
-    expect(requestsUnloadConfirmation()).toBe(true);
+    first.unmount();
+    renderCreateForm();
+    expect(currentEditorText()).toContain("Still unsaved");
     errorLog.mockRestore();
+  });
+
+  test.each(["submit", "draft", "schedule"] as const)("clears the local draft after successful %s", async (action) => {
+    const first = renderCreateForm();
+    editDescription("Saved progress");
+    selectStatus();
+    if (action === "schedule") {
+      fireEvent.keyDown(control("submit-options"), { key: "ArrowDown" });
+      fireEvent.click(control("schedule-for-later"));
+      fireEvent.click(screen.getByTestId("date-field-next-month"));
+      fireEvent.click(control("date-field-day-1"));
+      fireEvent.click(control("confirm-schedule"));
+    }
+    fireEvent.click(control(action === "draft" ? "save-as-draft" : "submit"));
+    await waitFor(() => expect(control("submit")).not.toBeDisabled());
+    first.unmount();
+    renderCreateForm();
+    expect(currentEditorText()).toBe("");
   });
 });

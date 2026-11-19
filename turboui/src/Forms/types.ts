@@ -37,7 +37,7 @@ export interface FormState<T extends FormValues = FormValues> {
 export interface UseFormOptions<T extends FormValues> {
   fields: T;
   validate?: (addError: AddErrorFn) => void;
-  submit: (attrs?: unknown) => Promise<void> | void;
+  submit: (attrs?: unknown) => Promise<void | boolean> | void | boolean;
   cancel?: () => Promise<void> | void;
   onChange?: (args: { newValues: T; field: string | null }) => void;
   onError?: (error: any) => void;
