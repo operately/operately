@@ -4,6 +4,7 @@ import { beginLogoutTransition } from "./logoutTransition";
 import { queryClient } from "@/api/queryClient";
 
 import { resetAnalytics } from "@/analytics/session";
+import { teardownApplication } from "@/applicationTeardown";
 
 type LogOutResult = "success" | "failure";
 type LogInResult = "success" | "failure";
@@ -18,9 +19,16 @@ export async function logOut(): Promise<LogOutResult> {
   resetAnalytics();
   disablePreloading();
   beginLogoutTransition();
+  teardownApplication();
   queryClient.clear();
 
   return "success";
+}
+
+export async function logOutAndRedirect() {
+  if ((await logOut()) === "success") {
+    window.location.href = "/";
+  }
 }
 
 interface LogInOptions {

@@ -1,0 +1,20 @@
+version: v1.0
+name: Deploy
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2404
+blocks:
+  - name: Trigger Production Deployment
+    dependencies: []
+    run:
+      when: "branch = 'main'"
+    task:
+      secrets:
+        - name: prod-deployment-vars
+        - name: discord-bot
+      jobs:
+        - name: "Trigger"
+          commands:
+            - checkout
+            - ruby scripts/deploy.rb

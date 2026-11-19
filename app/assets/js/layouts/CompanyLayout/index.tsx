@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { CompanyNavigation } from "turboui";
 
-import { logOut } from "@/routes/auth";
+import { logOutAndRedirect } from "@/routes/auth";
 import { Outlet, useNavigate } from "react-router";
 
 import { KeyboardShortcutsModal, useKeyboardShortcutsModal } from "./KeyboardShortcutsModal";
@@ -71,14 +71,6 @@ function Navigation({
   const search = useGlobalSearchHandler();
   const fullTextSearchPath = companySearchPathBuilder(paths);
 
-  const handleLogOut = async () => {
-    const res = await logOut();
-
-    if (res === "success") {
-      window.location.href = "/";
-    }
-  };
-
   const props: CompanyNavigation.Props = {
     companyName: company.name,
     me: {
@@ -119,7 +111,7 @@ function Navigation({
     discordUrl: window.appConfig.discordUrl,
     contactUsHref: contactUsLink(company.name, company.id),
     onOpenKeyboardShortcuts,
-    onLogOut: handleLogOut,
+    onLogOut: logOutAndRedirect,
     search,
     onNavigate: navigate,
     fullTextSearchPath,
