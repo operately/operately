@@ -1,6 +1,6 @@
 import { useSelectLocalization } from "../SelectLocalization";
 import * as React from "react";
-import Select from "react-select";
+import Select, { type StylesConfig } from "react-select";
 
 import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
@@ -25,11 +25,11 @@ function SelectBoxInput({ field, placeholder, options }: SelectBoxProps) {
   const error = useFieldError(field);
 
   return (
-    <div data-test-id={createTestId(field)} className="flex-1">
+    <div data-test-id={createTestId(field)} className="min-w-0 flex-1">
       <Select
         {...localization}
         unstyled={true}
-        className="flex-1"
+        className="min-w-0 flex-1"
         placeholder={placeholder ?? localization.placeholder}
         classNames={selectBoxClassNames(!!error)}
         value={options.find(({ value: optionValue }) => optionValue === value)}
@@ -75,9 +75,18 @@ function selectBoxOptionStyles({ isFocused }: { isFocused: boolean }) {
   });
 }
 
-function selectBoxStyles() {
+function selectBoxStyles(): StylesConfig<SelectBoxOption, false> {
   return {
-    input: (provided: Record<string, unknown>) => ({
+    valueContainer: (provided) => ({ ...provided, minWidth: 0 }),
+    singleValue: (provided) => ({
+      ...provided,
+      whiteSpace: "normal",
+      overflowWrap: "anywhere",
+      overflow: "visible",
+      textOverflow: "clip",
+    }),
+    option: (provided) => ({ ...provided, whiteSpace: "normal", overflowWrap: "anywhere" }),
+    input: (provided) => ({
       ...provided,
       "input:focus": {
         boxShadow: "none",
