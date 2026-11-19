@@ -1,6 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import userEvent from "@testing-library/user-event";
 import { Editor, useEditor } from ".";
 
 beforeAll(() => {
@@ -21,8 +22,9 @@ function TestEditor({ compact }: { compact: boolean }) {
 }
 
 describe.each([false, true])("heading toolbar (compact: %s)", (compact) => {
-  it("offers H2, H3, and H4 without H1", () => {
+  it("offers H2, H3, and H4 without H1", async () => {
     render(<TestEditor compact={compact} />);
+    if (compact) await userEvent.click(screen.getByRole("button", { name: "More formatting options" }));
     expect(screen.queryByTitle("Heading 1")).not.toBeInTheDocument();
     for (const level of [2, 3, 4]) {
       expect(screen.getByTitle(`Heading ${level}`)).toBeVisible();
@@ -31,6 +33,7 @@ describe.each([false, true])("heading toolbar (compact: %s)", (compact) => {
 
   it.each([2, 3, 4])("toggles H%i and returns to a paragraph", async (level) => {
     render(<TestEditor compact={compact} />);
+    if (compact) await userEvent.click(screen.getByRole("button", { name: "More formatting options" }));
     const button = screen.getByTitle(`Heading ${level}`);
     fireEvent.click(button);
     expect(await screen.findByRole("heading", { level })).toHaveTextContent("Section title");
