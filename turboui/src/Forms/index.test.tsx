@@ -357,6 +357,27 @@ describe("Forms", () => {
     await waitFor(() => expect(screen.queryByText("Save failed")).not.toBeInTheDocument());
   });
 
+  test.each([true, false, undefined])(
+    "records submit success only when the result is not false (%s)",
+    async (result) => {
+      function Harness() {
+        const form = useForm({ fields: {}, submit: async () => result });
+        return (
+          <Form form={form}>
+            <output data-testid="submit-state">{form.state}</output>
+            <output data-testid="submit-succeeded">{String(Boolean(form.lastSubmitSucceededAt))}</output>
+            <Submit />
+          </Form>
+        );
+      }
+
+      render(<Harness />);
+      fireEvent.click(screen.getByRole("button", { name: "Save" }));
+      await waitFor(() => expect(screen.getByTestId("submit-state")).toHaveTextContent("idle"));
+      expect(screen.getByTestId("submit-succeeded")).toHaveTextContent(String(result !== false));
+    },
+  );
+
   test("calls onError when submit fails", async () => {
     const onError = jest.fn();
     const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);

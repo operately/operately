@@ -1,14 +1,7 @@
 import * as React from "react";
 
 import { cloneFormValue, getValueAtPath, setValueAtPath } from "./path";
-import type {
-  AddErrorFn,
-  FieldValidation,
-  FormErrors,
-  FormState,
-  FormValues,
-  UseFormOptions,
-} from "./types";
+import type { AddErrorFn, FieldValidation, FormErrors, FormState, FormValues, UseFormOptions } from "./types";
 
 type ValidationMap = Record<string, FieldValidation[]>;
 
@@ -148,7 +141,8 @@ export function useForm<T extends FormValues>(options: UseFormOptions<T>): FormS
       setState("submitting");
 
       try {
-        await options.submit(attrs);
+        const succeeded = await options.submit(attrs);
+        if (succeeded === false) return;
         clearErrors();
         setLastSubmitSucceededAt(Date.now());
       } catch (error) {

@@ -43,7 +43,10 @@ function useInteractiveSubscriptions(): SubscribersSelector.Props {
   };
 }
 
-function CreateFormStory({ previousCheckIn }: Pick<ProjectCheckInFormPage.CreateProps, "previousCheckIn">) {
+function CreateFormStory({
+  previousCheckIn,
+  submitSucceeds = true,
+}: Pick<ProjectCheckInFormPage.CreateProps, "previousCheckIn"> & { submitSucceeds?: boolean }) {
   const subscriptions = useInteractiveSubscriptions();
 
   return (
@@ -60,7 +63,7 @@ function CreateFormStory({ previousCheckIn }: Pick<ProjectCheckInFormPage.Create
       subscriptions={subscriptions}
       onSubmit={async (values, meta) => {
         console.log("Create submit", values, meta);
-        return true;
+        return submitSucceeds;
       }}
     />
   );
@@ -76,6 +79,11 @@ export const Create: Story = {
       }}
     />
   ),
+};
+
+export const CreateFailedSubmission: Story = {
+  args: {} as ProjectCheckInFormPage.Props,
+  render: () => <CreateFormStory previousCheckIn={null} submitSucceeds={false} />,
 };
 
 export const FirstCheckIn: Story = {
