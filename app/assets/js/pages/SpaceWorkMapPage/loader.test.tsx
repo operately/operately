@@ -3,12 +3,32 @@ import React, { act } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
-import Api from "@/api";
+import Api, { type Space } from "@/api";
 import { queryClient } from "@/api/queryClient";
-import { loader, useLoadedData } from "./loader";
+import { loader, useLoadedData, type ReadyData } from "./loader";
+import { Page } from "./page";
 
 jest.mock("axios");
-jest.mock("turboui", () => ({}));
+jest.mock("turboui", () => ({
+  ContentListState: ({ loading, children }) => (loading ? <div role="status" /> : children),
+  WorkMapPage: ({ items, navigation, addingEnabled }) => (
+    <div data-test-id="work-map" data-adding-enabled={addingEnabled} data-item-count={items.length}>
+      {navigation[0].label}
+    </div>
+  ),
+}));
+jest.mock("react-i18next", () => ({
+  ...jest.requireActual("react-i18next"),
+  useTranslation: () => ({ t: (key) => key }),
+}));
+jest.mock("react-router", () => ({ useNavigate: () => jest.fn() }));
+jest.mock("@/routes/paths", () => ({ usePaths: () => ({ spacePath: (id) => `/spaces/${id}` }) }));
+jest.mock("../../models/spaces", () => ({ useSpaceSearch: () => jest.fn() }));
+jest.mock("../../models/workMap", () => ({
+  useWorkMapItems: (items) => [items, jest.fn()],
+  convertToWorkMapItems: (_paths, items) => items,
+}));
+jest.mock("@/hooks/useFormattedTimePreferences", () => ({ useFormattedTimePreferences: () => ({}) }));
 jest.mock("@/components/Pages", () => ({
   useLoadedData: () => ({
     workMapInput: { spaceId: "space-1" },
@@ -28,10 +48,38 @@ function deferred() {
   return { promise, resolve, reject };
 }
 
+class ErrorBoundary extends React.Component<
+  React.PropsWithChildren<{ onError: (error: Error) => void }>,
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error: Error) {
+    this.props.onError(error);
+  }
+  render() {
+    return this.state.failed ? <div role="alert" /> : this.props.children;
+  }
+}
+
 describe("SpaceWorkMapPage loading", () => {
   let root: Root;
-  let loaded: ReturnType<typeof useLoadedData>;
-  const space = { id: "space-1", name: "Engineering" };
+  let loaded: ReadyData;
+  let container: HTMLDivElement;
+  const space: Space = {
+    __typename: "space",
+    id: "space-1",
+    name: "Engineering",
+    permissions: {
+      __typename: "space_permissions",
+      canEdit: true,
+      canView: true,
+      canComment: true,
+      hasFullAccess: true,
+    },
+  };
   const spaceInput = { id: space.id, includeAccessLevels: true, includePermissions: true };
 
   beforeEach(() => {
@@ -39,7 +87,8 @@ describe("SpaceWorkMapPage loading", () => {
     (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
     Api.default.setBasePath("/api/v2");
     Api.default.setHeaders({ "x-company-id": "company-1" });
-    root = createRoot(document.createElement("div"));
+    container = document.createElement("div");
+    root = createRoot(container);
     queryClient.clear();
     jest.resetAllMocks();
     // These cases exercise template loading; the editable-space lookup is already available.
@@ -58,7 +107,9 @@ describe("SpaceWorkMapPage loading", () => {
     queryClient.setQueryData(Api.companies.getWorkMapQueryKey({ spaceId: space.id }), { workMap });
     queryClient.setQueryData(Api.spaces.getQueryKey(spaceInput), { space });
     function Harness() {
-      loaded = useLoadedData();
+      const state = useLoadedData();
+      if (state.status !== "ready") throw new Error("Expected seeded map to be ready");
+      loaded = state;
       return null;
     }
     await act(async () =>
@@ -75,6 +126,95 @@ describe("SpaceWorkMapPage loading", () => {
       await jest.advanceTimersByTimeAsync(milliseconds);
     });
   }
+
+  it.each(["map", "space"])("recovers an evicted required %s query before rendering the map", async (missing) => {
+    jest.mocked(axios.get).mockImplementation(async (url) => ({
+      data: url.endsWith("/spaces/get") ? { space } : { workMap: [] },
+    }));
+    await loader({ params: { id: space.id } });
+    const key =
+      missing === "map" ? Api.companies.getWorkMapQueryKey({ spaceId: space.id }) : Api.spaces.getQueryKey(spaceInput);
+    queryClient.removeQueries({ queryKey: key, exact: true });
+    const recovery = deferred();
+    const templates = deferred();
+    jest
+      .mocked(axios.get)
+      .mockImplementation((url) => (url.endsWith("/project_templates/list") ? templates.promise : recovery.promise));
+    await act(async () =>
+      root.render(
+        <QueryClientProvider client={queryClient}>
+          <Page />
+        </QueryClientProvider>,
+      ),
+    );
+    expect(container.querySelector('[role="status"]')).not.toBeNull();
+    expect(container.querySelector('[data-test-id="work-map"]')).toBeNull();
+    await act(async () => recovery.resolve({ data: missing === "map" ? { workMap: [] } : { space } }));
+    await advance();
+    expect(container.querySelector('[role="status"]')).toBeNull();
+    const map = container.querySelector('[data-test-id="work-map"]');
+    expect(map?.textContent).toBe(space.name);
+    expect(map?.getAttribute("data-item-count")).toBe("0");
+    expect(map?.getAttribute("data-adding-enabled")).toBe("false");
+    await act(async () => templates.resolve({ data: { templates: [] } }));
+    await advance();
+    expect(map?.getAttribute("data-adding-enabled")).toBe("true");
+  });
+
+  it("propagates the original required recovery failure to the boundary", async () => {
+    jest.mocked(axios.get).mockImplementation(async (url) => ({
+      data: url.endsWith("/spaces/get") ? { space } : { workMap: [] },
+    }));
+    await loader({ params: { id: space.id } });
+    queryClient.removeQueries({ queryKey: Api.spaces.getQueryKey(spaceInput), exact: true });
+    const recovery = deferred();
+    jest.mocked(axios.get).mockReturnValue(recovery.promise);
+    const onError = jest.fn();
+    const log = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      await act(async () =>
+        root.render(
+          <QueryClientProvider client={queryClient}>
+            <ErrorBoundary onError={onError}>
+              <Page />
+            </ErrorBoundary>
+          </QueryClientProvider>,
+        ),
+      );
+      expect(container.querySelector('[role="status"]')).not.toBeNull();
+      const error = new Error("Service unavailable");
+      await act(async () => recovery.reject(error));
+      await advance();
+      expect(onError.mock.calls[0]?.[0]).toBe(error);
+      expect(container.querySelector('[role="alert"]')).not.toBeNull();
+    } finally {
+      log.mockRestore();
+    }
+  });
+
+  it("treats a successful response without a space as an invariant failure", async () => {
+    queryClient.setQueryData(Api.spaces.getQueryKey(spaceInput), { space: null });
+    queryClient.setQueryData(Api.companies.getWorkMapQueryKey({ spaceId: space.id }), { workMap: [] });
+    jest.mocked(axios.get).mockResolvedValue({ data: { templates: [] } });
+    const onError = jest.fn();
+    const log = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      await act(async () =>
+        root.render(
+          <QueryClientProvider client={queryClient}>
+            <ErrorBoundary onError={onError}>
+              <Page />
+            </ErrorBoundary>
+          </QueryClientProvider>,
+        ),
+      );
+      expect(onError.mock.calls[0]?.[0]).toBeInstanceOf(Error);
+      expect(container.querySelector('[role="alert"]')).not.toBeNull();
+      expect(container.querySelector('[role="status"]')).toBeNull();
+    } finally {
+      log.mockRestore();
+    }
+  });
 
   it.each(["map", "space"])(
     "awaits both map and space, with %s finishing first, without requesting templates",
