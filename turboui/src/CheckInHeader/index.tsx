@@ -65,6 +65,7 @@ export function CheckInMetadata({
   scheduledAt,
   formattedTimePreferences,
 }: CheckInMetadataProps) {
+  const { t } = useTranslation();
   const containerClass =
     resourceType === "goal"
       ? "flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 mt-1 font-medium text-sm sm:text-base"
@@ -93,6 +94,14 @@ export function CheckInMetadata({
             <MetadataItem>
               <Acknowledgement acknowledgedBy={acknowledgedBy} />
             </MetadataItem>
+          )}
+          {resourceType === "project" && !acknowledgedBy && !showPendingAcknowledgement && (
+            <p
+              className="w-full mt-1 text-center text-sm text-content-subtle"
+              data-test-id="check-in-reviewer-guidance"
+            >
+              {t("Assign a reviewer on the project page to get feedback on check-ins.")}
+            </p>
           )}
         </>
       )}
