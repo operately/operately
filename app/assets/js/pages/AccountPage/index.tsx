@@ -1,7 +1,7 @@
 import React from "react";
 import * as Pages from "@/components/Pages";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { logOut } from "@/routes/auth";
+import { logOutAndRedirect } from "@/routes/auth";
 import { PageModule } from "@/routes/types";
 import { AccountPage } from "turboui";
 import { usePaths } from "@/routes/paths";
@@ -12,13 +12,6 @@ function Page() {
   const me = useMe()!;
   const paths = usePaths();
 
-  const handleLogOut = async () => {
-    const res = await logOut();
-    if (res === "success") {
-      window.location.href = "/";
-    }
-  };
-
   return (
     <AccountPage
       person={me}
@@ -27,7 +20,7 @@ function Page() {
       notificationSettingsPath={paths.accountNotificationSettingsPath()}
       securityPath={paths.accountSecurityPath()}
       homePath={paths.homePath()}
-      onLogOut={handleLogOut}
+      onLogOut={logOutAndRedirect}
     />
   );
 }
