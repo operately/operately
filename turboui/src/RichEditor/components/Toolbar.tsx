@@ -99,19 +99,19 @@ function MobileToolbar() {
     <div className="sticky bg-surface-base z-10 rounded-t-lg top-0" data-test-id="rich-editor-toolbar">
       <div className={"flex items-center gap-3 border-stroke-base" + " " + border}>
         <div className="flex justify-between items-center w-full min-w-0">
-          <div className="flex flex-1 flex-wrap items-center min-w-0" data-test-id="rich-editor-primary-controls">
+          <div className="flex flex-1 items-center min-w-0" data-test-id="rich-editor-primary-controls">
             <BoldButton editor={editor} iconSize={20} />
             <ItalicButton editor={editor} iconSize={20} />
             <StrikeButton editor={editor} iconSize={20} />
-            <HeadingButtons editor={editor} iconSize={20} />
-            <ColorPicker editor={editor} iconSize={18} />
-            <BulletListButton editor={editor} iconSize={20} />
             {uploadFile ? <AttachmentButton editor={editor} iconSize={20} /> : null}
           </div>
 
-          <div className="shrink-0">
+          <div className="flex shrink-0 items-center">
             <MobilePopupTools>
               <TableButton editor={editor} iconSize={20} tabIndex={0} />
+              <HeadingButtons editor={editor} iconSize={20} />
+              <ColorPicker editor={editor} iconSize={18} />
+              <BulletListButton editor={editor} iconSize={20} />
               <TaskListButton editor={editor} iconSize={20} />
               <NumberListButton editor={editor} iconSize={20} />
               <BlockquoteButton editor={editor} iconSize={20} />

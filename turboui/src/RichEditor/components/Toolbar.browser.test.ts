@@ -24,7 +24,7 @@ describe("Rich editor toolbar in a browser", () => {
       await toolbar.locator("..").evaluate((element) => (element.style.width = "280px"));
     }
     await toolbar.scrollIntoViewIfNeeded();
-    assert.equal(await primary.locator("button").count(), 9, "Includes all three headings and attachment upload");
+    assert.equal(await primary.locator("button").count(), 4, "Keeps basic formatting and attachment upload visible");
     assert.equal(
       await primary.evaluate((element) => element.scrollWidth <= element.clientWidth),
       true,
@@ -34,7 +34,7 @@ describe("Rich editor toolbar in a browser", () => {
     const primaryBounds = await primary.boundingBox();
     assert.ok(primaryBounds);
     await assertControlsFit(primary.locator("button"), primaryBounds);
-    assert.ok((await controlRowCount(primary.locator("button"))) > 1, "Controls wrap onto multiple rows");
+    assert.equal(await controlRowCount(toolbar.locator("button")), 1, "Toolbar stays on one row");
 
     await editor.fill("Mobile check-in");
     await editor.press("ControlOrMeta+a");
@@ -44,10 +44,19 @@ describe("Rich editor toolbar in a browser", () => {
     await overflow.click();
     const popup = page.getByRole("dialog");
     await popup.waitFor();
-    assert.equal(await popup.locator("button").count(), 10, "All overflow actions and Markdown help remain available");
+    assert.equal(await popup.locator("button").count(), 15, "All overflow actions and Markdown help remain available");
     const popupBounds = await popup.boundingBox();
     assert.ok(popupBounds);
     await assertControlsFit(popup.locator("button"), popupBounds);
+    await popup.getByRole("button", { name: "Heading 2", exact: true }).click();
+    await editor.locator("h2").filter({ hasText: "Mobile check-in" }).waitFor();
+    await editor.press("ControlOrMeta+a");
+    if ((await overflow.getAttribute("aria-expanded")) !== "true") await overflow.click();
+    await popup.locator('[data-test-id="toolbar-button-highlight"]').click();
+    await page.locator('[data-test-id="textYellow"]').click();
+    await editor.locator('mark[data-highlight="textYellow"]').filter({ hasText: "Mobile check-in" }).waitFor();
+    await page.keyboard.press("Escape");
+    if ((await overflow.getAttribute("aria-expanded")) !== "true") await overflow.click();
     await popup.locator('[data-test-id="toolbar-button-task-list"]').click();
     await editor.locator('[data-type="taskList"]').waitFor();
   });
