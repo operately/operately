@@ -1,0 +1,18 @@
+version: v1.0
+name: Notify CI failure
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2404
+blocks:
+  - name: Notify Discord
+    run:
+      when: "branch = 'main'"
+    task:
+      secrets:
+        - name: discord-bot
+      jobs:
+        - name: Notify
+          commands:
+            - checkout
+            - ruby scripts/deploy.rb ci-failed
