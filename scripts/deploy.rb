@@ -18,8 +18,26 @@ COMMIT_SHA = `git rev-parse HEAD`.strip
 RELEASE_MESSAGE = `git log -1 --pretty=%B #{IMAGE_TAG}`.split("\n").first.strip
 COMMIT_URL = "https://github.com/operately/operately/commit/#{COMMIT_SHA}"
 
-def linked_release
-  "[#{RELEASE_MESSAGE}](#{COMMIT_URL})"
+def bracket(url)
+  "<#{url}>"
+end
+
+def ci_workflow_url
+  workflow_id = ENV['SEMAPHORE_WORKFLOW_ID']
+  return nil if workflow_id.nil? || workflow_id.empty?
+
+  org = ENV.fetch('SEMAPHORE_ORGANIZATION_URL', ORG_URL).chomp('/')
+  "#{org}/workflows/#{workflow_id}"
+end
+
+def pipeline_url(workflow_id, pipeline_id)
+  "#{ORG_URL}/workflows/#{workflow_id}?pipeline_id=#{pipeline_id}"
+end
+
+def with_link(text, url)
+  return text if url.nil? || url.empty?
+
+  "#{text} #{bracket(url)}"
 end
 
 def notify_discord(content)
@@ -52,10 +70,14 @@ def request(method, path, body = nil)
   Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(http_request) }
 end
 
-def abort_on_api_error(response)
-  notify_discord("Production deployment failed: #{linked_release} ❌")
-  warn "Semaphore API #{response.code}: #{response.body}"
+def deployment_failed(detail)
+  notify_discord(with_link("Production deployment failed: #{RELEASE_MESSAGE} ❌", @deploy_url))
+  warn detail
   exit 1
+end
+
+def abort_on_api_error(response)
+  deployment_failed("Semaphore API #{response.code}: #{response.body}")
 end
 
 def wait_for_pipeline(pipeline_id)
@@ -86,7 +108,7 @@ if ARGV.first == 'ci-failed'
     exit 1
   end
 
-  notify_discord("CI failed for: #{linked_release} ❌")
+  notify_discord(with_link("CI failed for: #{RELEASE_MESSAGE} ❌", ci_workflow_url))
   exit 0
 end
 
@@ -110,9 +132,7 @@ abort_on_api_error(project) unless project.code == '200'
 
 project_id = JSON.parse(project.body).dig('metadata', 'id')
 if project_id.nil? || project_id.empty?
-  notify_discord("Production deployment failed: #{linked_release} ❌")
-  warn "Semaphore project #{PROJECT_NAME} has no id"
-  exit 1
+  deployment_failed("Semaphore project #{PROJECT_NAME} has no id")
 end
 
 workflow = request(:post, '/api/v1alpha/plumber-workflows', {
@@ -127,26 +147,24 @@ workflow = request(:post, '/api/v1alpha/plumber-workflows', {
 
 abort_on_api_error(workflow) unless %w[200 201].include?(workflow.code)
 
-pipeline_id = JSON.parse(workflow.body)['pipeline_id']
+body = JSON.parse(workflow.body)
+pipeline_id = body['pipeline_id']
+workflow_id = body['workflow_id']
 if pipeline_id.nil? || pipeline_id.empty?
-  notify_discord("Production deployment failed: #{linked_release} ❌")
-  warn 'Semaphore did not return a pipeline_id'
-  exit 1
+  deployment_failed('Semaphore did not return a pipeline_id')
 end
+
+@deploy_url = pipeline_url(workflow_id, pipeline_id) unless workflow_id.nil? || workflow_id.empty?
 
 puts "Started blastoff workflow, pipeline #{pipeline_id}"
 
 result = wait_for_pipeline(pipeline_id)
 
 if result == 'passed'
-  notify_discord("Deployed new version to production: #{linked_release} 🚀")
+  notify_discord(with_link("Deployed new version to production: #{RELEASE_MESSAGE} 🚀", COMMIT_URL))
   puts 'Production deployment passed'
 elsif result.nil?
-  notify_discord("Production deployment failed: #{linked_release} ❌")
-  warn "Timed out waiting for pipeline #{pipeline_id}"
-  exit 1
+  deployment_failed("Timed out waiting for pipeline #{pipeline_id}")
 else
-  notify_discord("Production deployment failed: #{linked_release} ❌")
-  warn "Production deployment finished with result=#{result}"
-  exit 1
+  deployment_failed("Production deployment finished with result=#{result}")
 end
