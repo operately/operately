@@ -80,12 +80,14 @@ export async function prefetchCompanyLayout(inputs: CompanyLayoutInputs) {
   return company.id;
 }
 
-export function useCompanyLayoutQueries(inputs: CompanyLayoutInputs) {
+export function useCompanyLayoutState(inputs: CompanyLayoutInputs) {
   const options = useMemo(() => companyLayoutOptions(inputs), [inputs]);
   const company = useLoadedQuery(options.company);
   const spaces = useLoadedQuery(options.spaces);
   const siteMessages = useLoadedQuery({ ...options.siteMessages, throwOnError: false });
   const billing = useLoadedQuery({ ...options.billing, throwOnError: false });
+  if (company.isPending || spaces.isPending) return null;
+
   assertPresent(company.data?.company, "Company is unavailable");
 
   return {
@@ -95,6 +97,12 @@ export function useCompanyLayoutQueries(inputs: CompanyLayoutInputs) {
     siteMessages: siteMessages.isError ? [] : (siteMessages.data?.messages ?? []),
     billingAccessState: inputs.billingInput === null || billing.isError ? null : (billing.data?.accessState ?? null),
   };
+}
+
+export function useCompanyLayoutQueries(inputs: CompanyLayoutInputs) {
+  const companyLayout = useCompanyLayoutState(inputs);
+  assertPresent(companyLayout, "Company layout is not ready");
+  return companyLayout;
 }
 
 export function useRefreshCompanyLayout(inputs: CompanyLayoutInputs) {
