@@ -9,6 +9,8 @@ ORG_URL = 'https://operately.semaphoreci.com'
 PROJECT_NAME = 'blastoff'
 PIPELINE_FILE = '.semaphore/prod.yml'
 REF = 'refs/heads/main'
+POLL_INTERVAL = 30
+TIMEOUT = 60 * 60
 
 IMAGE_TAG = `git rev-parse --short HEAD`.strip
 RELEASE_MESSAGE = `git log -1 --pretty=%B #{IMAGE_TAG}`.split("\n").first.strip
@@ -23,9 +25,32 @@ def request(method, path, body = nil)
   Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(http_request) }
 end
 
-def fail(response)
+def abort_on_api_error(response)
   warn "Semaphore API #{response.code}: #{response.body}"
   exit 1
+end
+
+def wait_for_pipeline(pipeline_id)
+  deadline = Time.now + TIMEOUT
+
+  loop do
+    response = request(:get, "/api/v1alpha/pipelines/#{pipeline_id}")
+    abort_on_api_error(response) unless response.code == '200'
+
+    pipeline = JSON.parse(response.body)['pipeline'] || {}
+    state = pipeline['state']
+    result = pipeline['result']
+    puts "Pipeline #{pipeline_id}: state=#{state} result=#{result}"
+
+    return result if state == 'done'
+
+    if Time.now > deadline
+      warn "Timed out waiting for pipeline #{pipeline_id}"
+      exit 1
+    end
+
+    sleep POLL_INTERVAL
+  end
 end
 
 if API_TOKEN.nil? || API_TOKEN.empty?
@@ -39,7 +64,7 @@ if IMAGE_TAG.empty? || RELEASE_MESSAGE.empty?
 end
 
 project = request(:get, "/api/v1alpha/projects/#{PROJECT_NAME}")
-fail(project) unless project.code == '200'
+abort_on_api_error(project) unless project.code == '200'
 
 project_id = JSON.parse(project.body).dig('metadata', 'id')
 if project_id.nil? || project_id.empty?
@@ -57,6 +82,21 @@ workflow = request(:post, '/api/v1alpha/plumber-workflows', {
   }
 })
 
-fail(workflow) unless %w[200 201].include?(workflow.code)
+abort_on_api_error(workflow) unless %w[200 201].include?(workflow.code)
 
-puts workflow.body
+pipeline_id = JSON.parse(workflow.body)['pipeline_id']
+if pipeline_id.nil? || pipeline_id.empty?
+  warn 'Semaphore did not return a pipeline_id'
+  exit 1
+end
+
+puts "Started blastoff workflow, pipeline #{pipeline_id}"
+
+result = wait_for_pipeline(pipeline_id)
+
+if result == 'passed'
+  puts 'Production deployment passed'
+else
+  warn "Production deployment finished with result=#{result}"
+  exit 1
+end
