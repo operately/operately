@@ -4,7 +4,7 @@ require 'net/http'
 require 'uri'
 require 'json'
 
-API_TOKEN = ENV['SEMAPHORE_API_TOKEN']
+API_TOKEN = ENV['BLASTOFF_API_TOKEN']
 DISCORD_WEBHOOK_URL = ENV['DISCORD_WEBHOOK_URL']
 ORG_URL = 'https://operately.semaphoreci.com'
 PROJECT_NAME = 'blastoff'
@@ -113,7 +113,7 @@ if ARGV.first == 'ci-failed'
 end
 
 if API_TOKEN.nil? || API_TOKEN.empty?
-  warn 'SEMAPHORE_API_TOKEN is required'
+  warn 'BLASTOFF_API_TOKEN is required'
   exit 1
 end
 
