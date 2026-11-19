@@ -281,6 +281,11 @@ promotions:
     auto_promote:
       when: "result = 'passed' and branch = 'main'"
 
+  - name: Notify CI failure
+    pipeline_file: notify-ci-failure.yml
+    auto_promote:
+      when: "result = 'failed' and branch = 'main'"
+
   - name: Sync API Docs
     pipeline_file: sync_docs.yaml
     auto_promote:
