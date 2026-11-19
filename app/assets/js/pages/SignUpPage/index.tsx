@@ -1,3 +1,4 @@
+import { authPath, internalReturnPath } from "@/routes/paths";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -16,7 +17,7 @@ export default { name: "SignUpPage", loader: Pages.emptyLoader, Page } as PageMo
 function Page() {
   const { t } = useTranslation();
   const inviteToken = new URLSearchParams(window.location.search).get("invite_token");
-  const redirectTo = new URLSearchParams(window.location.search).get("redirect_to");
+  const redirectTo = internalReturnPath(new URLSearchParams(window.location.search).get("redirect_to"));
 
   return (
     <Pages.Page title={translationText(t("Sign Up"))} testId="sign-up-page">
@@ -58,7 +59,7 @@ function SignInLink() {
     <div className="text-center font-medium mt-8 pt-8 border-t border-stroke-base text-sm">
       <Trans
         i18nKey="Already have an account? <actionLink>Sign in</actionLink>"
-        components={{ actionLink: <Link to="/log_in" /> }}
+        components={{ actionLink: <Link to={authPath("/log_in")} /> }}
       />
     </div>
   );

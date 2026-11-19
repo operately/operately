@@ -1,9 +1,10 @@
+import { MemberOnboarding } from "./MemberOnboarding";
 import { contactUsLink } from "./contactUsLink";
 import * as React from "react";
 
 import { CompanyNavigation } from "turboui";
 
-import { logOut } from "@/routes/auth";
+import { logOutAndRedirect } from "@/routes/auth";
 import { Outlet, useNavigate } from "react-router";
 
 import { KeyboardShortcutsModal, useKeyboardShortcutsModal } from "./KeyboardShortcutsModal";
@@ -28,7 +29,7 @@ export default function CompanyLayout() {
   const outletDiv = React.useRef<HTMLDivElement>(null);
   const keyboardShortcutsModal = useKeyboardShortcutsModal();
   const refresh = useRefreshCompanyLoader();
-  const productRelease = useProductRelease();
+  const { productRelease, canAnnounce } = useProductRelease();
 
   useScrollToTopOnNavigationChange({ outletDiv });
   Billing.useBillingUpdatedSignal(refresh);
@@ -36,7 +37,7 @@ export default function CompanyLayout() {
   return (
     <div className="flex flex-col h-screen">
       <SiteMessageBanner />
-      <ProductReleaseAnnouncementBanner productRelease={productRelease} />
+      <ProductReleaseAnnouncementBanner productRelease={productRelease} canAnnounce={canAnnounce} />
       <Navigation onOpenKeyboardShortcuts={keyboardShortcutsModal.open} productRelease={productRelease} />
       <SupportSessionBanner />
 
@@ -46,6 +47,7 @@ export default function CompanyLayout() {
         <Outlet />
       </div>
 
+      <MemberOnboarding />
       <DevBar />
       <KeyboardShortcutsModal isOpen={keyboardShortcutsModal.isOpen} onClose={keyboardShortcutsModal.close} />
     </div>
@@ -57,7 +59,7 @@ function Navigation({
   productRelease,
 }: {
   onOpenKeyboardShortcuts: () => void;
-  productRelease: ReturnType<typeof useProductRelease>;
+  productRelease: ReturnType<typeof useProductRelease>["productRelease"];
 }) {
   const { company, canAddGoal, canAddProject } = useCompanyLoaderData();
   const me = useMe()!;
@@ -68,14 +70,6 @@ function Navigation({
   useReviewRefreshSignal(refetchReviewCount);
   const search = useGlobalSearchHandler();
   const fullTextSearchPath = companySearchPathBuilder(paths);
-
-  const handleLogOut = async () => {
-    const res = await logOut();
-
-    if (res === "success") {
-      window.location.href = "/";
-    }
-  };
 
   const props: CompanyNavigation.Props = {
     companyName: company.name,
@@ -102,6 +96,7 @@ function Navigation({
       invitePeople: paths.invitePeoplePath(),
       profileEdit: paths.profileEditPath(me.id),
       accountSettings: paths.accountSettingsPath(),
+      accountNotifications: paths.accountNotificationSettingsPath(),
       accountSecurity: paths.accountSecurityPath(),
       accountApiTokens: paths.accountApiTokensPath(),
       accountMcpConnections: paths.accountMcpConnectionsPath(),
@@ -116,7 +111,7 @@ function Navigation({
     discordUrl: window.appConfig.discordUrl,
     contactUsHref: contactUsLink(company.name, company.id),
     onOpenKeyboardShortcuts,
-    onLogOut: handleLogOut,
+    onLogOut: logOutAndRedirect,
     search,
     onNavigate: navigate,
     fullTextSearchPath,

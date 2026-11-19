@@ -5,7 +5,7 @@ defmodule OperatelyEmail.DateFormattingTest do
   alias OperatelyEmail.DateFormatting
 
   test "formats calendar dates in the recipient locale and falls back to English" do
-    for {locale, expected} <- [{"en", "Jan 2, 2026"}, {"pt_BR", "2 de jan. de 2026"}, {"fr", "Jan 2, 2026"}] do
+    for {locale, expected} <- [{"en", "Jan 2, 2026"}, {"pt_BR", "2 de jan. de 2026"}, {"nl", "Jan 2, 2026"}] do
       Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
         assert DateFormatting.format(~D[2026-01-02]) == expected
         assert DateFormatting.format("2026-01-02") == expected

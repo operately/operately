@@ -19,5 +19,6 @@ defmodule OperatelyWeb.Mcp.Tools.Spaces.CreateTest do
 
     assert space.name == "MCP Space"
     assert space.mission == "Own the MCP workflows"
+    assert space.tools.kpis_enabled == true
   end
 end

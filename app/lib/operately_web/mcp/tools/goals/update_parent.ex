@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateParent do
   use OperatelyWeb.Mcp.Tool
 
-  alias OperatelyWeb.Api.Goals.ChangeParent, as: GoalChangeParent
+  alias OperatelyWeb.Api.Goals.UpdateParentGoal
   alias OperatelyWeb.Mcp.Helpers
 
   @impl true
@@ -28,8 +28,8 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateParent do
         ),
       output_schema:
         JsonSchema.object(
-          %{"goal" => JsonSchema.any_object("The updated goal.")},
-          required: ["goal"]
+          %{"success" => JsonSchema.boolean("True when the update succeeds.")},
+          required: ["success"]
         )
     )
   end
@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateParent do
   def call(conn, arguments) do
     with {:ok, goal_id} <- Helpers.decode_id(arguments["goal_id"]),
          {:ok, parent_goal_id} <- Helpers.decode_optional_id(arguments["parent_goal_id"]) do
-      GoalChangeParent.call(conn, %{goal_id: goal_id, parent_goal_id: parent_goal_id})
+      UpdateParentGoal.call(conn, %{goal_id: goal_id, parent_goal_id: parent_goal_id})
     end
   end
 end

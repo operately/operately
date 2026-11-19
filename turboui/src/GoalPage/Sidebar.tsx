@@ -43,8 +43,8 @@ export function Sidebar(props: GoalPage.State) {
       <DueDate {...props} />
       <Champion {...props} />
       <Reviewer {...props} />
-      <Privacy {...props} />
-      <Actions {...props} />
+      {!props.preview && <Privacy {...props} />}
+      {!props.preview && <Actions {...props} />}
     </div>
   );
 }
@@ -74,7 +74,7 @@ function DueDate(props: GoalPage.State) {
   const testId = isReadonly ? "due-date-field-readonly" : "due-date-field";
 
   return (
-    <SidebarSection title={t("Due Date")}>
+    <SidebarSection title={t("Due date")}>
       <DateField
         date={props.dueDate}
         onDateSelect={props.setDueDate}
@@ -345,7 +345,7 @@ function OverdueWarning(props: GoalPage.State) {
 function Privacy(props: GoalPage.State) {
   const { t } = useTranslation();
   return (
-    <SidebarSection title={t("Privacy")}>
+    <SidebarSection title={t("Access")}>
       <PrivacyField
         testId="goal-privacy-field"
         accessLevels={props.accessLevels}

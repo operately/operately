@@ -14,6 +14,7 @@ import { durationHumanized, isOverdue } from "../utils/time";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { showSuccessToast, showErrorToast } from "../Toasts";
 import { variantFeatures } from "./variantFeatures";
+import { ActionConfirmation } from "../SlideIn";
 
 export function Sidebar(props: TaskPage.ContentState) {
   return (
@@ -406,6 +407,18 @@ function Subscription(props: TaskPage.ContentState) {
 function Actions(props: TaskPage.ContentState) {
   const { t } = useTranslation();
   const { showMoveAndArchive } = variantFeatures(props.variant);
+  const [isArchiving, setIsArchiving] = React.useState(false);
+  const [isArchiveConfirmationOpen, setIsArchiveConfirmationOpen] = React.useState(false);
+
+  const changeArchive = async (action: TaskPage.ContentProps["onArchive"]) => {
+    if (!action || isArchiving) return;
+    setIsArchiving(true);
+    try {
+      await action();
+    } finally {
+      setIsArchiving(false);
+    }
+  };
 
   const handleCopyURL = async () => {
     try {
@@ -434,9 +447,19 @@ function Actions(props: TaskPage.ContentState) {
     },
     {
       label: t("Archive"),
-      onClick: props.onArchive,
+      onClick: () => setIsArchiveConfirmationOpen(true),
       icon: IconArchive,
-      show: Boolean(showMoveAndArchive && props.onArchive),
+      show: Boolean(showMoveAndArchive && props.canEdit && props.status?.closed && props.onArchive),
+      disabled: isArchiving,
+      testId: "archive-task",
+    },
+    {
+      label: t("Restore to board"),
+      onClick: () => changeArchive(props.onRestore),
+      icon: IconArchive,
+      show: Boolean(showMoveAndArchive && props.onRestore),
+      disabled: isArchiving,
+      testId: "restore-task",
     },
     {
       label: t("Delete"),
@@ -451,12 +474,13 @@ function Actions(props: TaskPage.ContentState) {
   if (actions.length === 0) return null;
 
   return (
-    <SidebarSection title={t("Actions")}>
+    <SidebarSection title={t("Actions")} testId="task-actions">
       <div className="space-y-1">
         {actions.map((action, index) => (
           <button
             key={index}
             onClick={action.onClick}
+            disabled={action.disabled}
             className={`flex items-center gap-2 text-xs hover:bg-surface-highlight rounded px-2 py-1 -mx-2 w-full text-left ${
               action.danger ? "text-content-error hover:bg-red-50" : ""
             }`}
@@ -467,6 +491,18 @@ function Actions(props: TaskPage.ContentState) {
           </button>
         ))}
       </div>
+
+      <ActionConfirmation
+        isOpen={isArchiveConfirmationOpen}
+        onClose={() => setIsArchiveConfirmationOpen(false)}
+        onConfirm={() => changeArchive(props.onArchive)}
+        title={t("Archive task")}
+        message={t("This task will move to the archive. You can restore it to the board at any time.")}
+        confirmLabel={t("Archive task")}
+        confirmVariant="primary"
+        isConfirming={isArchiving}
+        testId="archive-task-confirmation"
+      />
     </SidebarSection>
   );
 }

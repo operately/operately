@@ -12,8 +12,11 @@ import { DropPlaceholder, projectItemsWithPlaceholder } from "../../utils/Pragma
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 import { createTestId } from "../../TestableElement";
 import { OPEN_TASK_CREATE_EVENT } from "../hooks/useTaskKeyboardNavigation";
+import { columnColorClass, type ColumnColorMode } from "../columnColors";
 
 interface Props {
+  fillHeight?: boolean;
+  colorMode?: ColumnColorMode;
   status: StatusSelector.StatusOption;
   tasks: TaskBoard.Task[];
   draggedItemId: string | null;
@@ -34,10 +37,13 @@ interface Props {
   disableDnD?: boolean;
   onTaskClick?: (taskId: string) => void;
   canCreateTask: boolean;
+  canEdit: boolean;
   selectedTaskId?: string | null;
 }
 
 export function Column({
+  fillHeight = false,
+  colorMode = "soft",
   status,
   tasks,
   draggedItemId,
@@ -58,6 +64,7 @@ export function Column({
   disableDnD,
   onTaskClick,
   canCreateTask,
+  canEdit,
   selectedTaskId,
 }: Props) {
   const columnRef = useRef<HTMLDivElement>(null);
@@ -113,8 +120,13 @@ export function Column({
   return (
     <div
       ref={!disableDnD ? columnRef : null}
-      className="relative flex flex-col gap-3 bg-surface-dimmed min-h-[72vh] flex-shrink-0 p-3 rounded-lg dark:border dark:border-stroke-base"
+      className={classNames(
+        "relative flex flex-col gap-3 flex-shrink-0 p-3 rounded-lg",
+        !fillHeight && "min-h-[72vh]",
+        columnColorClass(status.color, colorMode),
+      )}
       style={{ width: columnWidth }}
+      data-color-mode={colorMode}
       data-test-id={createTestId("kanban-column", status.value)}
     >
       <div
@@ -154,6 +166,7 @@ export function Column({
                 <DropPlaceholder containerId={containerId} index={index} height={placeholderHeight} />
               )}
               <Card
+                draggingDisabled={!canEdit}
                 task={task}
                 containerId={containerId}
                 index={index}

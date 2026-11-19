@@ -22,11 +22,13 @@ it("invalidates template lists and details while preserving unrelated queries", 
 
 const input = {
   title: "Template",
+  slug: "template",
   type: "kpi" as const,
   summary: "",
   category: "",
   contentLanguage: "en",
   definition: "{}",
+  previewData: JSON.stringify({ entries: [{ period_offset: -1, value: 25 }] }),
 };
 
 function setupSave() {
@@ -61,6 +63,31 @@ it("saves drafts without publishing", async () => {
     await result.current.save(input, "draft");
   });
   expect(publish).not.toHaveBeenCalled();
+});
+
+it("updates template fields and example data together with the latest timestamp", async () => {
+  const { result, update, publish, draft } = setupSave();
+  await act(async () => {
+    await result.current.save(input, "draft");
+  });
+  const edited = {
+    ...input,
+    title: "Edited KPI",
+    previewData: JSON.stringify({ entries: [{ period_offset: -1, value: 416 }] }),
+  };
+  await act(async () => {
+    await result.current.save(edited, "draft");
+  });
+  expect(update).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: draft.id,
+      expectedUpdatedAt: draft.updatedAt,
+      ...edited,
+    }),
+    expect.anything(),
+  );
+  expect(publish).not.toHaveBeenCalled();
+  expect(result.current.getIdentity().expectedUpdatedAt).toBe("2026-10-10T12:00:00Z");
 });
 
 it("retries failed publication by updating the saved draft", async () => {

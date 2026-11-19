@@ -56,15 +56,17 @@ defmodule Operately.Operations.GoalCheckInEdit do
   defp update_check_in(multi, check_in, attrs) do
     Multi.update(multi, :check_in, fn changes ->
       if changes.full_edit_allowed do
-        Update.changeset(check_in, %{
-          status: attrs.status,
-          message: attrs.content,
-          state: state(check_in, attrs),
-          scheduled_at: scheduled_at(check_in, attrs),
-          targets: encode_new_target_values(attrs.new_target_values, check_in),
-          checks: attrs.checklist,
-          timeframe: to_timeframe(check_in.goal, attrs[:due_date])
-        })
+        changeset_attrs =
+          %{
+            status: attrs.status,
+            message: attrs.content,
+            state: state(check_in, attrs),
+            scheduled_at: scheduled_at(check_in, attrs)
+          }
+          |> put_progress(attrs, check_in)
+          |> put_timeframe(check_in.goal, attrs)
+
+        Update.changeset(check_in, changeset_attrs)
       else
         Update.changeset(check_in, %{
           message: attrs.content,
@@ -73,6 +75,8 @@ defmodule Operately.Operations.GoalCheckInEdit do
       end
     end)
   end
+
+  defp maybe_update_targets(multi, _targets, nil), do: multi
 
   defp maybe_update_targets(multi, targets, new_target_values) do
     Multi.merge(multi, fn changes ->
@@ -88,10 +92,13 @@ defmodule Operately.Operations.GoalCheckInEdit do
   defp update_targets(targets, new_target_values) do
     Enum.reduce(new_target_values, Multi.new(), fn target_value, multi ->
       target = Enum.find(targets, fn target -> target.id == target_value["id"] end)
-      changeset = Target.changeset(target, %{value: target_value["value"]})
-      id = "target-#{target.id}"
 
-      Multi.update(multi, id, changeset)
+      if target do
+        changeset = Target.changeset(target, %{value: target_value["value"]})
+        Multi.update(multi, "target-#{target.id}", changeset)
+      else
+        multi
+      end
     end)
   end
 
@@ -114,7 +121,6 @@ defmodule Operately.Operations.GoalCheckInEdit do
         changeset = Operately.Goals.Check.changeset(check, %{completed: item.completed, index: item.index})
         Multi.update(multi, "update-check-#{check.id}", changeset)
       else
-        # no-op for new checks
         multi
       end
     end)
@@ -140,7 +146,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
           Goal.changeset(goal, %{})
 
         changes.full_edit_allowed and changes.check_in.state == :published ->
-          Goal.changeset(goal, %{timeframe: to_timeframe(goal, attrs[:due_date]), last_check_in_id: changes.check_in.id, last_update_status: changes.check_in.status})
+          Goal.changeset(goal, %{last_check_in_id: changes.check_in.id, last_update_status: changes.check_in.status} |> put_timeframe(goal, attrs))
 
         true ->
           Goal.changeset(goal, %{})
@@ -162,14 +168,14 @@ defmodule Operately.Operations.GoalCheckInEdit do
               goal_id: goal.id,
               update_id: changes.check_in.id,
               old_timeframe: goal.timeframe,
-              new_timeframe: changes.check_in.timeframe
+              new_timeframe: Update.timeframe(changes.check_in)
             }
           end)
 
         true ->
           Activities.insert_sync(Multi.new(), author.id, :goal_check_in_edit, fn _ ->
-            old_timeframe = check_in.timeframe
-            new_timeframe = changes.check_in.timeframe
+            old_timeframe = Update.timeframe(check_in)
+            new_timeframe = Update.timeframe(changes.check_in)
 
             %{
               company_id: goal.company_id,
@@ -186,6 +192,15 @@ defmodule Operately.Operations.GoalCheckInEdit do
   #
   # Helpers
   #
+
+  defp put_progress(changes, attrs, check_in) do
+    changes = if is_nil(attrs.new_target_values), do: changes, else: Map.put(changes, :targets, encode_new_target_values(attrs.new_target_values, check_in))
+    if is_nil(attrs.checklist), do: changes, else: Map.put(changes, :checks, attrs.checklist)
+  end
+
+  defp put_timeframe(changes, goal, attrs) do
+    if Map.has_key?(attrs, :due_date), do: Map.put(changes, :timeframe, to_timeframe(goal, attrs.due_date)), else: changes
+  end
 
   defp encode_new_target_values(new_target_values, check_in) do
     Enum.map(new_target_values, fn target_value ->

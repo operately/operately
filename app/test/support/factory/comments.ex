@@ -1,9 +1,25 @@
 defmodule Operately.Support.Factory.Comments do
   alias Operately.Support.RichText
 
+  def add_inline_thread(ctx, testid, document_name, opts) do
+    document = Map.fetch!(ctx, document_name)
+    author = Keyword.get(opts, :creator, ctx.creator)
+
+    attrs = %{
+      source_version: document.current_version,
+      from: Keyword.fetch!(opts, :from),
+      to: Keyword.fetch!(opts, :to),
+      quote: Keyword.fetch!(opts, :quote),
+      content: Keyword.get(opts, :content, RichText.rich_text("Review"))
+    }
+
+    {:ok, thread} = Operately.Operations.InlineThreadCreating.run(author, document, attrs)
+    Map.put(ctx, testid, thread)
+  end
+
   def add_comment(ctx, testid, parent_name, opts \\ []) do
     creator = Keyword.get(opts, :creator, ctx.creator)
-    entity_type = find_entity_type(ctx[parent_name])
+    entity_type = Keyword.get_lazy(opts, :entity_type, fn -> find_entity_type(ctx[parent_name]) end)
 
     content = Keyword.get(opts, :content, RichText.rich_text("Content"))
 
@@ -45,7 +61,8 @@ defmodule Operately.Support.Factory.Comments do
   defp find_entity_type(%Operately.ResourceHubs.File{}), do: "resource_hub_file"
   defp find_entity_type(%Operately.ResourceHubs.Link{}), do: "resource_hub_link"
   defp find_entity_type(%Operately.Projects.Milestone{}), do: "project_milestone"
-  defp find_entity_type(%Operately.Tasks.Task{}), do: "project_task"
+  defp find_entity_type(%Operately.Tasks.Task{project_id: project_id}) when not is_nil(project_id), do: "project_task"
+  defp find_entity_type(%Operately.Tasks.Task{space_id: space_id}) when not is_nil(space_id), do: "space_task"
   defp find_entity_type(%Operately.Kpis.KpiEntry{}), do: "kpi_entry"
   defp find_entity_type(%Operately.Updates.Comment{}), do: "comment"
 end

@@ -208,8 +208,8 @@ defmodule OperatelyWeb.Api.GoalChecks do
     end
 
     def find_check(multi, check_id) do
-      Ecto.Multi.run(multi, :check, fn _repo, _ ->
-        case Operately.Repo.get(Operately.Goals.Check, check_id) do
+      Ecto.Multi.run(multi, :check, fn _repo, %{goal: goal} ->
+        case Operately.Repo.get_by(Operately.Goals.Check, id: check_id, goal_id: goal.id) do
           nil -> {:error, {:not_found, gettext("Check not found")}}
           check -> {:ok, check}
         end
@@ -276,6 +276,9 @@ defmodule OperatelyWeb.Api.GoalChecks do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
+
+        {:error, operation, %Ecto.Changeset{errors: [name: error]}, _changes} when operation in [:added_check, :updated_check] ->
+          {:error, :bad_request, Operately.I18n.ValidationErrors.translate(error)}
 
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Unexpected error in goal checks: #{inspect(reason)}")

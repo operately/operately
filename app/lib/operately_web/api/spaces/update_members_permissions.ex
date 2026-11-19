@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Spaces.UpdateMembersPermissions do
   alias Operately.Groups.Group
   alias Operately.Groups.Permissions
   alias Operately.Operations.GroupMembersPermissionsEditing
+  alias Operately.People
 
   inputs do
     field :space_id, :id, null: false
@@ -22,11 +23,19 @@ defmodule OperatelyWeb.Api.Spaces.UpdateMembersPermissions do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id) end)
+    |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id, company_id: ctx.me.company_id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :has_full_access, company_read_only: company_read_only(conn)) end)
+    |> run(:company_members, fn ctx -> validate_company_members(ctx.space, inputs.members) end)
     |> run(:operation, fn ctx -> GroupMembersPermissionsEditing.run(ctx.me, ctx.space, inputs.members) end)
     |> run(:serialized, fn -> {:ok, %{success: true}} end)
     |> respond()
+  end
+
+  defp validate_company_members(space, members) do
+    case People.validate_active_company_members(space.company_id, Enum.map(members, & &1.id)) do
+      :ok -> {:ok, :valid}
+      error -> error
+    end
   end
 
   def respond(result) do
@@ -34,6 +43,7 @@ defmodule OperatelyWeb.Api.Spaces.UpdateMembersPermissions do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :space, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :company_members, _} -> {:error, :bad_request}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end

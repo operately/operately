@@ -11,6 +11,19 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContentsTest do
     |> Factory.add_document(:document, :hub)
   end
 
+  test "space-only listing stays on the default and explicit IDs select another hub", ctx do
+    ctx = ctx |> Factory.add_resource_hub(:other_hub, :space, :creator) |> Factory.add_document(:other_document, :other_hub)
+    for {scope, hub, document} <- [
+      {%{space_id: Paths.space_id(ctx.space)}, ctx.hub, ctx.document},
+      {%{resource_hub_id: Paths.resource_hub_id(ctx.other_hub)}, ctx.other_hub, ctx.other_document}
+    ] do
+      assert {200, response} = external_query(ctx.conn, ctx.api_token, "documents/list_contents", scope)
+      assert response.resource_hub_id == Paths.resource_hub_id(hub.id)
+      assert [node] = response.nodes ++ response.draft_nodes
+      assert node.document.id == Paths.document_id(document)
+    end
+  end
+
   test "lists contents by space_id", ctx do
     assert {200, res} =
              external_query(ctx.conn, ctx.api_token, "documents/list_contents", %{

@@ -41,6 +41,18 @@ defmodule Operately.Tasks.KanbanState do
     |> Map.update(status, [task_short_id], &List.insert_at(&1, column_index, task_short_id))
   end
 
+  def remove(state, task = %Task{}) do
+    Map.new(state, fn {status, ids} ->
+      {status, Enum.reject(ids || [], &(is_binary(&1) and OperatelyWeb.Api.Types.Id.decode(&1) == {:ok, task.id}))}
+    end)
+  end
+
+  def append(state, task = %Task{}) do
+    state = remove(state, task)
+    status = task.task_status.value || task.task_status.id
+    add(state, task, status, length(Map.get(state, status, [])))
+  end
+
   defp normalize_statuses(statuses) do
     statuses
     |> Enum.map(&to_string/1)

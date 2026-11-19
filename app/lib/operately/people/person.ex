@@ -20,6 +20,7 @@ defmodule Operately.People.Person do
 
     field :full_name, :string
     field :title, :string
+    field :title_setup_pending, :boolean, default: false
     field :avatar_url, :string
     field :email, :string
     field :timezone, :string
@@ -54,6 +55,7 @@ defmodule Operately.People.Person do
     |> cast(attrs, [
       :full_name,
       :title,
+      :title_setup_pending,
       :avatar_url,
       :timezone,
       :language,
@@ -73,6 +75,9 @@ defmodule Operately.People.Person do
     |> foreign_key_constraint(:avatar_blob_id, name: :people_avatar_blob_id_fkey)
     |> unique_constraint([:company_id, :account_id], name: :people_company_id_account_id_index, message: "Email has already been taken")
   end
+
+  def active?(%__MODULE__{suspended: false, suspended_at: nil}), do: true
+  def active?(_), do: false
 
   def notification_preferences(%__MODULE__{preferences: %Preferences{notifications: %NotificationPreferences{} = notifications}}), do: notifications
   def notification_preferences(_), do: %NotificationPreferences{}
@@ -116,6 +121,10 @@ defmodule Operately.People.Person do
   #
   def scope_company(query, company_id) do
     from p in query, where: p.company_id == ^company_id
+  end
+
+  def scope_active(query) do
+    from p in query, where: p.suspended == false and is_nil(p.suspended_at)
   end
 
   #

@@ -87,6 +87,15 @@ defmodule OperatelyWeb.Mcp.InputValidatorTest do
     assert {:error, {:invalid_minimum, "index", 0}} == InputValidator.validate(schema, %{"index" => -1})
   end
 
+  test "accepts integers and floats as numbers" do
+    schema = JsonSchema.object(%{"value" => JsonSchema.number("A numeric value.", minimum: 0)})
+
+    assert :ok == InputValidator.validate(schema, %{"value" => 10})
+    assert :ok == InputValidator.validate(schema, %{"value" => 10.5})
+    assert {:error, {:invalid_type, "value", "number"}} == InputValidator.validate(schema, %{"value" => "10"})
+    assert {:error, {:invalid_minimum, "value", 0}} == InputValidator.validate(schema, %{"value" => -1})
+  end
+
   test "accepts nullable values" do
     schema = JsonSchema.object(%{"description" => JsonSchema.nullable(JsonSchema.string("Description."))})
 

@@ -99,7 +99,7 @@ defmodule Operately.Notifications.DigestItemsTest do
   defp assert_translated_item(ctx, activity) do
     {:ok, english} = Gettext.with_locale(OperatelyWeb.Gettext, "en", fn -> DigestItems.buffered_item(ctx.creator, activity) end)
     {:ok, portuguese} = Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn -> DigestItems.buffered_item(ctx.creator, activity) end)
-    fallback = Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn -> DigestItems.buffered_item(ctx.creator, activity) end)
+    fallback = Gettext.with_locale(OperatelyWeb.Gettext, "nl", fn -> DigestItems.buffered_item(ctx.creator, activity) end)
 
     assert fallback == {:ok, english}, activity.action
     assert portuguese.headline != english.headline, activity.action

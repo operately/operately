@@ -53,15 +53,29 @@ function TooltipContent({ title, description }: { title: string; description: st
   );
 }
 
-function Badge({ title, colors, testId }: { title: string; colors: string; testId?: string }) {
-  const className = classNames("text-xs font-semibold rounded-full px-2.5 py-1.5", "uppercase cursor-default", colors);
+type BadgeProps = React.ComponentPropsWithoutRef<"div"> & {
+  title: string;
+  colors: string;
+  testId?: string;
+};
+
+const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(function Badge(
+  { title, colors, testId, className, ...props },
+  ref,
+) {
+  const badgeClassName = classNames(
+    "text-xs font-semibold rounded-full px-2.5 py-1.5",
+    "uppercase cursor-default",
+    colors,
+    className,
+  );
 
   return (
-    <div className={className} data-test-id={testId}>
+    <div {...props} ref={ref} tabIndex={props.tabIndex ?? 0} className={badgeClassName} data-test-id={testId}>
       {title}
     </div>
   );
-}
+});
 
 //
 // Permission data

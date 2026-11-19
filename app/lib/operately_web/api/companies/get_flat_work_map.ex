@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMap do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.WorkMaps.GetWorkMapQuery
+  alias Operately.Tasks.Task
 
   inputs do
     field? :space_id, :id, null: true
@@ -39,9 +40,18 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMap do
         only_completed: inputs[:only_completed] || false,
         include_assignees: inputs[:include_assignees] || false,
         include_reviewer: inputs[:include_reviewer] || false,
-        include_tasks: inputs[:include_tasks] || false
+        include_tasks: inputs[:include_tasks] || false,
+        include_task_statuses: inputs[:include_tasks] || false
       }, :flat)
 
-    {:ok, %{work_map: Serializer.serialize(flat_work_map)}}
+    work_map = Enum.map(flat_work_map, &load_task_permissions(&1, company_read_only(conn)))
+
+    {:ok, %{work_map: Serializer.serialize(work_map)}}
   end
+
+  defp load_task_permissions(%{type: :task, resource: task} = item, read_only) do
+    %{item | resource: Task.set_permissions(task, read_only)}
+  end
+
+  defp load_task_permissions(item, _read_only), do: item
 end

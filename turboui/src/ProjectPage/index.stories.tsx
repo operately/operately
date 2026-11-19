@@ -404,6 +404,11 @@ export const Default: Story = {
         onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
         getTaskPageProps={taskActions.getTaskPageProps}
         onMilestoneUpdate={handleMilestoneUpdate}
+        onMilestoneComplete={async (id) => {
+          setMilestones((current) =>
+            current.map((milestone) => (milestone.id === id ? { ...milestone, status: "done" } : milestone)),
+          );
+        }}
         onMilestoneReorder={reorderMilestones}
         richTextHandlers={createMockRichTextHandlers()}
         formattedTimePreferences={defaultFormattedTimePreferences}

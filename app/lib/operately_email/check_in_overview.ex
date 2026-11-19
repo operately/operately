@@ -58,7 +58,7 @@ defmodule OperatelyEmail.CheckInOverview do
   end
 
   defp deadline_message(:day, count, false) do
-    ngettext("1 day until the deadline.", "%{count} days until the deadline.", count)
+    ngettext("1 day until the due date.", "%{count} days until the due date.", count)
   end
 
   defp deadline_message(:week, count, true) do
@@ -66,7 +66,7 @@ defmodule OperatelyEmail.CheckInOverview do
   end
 
   defp deadline_message(:week, count, false) do
-    ngettext("1 week until the deadline.", "%{count} weeks until the deadline.", count)
+    ngettext("1 week until the due date.", "%{count} weeks until the due date.", count)
   end
 
   defp deadline_message(:month, count, true) do
@@ -74,7 +74,7 @@ defmodule OperatelyEmail.CheckInOverview do
   end
 
   defp deadline_message(:month, count, false) do
-    ngettext("1 month until the deadline.", "%{count} months until the deadline.", count)
+    ngettext("1 month until the due date.", "%{count} months until the due date.", count)
   end
 
   # Only catalog-owned emphasis is interpreted; names are rendered as text above.

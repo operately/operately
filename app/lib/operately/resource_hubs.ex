@@ -5,7 +5,12 @@ defmodule Operately.ResourceHubs do
   alias Operately.Goals.Goal
   alias Operately.Groups.Group
   alias Operately.Projects.Project
-  alias Operately.ResourceHubs.{ResourceHub, Folder, Node, Document, DocumentVersion, File, Link}
+  alias Operately.ResourceHubs.{ResourceHub, Folder, Node, Document, DocumentVersion, File, Link, Summary}
+
+  def list_summaries(me, %Group{} = space) do
+    ResourceHub.list(me, space_id: space.id, opts: [order_by: [asc: :position, asc: :inserted_at, asc: :id]])
+    |> Enum.map(&Summary.build(&1, space.default_resource_hub_id))
+  end
 
   def list_resource_hubs(%Group{} = space) do
     from(r in ResourceHub, where: r.space_id == ^space.id)
@@ -27,6 +32,17 @@ defmodule Operately.ResourceHubs do
   #
   # Folders
   #
+
+  def validate_parent_folder(_person, _hub_id, nil), do: {:ok, nil}
+
+  def validate_parent_folder(person, hub_id, folder_id) do
+    with {:ok, folder} <- Folder.get(person, id: folder_id, opts: [preload: :node]),
+         true <- folder.node.resource_hub_id == hub_id do
+      {:ok, folder}
+    else
+      _ -> {:error, :not_found}
+    end
+  end
 
   def list_folders(resource_hub = %ResourceHub{}) do
     from(f in Folder,

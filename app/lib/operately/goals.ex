@@ -152,6 +152,24 @@ defmodule Operately.Goals do
     end)
   end
 
+  @doc """
+  Allows removing the parent, but rejects a goal itself or any descendant as its parent to prevent cycles.
+  """
+  def validate_parent_goal(_goal, nil), do: {:ok, nil}
+
+  def validate_parent_goal(goal, parent_goal) do
+    root = from(g in Goal, where: g.id == ^parent_goal.id, select: %{id: g.id, parent_goal_id: g.parent_goal_id})
+    ancestors = from(g in Goal, join: a in "ancestors", on: g.id == a.parent_goal_id, select: %{id: g.id, parent_goal_id: g.parent_goal_id})
+
+    cycle? =
+      from(a in "ancestors", where: a.id == type(^goal.id, :binary_id))
+      |> recursive_ctes(true)
+      |> with_cte("ancestors", as: ^union(root, ^ancestors))
+      |> Repo.exists?()
+
+    if cycle?, do: {:error, :bad_request}, else: {:ok, parent_goal}
+  end
+
   defp goal_contribs_initial_query(goal_id, nil) do
     from(g in Goal, where: g.id == ^goal_id)
   end

@@ -14,7 +14,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentEditedEmailTest do
     for {content, english, portuguese} <- [
           {mention, "mentioned you in the document", "mencionou você no documento"},
           {plain, "updated the document", "atualizou o documento"}
-        ], {locale, expected} <- [{"en", english}, {"pt_BR", portuguese}, {"fr", english}] do
+        ], {locale, expected} <- [{"en", english}, {"pt_BR", portuguese}, {"nl", english}] do
       Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
         assert ResourceHubDocumentEditedEmail.subject_text(author, parent, person, document, content) ==
           ~s|(Space <literal>) Ana S. #{expected} "Document <literal>"|

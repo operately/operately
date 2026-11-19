@@ -27,6 +27,8 @@ defmodule Operately.Operations.ResourceHubDocumentVersionRestoring do
       end
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.DocumentUpdated.broadcast_result(document.id)
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(document.resource_hub.project_id)
     |> case do
       {:ok, changes} ->
         {:ok, %{document: changes.document, restored_version: changes.restored_version}}
@@ -51,6 +53,7 @@ defmodule Operately.Operations.ResourceHubDocumentVersionRestoring do
       content: source.content,
       current_version: next_version
     }))
+    |> Operately.Operations.InlineThreads.ReconcileAnchors.add(locked)
     |> Multi.insert(:restored_version, fn changes ->
       DocumentVersion.changeset(%{
         document_id: changes.document.id,

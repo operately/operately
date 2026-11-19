@@ -50,8 +50,9 @@ defmodule Operately.I18n.TranslationCheckTest do
     source = ~s|msgid "1 task"\nmsgid_plural "%{count} tasks"\nmsgstr[0] ""\nmsgstr[1] ""\n|
     translation = ~s|msgid "1 task"\nmsgid_plural "%{count} tasks"\nmsgstr[0] "задача"\nmsgstr[1] "задачи"\n|
 
-    assert [error] = TranslationCheck.validate(Po.parse(source), translation, "ru")
-    assert error =~ "msgstr[2]"
+    assert [many_error, other_error] = TranslationCheck.validate(Po.parse(source), translation, "ru")
+    assert many_error =~ "msgstr[2]"
+    assert other_error =~ "msgstr[3]"
   end
 
   test "technical exceptions are exact and cannot hide ordinary copy" do

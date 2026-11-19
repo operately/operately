@@ -23,6 +23,8 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
 
   test "stores the document title on the document, not the node", ctx do
     document = create_document(ctx, true, [])
+    topic = "api:document_updated:#{document.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
 
     {:ok, document} = Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, document, @attrs)
 
@@ -30,16 +32,20 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
 
     assert document.name == "new name"
     assert document.node.name == nil
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
   end
 
   test "editing a draft does not create an activity", ctx do
     document = create_document(ctx, true, [], post_as_draft: true)
+    topic = "api:document_updated:#{document.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
 
     {:ok, updated} =
       Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, document, @attrs)
 
     assert updated.name == "new name"
     assert updated.state == :draft
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
 
     refute Repo.exists?(
              from(a in Operately.Activities.Activity,

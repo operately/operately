@@ -29,7 +29,7 @@ export function PageHeader(props: ProjectPageLayout.Props) {
       <IconProject size={38} className="rounded-lg bg-blue-50 dark:bg-blue-900" />
 
       <div className="min-w-0">
-        <Breadcrumbs navigation={navigation} />
+        {!props.preview && <Breadcrumbs navigation={navigation} />}
 
         <div className="flex flex-wrap items-center gap-2">
           <TextField
@@ -41,7 +41,7 @@ export function PageHeader(props: ProjectPageLayout.Props) {
             testId="project-name-field"
           />
 
-          {props.mode !== "template" && isInviteOnly && (
+          {props.mode !== "template" && !props.preview && isInviteOnly && (
             <PrivacyIndicator
               privacyLevel="secret"
               resourceType="project"

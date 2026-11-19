@@ -26,9 +26,18 @@ it("allows switching back to the implicit overview tab", () => {
 });
 
 it.each([
+  ["/projects/project-1?tab=tasks", "/projects/project-1?tab=tasks&taskId=task-1"],
+  ["/projects/project-1?tab=tasks&taskId=task-1", "/projects/project-1?tab=tasks"],
+  ["/projects/project-1?tab=tasks&taskId=task-1", "/projects/project-1?tab=tasks&taskId=task-2"],
+])("does not rerun the loader for task panel navigation from %s to %s", (from, to) => {
+  expect(shouldRevalidate(navigation(from, to))).toBe(false);
+});
+
+it.each([
   ["/projects/project-1", "/projects/project-2?tab=discussions"],
   ["/projects/project-1?tab=tasks&filter=open", "/projects/project-1?tab=discussions&filter=all"],
   ["/projects/project-1?tab=discussions", "/projects/project-1?tab=discussions"],
+  ["/projects/project-1?tab=tasks&taskId=task-1&filter=open", "/projects/project-1?tab=tasks&filter=all"],
 ])("preserves loader revalidation from %s to %s", (from, to) => {
   expect(shouldRevalidate(navigation(from, to))).toBe(true);
 });

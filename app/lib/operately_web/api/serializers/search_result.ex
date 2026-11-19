@@ -32,6 +32,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Search.Result do
       goal_id: encode_optional_id(target[:goal_id]),
       milestone_id: encode_optional_id(target[:milestone_id]),
       task_id: encode_optional_id(target[:task_id]),
+      board_id: encode_optional_id(target[:board_id]),
       person_id: encode_optional_id(target[:person_id]),
       discussion_id: encode_optional_id(target[:discussion_id]),
       project_check_in_id: encode_optional_id(target[:project_check_in_id]),

@@ -38,7 +38,7 @@ beforeEach(() => {
   Api.default.setBasePath("/api/v2");
   Api.default.setHeaders({ "x-company-id": "company1" });
   jest.mocked(axios.get).mockImplementation(async (url) => ({
-    data: url.endsWith("/get_flat_work_map") ? { workMap: [] } : { person, me: person },
+    data: url.endsWith("/get_flat_work_map") ? { workMap: [] } : { person, me: person, taskIds: [] },
   }));
 });
 afterEach(() => queryClient.clear());
@@ -61,7 +61,7 @@ it("reuses prefetched data on mount and route re-entry", async () => {
   unmount();
   await visit();
   renderHook(useLoadedData, { initialProps: undefined, wrapper });
-  expect(axios.get).toHaveBeenCalledTimes(3);
+  expect(axios.get).toHaveBeenCalledTimes(4);
 });
 
 it("updates mounted data on invalidation and retains it after a background failure", async () => {
@@ -83,7 +83,7 @@ it("uses the current-user query only for a matching self-profile 404", async () 
   await visit();
   const { result } = renderHook(useLoadedData, { initialProps: undefined, wrapper });
   expect(result.current.person.id).toBe("person1");
-  expect(axios.get).toHaveBeenCalledTimes(4);
+  expect(axios.get).toHaveBeenCalledTimes(5);
   jest.mocked(axios.get).mockResolvedValue({ data: { me: { ...person, fullName: "Updated self" } } });
   await act(() => queryClient.invalidateQueries({ queryKey: Api.people.getMeQueryKeyPrefix() }));
   await waitFor(() => expect(result.current.person.fullName).toBe("Updated self"));

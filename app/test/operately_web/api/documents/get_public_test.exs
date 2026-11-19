@@ -9,6 +9,17 @@ defmodule OperatelyWeb.Api.Documents.GetPublicTest do
     |> Factory.add_document(:document, :hub, state: :published)
   end
 
+  test "inline review threads are never included in public responses", ctx do
+    content = Operately.Support.RichText.rich_text("Hello world")
+    document = ctx.document |> Ecto.Changeset.change(public_token: "shared", content: content) |> Repo.update!()
+    attrs = %{resource_id: document.id, source_version: document.current_version, from: 1, to: 6, quote: "Hello", content: Operately.Support.RichText.rich_text("Private review")}
+    assert {:ok, _} = Operately.Operations.InlineThreadCreating.run(ctx.creator, document, attrs)
+
+    assert {200, %{document: public}} = query(ctx.conn, [:documents, :get_public], %{token: "shared"})
+    assert Enum.sort(Map.keys(public)) == Enum.sort([:__typename, :name, :content, :published_at, :updated_at])
+    assert Jason.decode!(public.content) == content
+  end
+
   test "anonymous readers only receive public document fields", ctx do
     ctx.document |> Ecto.Changeset.change(public_token: "shared") |> Repo.update!()
 

@@ -14,6 +14,9 @@ defmodule Operately.Activities.Content.TaskAssigneeUpdating do
     field :new_assignee_ids, {:array, :binary_id}
     field :added_assignee_ids, {:array, :binary_id}
     field :removed_assignee_ids, {:array, :binary_id}
+
+    field :added_assignees, :any, virtual: true, default: []
+    field :removed_assignees, :any, virtual: true, default: []
   end
 
   def changeset(attrs) do

@@ -1,7 +1,7 @@
 defmodule Operately.Operations.CompanyMemberRemoving do
   alias Ecto.Multi
   alias Operately.Repo
-  alias Operately.People
+  alias Operately.People.Person
   alias Operately.Search.IndexUpdates
 
   @doc """
@@ -14,17 +14,27 @@ defmodule Operately.Operations.CompanyMemberRemoving do
 
   ## Parameters
     - admin: The admin performing the removal
-    - person_id: ID of the person to remove
+    - person: The person to remove, must belong to the admin's company
   """
-  def run(admin, person_id) do
-    person = People.get_person!(person_id) |> Repo.preload(:account)
+  def run(admin, person = %Person{}) do
+    with :ok <- validate_company(admin, person) do
+      person = Repo.preload(person, :account)
 
-    Multi.new()
-    |> IndexUpdates.delete(:search_person, "person", person.id)
-    |> suspend_or_delete_person(person)
-    |> insert_activity(admin)
-    |> Repo.transaction()
-    |> Repo.extract_result(:person)
+      Multi.new()
+      |> IndexUpdates.delete(:search_person, "person", person.id)
+      |> suspend_or_delete_person(person)
+      |> insert_activity(admin)
+      |> Repo.transaction()
+      |> Repo.extract_result(:person)
+    end
+  end
+
+  defp validate_company(admin, person) do
+    if person.company_id == admin.company_id do
+      :ok
+    else
+      {:error, :invalid_company}
+    end
   end
 
   defp suspend_or_delete_person(multi, person) do
@@ -35,10 +45,12 @@ defmodule Operately.Operations.CompanyMemberRemoving do
 
       # For existing members, mark them as suspended
       false ->
-        changeset = People.Person.changeset(person, %{
-          suspended: true,
-          suspended_at: DateTime.utc_now()
-        })
+        changeset =
+          Person.changeset(person, %{
+            suspended: true,
+            suspended_at: DateTime.utc_now()
+          })
+
         Multi.update(multi, :person, changeset)
     end
   end

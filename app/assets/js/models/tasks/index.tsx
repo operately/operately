@@ -16,12 +16,15 @@ export { useKanbanState } from "./useKanbanState";
 export { parseKanbanState, type KanbanState } from "./parseKanbanState";
 export { useTaskTimelineItems } from "./useTaskTimelineItems";
 export { useTaskSlideInProps } from "./useTaskSlideInProps";
+export { resolveTaskMoveDestination, taskMoveDestinationPath, type TaskMoveDestination } from "./taskMoveNavigation";
 export { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 export {
   invalidateTaskLifecycleQueries,
   useCreateTask,
   useDeleteTask,
   useMoveTask,
+  useTaskMoveBoards,
+  taskMoveErrorResult,
   useUpdateTaskAssignee,
   useUpdateTaskDescription,
   useUpdateTaskDueDate,
@@ -57,12 +60,18 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask, opts: Parse
     title: task.name,
     status: parseTaskStatusForTurboUi(task.status),
     description: task.description || null,
-    link: opts.type === "project" ? paths.taskPath(task.id) : paths.spaceKanbanPath(opts.space.id, { taskId: task.id }),
+    link:
+      opts.type === "project"
+        ? paths.taskPath(task.id)
+        : task.boardId
+          ? paths.spaceKanbanPath(opts.space.id, task.boardId, { taskId: task.id })
+          : paths.spacePath(opts.space.id),
     assignees: parsePeopleForTurboUi(paths, task.assignees || []),
     milestone: task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null,
     dueDate: parseContextualDate(task.dueDate),
     reminders: parseTaskReminders(task.reminders),
     closedAt: Time.parse(task.closedAt),
+    archivedAt: Time.parse(task.archivedAt),
     hasDescription: richContentToString(description).trim().length > 0,
     hasComments,
     commentCount,

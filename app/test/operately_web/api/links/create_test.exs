@@ -13,6 +13,75 @@ defmodule OperatelyWeb.Api.Links.CreateTest do
     ctx |> Factory.setup()
   end
 
+  test "publishes a project update for project links only", ctx do
+    ctx = ctx |> Factory.add_space(:space) |> Factory.add_project(:project, :space)
+      |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
+      |> Factory.fetch_default_resource_hub(:space_hub, :space) |> Factory.log_in_person(:creator)
+
+    topic = "api:project_updated:#{ctx.project.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
+
+    inputs = %{resource_hub_id: Paths.resource_hub_id(ctx.project_hub), name: "Reference", url: "https://example.com", type: "other"}
+
+    assert {200, _} = mutation(ctx.conn, [:links, :create], inputs)
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event"}
+    assert {200, _} = mutation(ctx.conn, [:links, :create], %{inputs | resource_hub_id: Paths.resource_hub_id(ctx.space_hub)})
+    refute_receive %Phoenix.Socket.Broadcast{topic: ^topic}
+    assert {400, _} = mutation(ctx.conn, [:links, :create], Map.delete(inputs, :name))
+    refute_receive %Phoenix.Socket.Broadcast{topic: ^topic}
+  end
+
+  describe "destination folder authorization" do
+    setup ctx do
+      ctx
+      |> Factory.add_company_member(:actor)
+      |> Factory.add_space(:source_space, company_permissions: Binding.edit_access())
+      |> Factory.fetch_default_resource_hub(:hub, :source_space)
+      |> Factory.add_folder(:folder, :hub)
+      |> Factory.add_blob(:blob, :actor)
+      |> Factory.log_in_person(:actor)
+    end
+
+    for destination <- [:foreign, :inaccessible, :accessible_other_hub, :missing] do
+      @destination destination
+
+      test "rejects #{@destination} destination before writes", ctx do
+        destination_id =
+          case @destination do
+            :foreign ->
+              foreign = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.fetch_default_resource_hub(:hub, :space) |> Factory.add_folder(:folder, :hub)
+              foreign.folder.id
+
+            :missing ->
+              Ecto.UUID.generate()
+
+            scope ->
+              access = if scope == :inaccessible, do: Binding.no_access(), else: Binding.edit_access()
+
+              other =
+                ctx |> Factory.add_space(:other_space, company_permissions: access) |> Factory.fetch_default_resource_hub(:other_hub, :other_space) |> Factory.add_folder(:other_folder, :other_hub)
+
+              other.other_folder.id
+          end
+
+        nodes = Repo.all(Operately.ResourceHubs.Node)
+        activities = Repo.aggregate(Operately.Activities.Activity, :count)
+        subscriptions = Repo.aggregate(Operately.Notifications.SubscriptionList, :count)
+
+        ctx = Factory.add_api_token(ctx, :destination_token, :actor, read_only: false)
+        assert {404, _} = mutation(ctx.conn, [:links, :create], %{resource_hub_id: ctx.hub.id, folder_id: destination_id, name: "Link", url: "https://example.com", type: "other"})
+
+        assert {404, _} =
+                 external_mutation(ctx.conn, ctx.destination_token, "links/create", %{resource_hub_id: ctx.hub.id, folder_id: destination_id, name: "Link", url: "https://example.com", type: "other"})
+
+        assert Repo.all(Operately.ResourceHubs.Node) == nodes
+        assert Repo.aggregate(Operately.Activities.Activity, :count) == activities
+        assert Repo.aggregate(Operately.Notifications.SubscriptionList, :count) == subscriptions
+        assert Repo.reload(ctx.blob).status == :pending
+      end
+    end
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:links, :create], %{})

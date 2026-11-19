@@ -2,7 +2,15 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { Avatar } from "../Avatar";
-import { IconCode, IconDoorExit, IconLockPassword, IconRobotFace, IconSettings, IconUserCircle } from "../icons";
+import {
+  IconBell,
+  IconCode,
+  IconDoorExit,
+  IconLockPassword,
+  IconRobotFace,
+  IconSettings,
+  IconUserCircle,
+} from "../icons";
 import { Menu, MenuActionItem, MenuLinkItem } from "../Menu";
 import { CompanyNavigationLinks, CompanyNavigationPerson } from "./types";
 
@@ -20,12 +28,14 @@ export function User({
   return (
     <Menu
       customTrigger={
-        <div
-          className="flex items-center cursor-pointer border border-stroke-base rounded-full"
+        <button
+          type="button"
+          aria-label={t("Account")}
+          className="flex items-center cursor-pointer border border-stroke-base rounded-full p-0 bg-transparent"
           style={{ height: "32px", width: "32px" }}
         >
           <Avatar person={me} size={30} />
-        </div>
+        </button>
       }
       testId="account-menu"
       showArrow
@@ -41,6 +51,9 @@ export function User({
       </MenuLinkItem>
       <MenuLinkItem icon={IconSettings} to={links.accountSettings} testId="settings-link">
         {t("Settings")}
+      </MenuLinkItem>
+      <MenuLinkItem icon={IconBell} to={links.accountNotifications} testId="notifications-link">
+        {t("Notifications")}
       </MenuLinkItem>
       <MenuLinkItem icon={IconLockPassword} to={links.accountSecurity} testId="password-link">
         {t("Password & Security")}

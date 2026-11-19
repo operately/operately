@@ -12,6 +12,11 @@ directory where Operately is running. By default this location is `~/operately`.
 docker compose down
 ```
 
+Stop the server before running `./operately update` as well. Older installed
+helpers run migrations while the old app is still running. Keep application
+writers and background workers stopped until migrations succeed, then start
+only the new release.
+
 ### Update the version
 
 Prefer `./operately update` so the helper script, image tag, and

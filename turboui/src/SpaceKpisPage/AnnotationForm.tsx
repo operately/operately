@@ -108,7 +108,7 @@ export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onE
           <DateInput field="date" label={t("Date")} required />
           <TextInput
             field="title"
-            label={t("Title")}
+            label={t("Title", { context: "resource" })}
             placeholder={t("e.g. Launched enterprise plan")}
             required
             autoFocus

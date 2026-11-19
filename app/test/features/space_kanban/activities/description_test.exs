@@ -48,6 +48,6 @@ defmodule Operately.Features.SpaceKanban.Activities.DescriptionTest do
       long_title: "updated the description of #{ctx.task.name} in #{ctx.space.name}"
     )
     |> Steps.click_task_link_in_space_feed(task_name: ctx.task.name)
-    |> Steps.assert_space_kanban_page_open()
+    |> Steps.assert_task_open_from_activity(:task)
   end
 end

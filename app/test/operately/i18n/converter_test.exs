@@ -18,6 +18,47 @@ defmodule Operately.I18n.ConverterTest do
              ["0 tasks", "0.5 tasks", "1 task", "1.5 tasks", "2 tasks", "1000000 tasks"]
   end
 
+  test "Spanish uses plural for zero, fractions, and millions" do
+    po = """
+    msgctxt "inbox"
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] "%{count} tarea"
+    msgstr[1] "%{count} tareas"
+    """
+
+    counts = [0, 0.5, 1, 1.5, 2, 2.5, 1_000_000]
+    assert render_task_counts(po, "es", counts) == ["0 tareas", "0.5 tareas", "1 tarea", "1.5 tareas", "2 tareas", "2.5 tareas", "1000000 tareas"]
+    assert render_task_counts(@untranslated_tasks, "es", counts) == ["0 tasks", "0.5 tasks", "1 task", "1.5 tasks", "2 tasks", "2.5 tasks", "1000000 tasks"]
+  end
+
+  test "French maps zero and fractions below two to singular and millions to plural" do
+    po = """
+    msgctxt "inbox"
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] "%{count} tâche"
+    msgstr[1] "%{count} tâches"
+    """
+
+    counts = [0, 0.5, 1, 1.5, 2, 2.5, 1_000_000]
+    assert render_task_counts(po, "fr", counts) == ["0 tâche", "0.5 tâche", "1 tâche", "1.5 tâche", "2 tâches", "2.5 tâches", "1000000 tâches"]
+    assert render_task_counts(@untranslated_tasks, "fr", counts) == ["0 tasks", "0.5 tasks", "1 task", "1.5 tasks", "2 tasks", "2.5 tasks", "1000000 tasks"]
+  end
+
+  test "German uses singular only for one and plural for zero, fractions, and millions" do
+    po = """
+    msgctxt "inbox"
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] "1 Aufgabe"
+    msgstr[1] "%{count} Aufgaben"
+    """
+
+    assert render_task_counts(po, "de", [0, 0.5, 1, 1.5, 2, 1_000_000]) ==
+             ["0 Aufgaben", "0.5 Aufgaben", "1 Aufgabe", "1.5 Aufgaben", "2 Aufgaben", "1000000 Aufgaben"]
+  end
+
   test "missing Portuguese singular translations fall back while translated plurals remain available" do
     po = """
     msgctxt "inbox"
@@ -152,13 +193,14 @@ defmodule Operately.I18n.ConverterTest do
     msgstr[0] "%{count} яблоко"
     msgstr[1] "%{count} яблока"
     msgstr[2] "%{count} яблок"
+    msgstr[3] "%{count} яблока"
     """
 
     assert Converter.from_po(po, "ru") == %{
              "1 apple_one" => "{{count}} яблоко",
              "1 apple_few" => "{{count}} яблока",
              "1 apple_many" => "{{count}} яблок",
-             "1 apple_other" => "{{count}} яблок"
+             "1 apple_other" => "{{count}} яблока"
            }
   end
 
@@ -169,6 +211,7 @@ defmodule Operately.I18n.ConverterTest do
     msgstr[0] "%{count} яблоко"
     msgstr[1] "%{count} яблока"
     msgstr[2] "%{count} яблок"
+    msgstr[3] "%{count} яблока"
     """
 
     translations = Converter.from_po(po, "ru")
@@ -179,12 +222,12 @@ defmodule Operately.I18n.ConverterTest do
       ru: {translation: JSON.parse(process.argv[1])},
       en: {translation: {'1 apple_other': '{{count}} apples'}}
     }});
-    process.stdout.write(JSON.stringify([1, 2, 5, 1.5].map(count => i18next.t('1 apple', {count}))));
+    process.stdout.write(JSON.stringify([0, 1, 2, 5, 11, 21, 22, 25, 101, 111, 1.5].map(count => i18next.t('1 apple', {count}))));
     """
 
     {output, 0} = System.cmd("node", ["-e", script, Jason.encode!(translations)], cd: Path.expand("../../..", __DIR__))
 
-    assert Jason.decode!(output) == ["1 яблоко", "2 яблока", "5 яблок", "1.5 яблок"]
+    assert Jason.decode!(output) == ["0 яблок", "1 яблоко", "2 яблока", "5 яблок", "11 яблок", "21 яблоко", "22 яблока", "25 яблок", "101 яблоко", "111 яблок", "1.5 яблока"]
   end
 
   defp render_task_counts(po, locale, counts) do

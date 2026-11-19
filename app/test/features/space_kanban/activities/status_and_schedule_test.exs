@@ -10,8 +10,8 @@ defmodule Operately.Features.SpaceKanban.Activities.StatusAndScheduleTest do
   feature "changing a task status creates an activity", ctx do
     [old_status_value, new_status_value | _] = ctx.status_values
 
-    old_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == old_status_value)).label
-    new_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == new_status_value)).label
+    old_status_label = Enum.find(ctx.default_board.task_statuses, &(&1.value == old_status_value)).label
+    new_status_label = Enum.find(ctx.default_board.task_statuses, &(&1.value == new_status_value)).label
 
     ctx
     |> Steps.visit_kanban_page()
@@ -28,8 +28,8 @@ defmodule Operately.Features.SpaceKanban.Activities.StatusAndScheduleTest do
   feature "task-status-updating activity works after task is deleted", ctx do
     [old_status_value, new_status_value | _] = ctx.status_values
 
-    old_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == old_status_value)).label
-    new_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == new_status_value)).label
+    old_status_label = Enum.find(ctx.default_board.task_statuses, &(&1.value == old_status_value)).label
+    new_status_label = Enum.find(ctx.default_board.task_statuses, &(&1.value == new_status_value)).label
     task_display = "the \"#{ctx.task.name}\" task"
 
     ctx
@@ -50,8 +50,8 @@ defmodule Operately.Features.SpaceKanban.Activities.StatusAndScheduleTest do
   feature "task-status-updating activity task link redirects to space kanban page", ctx do
     [old_status_value, new_status_value | _] = ctx.status_values
 
-    old_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == old_status_value)).label
-    new_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == new_status_value)).label
+    old_status_label = Enum.find(ctx.default_board.task_statuses, &(&1.value == old_status_value)).label
+    new_status_label = Enum.find(ctx.default_board.task_statuses, &(&1.value == new_status_value)).label
 
     ctx
     |> Steps.visit_kanban_page()
@@ -64,7 +64,7 @@ defmodule Operately.Features.SpaceKanban.Activities.StatusAndScheduleTest do
       long_title: "marked #{ctx.task.name} as #{new_status_label} in #{ctx.space.name}"
     )
     |> Steps.click_task_link_in_space_feed(task_name: ctx.task.name)
-    |> Steps.assert_space_kanban_page_open()
+    |> Steps.assert_task_open_from_activity(:task)
   end
 
   feature "changing a task due date creates an activity", ctx do

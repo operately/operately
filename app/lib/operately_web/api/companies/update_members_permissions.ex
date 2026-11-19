@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Companies.UpdateMembersPermissions do
   alias Operately.Companies.Permissions
   alias Operately.Operations.CompanyMembersPermissionsEditing
   alias Operately.Access.Binding
+  alias Operately.People
 
   inputs do
     field :members, list_of(:edit_company_member_permissions_input), null: false
@@ -27,10 +28,12 @@ defmodule OperatelyWeb.Api.Companies.UpdateMembersPermissions do
 
     members = parse_members(inputs.members)
     :ok = validate_access_levels(company, members)
+    :ok = validate_company_members(company, members)
 
     {:ok, _} = CompanyMembersPermissionsEditing.run(me, members)
     {:ok, %{success: true}}
   catch
+    {:error, :invalid_company_member} -> {:error, :bad_request}
     {:error, :forbidden} -> {:error, :forbidden}
     {:error, :not_found} -> {:error, :not_found}
     {:error, _} -> {:error, :internal_server_error}
@@ -55,6 +58,13 @@ defmodule OperatelyWeb.Api.Companies.UpdateMembersPermissions do
     end)
 
     :ok
+  end
+
+  defp validate_company_members(company, members) do
+    case People.validate_active_company_members(company.id, Enum.map(members, & &1.id)) do
+      :ok -> :ok
+      error -> throw error
+    end
   end
 
   defp parse_members(members) do

@@ -9,7 +9,7 @@ defmodule Operately.CuratedTemplatesTest do
 
   describe "create/2" do
     test "creates an incomplete draft owned by the authenticated editor", ctx do
-      assert {:ok, template} = CuratedTemplates.create(ctx.account, %{type: :project, title: "Launch", state: :published, creator_account_id: Ecto.UUID.generate()})
+      assert {:ok, template} = CuratedTemplates.create(ctx.account, %{type: :project, title: "Launch", slug: "launch", state: :published, creator_account_id: Ecto.UUID.generate()})
       assert template.state == :draft
       assert template.creator_account_id == ctx.account.id
       assert template.updater_account_id == ctx.account.id
@@ -20,6 +20,19 @@ defmodule Operately.CuratedTemplatesTest do
       assert {:error, %Ecto.Changeset{}} = CuratedTemplates.create(ctx.account, %{type: :kpi, title: "Revenue", definition: %{"unit" => []}})
       assert Repo.aggregate(Template, :count) == 0
     end
+  end
+
+  test "slugs are unique within a language and editable", ctx do
+    attrs = %{type: :kpi, title: "Visitors", slug: "website-visitors", content_language: "en"}
+    assert {:ok, template} = CuratedTemplates.create(ctx.account, attrs)
+    assert {:error, changeset} = CuratedTemplates.create(ctx.account, attrs)
+    assert "has already been taken" in errors_on(changeset).slug
+    assert {:ok, translated} = CuratedTemplates.create(ctx.account, %{attrs | content_language: "pt-BR"})
+    assert translated.slug == template.slug
+    assert {:ok, updated} = Operately.Operations.CuratedTemplateUpdating.run(template, ctx.account, template.updated_at, {:update, %{slug: "monthly-visitors"}})
+    assert updated.slug == "monthly-visitors"
+    assert {:error, changeset} = Operately.Operations.CuratedTemplateUpdating.run(translated, ctx.account, translated.updated_at, {:update, %{slug: "monthly-visitors", content_language: "en"}})
+    assert "has already been taken" in errors_on(changeset).slug
   end
 
   describe "delete/2" do

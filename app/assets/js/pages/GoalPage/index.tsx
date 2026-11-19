@@ -154,7 +154,7 @@ function Page() {
   });
 
   const parentGoalSearch = useParentGoalSearch({ type: "goal", id: goal.id });
-  const spaceSearch = useSpaceSearch();
+  const spaceSearch = useSpaceSearch({ accessLevel: "edit_access" });
 
   const richTextHandlers = useRichTextHandlers({
     taskList: {
@@ -434,6 +434,7 @@ function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage
       status: checkIn.status!,
       state: checkIn.state,
       scheduledAt: checkIn.scheduledAt,
+      acknowledgedAt: checkIn.acknowledgedAt,
     };
   });
 }

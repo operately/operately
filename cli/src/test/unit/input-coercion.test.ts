@@ -9,6 +9,42 @@ import { fixtureCatalog } from "./fixture-catalog";
 
 const registry = createRegistry(fixtureCatalog);
 
+test("nested status inputs do not require generated response metadata", () => {
+  const types = structuredClone(fixtureCatalog.types);
+  const statusType = types.objects.task_status;
+  assert.ok(statusType);
+  statusType.fields.push({
+    name: "__typename",
+    type: { kind: "named", name: "string" },
+    optional: false,
+    nullable: false,
+    has_default: false,
+    default: null,
+  });
+
+  for (const status of [
+    { id: "todo", label: "Todo" },
+    { id: "todo", label: "Todo", __typename: "task_status" },
+  ]) {
+    const parsed = parseCommand(
+      [
+        "goals",
+        "update_target_value",
+        "--goal-id",
+        "g1",
+        "--target-value",
+        "1",
+        "--task-statuses",
+        JSON.stringify([status]),
+      ],
+      registry,
+      types,
+    );
+    assert.equal(parsed.kind, "endpoint");
+    if (parsed.kind === "endpoint") assert.deepEqual(parsed.endpointInputs.task_statuses, [status]);
+  }
+});
+
 function withTempFile<T>(contents: string, run: (filePath: string) => T): T {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "operately-cli-input-coercion-"));
   const filePath = path.join(dir, "input.md");

@@ -42,24 +42,21 @@ const meta: Meta<typeof TaskList> = {
           setTasks([...initialTasks]);
         }, [initialTasks]);
 
-        const handleTaskMove = React.useCallback(
-          (move: BoardMove) => {
-            console.log(
-              `Dragged item ${move.itemId} was dropped into zone ${move.destination.containerId} at index ${move.destination.index}`,
-            );
-
-            // Use the provided index directly for reordering
-            const updatedTasks = reorderTasksInList(tasks, move.itemId, move.destination.index);
-            setTasks(updatedTasks);
+        const onTaskMilestoneChange = React.useCallback(
+          (taskId: string, _milestoneId: string | null, index: number) => {
+            setTasks((previous) => reorderTasksInList(previous, taskId, index));
           },
-          [tasks],
+          [],
         );
+        const handleTaskMove = (move: BoardMove) =>
+          onTaskMilestoneChange(move.itemId, move.destination.containerId, move.destination.index);
 
         const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
 
         return (
           <TaskList
             tasks={tasks}
+            onTaskMilestoneChange={onTaskMilestoneChange}
             showHiddenTasksToggle={showHiddenTasksToggle}
             milestoneId="milestone-1"
             onTaskAssigneeChange={onTaskAssigneeChange || (() => {})}

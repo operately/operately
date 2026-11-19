@@ -93,6 +93,7 @@ defmodule Operately.Operations.CompanyJoiningViaInviteLink do
         full_name: account.full_name,
         email: account.email,
         company_id: invite_link.company_id,
+        title_setup_pending: true,
         account_id: account.id
       })
     end)

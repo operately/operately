@@ -17,7 +17,9 @@ defmodule OperatelyWeb.Api.SiteMessages.ListActiveTest do
         |> Factory.add_account(:outsider)
         |> Factory.log_in_account(:outsider)
 
-      assert {404, _} = query(ctx.conn, [:site_messages, :list_active], %{})
+      conn = put_req_header(ctx.conn, "x-company-id", Paths.company_id(ctx.company))
+
+      assert {404, _} = query(conn, [:site_messages, :list_active], %{})
     end
   end
 

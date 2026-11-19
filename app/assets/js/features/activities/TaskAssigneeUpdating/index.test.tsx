@@ -1,7 +1,6 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import i18n, { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import type { Activity } from "@/models/activities";
 import type { ActivityContentTaskAssigneeUpdating, Person } from "@/api";
 import { usePaths } from "@/routes/paths";
@@ -72,10 +71,10 @@ const cases = [
   [3, "Alex assigned 3 people to the task", 'Task "Write copy" was updated with new assignees'],
 ] as const;
 
-describe.each([false, true])("saved Portuguese preference (flag: %s)", (enabled) => {
+describe.each(["en", "pt-BR"])("selected language: %s", (language) => {
   it.each(cases)("preserves zero/single/multiple-assignee wording (%i)", async (count, prefix, notification) => {
     i18n.removeResourceBundle("pt-BR", "translation");
-    await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+    await applyLanguage(language);
     expect(title(count)).toBe(`${prefix} <a href="/tasks/task">Write copy</a>`);
     expect(title(count, "feed")).toBe(
       `${prefix} <a href="/tasks/task">Write copy</a> in <a href="/projects/project">Website</a>`,

@@ -2,7 +2,7 @@
 
 Operately uses one Gettext catalog for Elixir, React, and TurboUI. English source text is the message identifier; context distinguishes ambiguous wording. Elixir and email rendering use Gettext, while the frontend uses i18next resources generated from the same catalog.
 
-So far supported languages are English (`en`) and Brazilian Portuguese (`pt-BR`). Supported-language registries live in [Elixir](../app/lib/operately/i18n/languages.ex) and [TypeScript](../app/assets/js/i18n/languages.ts).
+So far supported languages are English (`en`), Brazilian Portuguese (`pt-BR`), German (`de`), Russian (`ru`), French (`fr`), and Spanish (`es`). Supported-language registries live in [Elixir](../app/lib/operately/i18n/languages.ex) and [TypeScript](../app/assets/js/i18n/languages.ts).
 
 To add another language, follow the [internationalization skill](../.agents/skills/internationalization/SKILL.md) and its [new-language reference](../.agents/skills/internationalization/references/adding-a-language.md), starting with glossary preparation.
 
@@ -33,7 +33,7 @@ Keep terminology in these files rather than duplicating it in guides or skills. 
 
 ## Language resolution
 
-A person selects a language explicitly in Account → Profile. English is the default for absent or unsupported preferences; browser language never selects or persists a preference. Language is stored separately from timezone and time-format preferences.
+All supported languages are available to every user and company. A person selects a language explicitly in My Account → Settings. English is the default for absent or unsupported preferences; browser language never selects or persists a preference. Language is stored separately from timezone and time-format preferences.
 
 Web requests and emails use the same effective-language rules. Background workers must scope the locale while constructing and rendering each recipient's content, including buffered notifications and digests, and restore the previous locale afterward. Never rely on request state in a worker. Billing emails group recipients by effective language within the billing company.
 
@@ -118,7 +118,7 @@ Use Operately's shared `Trans` adapter rather than importing `Trans` directly fr
 3. Fill every active translation and required plural form in each supported non-English PO file. Preserve named placeholders, context, and rich-text tags. Review translations against the glossary.
 4. Run `make gen.i18n` again and include the source, PO, POT, and generated-resource changes in the same PR. Inspect the diff for unintended translation changes.
 5. Run `make test.i18n`. It checks that every wrapped source message has a translation in every supported non-English language, without changing your working tree.
-6. Run the affected surface's tests and check English, translated output, user-content escaping, links, and zero/one/many counts where relevant. Check language switching and flag rollback when changing locale handling; email changes also verify recipient isolation and both body formats.
+6. Run the affected surface's tests and check English, translated output, user-content escaping, links, and zero/one/many counts where relevant. Check language switching and English fallback when changing locale handling; email changes also verify recipient isolation and both body formats.
 
 Existing focused catalog checks can be run from the repository root:
 
@@ -135,3 +135,9 @@ To fix failures, run `make gen.i18n`, complete the reported PO entries, regenera
 This checks completeness only. Unwrapped copy, generated-file freshness, language configuration, placeholders, tags, and translation quality still require review.
 
 Runtime English fallback remains a safeguard, not permission to ship missing translations. Preserve fallback behavior and its tests. Plural conversion uses explicit locale mappings; for Portuguese, the frontend's `zero`, `many`, and `other` categories use `msgstr[1]`, while `one` uses `msgstr[0]`. The zero override prevents a zero count from displaying a hardcoded singular. Missing plural forms fall back using English plural rules.
+
+Russian uses `msgstr[0]` for `one`, `[1]` for `few`, `[2]` for `many`, and `[3]` for fractional counts (`other`). Its PO header declares four forms; Gettext integer counts select indexes 0–2, while the frontend also uses index 3. Keep `%{count}` in the singular translation: the `one` category includes 21 and 101, not just 1.
+
+French maps `one` to `msgstr[0]` and both `many` and `other` to `msgstr[1]`. Zero and fractions below two use the singular form in the frontend; whole millions use the plural. Keep `%{count}` in both forms so zero and fractional values render correctly.
+
+Spanish maps `one` to `msgstr[0]` and both `many` and `other` to `msgstr[1]`. Only one uses the singular; zero, fractions, and whole millions use the plural. Its PO rule is `nplurals=2; plural=(n != 1);`.

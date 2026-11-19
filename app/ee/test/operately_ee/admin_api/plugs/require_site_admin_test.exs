@@ -3,8 +3,8 @@ defmodule OperatelyEE.AdminApi.Plugs.RequireSiteAdminTest do
 
   alias OperatelyEE.AdminApi.Plugs.RequireSiteAdmin
 
-  test "operator locale uses their account, not the administration target, and respects rollback", ctx do
-    ctx = Factory.setup(ctx) |> Factory.enable_feature("i18n")
+  test "operator locale uses their account, not the administration target, and respects language changes", ctx do
+    ctx = Factory.setup(ctx)
     {:ok, _} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     {:ok, account} = Operately.People.Account.promote_to_admin(ctx.account)
     target = Operately.CompaniesFixtures.company_fixture()
@@ -15,7 +15,7 @@ defmodule OperatelyEE.AdminApi.Plugs.RequireSiteAdminTest do
     assert RequireSiteAdmin.call(conn, []).assigns.locale == "pt-BR"
     assert Gettext.get_locale(OperatelyWeb.Gettext) == "pt_BR"
 
-    Operately.Companies.disable_experimental_feature(ctx.company, "i18n")
+    {:ok, _} = Operately.People.update_person(ctx.creator, %{language: "en"})
     assert RequireSiteAdmin.call(conn, []).assigns.locale == "en"
     assert Gettext.get_locale(OperatelyWeb.Gettext) == "en"
   end

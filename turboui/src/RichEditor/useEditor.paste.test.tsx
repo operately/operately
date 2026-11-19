@@ -61,6 +61,19 @@ it.each(["https://example.com", resourceUrl])("saves a pasted URL immediately as
   expect(editor.getHTML()).toContain(`href="${url}"`);
 });
 
+it("emits a link when a URL is entered without trailing whitespace", async () => {
+  const url = "https://example.com/launch-plan";
+  const { editor, result, onUpdate } = await setup();
+
+  act(() => {
+    editor.commands.insertContent(url);
+  });
+
+  const json = result.current.getJson();
+  expect(json.content[0].content).toMatchObject([{ text: url, marks: [{ type: "link", attrs: { href: url } }] }]);
+  expect(onUpdate).toHaveBeenLastCalledWith({ json, html: expect.any(String) });
+});
+
 it("links multiple URLs in pasted text, including the final word without whitespace", async () => {
   const { editor, result } = await setup();
 

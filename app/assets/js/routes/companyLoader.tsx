@@ -4,14 +4,17 @@ import * as Socket from "@/api/socket";
 import { companyLayoutInputs, prefetchCompanyLayout } from "@/models/companies/companyLayoutQueries";
 
 import { checkAuth } from "@/routes/pageRoute";
+import { idWithoutComments } from "@/routes/paths";
 
 export type CompanyLoaderResult = Awaited<ReturnType<typeof companyLoader>>;
 
 export async function companyLoader({ params }: { params: { companyId?: string } }) {
   checkAuth();
 
-  Api.default.setHeaders({ "x-company-id": params.companyId });
-  Socket.setHeaders({ "x-company-id": params.companyId });
+  // Renamed company URLs must share the same request and query-cache identity.
+  const companyShortId = params.companyId ? idWithoutComments(params.companyId) : undefined;
+  Api.default.setHeaders({ "x-company-id": companyShortId });
+  Socket.setHeaders({ "x-company-id": companyShortId });
 
   try {
     const inputs = companyLayoutInputs();

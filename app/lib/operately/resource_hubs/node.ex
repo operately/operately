@@ -40,6 +40,7 @@ defmodule Operately.ResourceHubs.Node do
     node
     |> cast(attrs, [:resource_hub_id, :parent_folder_id, :type, :updated_at])
     |> validate_required([:resource_hub_id, :type])
+    |> foreign_key_constraint(:resource_hub_id)
   end
 
   def getter_profile(:default) do

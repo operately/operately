@@ -5,7 +5,7 @@ import React from "react";
 import type { ActivityContentTaskNameUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { activityAuthorName, projectLink, spaceLink, taskLink } from "../feedItemLinks";
+import { activityAuthorName, projectLink, spaceLink, taskLink, taskActivityPath } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
@@ -18,18 +18,14 @@ const TaskNameUpdating: ActivityHandler = {
     const { project, space, task } = content(activity);
 
     if (project && task) {
-      return paths.taskPath(task.id);
+      return taskActivityPath(paths, task);
     }
 
     if (project) {
       return paths.projectPath(project.id);
     }
 
-    if (task) {
-      return paths.spaceKanbanPath(space.id, { taskId: task.id });
-    }
-
-    return paths.spaceKanbanPath(space.id);
+    return taskActivityPath(paths, task, space.id);
   },
 
   PageTitle(_props: { activity: any }) {

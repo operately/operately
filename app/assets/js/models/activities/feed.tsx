@@ -9,6 +9,7 @@ import {
   ActivityContentTaskMilestoneUpdating,
   ActivityContentTaskNameUpdating,
   ActivityContentTaskStatusUpdating,
+  ActivityContentTaskArchiveUpdating,
 } from "@/api";
 import { compareIds, Paths } from "@/routes/paths";
 import {
@@ -19,6 +20,7 @@ import {
   TaskDueDateActivity,
   TaskMilestoneActivity,
   TaskStatusChangeActivity,
+  TaskArchiveActivity,
   TaskTitleActivity,
 } from "turboui";
 import { parseContextualDate } from "../contextualDates";
@@ -35,6 +37,7 @@ export const TASK_ACTIVITY_TYPES = [
   "task_due_date_updating",
   "task_milestone_updating",
   "task_status_updating",
+  "task_archive_updating",
 ];
 
 export const MILESTONE_ACTIVITY_TYPES = [
@@ -115,6 +118,18 @@ function parseActivityForTurboUi(paths: Paths, activity: Activity, pageContext: 
         activity.content as ActivityContentTaskMilestoneUpdating,
         pageContext,
       );
+    case "task_archive_updating": {
+      const content = activity.content as ActivityContentTaskArchiveUpdating;
+      return {
+        id: activity.id,
+        type: "task_archive_updating",
+        author,
+        insertedAt: activity.insertedAt,
+        archived: content.archived,
+        taskName: content.name,
+        page: pageContext,
+      } satisfies TaskArchiveActivity;
+    }
     case "task_status_updating":
       return parseTaskStatusUpdatingActivity(
         author,

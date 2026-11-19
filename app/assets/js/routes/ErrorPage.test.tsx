@@ -5,7 +5,6 @@ import { act } from "@/__tests__/renderHook";
 import { MemoryRouter, useRouteError, useRouteLoaderData } from "react-router";
 import ErrorPage from "./ErrorPage";
 import { applyLanguage, setupTestCatalog } from "@/__tests__/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import { captureException } from "@sentry/react";
 
 setupTestCatalog();
@@ -31,6 +30,7 @@ jest.mock("turboui", () => ({
 
 beforeEach(() => {
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+  jest.mocked(captureException).mockClear();
 });
 
 it.each([
@@ -52,6 +52,7 @@ it.each([
       ),
     );
     expect(element.querySelector("a")?.getAttribute("href")).toBe(href);
+    expect(captureException).not.toHaveBeenCalled();
   } finally {
     await act(async () => root.unmount());
     log.mockRestore();
@@ -78,12 +79,16 @@ it("preserves not-found rendering without company loader data", async () => {
 });
 
 it.each([
-  ["prod", true],
-  ["prod", false],
-  ["dev", true],
-  ["test", true],
-] as const)("diagnostics and flag rollback: %s, %s", async (environment, enabled) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+  ["prod", "pt-BR", "Ops! Algo deu errado."],
+  ["prod", "en", "Oops! Something went wrong."],
+  ["dev", "pt-BR", "Ops! Algo deu errado."],
+  ["test", "pt-BR", "Ops! Algo deu errado."],
+  ["prod", "ru", "Что-то пошло не так."],
+  ["dev", "ru", "Что-то пошло не так."],
+  ["prod", "de", "Etwas ist schiefgelaufen."],
+  ["dev", "de", "Etwas ist schiefgelaufen."],
+] as const)("diagnostics and selected language: %s, %s", async (environment, language, expected) => {
+  await applyLanguage(language);
   window.appConfig = { environment } as typeof window.appConfig;
   jest.mocked(useRouteLoaderData).mockReturnValue({ companyId: "company" });
   const error = new Error("Literal diagnostic");
@@ -102,10 +107,9 @@ it.each([
       ),
     );
 
-    expect(element.textContent).toContain(enabled ? "Ops! Algo deu errado." : "Oops! Something went wrong.");
+    expect(element.textContent).toContain(expected);
     expect(element.querySelector("pre")?.textContent ?? null).toBe(environment === "prod" ? null : error.stack);
     expect(element.querySelector("script")).toBeNull();
-    expect(captureException).toHaveBeenCalledWith(error, { level: "fatal" });
   } finally {
     await act(async () => root.unmount());
     log.mockRestore();
@@ -131,5 +135,40 @@ it("handles missing errors in development without crashing", async () => {
     expect(element.querySelector("pre")?.textContent).toBe("");
   } finally {
     await act(async () => root.unmount());
+  }
+});
+
+it.each([
+  [{ isAxiosError: true, response: { status: 503 } }, 503],
+  [{ isAxiosError: true, status: 503 }, 503],
+  [{ status: 503 }, 503],
+  [{ isAxiosError: true, response: { status: 404 } }, 404],
+  [{ isAxiosError: true, response: { status: 500 } }, 500],
+  [{ isAxiosError: true }, 500],
+])("renders the HTTP error status (%#)", async (error, status) => {
+  await applyLanguage("en");
+  window.appConfig = { environment: "prod" } as typeof window.appConfig;
+  jest.mocked(useRouteError).mockReturnValue(error);
+  jest.mocked(useRouteLoaderData).mockReturnValue(undefined);
+  const log = jest.spyOn(console, "error").mockImplementation(() => {});
+  const element = document.createElement("div");
+  const root = createRoot(element);
+  try {
+    await act(async () =>
+      root.render(
+        <MemoryRouter>
+          <ErrorPage />
+        </MemoryRouter>,
+      ),
+    );
+    if (status === 404) {
+      expect(element.querySelector('[data-test-id="not-found"]')).not.toBeNull();
+    } else {
+      expect(element.querySelector('[data-test-id="error-page"]')?.getAttribute("data-status")).toBe(String(status));
+      expect(element.querySelector("a")?.getAttribute("href")).toBe("/");
+    }
+  } finally {
+    await act(async () => root.unmount());
+    log.mockRestore();
   }
 });

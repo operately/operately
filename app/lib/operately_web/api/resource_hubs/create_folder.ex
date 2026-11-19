@@ -25,6 +25,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateFolder do
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:hub, fn ctx -> ResourceHub.get(ctx.me, id: ctx.attrs.resource_hub_id) end)
     |> run(:permissions, fn ctx -> authorize(ctx.hub, company_read_only(conn)) end)
+    |> run(:parent_folder, fn ctx -> Operately.ResourceHubs.validate_parent_folder(ctx.me, ctx.hub.id, inputs[:folder_id]) end)
     |> run(:operation, fn ctx -> execute(ctx) end)
     |> run(:serialized, fn ctx -> serialize(ctx) end)
     |> respond()
@@ -35,6 +36,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateFolder do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :hub, _} -> {:error, :not_found}
+      {:error, :parent_folder, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}

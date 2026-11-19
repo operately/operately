@@ -3,6 +3,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.TaskMov
 
   def serialize(content, level: :essential) do
     %{
+      origin_board_id: content["origin_board_id"] && Operately.ShortUuid.encode!(content["origin_board_id"]),
+      destination_board_id: content["destination_board_id"] && Operately.ShortUuid.encode!(content["destination_board_id"]),
+
       task: Serializer.serialize(content["task"], level: :essential),
       task_name: content["task_name"],
       origin_type: content["origin_type"],

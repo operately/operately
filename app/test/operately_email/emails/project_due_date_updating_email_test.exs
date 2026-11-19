@@ -18,7 +18,7 @@ defmodule OperatelyEmail.Emails.ProjectDueDateUpdatingEmailTest do
       content: %{"project_id" => ctx.project.id, "old_due_date" => "2026-01-01", "new_due_date" => "2026-02-02"}
     }) |> Operately.Repo.reload!()
 
-    for {locale, previous_date, new_date} <- [{"en", "Jan 1, 2026", "Feb 2, 2026"}, {"pt_BR", "1 de jan. de 2026", "2 de fev. de 2026"}, {"fr", "Jan 1, 2026", "Feb 2, 2026"}] do
+    for {locale, previous_date, new_date} <- [{"en", "Jan 1, 2026", "Feb 2, 2026"}, {"pt_BR", "1 de jan. de 2026", "2 de fev. de 2026"}, {"nl", "Jan 1, 2026", "Feb 2, 2026"}] do
       Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
         ProjectDueDateUpdatingEmail.send(ctx.creator, activity)
         assert_email_sent(fn email ->

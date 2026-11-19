@@ -93,3 +93,24 @@ it.each([
 });
 
 jest.mock("react-router", () => ({}));
+
+it.each(["spaces/get", "spaces/list_tools"])("preserves loader and observer failures from %s", async (endpoint) => {
+  const error = Object.assign(new Error("Service unavailable"), { response: { status: 503 } });
+  const data = response;
+  jest.mocked(axios.get).mockResolvedValue({ data });
+  const inputs = await loader({ params: { id: "space1" } });
+  jest.mocked(Pages.useLoadedData).mockReturnValue(inputs);
+  queryClient.clear();
+  jest
+    .mocked(axios.get)
+    .mockImplementation((url) => (url.endsWith(endpoint) ? Promise.reject(error) : Promise.resolve({ data })));
+  await expect(loader({ params: { id: "space1" } })).rejects.toBe(error);
+  const log = jest.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    expect(() => renderHook(useLoadedData, { initialProps: undefined, wrapper })).toThrow(
+      expect.objectContaining({ response: { status: 503 } }),
+    );
+  } finally {
+    log.mockRestore();
+  }
+});

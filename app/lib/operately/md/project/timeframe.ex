@@ -8,7 +8,7 @@ defmodule Operately.MD.Project.Timeframe do
     ## #{gettext("Timeframe")}
 
     #{gettext("Start Date")}: #{render_contextual_date(tf && tf.contextual_start_date)}
-    #{gettext("Due Date")}: #{render_contextual_date(tf && tf.contextual_end_date)}
+    #{gettext("Due date")}: #{render_contextual_date(tf && tf.contextual_end_date)}
 
     ### #{gettext("Timeframe History")}
 

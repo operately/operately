@@ -1,3 +1,4 @@
+import { taskActivityPath } from "./feedItemLinks";
 import type {
   ActivityContentTaskAssigneeUpdating,
   ActivityContentTaskDueDateUpdating,
@@ -10,54 +11,26 @@ import type { Activity } from "@/models/activities";
 import * as Activities from "@/models/activities";
 import type { Paths } from "@/routes/paths";
 import * as React from "react";
-import { Link } from "turboui";
-
-interface UpdatedTask {
-  key: string;
-  name: string;
-  path: string;
-}
-
-interface ListPart {
-  type: "element" | "literal";
-  value: string;
-}
+import { ActivityTaskList, type ActivityTaskListEntry } from "turboui";
 
 export function UpdatedTaskList({ activity, paths }: { activity: Activity; paths: Paths }) {
   const locale = useLocale();
   const tasks = updatedTasksForFeed(activity, paths);
-  const parts = listParts(tasks.length, locale);
-
-  return (
-    <>
-      {parts.map((part, index) => {
-        if (part.type === "literal") return <React.Fragment key={index}>{part.value}</React.Fragment>;
-
-        const task = tasks[Number(part.value)];
-        if (!task) return null;
-
-        return (
-          <Link key={task.key} to={task.path}>
-            {task.name}
-          </Link>
-        );
-      })}
-    </>
-  );
+  return <ActivityTaskList tasks={tasks} locale={locale} />;
 }
 
 export function hasAggregatedTasks(activity: Activity): boolean {
   return Activities.getAggregatedActivities(activity).length > 1;
 }
 
-function updatedTasksForFeed(activity: Activity, paths: Paths): UpdatedTask[] {
+function updatedTasksForFeed(activity: Activity, paths: Paths): ActivityTaskListEntry[] {
   const seen = new Set<string>();
 
   return Activities.getAggregatedActivities(activity)
     .slice()
     .sort((a, b) => (a.insertedAt || "").localeCompare(b.insertedAt || ""))
     .map((activity) => updatedTask(activity, paths))
-    .filter((task): task is UpdatedTask => task !== null)
+    .filter((task): task is ActivityTaskListEntry => task !== null)
     .filter((task) => {
       if (seen.has(task.key)) return false;
 
@@ -66,7 +39,7 @@ function updatedTasksForFeed(activity: Activity, paths: Paths): UpdatedTask[] {
     });
 }
 
-function updatedTask(activity: Activity, paths: Paths): UpdatedTask | null {
+function updatedTask(activity: Activity, paths: Paths): ActivityTaskListEntry | null {
   const data = taskUpdateContent(activity);
   const task = data?.task;
   const project = data?.project;
@@ -77,9 +50,9 @@ function updatedTask(activity: Activity, paths: Paths): UpdatedTask | null {
   let path: string;
 
   if (project) {
-    path = paths.taskPath(task.id);
+    path = taskActivityPath(paths, task);
   } else if (space?.id) {
-    path = paths.spaceKanbanPath(space.id, { taskId: task.id });
+    path = taskActivityPath(paths, task, space.id);
   } else {
     return null;
   }
@@ -114,14 +87,4 @@ function taskUpdateContent(
     default:
       return undefined;
   }
-}
-
-function listParts(count: number, locale: string): ListPart[] {
-  const items = Array.from({ length: count }, (_, index) => String(index));
-  const listFormat = new Intl.ListFormat(locale, { style: "long", type: "conjunction" });
-
-  return listFormat.formatToParts(items).map((part) => ({
-    type: part.type === "element" ? "element" : "literal",
-    value: part.value,
-  }));
 }

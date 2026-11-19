@@ -38,6 +38,10 @@ function shouldCaptureAxiosError(error: unknown): boolean {
     return false;
   }
 
+  if (axios.isCancel(error)) {
+    return false;
+  }
+
   if (!axios.isAxiosError(error)) {
     return true;
   }
@@ -45,6 +49,11 @@ function shouldCaptureAxiosError(error: unknown): boolean {
   const status = error.response?.status;
   if (status === undefined) {
     return true;
+  }
+
+  // The server reports the original exception with its database stack.
+  if (status === 503 && error.response?.data?.code === "database_connection_queue_timeout") {
+    return false;
   }
 
   return !IGNORED_AXIOS_STATUSES.has(status);
@@ -65,6 +74,11 @@ function captureAxiosError(error: unknown) {
       method: error.config?.method,
       url: error.config?.url,
       status: error.response?.status,
+      code: error.code,
+      timeout: error.config?.timeout,
+      signalAborted: error.config?.signal?.aborted,
+      online: window.navigator.onLine,
+      visibilityState: window.document.visibilityState,
     },
   });
 }

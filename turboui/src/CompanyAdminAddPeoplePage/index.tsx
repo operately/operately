@@ -185,6 +185,7 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
             ))
             .with({ state: "invited" }, (state) => (
               <InvitedContent
+                companyName={props.companyName}
                 fullName={state.fullName}
                 inviteLink={state.inviteLink}
                 isGuest={isGuest}
@@ -202,6 +203,7 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
             ))
             .with({ state: "added" }, (state) => (
               <AddedContent
+                companyName={props.companyName}
                 fullName={state.fullName}
                 isGuest={isGuest}
                 spaces={props.spaces}

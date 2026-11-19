@@ -20,16 +20,212 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     |> Factory.add_project_task(:task, :milestone)
   end
 
+  test "archived boards reject task writes without side effects", ctx do
+    ctx = ctx |> Factory.create_space_task(:space_task, :engineering) |> Factory.log_in_person(:creator)
+    board = Repo.get!(Operately.Tasks.TaskBoard, ctx.space_task.board_id)
+    board = board |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00]) |> Repo.update!()
+    activity_count = Repo.aggregate(Operately.Activities.Activity, :count)
+    inputs = %{task_id: ctx.space_task.id, type: "space"}
+    status = ctx.space_task.task_status |> Map.from_struct() |> Map.update!(:color, &to_string/1)
+
+    for {endpoint, fields} <- [
+      {:update_name, %{name: "Changed"}},
+      {:update_due_date, %{due_date: nil}},
+      {:update_reminders, %{reminders: []}},
+      {:update_assignee, %{assignee_id: ctx.creator.id}},
+      {:update_status, %{status: status}},
+      {:delete, %{}}
+    ] do
+      assert {400, %{details: %{code: "task_board_archived"}}} = mutation(ctx.conn, [:tasks, endpoint], Map.merge(inputs, fields))
+    end
+
+    assert Repo.reload!(ctx.space_task).name == ctx.space_task.name
+    assert Repo.reload!(board) == board
+    assert Repo.aggregate(Operately.Activities.Activity, :count) == activity_count
+  end
+
+  test "archived boards allow task description updates", ctx do
+    ctx = ctx |> Factory.create_space_task(:space_task, :engineering) |> Factory.log_in_person(:creator)
+    Repo.get!(Operately.Tasks.TaskBoard, ctx.space_task.board_id)
+    |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00])
+    |> Repo.update!()
+
+    description = RichText.rich_text("Changed")
+
+    assert {200, _} = mutation(ctx.conn, [:tasks, :update_description], %{
+      task_id: ctx.space_task.id, type: "space", description: Jason.encode!(description)
+    })
+
+    assert Repo.reload!(ctx.space_task).description == description
+  end
+
+  test "rejects explicit creation on an archived board", ctx do
+    ctx = Factory.log_in_person(ctx, :creator)
+    {:ok, board} = Operately.Operations.TaskBoardCreating.run(ctx.creator, ctx.engineering, "Archived")
+    board |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00]) |> Repo.update!()
+    count = Repo.aggregate(Operately.Tasks.Task, :count)
+    assert {400, %{details: %{code: "task_board_archived"}}} = mutation(ctx.conn, [:tasks, :create], %{
+      type: "space", id: ctx.engineering.id, board_id: board.id, name: "Blocked", due_date: nil
+    })
+    assert Repo.aggregate(Operately.Tasks.Task, :count) == count
+  end
+
+  describe "board storage compatibility" do
+    setup ctx do
+      Factory.log_in_person(ctx, :creator)
+    end
+
+    test "space-only creation uses its persisted default after another board is added", ctx do
+      alias Operately.Tasks.TaskBoard
+      other = Repo.insert!(%TaskBoard{space_id: ctx.engineering.id, name: "Other", position: -1})
+      before = Repo.reload!(ctx.engineering)
+      assert {200, response} = mutation(ctx.conn, [:tasks, :create], %{type: "space", id: Paths.space_id(ctx.engineering), name: "Default task", due_date: nil})
+      {:ok, id} = OperatelyWeb.Api.Types.Id.decode(response.task.id)
+      task = Repo.get!(Operately.Tasks.Task, id)
+      assert task.board_id == before.default_task_board_id
+      assert Repo.reload!(other).tasks_kanban_state == %{}
+      board = Repo.get!(TaskBoard, task.board_id)
+      assert Paths.task_id(task) in board.tasks_kanban_state[task.task_status.value]
+    end
+
+    test "task-specific status changes and deletion synchronize only its own board", ctx do
+      alias Operately.Tasks.TaskBoard
+      board = Repo.insert!(%TaskBoard{space_id: ctx.engineering.id, name: "Other", task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.engineering.default_task_board_id).task_statuses})
+      ctx = Factory.create_space_task(ctx, :board_task, :engineering, board_id: board.id)
+      default = Repo.get!(TaskBoard, ctx.engineering.default_task_board_id)
+      status = Enum.find(board.task_statuses, & &1.closed) |> Map.from_struct() |> Map.update!(:color, &to_string/1)
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_status], %{task_id: Paths.task_id(ctx.board_task), type: "space", status: status})
+      assert Repo.reload!(board).tasks_kanban_state[status.value] == [Paths.task_id(ctx.board_task)]
+      assert {200, _} = mutation(ctx.conn, [:tasks, :delete], %{task_id: Paths.task_id(ctx.board_task), type: "space"})
+      assert Repo.reload!(board).tasks_kanban_state |> Map.values() |> List.flatten() == []
+      assert Repo.reload!(default) == default
+    end
+
+    test "missing defaults reject creation without initializing a board", ctx do
+      ctx.engineering |> Ecto.Changeset.change(default_task_board_id: nil) |> Repo.update!()
+      count = Repo.aggregate(Operately.Tasks.TaskBoard, :count)
+      assert {400, _} = mutation(ctx.conn, [:tasks, :create], %{type: "space", id: Paths.space_id(ctx.engineering), name: "No destination", due_date: nil})
+      assert Repo.aggregate(Operately.Tasks.TaskBoard, :count) == count
+    end
+  end
+
+  describe "assignee company boundaries" do
+    setup ctx do
+      ctx
+      |> Factory.create_space_task(:space_task, :engineering)
+      |> Factory.add_task_assignee(:existing_assignee, :task, :creator)
+      |> Factory.add_task_assignee(:existing_space_assignee, :space_task, :creator)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_api_token(:write_token, :creator, read_only: false)
+    end
+
+    for type <- [:project, :space], endpoint <- [:create, :update_assignee] do
+      @task_type type
+      @endpoint endpoint
+
+      test "#{@endpoint} rejects foreign #{@task_type} task assignees without writes", ctx do
+        foreign_person = Factory.setup(%{}).creator
+        assert {:error, :not_found} = Operately.Projects.Project.get(foreign_person, id: ctx.project.id)
+        before = task_access_snapshot()
+
+        for assignees <- [%{assignee_id: foreign_person.id}, %{assignee_ids: [ctx.new_champion.id, foreign_person.id]}] do
+          inputs = Map.merge(task_boundary_inputs(ctx, @task_type, @endpoint), assignees)
+          assert {400, _} = mutation(ctx.conn, [:tasks, @endpoint], inputs)
+          assert task_access_snapshot() == before
+          assert {400, _} = external_mutation(ctx.conn, ctx.write_token, "tasks/#{@endpoint}", inputs)
+          assert task_access_snapshot() == before
+        end
+      end
+    end
+
+    test "rejects foreign task destinations despite existing access", ctx do
+      foreign =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_space(:engineering)
+        |> Factory.add_project(:project, :engineering)
+        |> Factory.add_project_milestone(:milestone, :project)
+        |> Factory.add_project_task(:task, :milestone)
+        |> Factory.create_space_task(:space_task, :engineering)
+
+      for scope <- [[project_id: foreign.project.id], [group_id: foreign.engineering.id]] do
+        context = Operately.Access.get_context!(scope)
+        {:ok, _} = Operately.Access.bind_person(context, ctx.creator.id, Binding.full_access())
+      end
+
+      before = task_access_snapshot()
+
+      for type <- [:project, :space], endpoint <- [:create, :update_assignee] do
+        inputs = task_boundary_inputs(foreign, type, endpoint) |> Map.put(:assignee_id, ctx.creator.id)
+        assert {404, _} = mutation(ctx.conn, [:tasks, endpoint], inputs)
+        assert task_access_snapshot() == before
+      end
+    end
+  end
+
+  describe "explicit board selection" do
+    setup ctx do
+      board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.engineering.id, name: "Other", task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.engineering.default_task_board_id).task_statuses})
+      ctx |> Factory.log_in_person(:creator) |> Map.put(:board, board)
+    end
+
+    test "creates on the selected board and keeps legacy space fields on the default", ctx do
+      assert {200, response} = mutation(ctx.conn, [:tasks, :create], %{
+        type: "space", id: Paths.space_id(ctx.engineering), board_id: ctx.board.id, name: "Selected", due_date: nil
+      })
+      assert response.task.board_id == Operately.ShortUuid.encode!(ctx.board.id)
+      assert {200, %{space: space}} = query(ctx.conn, [:spaces, :get], %{id: Paths.space_id(ctx.engineering)})
+      assert Map.new(space.tasks_kanban_state, fn {key, ids} -> {to_string(key), ids} end) == Repo.get!(Operately.Tasks.TaskBoard, ctx.engineering.default_task_board_id).tasks_kanban_state
+      assert response.task.id in List.flatten(Map.values(Repo.reload!(ctx.board).tasks_kanban_state))
+    end
+
+    test "missing default returns active candidates and explicit selection still works", ctx do
+      ctx.engineering |> Ecto.Changeset.change(default_task_board_id: nil) |> Repo.update!()
+      inputs = %{type: "space", id: Paths.space_id(ctx.engineering), name: "Selected", due_date: nil}
+      assert {400, response} = mutation(ctx.conn, [:tasks, :create], inputs)
+      assert response.details.code == "default_task_board_unavailable"
+      assert Enum.any?(response.details.candidates, &(&1.id == Operately.ShortUuid.encode!(ctx.board.id)))
+      assert {200, _} = mutation(ctx.conn, [:tasks, :create], Map.put(inputs, :board_id, ctx.board.id))
+    end
+
+    test "rejects project selectors, mismatched spaces, and archived boards", ctx do
+      assert {400, _} = mutation(ctx.conn, [:tasks, :create], %{type: "project", id: Paths.project_id(ctx.project), board_id: ctx.board.id, name: "Invalid", due_date: nil})
+      ctx = Factory.add_space(ctx, :other_space)
+      assert {400, _} = mutation(ctx.conn, [:tasks, :create], %{type: "space", id: Paths.space_id(ctx.other_space), board_id: ctx.board.id, name: "Invalid", due_date: nil})
+      ctx.board |> Ecto.Changeset.change(archived_at: ~N[2026-01-01 00:00:00]) |> Repo.update!()
+      assert {400, response} = mutation(ctx.conn, [:tasks, :create], %{type: "space", id: Paths.space_id(ctx.engineering), board_id: ctx.board.id, name: "Invalid", due_date: nil})
+      assert response.details.code == "task_board_archived"
+    end
+  end
+
+  defp task_boundary_inputs(ctx, type, :create) do
+    id = if type == :project, do: ctx.project.id, else: ctx.engineering.id
+    %{type: Atom.to_string(type), id: id, name: "New task", due_date: nil}
+  end
+
+  defp task_boundary_inputs(ctx, type, :update_assignee) do
+    task = if type == :project, do: ctx.task, else: ctx.space_task
+    %{type: Atom.to_string(type), task_id: task.id}
+  end
+
+  defp task_access_snapshot do
+    [
+      Operately.Tasks.Task, Operately.Tasks.Assignee, Contributor, Binding,
+      Operately.Notifications.SubscriptionList, Operately.Notifications.Subscription,
+      Operately.Activities.Activity, Operately.Access.GroupMembership
+    ]
+    |> Enum.map(fn schema -> Repo.all(from(row in schema, order_by: row.id)) end)
+  end
+
   describe "list tasks" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:tasks, :list], %{})
     end
 
-    test "it requires a project_id", ctx do
+    test "it requires a project, space, or board selector", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = query(ctx.conn, [:tasks, :list], %{})
-      assert res.message == "Missing required fields: project_id"
+      assert {400, _} = query(ctx.conn, [:tasks, :list], %{})
     end
 
     test "it returns not found for non-existent project", ctx do
@@ -587,7 +783,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # Pick a status from the project
-      status_struct = List.first(ctx.project.task_statuses)
+      status_struct = List.first(Operately.Projects.Project.task_statuses(ctx.project))
       status = Map.from_struct(status_struct) |> Map.put(:color, Atom.to_string(status_struct.color))
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
@@ -603,11 +799,11 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert res.task.status.id == status.id
     end
 
-    test "it sets completion timestamp when creating a task with closed status", ctx do
+    test "it uses the board's current closed status when creating a task", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      closed_status = Enum.find(ctx.project.task_statuses, & &1.closed)
-      status = Map.from_struct(closed_status) |> Map.put(:color, Atom.to_string(closed_status.color))
+      closed_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), & &1.closed)
+      status = Map.from_struct(closed_status) |> Map.merge(%{color: Atom.to_string(closed_status.color), closed: false, value: "outdated"})
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         id: Paths.project_id(ctx.project),
@@ -624,6 +820,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert task.closed_at
       assert res.task.closed_at
+      assert task.task_status == closed_status
     end
 
     test "it rejects invalid status", ctx do
@@ -930,7 +1127,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       space_before = Operately.Groups.get_group!(ctx.engineering.id)
-      kanban_state_before = space_before.tasks_kanban_state
+      kanban_state_before = Repo.get!(Operately.Tasks.TaskBoard, space_before.default_task_board_id).tasks_kanban_state
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         id: Paths.space_id(ctx.engineering),
@@ -945,7 +1142,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert res.updated_space.id == Paths.space_id(ctx.engineering)
 
       space_after = Operately.Groups.get_group!(ctx.engineering.id)
-      kanban_state_after = space_after.tasks_kanban_state
+      kanban_state_after = Repo.get!(Operately.Tasks.TaskBoard, space_after.default_task_board_id).tasks_kanban_state
 
       refute kanban_state_before == kanban_state_after
       assert Map.has_key?(kanban_state_after, "pending")
@@ -1028,6 +1225,11 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       value: "pending",
       closed: false
     }
+
+    setup ctx do
+      {:ok, project} = Operately.Projects.update_project(ctx.project, %{task_statuses: [@pending_status, @done_status]})
+      %{project: project}
+    end
 
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:tasks, :update_status], %{})
@@ -1126,7 +1328,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.space_task),
-        status: @done_status,
+        status: Enum.find(Repo.get!(Operately.Tasks.TaskBoard, ctx.engineering.default_task_board_id).task_statuses, & &1.closed) |> Map.from_struct() |> Map.update!(:color, &to_string/1),
         type: "space"
       })
 
@@ -2906,4 +3108,5 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       0 -> :ok
     end
   end
+
 end

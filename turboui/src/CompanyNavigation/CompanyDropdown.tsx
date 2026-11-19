@@ -30,7 +30,7 @@ export function CompanyDropdown({
       <DropdownLinkItem
         path={links.people}
         icon={IconUserCircle}
-        title={t("People")}
+        title={t("People", { context: "navigation" })}
         testId="company-dropdown-people"
         hidden={!canViewCompanyDirectory}
       />
@@ -50,7 +50,12 @@ export function CompanyDropdown({
         title={t("Company Admin")}
         testId="company-dropdown-company-admin"
       />
-      <DropdownLinkItem path={links.lobby} icon={IconSwitch} title={t("Switch Company")} testId="company-dropdown-switch" />
+      <DropdownLinkItem
+        path={links.lobby}
+        icon={IconSwitch}
+        title={t("Switch Company")}
+        testId="company-dropdown-switch"
+      />
     </DropdownMenu>
   );
 }

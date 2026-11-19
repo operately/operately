@@ -179,7 +179,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
     end
 
     test "records a milestone activity for every moved task", ctx do
-      closed_status = Enum.find(ctx.project.task_statuses, & &1.closed)
+      closed_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), & &1.closed)
 
       ctx =
         ctx
@@ -207,7 +207,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
     end
 
     test "does not move tasks that are already closed", ctx do
-      closed_status = Enum.find(ctx.project.task_statuses, &(&1.closed && &1.color == :green))
+      closed_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.closed && &1.color == :green))
 
       ctx =
         Factory.add_project_task(ctx, :closed_task, :milestone,
@@ -222,7 +222,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
     end
 
     test "changes open tasks to a selected closed status", ctx do
-      closed_status = Enum.find(ctx.project.task_statuses, &(&1.closed && &1.color == :green))
+      closed_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.closed && &1.color == :green))
 
       assert {200, _} = complete_milestone(ctx, %{action: "set_status", status_id: closed_status.id})
 
@@ -237,7 +237,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
 
     test "records a status activity for every closed task", ctx do
       ctx = Factory.add_project_task(ctx, :second_open_task, :milestone)
-      closed_status = Enum.find(ctx.project.task_statuses, &(&1.closed && &1.color == :green))
+      closed_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.closed && &1.color == :green))
 
       assert {200, _} = complete_milestone(ctx, %{action: "set_status", status_id: closed_status.id})
 
@@ -267,7 +267,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
       topic = "api:assignments_count:#{ctx.assignee.id}"
       OperatelyWeb.Endpoint.subscribe(topic)
 
-      closed_status = Enum.find(ctx.project.task_statuses, &(&1.closed && &1.color == :green))
+      closed_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.closed && &1.color == :green))
 
       assert {200, _} = complete_milestone(ctx, %{action: "set_status", status_id: closed_status.id})
 
@@ -276,7 +276,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
     end
 
     test "rejects an open task status", ctx do
-      open_status = Enum.find(ctx.project.task_statuses, &(!&1.closed))
+      open_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(!&1.closed))
 
       assert {400, res} = complete_milestone(ctx, %{action: "set_status", status_id: open_status.id})
       assert res.message == "Select a closed task status"

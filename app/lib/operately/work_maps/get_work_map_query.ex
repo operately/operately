@@ -4,6 +4,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   require Logger
 
   alias Operately.Repo
+  alias Operately.Tasks.Task
   alias Operately.Goals.{Check, Goal, Target}
   alias Operately.Projects.{Milestone, Project}
   alias Operately.Groups.Group
@@ -26,16 +27,18 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     - contributor_id (optional): The ID of a contributor
     - include_assignees (optional): A boolean indicating whether to include assignees in the result. Defaults to false
     - include_reviewer (optional): A boolean indicating whether to include reviewer details in the result. Defaults to false
+    - include_tasks (optional): Include assigned tasks in the flat work map. Defaults to false
+    - include_task_statuses (optional): Populate available statuses for included tasks. Defaults to false
     - only_completed (optional): A boolean indicating whether to return only completed items. Defaults to false
   """
   def execute(person, args) do
+    [goals, projects] =
+      Operately.Parallel.run([
+        fn -> get_goals(person, args) end,
+        fn -> get_projects(person, args) end
+      ])
+
     try do
-      goals_task = Task.async(fn -> get_goals(person, args) end)
-      projects_task = Task.async(fn -> get_projects(person, args) end)
-
-      goals = Task.await(goals_task)
-      projects = Task.await(projects_task)
-
       work_map = build_work_map(goals, projects, args)
 
       {:ok, work_map}
@@ -64,15 +67,14 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   they match the filter criteria directly.
   """
   def execute(person, args, :flat) do
+    [goals, projects, tasks] =
+      Operately.Parallel.run([
+        fn -> get_goals(person, args) end,
+        fn -> get_projects(person, args) end,
+        fn -> get_tasks(person, args) end
+      ])
+
     try do
-      goals_task = Task.async(fn -> get_goals(person, args) end)
-      projects_task = Task.async(fn -> get_projects(person, args) end)
-      tasks_task = Task.async(fn -> get_tasks(person, args) end)
-
-      goals = Task.await(goals_task)
-      projects = Task.await(projects_task)
-      tasks = Task.await(tasks_task)
-
       flat_items = build_flat_work_map(goals, projects, tasks, args)
 
       {:ok, flat_items}
@@ -161,10 +163,10 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
       match?(%Operately.People.Person{}, person) ->
         assignee_id = contributor_id || person.id
-        query_tasks(company_id, assignee_id, person)
+        query_tasks(person, assignee_id, args)
 
       match?(:system, person) and not is_nil(contributor_id) ->
-        query_tasks(company_id, contributor_id, person)
+        query_tasks(person, contributor_id, args)
 
       match?(:system, person) ->
         []
@@ -175,18 +177,38 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     end
   end
 
-  defp query_tasks(company_id, assignee_id, person) do
-    from(t in Operately.Tasks.Task, as: :task)
-    |> join(:inner, [task: t], a in assoc(t, :assignees), as: :assignee)
-    |> join(:left, [task: t], p in assoc(t, :project), as: :project)
-    |> where([assignee: a], a.person_id == ^assignee_id)
-    |> Operately.Tasks.Task.scope_company(company_id)
-    |> where([project: p], is_nil(p.id) or p.status == "active")
-    |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
-    |> select_merge([assignee: a], %{assigned_at: a.inserted_at})
-    |> preload([:project, :space, :company, :assigned_people])
-    |> preload_project_space_if_authorized(person)
-    |> Repo.all()
+  @doc """
+  Open, unarchived tasks assigned to `person` in the company.
+
+  Includes tasks on active projects and tasks with no project.
+  """
+  def list_assigned_tasks(%Operately.People.Person{} = person, company_id) when is_binary(company_id) do
+    query_tasks(person, person.id, %{company_id: company_id})
+  end
+
+  defp query_tasks(person, assignee_id, args) do
+    assignments =
+      from(t in Task, as: :task)
+      |> join(:inner, [task: t], a in assoc(t, :assignees), as: :assignee)
+      |> join(:left, [task: t], p in assoc(t, :project), as: :project)
+      |> where([assignee: a], a.person_id == ^assignee_id)
+      |> Task.scope_company(args.company_id)
+      |> where([project: p], is_nil(p.id) or p.status == "active")
+      |> where([task: t], is_nil(t.closed_at) and is_nil(t.archived_at))
+      |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
+      |> select([task: t, assignee: a], {t.id, a.inserted_at})
+      |> Repo.all()
+      |> Map.new()
+
+    Task.list(person,
+      opts: [
+        ids: Map.keys(assignments),
+        preload: [:project, :space, :board, :company, :assigned_people],
+        auth_preload: [:project_space],
+        after_load: if(Map.get(args, :include_task_statuses, false), do: [&Task.preload_available_statuses/1], else: [])
+      ]
+    )
+    |> Enum.map(fn task -> %{task | assigned_at: Map.fetch!(assignments, task.id)} end)
   end
 
   defp build_work_map(goals, projects, args) do
@@ -249,6 +271,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
       champion: c
     )
     |> preload_project_milestones()
+    |> preload_project_completion_tasks()
     |> maybe_preload_project_reviewer(include_reviewer || need_reviewer)
     |> maybe_preload_project_contributors(include_assignees || needs_contributor?(args))
     |> preload_space_if_authorized(person)
@@ -275,6 +298,21 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
       )
 
     preload(query, [], milestones: ^subquery)
+  end
+
+  defp preload_project_completion_tasks(query) do
+    # Load the whole project population, independently of assigned-task filters.
+    # Helper tasks exist only in the frontend; archived tasks remain counted there.
+    tasks =
+      from(t in Task,
+        join: project in assoc(t, :project),
+        left_join: milestone in assoc(t, :milestone),
+        where: is_nil(project.closed_at),
+        select: [:id, :project_id, :milestone_id, :task_status],
+        select_merge: %{milestone: struct(milestone, [:id, :status])}
+      )
+
+    preload(query, [], tasks: ^tasks)
   end
 
   defp preload_goal_associations(query, args, person) do
@@ -319,10 +357,6 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp preload_space_if_authorized(query, person) do
     preload(query, [], group: ^space_preload_query(person))
-  end
-
-  defp preload_project_space_if_authorized(query, person) do
-    preload(query, [], project_space: ^space_preload_query(person))
   end
 
   defp space_preload_query(:system), do: from(g in Group)

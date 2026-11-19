@@ -92,7 +92,6 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorkerTest do
     end
   end
   test "worker resolves mixed recipient languages at delivery time", ctx do
-    Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
     Operately.People.update_person(ctx.admin, %{language: "pt-BR"})
     args = %{company_id: ctx.company.id, limit_key: "member_count", current_usage: 20, limit: 20}
     assert :ok = perform_job(LimitBreachAlertEmailWorker, args)
@@ -104,9 +103,8 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorkerTest do
     assert Enum.any?(emails, &({ctx.owner.full_name, ctx.owner.email} in &1.to and &1.subject =~ "Free plan"))
   end
 
-  test "retries skip delivered recipients even when preferences or the flag change", ctx do
-    for change <- [:none, :flag_disabled, :preferences_changed] do
-      Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+  test "retries skip delivered recipients even when preferences change", ctx do
+    for change <- [:none, :preferences_changed] do
       Operately.People.update_person(ctx.admin, %{language: "pt-BR"})
       args = %{company_id: ctx.company.id, limit_key: "member_count", current_usage: 20, limit: 20}
       job = Oban.Testing.with_testing_mode(:manual, fn ->
@@ -133,7 +131,6 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorkerTest do
       assert retry.meta["source"] == "billing-alert"
       case change do
         :none -> :ok
-        :flag_disabled -> Operately.Companies.disable_experimental_feature(ctx.company, "i18n")
         :preferences_changed ->
           Operately.People.update_person(ctx.owner, %{language: "pt-BR"})
           Operately.People.update_person(ctx.admin, %{language: "en"})

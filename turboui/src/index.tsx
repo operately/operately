@@ -29,6 +29,7 @@ export { BulletDot } from "./BulletDot";
 export * from "./ImageWithPlaceholder";
 export * from "./icons";
 export * from "./Link";
+export * from "./ActivityTaskList";
 export * from "./Menu";
 export * from "./NotificationRow";
 export * from "./OptionsMenuItem";
@@ -81,6 +82,7 @@ export { GoalPage } from "./GoalPage";
 export { HomePage } from "./HomePage";
 export { LastCheckIn } from "./LastCheckIn";
 export { InviteLinkJoinPage } from "./InviteLinkJoinPage";
+export { JoinSpacePrompt } from "./JoinSpacePrompt";
 export { LobbyPage } from "./LobbyPage";
 export { InviteMemberForm } from "./InviteMemberForm";
 export { InvitePeoplePage } from "./InvitePeoplePage";
@@ -174,6 +176,7 @@ export { NewDocumentPage } from "./NewDocumentPage";
 export { DocumentEditPage } from "./DocumentEditPage";
 export type { DocumentEditPage as DocumentEditPageTypes } from "./DocumentEditPage/types";
 export { DocumentPage } from "./DocumentPage";
+export type { DocumentInlineCommentsProps, InlineCommentTarget } from "./DocumentPage";
 export { DocumentTitle } from "./DocumentTitle";
 export { OngoingDraftActions } from "./OngoingDraftActions";
 export { LinkNewPage } from "./LinkNewPage";
@@ -203,6 +206,8 @@ export type { SpaceKpisPage as SpaceKpisPageTypes } from "./SpaceKpisPage/types"
 export { formatValue as formatKpiValue, fromIsoDate as kpiDateFromIso } from "./SpaceKpisPage/utils";
 // KPI summary card for the space home page (see KpiSummaryCard.stories.tsx).
 export { KpiSummaryCard } from "./SpaceKpisPage/KpiSummaryCard";
+export type { ToolAction } from "./SpaceToolsConfigurationPage";
+export { SpaceTaskBoardCard } from "./SpaceTaskBoardCard";
 export { SpaceToolsConfigurationPage } from "./SpaceToolsConfigurationPage";
 export { SpaceTemplatesTool } from "./SpaceTemplatesTool";
 export { SwitchToggle } from "./SwitchToggle";
@@ -234,6 +239,11 @@ export { SpaceKanbanPage } from "./SpaceKanbanPage";
 export { Summary } from "./RichContent";
 export { displayDate, nodeDisplayInsertedAt, withNodeDisplayInsertedAt, type DraftableResource } from "./utils/drafts";
 export { Editor, hasLocalDraft, useEditor } from "./RichEditor";
+export type {
+  InlineCommentRange,
+  InlineCommentSelection,
+  InlineCommentsOptions,
+} from "./RichEditor/extensions/InlineComments";
 export type { RichEditorHandlers } from "./RichEditor/useEditor";
 export type { RichTextHandlers, CommentTaskItemChangeHandler } from "./RichContent/types";
 export type { TaskListInteraction, TaskItemChange } from "./RichEditor/taskLists";
@@ -296,9 +306,14 @@ export { SiteMessageBanner } from "./SiteMessageBanner";
 
 export { ErrorPage } from "./ErrorPage";
 export { BillingPickCompanyPage } from "./BillingPickCompanyPage";
+export { CompanyPickerPage } from "./CompanyPickerPage";
 
 export { formatDate } from "./utils/formatting";
 
 export { useSelectLocalization } from "./SelectLocalization";
 
 export * from "./CuratedTemplates";
+
+export * from "./SaasAdminAccountActionsMenu";
+
+export { TitleSetupPrompt } from "./TitleSetupPrompt";

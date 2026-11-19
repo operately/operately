@@ -8,7 +8,6 @@ import { displayDate } from "turboui";
 export type ProjectCheckIn = api.ProjectCheckIn;
 
 export {
-  invalidateProjectCheckInQueries,
   useAcknowledgeProjectCheckIn,
   useDeleteProjectCheckIn,
   useEditProjectCheckIn,
@@ -29,6 +28,7 @@ export function parseCheckInsForTurboUi(paths: Paths, checkIns: api.ProjectCheck
       status: checkIn.status,
       state: checkIn.state,
       scheduledAt: checkIn.scheduledAt,
+      acknowledgedAt: checkIn.acknowledgedAt,
     };
   });
 }

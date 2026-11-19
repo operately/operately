@@ -17,6 +17,7 @@ import {
 import { useShortcutFieldFocusRestore } from "../hooks/useShortcutFieldFocusRestore";
 
 interface CardProps {
+  draggingDisabled?: boolean;
   task: TaskBoard.Task;
   containerId: string;
   index: number;
@@ -31,6 +32,7 @@ interface CardProps {
 }
 
 export function Card({
+  draggingDisabled = false,
   task,
   containerId,
   index,
@@ -50,6 +52,7 @@ export function Card({
   const [assigneeFieldOpen, setAssigneeFieldOpen] = useState(false);
   const [dueDateFieldOpen, setDueDateFieldOpen] = useState(false);
   const { ref, isDragging, closestEdge } = useSortableItem({
+    disabled: draggingDisabled,
     itemId: task.id,
     index,
     containerId,
@@ -171,11 +174,12 @@ export function Card({
     <div
       ref={ref as React.RefObject<HTMLDivElement>}
       className={classNames(
-        "relative rounded-lg border bg-surface-base px-3.5 py-3 shadow-xs group w-full cursor-grab focus-visible:outline-none transition-[border-color,box-shadow] hover:border-surface-outline hover:shadow-sm",
+        "relative rounded-lg border bg-surface-base px-3.5 py-3 shadow-xs group w-full focus-visible:outline-none transition-[border-color,box-shadow] hover:border-surface-outline hover:shadow-sm",
         selected
           ? "border-brand-1 bg-[rgba(224,242,254,0.75)] shadow-[inset_0_0_0_2px_var(--color-brand-1)] dark:bg-[rgba(37,99,235,0.20)]"
           : "border-surface-subtle dark:border-stroke-base",
         {
+          "cursor-grab": !draggingDisabled,
           "opacity-60": isDimmed,
           "cursor-grabbing": isDragging,
         },
@@ -188,11 +192,13 @@ export function Card({
     >
       {dropIndicatorEdge && <DropIndicator edge={dropIndicatorEdge} />}
       <div className="flex items-start gap-2">
-        <IconGripVertical
-          size={16}
-          className="mt-0.5 flex-shrink-0 text-content-subtle opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
-          aria-hidden="true"
-        />
+        {!draggingDisabled && (
+          <IconGripVertical
+            size={16}
+            className="mt-0.5 flex-shrink-0 text-content-subtle opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+            aria-hidden="true"
+          />
+        )}
         <div className="flex-1 min-w-0 flex flex-col gap-2">
           <div onMouseDown={stopDragFromInteractive}>
             <div

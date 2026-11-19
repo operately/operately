@@ -8,12 +8,11 @@ defmodule Operately.CompanyTransfers.Import.OrderingStateRewriter do
   alias OperatelyWeb.Api.Helpers
 
   @registry %{
-    "groups" => [
+    "task_boards" => [
       %{column: "tasks_kanban_state", kind: :id_lists_by_key, table: "tasks"}
     ],
     "projects" => [
-      %{column: "milestones_ordering_state", kind: :id_list, table: "project_milestones"},
-      %{column: "tasks_kanban_state", kind: :id_lists_by_key, table: "tasks"}
+      %{column: "milestones_ordering_state", kind: :id_list, table: "project_milestones"}
     ],
     "project_milestones" => [
       %{column: "tasks_ordering_state", kind: :id_list, table: "tasks"},
@@ -32,6 +31,18 @@ defmodule Operately.CompanyTransfers.Import.OrderingStateRewriter do
   @doc """
   Rewrites known ordering and kanban state fields for the given row.
   """
+  def rewrite_row_fields(%{"preferences" => %{"task_ordering" => ids} = preferences} = row, "people", %TranslationPlan{} = plan) when is_list(ids) do
+    # Personal ordering stores UUIDs, unlike the encoded IDs in shared board state.
+    translated = Enum.flat_map(ids, fn id ->
+      case TranslationPlan.translate(plan, "tasks", id) do
+        nil -> []
+        translated_id -> [translated_id]
+      end
+    end)
+
+    {:ok, Map.put(row, "preferences", Map.put(preferences, "task_ordering", translated))}
+  end
+
   def rewrite_row_fields(row, table, %TranslationPlan{} = plan) when is_map(row) and is_binary(table) do
     Enum.reduce(Map.get(@registry, table, []), row, fn config, acc ->
       rewrite_field(acc, config, plan)

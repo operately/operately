@@ -26,9 +26,9 @@ type DueDateFieldTarget = "mobile" | "desktop" | null;
 interface TaskItemProps {
   task: TaskWithIndex;
   milestoneId: string;
-  onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-  onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;
-  onTaskStatusChange: (taskId: string, status: Status | null) => void;
+  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskAssigneeChange?: (taskId: string, assignees: Person[]) => void;
+  onTaskStatusChange?: (taskId: string, status: Status | null) => void;
   assigneePersonSearch?: PersonField.SearchData;
   statusOptions: StatusSelector.StatusOption[];
   draggingDisabled?: boolean;
@@ -76,7 +76,7 @@ export function TaskItem({
     if (!element) return;
 
     const openAssigneeField = () => {
-      if (!assigneePersonSearch) return;
+      if (!onTaskAssigneeChange || !assigneePersonSearch) return;
 
       prepareFocusRestore();
       setAssigneeFieldOpen(true);
@@ -111,6 +111,7 @@ export function TaskItem({
       element.removeEventListener(OPEN_TASK_EVENT, openTask);
     };
   }, [
+    onTaskAssigneeChange,
     assigneePersonSearch,
     onTaskClick,
     onTaskDueDateChange,
@@ -224,6 +225,7 @@ export function TaskItem({
                   onChange={handleStatusChange}
                   size="md"
                   readonly={!onTaskStatusChange}
+                  testId="task-status"
                   isOpen={statusFieldOpen}
                   onOpenChange={handleStatusFieldOpenChange}
                   onCloseAutoFocus={restoreFocusOnCloseAutoFocus}
@@ -312,7 +314,7 @@ export function TaskItem({
             className="flex items-center justify-end flex-shrink-0 min-w-6 max-w-[7rem] h-6 cursor-pointer"
             onMouseDown={stopDragFromInteractive}
           >
-            {assigneePersonSearch ? (
+            {onTaskAssigneeChange && assigneePersonSearch ? (
               <AssigneesField
                 people={currentAssignees}
                 setPeople={handleAssigneesChange}

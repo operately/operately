@@ -65,7 +65,7 @@ defmodule OperatelyWeb.Api.Spaces.CreateTest do
 
   defp assert_space_created(res) do
     {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.space.id)
-    assert Operately.Groups.get_group(id)
+    assert Operately.Groups.get_group(id).tools.kpis_enabled == true
   end
 
   #

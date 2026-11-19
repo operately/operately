@@ -3,7 +3,7 @@ defmodule Operately.I18n.ValidationErrorsTest do
   alias Operately.I18n.ValidationErrors
 
   test "member email length errors translate complete sentences and interpolate limits" do
-    for locale <- ["en", "pt_BR", "fr"], count <- [0, 1, 2, 160] do
+    for locale <- ["en", "pt_BR", "nl"], count <- [0, 1, 2, 160] do
       Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
         expected =
           if locale == "pt_BR" do
@@ -30,7 +30,7 @@ defmodule Operately.I18n.ValidationErrorsTest do
   end
 
   test "unknown errors and missing locales retain English and interpolate literal values" do
-    for locale <- ["en", "fr"] do
+    for locale <- ["en", "nl"] do
       Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
         assert ValidationErrors.member(:full_name, "can't be blank") == "Name can't be blank"
         assert ValidationErrors.translate({"should be at least %{count} character(s)", count: 2}) == "should be at least 2 character(s)"

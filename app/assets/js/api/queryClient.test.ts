@@ -1,7 +1,10 @@
+/** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
+import React from "react";
+import { act, renderHook, waitFor } from "@/__tests__/renderHook";
 import axios from "axios";
-import { QueryObserver } from "@tanstack/react-query";
+import { QueryClientProvider, QueryObserver } from "@tanstack/react-query";
 import Api from "./index";
-import { loaderBackedQueryOptions, queryClient } from "./queryClient";
+import { loaderBackedQueryOptions, queryClient, useLoadedQuery } from "./queryClient";
 
 jest.mock("axios");
 
@@ -115,3 +118,71 @@ function waitForRefetch(observer: QueryObserver, expectedRequestCount: number): 
     });
   });
 }
+
+describe("useLoadedQuery error handling", () => {
+  const queryKey = ["loaded-query"];
+  const wrapper = ({ children }: React.PropsWithChildren) =>
+    React.createElement(QueryClientProvider, { client: queryClient }, children);
+
+  beforeEach(() => queryClient.clear());
+  afterEach(() => queryClient.clear());
+
+  async function failedQuery() {
+    const error = Object.assign(new Error("Service unavailable"), { response: { status: 503 } });
+    const queryFn = jest.fn<Promise<string>, []>().mockRejectedValue(error);
+    await expect(queryClient.fetchQuery({ queryKey, queryFn })).rejects.toBe(error);
+    return { error, queryFn };
+  }
+
+  it("propagates the original failure without retrying it on mount", async () => {
+    const { error, queryFn } = await failedQuery();
+    const log = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      let caught: unknown;
+      try {
+        renderHook(() => useLoadedQuery({ queryKey, queryFn }), { initialProps: undefined, wrapper });
+      } catch (failure) {
+        caught = failure;
+      }
+      expect(caught).toBe(error);
+      expect(queryFn).toHaveBeenCalledTimes(1);
+    } finally {
+      log.mockRestore();
+    }
+  });
+
+  it.each([false, () => false])("keeps a disabled query's cached failure local (%#)", async (enabled) => {
+    const { error, queryFn } = await failedQuery();
+    const { result } = renderHook(() => useLoadedQuery({ queryKey, queryFn, enabled }), {
+      initialProps: undefined,
+      wrapper,
+    });
+    expect(result.current.error).toBe(error);
+    expect(queryFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("allows local error handling and an explicit retry", async () => {
+    const { error, queryFn } = await failedQuery();
+    const { result } = renderHook(() => useLoadedQuery({ queryKey, queryFn, throwOnError: false }), {
+      initialProps: undefined,
+      wrapper,
+    });
+    expect(result.current.error).toBe(error);
+    queryFn.mockResolvedValue("Recovered");
+    await act(() => result.current.refetch());
+    await waitFor(() => expect(result.current.data).toBe("Recovered"));
+  });
+
+  it("retains cached data when a background refresh fails", async () => {
+    const error = new Error("Offline");
+    const queryFn = jest.fn().mockRejectedValue(error);
+    queryClient.setQueryData(queryKey, "Cached content");
+    const { result } = renderHook(() => useLoadedQuery<string>({ queryKey, queryFn }), {
+      initialProps: undefined,
+      wrapper,
+    });
+    await act(() => queryClient.invalidateQueries({ queryKey }));
+    await waitFor(() => expect(result.current.error).toBe(error));
+    expect(result.current.data).toBe("Cached content");
+  });
+});

@@ -5,42 +5,86 @@ import { useFieldValue } from "./context";
 import { InputField } from "./FieldGroup";
 import type { RadioButtonsProps } from "./types";
 
-export function RadioButtons({ field, label, hidden, options, containerClass }: RadioButtonsProps) {
-  const className = classNames("mt-1", containerClass ?? "flex flex-col gap-2");
+export function RadioButtons({
+  field,
+  label,
+  hidden,
+  options,
+  containerClass,
+  variant = "default",
+}: RadioButtonsProps) {
+  const className = classNames(
+    "mt-1",
+    containerClass ?? (variant === "cards" ? "grid grid-cols-3 gap-2" : "flex flex-col gap-2"),
+  );
 
   return (
     <InputField field={field} label={label} hidden={hidden}>
       <div className={className}>
         {options.map((option) => (
-          <RadioButton key={option.value} field={field} value={option.value} label={option.label} />
+          <RadioButton key={option.value} field={field} {...option} variant={variant} />
         ))}
       </div>
     </InputField>
   );
 }
 
-function RadioButton({ field, value, label }: { field: string; value: string; label: string }) {
+function RadioButton({
+  field,
+  value,
+  label,
+  icon,
+  variant,
+}: {
+  field: string;
+  value: string;
+  label: string;
+  icon?: React.ReactNode;
+  variant: RadioButtonsProps["variant"];
+}) {
   const [activeValue, setActiveValue] = useFieldValue<string>(field);
+  const isCard = variant === "cards";
 
   return (
-    <label className="flex items-start gap-2">
+    <label className={isCard ? "relative flex min-w-0" : "flex items-start gap-2"}>
       <input
         data-test-id={field + "-" + value}
         name={field}
         type="radio"
-        className={radioClass}
+        className={isCard ? cardClass : radioClass}
         style={radioStyle}
         value={value}
         onChange={() => setActiveValue(value)}
         checked={value === activeValue}
       />
 
-      <div className="flex flex-col">
-        <div className="text-content-accent leading-none">{label}</div>
+      <div
+        className={
+          isCard
+            ? "relative pointer-events-none flex min-h-24 w-full flex-col items-center justify-center gap-1.5 p-2 text-center"
+            : "flex flex-col"
+        }
+      >
+        {isCard && icon && <span aria-hidden="true">{icon}</span>}
+        <div
+          className={
+            isCard ? "text-content-accent text-sm font-semibold leading-tight" : "text-content-accent leading-none"
+          }
+        >
+          {label}
+        </div>
       </div>
     </label>
   );
 }
+
+const cardClass = classNames(
+  "peer absolute inset-0 m-0 h-full w-full cursor-pointer appearance-none rounded border",
+  "border-surface-outline bg-surface-dimmed hover:bg-surface-accent",
+  "checked:border-accent-1 checked:bg-surface-base checked:hover:bg-surface-accent",
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1",
+  "disabled:cursor-not-allowed disabled:opacity-50",
+);
 
 const radioClass = classNames(
   "before:content[''] peer relative h-4 w-4 cursor-pointer appearance-none",

@@ -421,10 +421,15 @@ defmodule OperatelyWeb.Api.Kpis do
           title: inputs.title,
           created_by_id: ctx.me.id
         })
+        |> normalize_operation_result()
       end)
       |> run(:serialized, fn ctx -> {:ok, %{annotation: Serializer.serialize(Repo.preload(ctx.operation, :created_by), level: :essential)}} end)
       |> respond()
     end
+
+    defp normalize_operation_result({:error, :annotation, %Ecto.Changeset{} = changeset, _changes}), do: {:error, changeset}
+    defp normalize_operation_result({:error, step, reason, changes}), do: {:error, {step, reason, changes}}
+    defp normalize_operation_result(result), do: result
 
     defp load_kpi(kpi_id) do
       case Kpis.get_kpi(kpi_id) do
@@ -439,7 +444,8 @@ defmodule OperatelyWeb.Api.Kpis do
         {:error, :kpi, _} -> {:error, :not_found}
         {:error, :space, _} -> {:error, :not_found}
         {:error, :check_permissions, _} -> {:error, :forbidden}
-        {:error, :operation, _} -> {:error, :bad_request}
+        {:error, :operation, %{error: %Ecto.Changeset{}}} -> {:error, :bad_request}
+        {:error, :operation, _} -> {:error, :internal_server_error}
         _ -> {:error, :internal_server_error}
       end
     end
@@ -470,10 +476,17 @@ defmodule OperatelyWeb.Api.Kpis do
       |> run(:kpi, fn ctx -> {:ok, ctx.annotation.kpi} end)
       |> run(:space, fn ctx -> Group.get(ctx.me, id: ctx.kpi.space_id) end)
       |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
-      |> run(:operation, fn ctx -> Kpis.edit_annotation(ctx.me, ctx.kpi, ctx.annotation, edit_attrs(inputs)) end)
+      |> run(:operation, fn ctx ->
+        Kpis.edit_annotation(ctx.me, ctx.kpi, ctx.annotation, edit_attrs(inputs))
+        |> normalize_operation_result()
+      end)
       |> run(:serialized, fn ctx -> {:ok, %{annotation: Serializer.serialize(Repo.preload(ctx.operation, :created_by), level: :essential)}} end)
       |> respond()
     end
+
+    defp normalize_operation_result({:error, :annotation, %Ecto.Changeset{} = changeset, _changes}), do: {:error, changeset}
+    defp normalize_operation_result({:error, step, reason, changes}), do: {:error, {step, reason, changes}}
+    defp normalize_operation_result(result), do: result
 
     defp load_annotation(annotation_id) do
       case Kpis.get_annotation(annotation_id) do
@@ -494,7 +507,8 @@ defmodule OperatelyWeb.Api.Kpis do
         {:error, :annotation, _} -> {:error, :not_found}
         {:error, :space, _} -> {:error, :not_found}
         {:error, :check_permissions, _} -> {:error, :forbidden}
-        {:error, :operation, _} -> {:error, :bad_request}
+        {:error, :operation, %{error: %Ecto.Changeset{}}} -> {:error, :bad_request}
+        {:error, :operation, _} -> {:error, :internal_server_error}
         _ -> {:error, :internal_server_error}
       end
     end

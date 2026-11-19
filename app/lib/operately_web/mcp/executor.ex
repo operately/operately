@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Mcp.Executor do
 
   use Gettext, backend: OperatelyWeb.Gettext
 
+  alias OperatelyWeb.DatabaseErrors
   alias OperatelyWeb.Api.RichContent.Preparation
   alias Jason.EncodeError
   alias Plug.Conn
@@ -44,11 +45,31 @@ defmodule OperatelyWeb.Mcp.Executor do
       {:error, :invalid_arguments} = error -> error
       {:error, :not_implemented} -> {:ok, not_implemented_result(definition.name)}
       {:error, :not_found} -> {:ok, not_found_result()}
+      {:error, :not_found, _message} -> {:ok, not_found_result()}
       {:error, :forbidden} -> {:ok, forbidden_result()}
       {:error, :bad_request} -> {:ok, bad_request_result()}
+      {:error, :bad_request, message, details} -> {:ok, detailed_bad_request_result(message, details)}
+      {:error, :bad_request, message} when is_binary(message) -> {:ok, bad_request_result(message)}
       {:error, :internal_server_error} -> {:ok, internal_error_result()}
       {:error, _reason} -> {:ok, internal_error_result()}
     end
+  rescue
+    error ->
+      if DatabaseErrors.queue_timeout?(error) do
+        DatabaseErrors.put_sentry_context(conn)
+
+        {exception, stack} =
+          case error do
+            %Plug.Conn.WrapperError{reason: reason, stack: stack} -> {reason, stack}
+            _ -> {error, __STACKTRACE__}
+          end
+
+        # This failure becomes a tool result, so PlugCapture will not see it.
+        Sentry.capture_exception(exception, stacktrace: stack, tags: %{mcp_tool: definition.name})
+        {:ok, %{"isError" => true, "content" => [text_content(DatabaseErrors.message())]}}
+      else
+        reraise error, __STACKTRACE__
+      end
   end
 
   defp ensure_authenticated_conn(conn) do
@@ -89,10 +110,19 @@ defmodule OperatelyWeb.Mcp.Executor do
     }
   end
 
-  defp bad_request_result do
+  defp bad_request_result(message \\ gettext("The tool could not complete the request with the provided data.")) do
     %{
       "isError" => true,
-      "content" => [text_content(gettext("The tool could not complete the request with the provided data."))]
+      "content" => [text_content(message)]
+    }
+  end
+
+  defp detailed_bad_request_result(message, details) do
+    payload = stringify_keys(%{error: "Bad request", message: message, details: details})
+    %{
+      "isError" => true,
+      "structuredContent" => payload,
+      "content" => [text_content(encode_json!(payload))]
     }
   end
 
@@ -115,6 +145,11 @@ defmodule OperatelyWeb.Mcp.Executor do
   rescue
     EncodeError -> "{}"
   end
+
+  defp stringify_keys(%Date{} = value), do: Date.to_iso8601(value)
+  defp stringify_keys(%DateTime{} = value), do: DateTime.to_iso8601(value)
+  defp stringify_keys(%NaiveDateTime{} = value), do: NaiveDateTime.to_iso8601(value)
+  defp stringify_keys(%Time{} = value), do: Time.to_iso8601(value)
 
   defp stringify_keys(value) when is_map(value) do
     Map.new(value, fn {key, nested_value} ->

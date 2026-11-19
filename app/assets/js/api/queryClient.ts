@@ -50,5 +50,15 @@ export function useLoadedQuery<
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 >(options: UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>): UseQueryResult<TData, TError> {
-  return useQuery<TQueryFnData, TError, TData, TQueryKey>(loaderBackedQueryOptions(options));
+  return useQuery<TQueryFnData, TError, TData, TQueryKey>({
+    ...loaderBackedQueryOptions(options),
+    retryOnMount: false,
+    // Preserve request failures for the route boundary unless the surface handles them locally.
+    throwOnError:
+      options.throwOnError ??
+      ((_error, query) => {
+        const enabled = typeof options.enabled === "function" ? options.enabled(query) : options.enabled;
+        return enabled !== false && query.state.data === undefined;
+      }),
+  });
 }

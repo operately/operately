@@ -8,11 +8,19 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :id
     field :type, :curated_template_type
     field :title, :string
+    field :slug, :string
     field? :summary, :string, null: true
     field? :category, :string, null: true
     field :content_language, :string
     field :updated_at, :datetime
     field? :definition, :json
+    field? :preview_data, :json
+  end
+
+  object :curated_template_instantiation, for: Operately.Operations.CuratedTemplateInstantiation.Result do
+    field :resource_type, :curated_template_type, null: false
+    field :resource_id, :id, null: false
+    field :space_id, :id, null: false
   end
 
   enum :rich_text_resource_type, values: OperatelyWeb.Api.RichContent.Resources.types()
@@ -292,6 +300,26 @@ defmodule OperatelyWeb.Api.Types do
     field :kpi, :kpi
     field? :champion, :person, null: true
     field :kpi_name, :string
+  end
+
+  object :activity_content_kpi_deleted, for: Operately.Activities.Content.KpiDeleted do
+    field :space, :space, null: true
+    field :kpi_name, :string, null: false
+  end
+
+  object :activity_content_kpi_edited, for: Operately.Activities.Content.KpiEdited do
+    field :space, :space, null: true
+    field :kpi, :kpi, null: true
+    field :old_name, :string, null: false
+    field :new_name, :string, null: false
+  end
+
+  object :activity_content_kpi_entry_logged, for: Operately.Activities.Content.KpiEntryLogged do
+    field :space, :space, null: false
+    field :kpi, :kpi, null: true
+    field :entry, :kpi_entry, null: true
+    field :value, :float, null: false
+    field :period, :date, null: false
   end
 
   object :activity_content_kpi_entry_commented, for: Operately.Activities.Content.KpiEntryCommented do
@@ -1214,8 +1242,10 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :space_permissions, null: true
     field? :members, list_of(:person), null: true
     field? :access_levels, :access_levels, null: true
+    field? :tools, :space_tool_settings, null: false
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :notifications, list_of(:notification), null: true
+    field? :default_task_board_id, :id, null: true
     field? :task_statuses, list_of(:task_status), null: true
     field? :tasks_kanban_state, :json, null: true
   end
@@ -1246,6 +1276,9 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_discussion_editing,
       :activity_content_discussion_posting,
       :activity_content_kpi_created,
+      :activity_content_kpi_deleted,
+      :activity_content_kpi_edited,
+      :activity_content_kpi_entry_logged,
       :activity_content_kpi_entry_commented,
       :activity_content_kpi_entry_edited,
       :activity_content_kpi_entry_deleted,
@@ -1299,6 +1332,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_project_review_submitted,
       :activity_content_project_timeline_edited,
       :activity_content_resource_hub_document_commented,
+      :activity_content_resource_hub_document_inline_thread_resolution_changed,
       :activity_content_resource_hub_document_created,
       :activity_content_resource_hub_document_deleted,
       :activity_content_resource_hub_document_edited,
@@ -1312,6 +1346,13 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_resource_hub_folder_created,
       :activity_content_resource_hub_folder_deleted,
       :activity_content_resource_hub_folder_renamed,
+      :activity_content_resource_hub_deleted,
+      :activity_content_resource_hub_renamed,
+      :activity_content_task_board_created,
+      :activity_content_task_board_renamed,
+      :activity_content_task_board_default_changed,
+      :activity_content_task_board_archived,
+      :activity_content_task_board_restored,
       :activity_content_resource_hub_link_commented,
       :activity_content_resource_hub_link_created,
       :activity_content_resource_hub_link_deleted,
@@ -1329,6 +1370,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_task_reopening,
       :activity_content_task_size_change,
       :activity_content_task_status_change,
+      :activity_content_task_archive_updating,
       :activity_content_task_status_updating,
       :activity_content_task_update
     ]
@@ -1367,6 +1409,51 @@ defmodule OperatelyWeb.Api.Types do
     field? :folder, :resource_hub_folder, null: true
     field? :old_name, :string, null: true
     field? :new_name, :string, null: true
+  end
+
+  object :activity_content_resource_hub_deleted, for: Operately.Activities.Content.ResourceHubDeleted do
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field :name, :string, null: false
+  end
+
+  object :activity_content_task_board_created, for: Operately.Activities.Content.TaskBoardCreated do
+    field :space, :space, null: true
+    field :board_id, :id, null: false
+    field :name, :string, null: false
+  end
+
+  object :activity_content_task_board_archived, for: Operately.Activities.Content.TaskBoardArchived do
+    field :space, :space, null: true
+    field :board_id, :id, null: false
+    field :name, :string, null: false
+  end
+
+  object :activity_content_task_board_restored, for: Operately.Activities.Content.TaskBoardRestored do
+    field :space, :space, null: true
+    field :board_id, :id, null: false
+    field :name, :string, null: false
+  end
+
+  object :activity_content_task_board_default_changed, for: Operately.Activities.Content.TaskBoardDefaultChanged do
+    field :space, :space, null: true
+    field :board_id, :id, null: false
+    field :previous_board_id, :id, null: true
+    field :name, :string, null: false
+  end
+
+  object :activity_content_task_board_renamed, for: Operately.Activities.Content.TaskBoardRenamed do
+    field :space, :space, null: true
+    field :board_id, :id, null: false
+    field :old_name, :string, null: false
+    field :new_name, :string, null: false
+  end
+
+  object :activity_content_resource_hub_renamed, for: Operately.Activities.Content.ResourceHubRenamed do
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field :old_name, :string, null: false
+    field :new_name, :string, null: false
   end
 
   object :activity_content_resource_hub_file_created, for: Operately.Activities.Content.ResourceHubFileCreated do
@@ -1445,6 +1532,16 @@ defmodule OperatelyWeb.Api.Types do
     field? :document, :resource_hub_document, null: true
   end
 
+  object :activity_content_resource_hub_document_inline_thread_resolution_changed, for: Operately.Activities.Content.ResourceHubDocumentInlineThreadResolutionChanged do
+    field? :goal, :goal, null: true
+    field? :project, :project, null: true
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :document, :resource_hub_document, null: true
+    field :inline_thread_id, :id, null: false
+    field :resolved, :boolean, null: false
+  end
+
   object :activity_content_resource_hub_document_commented, for: Operately.Activities.Content.ResourceHubDocumentCommented do
     field? :goal, :goal, null: true
     field? :project, :project, null: true
@@ -1452,6 +1549,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :resource_hub, :resource_hub, null: true
     field? :document, :resource_hub_document, null: true
     field? :comment, :comment, null: true
+    field? :inline_thread_id, :id, null: true
   end
 
   object :activity_content_resource_hub_link_created, for: Operately.Activities.Content.ResourceHubLinkCreated do
@@ -1568,6 +1666,14 @@ defmodule OperatelyWeb.Api.Types do
     field :new_due_date, :contextual_date, null: false
   end
 
+  object :activity_content_task_archive_updating, for: Operately.Activities.Content.TaskArchiveUpdating do
+    field :space, :space, null: false
+    field :project, :project, null: true
+    field :task, :task, null: true
+    field :name, :string, null: false
+    field :archived, :boolean, null: false
+  end
+
   object :activity_content_task_status_updating, for: Operately.Activities.Content.TaskStatusUpdating do
     field :space, :space, null: false
     field :project, :project, null: true
@@ -1616,6 +1722,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_task_adding, for: Operately.Activities.Content.TaskAdding do
+    field? :board_id, :id, null: true
     field :space, :space
     field :project, :project, null: true
     field :milestone, :milestone, null: true
@@ -1634,6 +1741,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_task_moving, for: Operately.Activities.Content.TaskMoving do
+    field? :origin_board_id, :id, null: true
+    field? :destination_board_id, :id, null: true
     field :task, :task, null: true
     field :task_name, :string, null: false
     field :origin_type, :task_type, null: false
@@ -1702,6 +1811,14 @@ defmodule OperatelyWeb.Api.Types do
     field? :templates_enabled, :boolean, null: false
   end
 
+  object :space_tool_settings do
+    field :tasks_enabled, :boolean, null: false
+    field :discussions_enabled, :boolean, null: false
+    field :resource_hub_enabled, :boolean, null: false
+    field :kpis_enabled, :boolean, null: false
+    field :templates_enabled, :boolean, null: false
+  end
+
   object :space_tools, for: Operately.Groups.SpaceTools do
     field :tasks_enabled, :boolean, null: false
     field :discussions_enabled, :boolean, null: false
@@ -1714,6 +1831,7 @@ defmodule OperatelyWeb.Api.Types do
     field :messages_boards, list_of(:messages_board), null: true
     field :resource_hubs, list_of(:resource_hub), null: true
     field :tasks, list_of(:task), null: true
+    field? :task_boards, list_of(:task_board_summary), null: true
     field :kpis, list_of(:kpi), null: true
     field :templates, list_of(:project_template), null: true
   end
@@ -1745,6 +1863,13 @@ defmodule OperatelyWeb.Api.Types do
     field? :url, :string, null: true
   end
 
+  object :resource_hub_summary, for: Operately.ResourceHubs.Summary do
+    field :id, :id
+    field :name, :string
+    field :position, :integer, null: false
+    field :is_default, :boolean
+  end
+
   object :resource_hub, for: Operately.ResourceHubs.ResourceHub do
     field :id, :string, null: false
     field :name, :string, null: false
@@ -1755,6 +1880,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :nodes, list_of(:resource_hub_node), null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :permissions, :resource_hub_permissions, null: true
+    field? :position, :integer, null: true
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
   end
@@ -1777,7 +1903,36 @@ defmodule OperatelyWeb.Api.Types do
     field? :can_edit_file, :boolean, null: true
     field? :can_edit_link, :boolean, null: true
     field? :can_rename_folder, :boolean, null: true
+    field? :can_rename_hub, :boolean, null: true
     field? :can_view, :boolean, null: true
+  end
+
+  enum :inline_thread_resource_type, values: Operately.Comments.InlineThread.resource_types()
+  enum :inline_anchor_status, values: Operately.Comments.InlineAnchor.statuses()
+
+  object :inline_anchor, for: Operately.Comments.InlineAnchor do
+    field :source_version, :integer, null: false
+    field :source_from, :integer, null: false
+    field :source_to, :integer, null: false
+    field :quote, :string, null: false
+    field :prefix, :string, null: false
+    field :suffix, :string, null: false
+    field :current_version, :integer, null: false
+    field :current_from, :integer, null: true
+    field :current_to, :integer, null: true
+    field :status, :inline_anchor_status, null: false
+  end
+
+  object :inline_thread, for: Operately.Comments.InlineThread do
+    field :id, :id, null: false
+    field :resource_type, :inline_thread_resource_type, null: false
+    field :resource_id, :id, null: false
+    field :author, :person, null: true
+    field :resolved_at, :string, null: true
+    field :resolved_by, :person, null: true
+    field :inserted_at, :string, null: false
+    field :anchor, :inline_anchor, null: false
+    field :messages, list_of(:comment), null: false
   end
 
   object :document_version, for: Operately.ResourceHubs.DocumentVersion do
@@ -1957,6 +2112,7 @@ defmodule OperatelyWeb.Api.Types do
   enum :search_sort, values: Operately.Search.CompanyQuery.Filters.sorts()
 
   object :search_navigation_target do
+    field? :board_id, :id, null: true
     field? :resource_hub_id, :string, null: true
     field? :folder_id, :string, null: true
     field? :document_id, :string, null: true
@@ -2033,12 +2189,37 @@ defmodule OperatelyWeb.Api.Types do
     field? :date, :date, null: true
   end
 
+  enum :task_board_archive_status, values: [:active, :archived, :all]
+
+  object :task_board, for: Operately.Tasks.TaskBoard do
+    field? :space_id, :id, null: true
+    field? :project_id, :id, null: true
+    field :id, :id, null: false
+    field :name, :string, null: false
+    field :archived_at, :datetime, null: true
+    field :task_statuses, list_of(:task_status), null: false
+    field :tasks_kanban_state, :json, null: false
+  end
+
+  object :task_board_summary, for: Operately.Tasks.BoardSummary do
+    field? :space_id, :id, null: true
+    field? :project_id, :id, null: true
+    field :id, :id, null: false
+    field :name, :string, null: false
+    field :position, :integer, null: false
+    field :is_default, :boolean, null: false
+    field :archived_at, :datetime, null: true
+  end
+
   object :task, for: Operately.Tasks.Task do
+    field? :space_id, :id, null: true
+    field? :board_id, :id, null: true
     field :id, :string
     field? :url, :string
     field :name, :string
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
+    field? :archived_at, :datetime, null: true
     field? :closed_at, :datetime, null: true
     field? :due_date, :contextual_date, null: true
     field? :reminders, list_of(:task_reminder), null: true
@@ -2335,6 +2516,7 @@ defmodule OperatelyWeb.Api.Types do
   enum :language, values: Operately.I18n.Languages.api_values()
 
   object :person, for: Operately.People.Person do
+    field? :title_setup_pending, :boolean, null: false
     field :id, :string
     field? :url, :string
     field :full_name, :string
@@ -2896,6 +3078,12 @@ defmodule OperatelyWeb.Api.Types do
     field :timeframe, :timeframe, null: true
   end
 
+  object :project_task_completion do
+    field :completed_count, :integer, null: false
+    field :total_count, :integer, null: false
+    field :percentage, :integer, null: false
+  end
+
   object :work_map_item, for: Operately.WorkMaps.WorkMapItem do
     field :id, :string, null: false
     field :parent_id, :string, null: true
@@ -2903,7 +3091,10 @@ defmodule OperatelyWeb.Api.Types do
     field :state, :work_map_item_state, null: false
     field :status, :work_map_item_status, null: false
     field :task_status, :task_status, null: true
+    field? :task_statuses, list_of(:task_status), null: true
+    field? :can_edit_task, :boolean, null: true
     field :progress, :float, null: true
+    field? :task_completion, :project_task_completion, null: true
     field :space, :space, null: true
     field :space_path, :string, null: true
     field :project, :project, null: true

@@ -3,7 +3,8 @@ import * as DropdownMenu from "../Embedding/DropdownMenu";
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
-import { IconChevronRight, IconDots } from "../icons";
+import { DivLink } from "../Link";
+import { IconCheck, IconChevronDown, IconChevronRight, IconDots } from "../icons";
 
 import { TestableElement, createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
@@ -12,6 +13,9 @@ import { useWindowSizeBreakpoints } from "../utils/useWindowSizeBreakpoint";
 type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
 
 interface MenuProps extends TestableElement {
+  triggerIcon?: React.ComponentType<{ size: number }>;
+  triggerLabel?: string;
+  ariaLabel?: string;
   children: React.ReactNode;
   customTrigger?: React.ReactNode;
   headerContent?: React.ReactNode;
@@ -35,6 +39,7 @@ interface MenuItemProps extends TestableElement {
 
 interface MenuLinkItemProps extends MenuItemProps {
   to: string;
+  target?: string;
 }
 
 interface MenuActionItemProps extends MenuItemProps {
@@ -50,6 +55,7 @@ interface MenuActionItemProps extends MenuItemProps {
 
 interface SubMenuProps {
   label: string;
+  valueLabel?: string;
   icon?: React.ComponentType<{ size: any }>;
   children: React.ReactNode;
   hidden?: boolean;
@@ -89,6 +95,7 @@ export function Menu(props: MenuProps) {
 
 function Trigger(props: MenuProps) {
   const embedding = useEmbedding();
+  const TriggerIcon = props.triggerIcon ?? IconDots;
   if (props.anchorPosition) {
     // A noninteractive anchor positions a controlled menu at a context-click location.
     const trigger = (
@@ -124,18 +131,26 @@ function Trigger(props: MenuProps) {
   } else {
     return (
       <DropdownMenu.Trigger
-        className={menuTriggerClass}
+        className={classNames(menuTriggerClass, props.triggerLabel && "flex items-center gap-2 text-sm font-medium")}
+        aria-label={props.ariaLabel}
         data-test-id={props.testId}
         disabled={props.readonly}
         aria-readonly={props.readonly || undefined}
       >
-        <IconDots size={20} />
+        {props.triggerLabel ? (
+          <>
+            {props.triggerLabel}
+            <IconChevronDown size={16} />
+          </>
+        ) : (
+          <TriggerIcon size={20} />
+        )}
       </DropdownMenu.Trigger>
     );
   }
 }
 
-export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
+export function SubMenu({ label, valueLabel, icon, children, hidden }: SubMenuProps) {
   const isXsScreen = useWindowSizeBreakpoints() === "xs";
 
   if (hidden) return null;
@@ -145,6 +160,7 @@ export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
       <DropdownMenu.SubTrigger asChild>
         <div className={menuItemClass} data-test-id={createTestId(label)}>
           <MenuItemIconAndTitle icon={icon}>{label}</MenuItemIconAndTitle>
+          {valueLabel && <span className="text-content-subtle">{valueLabel}</span>}
           <IconChevronRight size={16} />
         </div>
       </DropdownMenu.SubTrigger>
@@ -174,6 +190,16 @@ export function MenuLinkItem(props: MenuLinkItemProps) {
   const navigate = useNavigate();
 
   if (props.hidden) return null;
+
+  if (props.target) {
+    return (
+      <DropdownMenu.Item asChild className={menuItemClassNames(props)}>
+        <DivLink to={props.to} target={props.target} testId={props.testId}>
+          <MenuItemIconAndTitle icon={props.icon}>{props.children}</MenuItemIconAndTitle>
+        </DivLink>
+      </DropdownMenu.Item>
+    );
+  }
 
   const handleClick = () => {
     navigate(props.to);
@@ -210,6 +236,21 @@ export function MenuActionItem(props: MenuActionItemProps) {
 
 export function MenuSeparator() {
   return <DropdownMenu.Separator className="my-2 h-px bg-surface-outline" />;
+}
+
+export function MenuRadioItem({
+  value,
+  children,
+  testId,
+}: React.PropsWithChildren<TestableElement & { value: string }>) {
+  return (
+    <DropdownMenu.RadioItem value={value} className={menuItemClass} data-test-id={testId}>
+      <span className="flex-1">{children}</span>
+      <DropdownMenu.ItemIndicator>
+        <IconCheck size={16} aria-hidden />
+      </DropdownMenu.ItemIndicator>
+    </DropdownMenu.RadioItem>
+  );
 }
 
 function useHasVisibleChildren(children: React.ReactNode): boolean {

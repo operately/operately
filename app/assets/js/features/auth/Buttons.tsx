@@ -1,3 +1,4 @@
+import { internalReturnPath } from "@/routes/paths";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import classNames from "classnames";
@@ -57,7 +58,7 @@ function signupEmailPath(inviteToken?: string | null, redirectTo?: string | null
     params.set("invite_token", inviteToken);
   }
 
-  if (redirectTo) {
+  if (redirectTo && internalReturnPath(redirectTo)) {
     params.set("redirect_to", redirectTo);
   }
 
@@ -95,7 +96,7 @@ function SignUpButton({ title, link, icon, external, testId }: SignUpButtonProps
 
 function getGoogleAuthUrl(): string {
   const params = new URLSearchParams(window.location.search);
-  const redirectTo = params.get("redirect_to");
+  const redirectTo = internalReturnPath(params.get("redirect_to"));
   const inviteToken = params.get("invite_token");
 
   const search = new URLSearchParams();

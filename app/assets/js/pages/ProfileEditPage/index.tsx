@@ -2,15 +2,10 @@ import * as React from "react";
 import * as People from "@/models/people";
 
 import { useNavigate } from "react-router";
-import { getTimezones } from "./timezones";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { applyLanguage } from "@/i18n";
 import { useTranslation } from "react-i18next";
-import { I18N_FEATURE_FLAG, isSupportedLanguage } from "@/i18n/languages";
-import { hasFeature } from "@/models/companies";
 import { PageModule } from "@/routes/types";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { usePaths } from "@/routes/paths";
 import { emptyContent, parseContent, ProfileEditPage } from "turboui";
 import * as Blobs from "@/models/blobs";
@@ -23,16 +18,13 @@ export type { FromLocation } from "./loader";
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
 
 function Page() {
-  useTranslation();
   const paths = usePaths();
   const me = useMe();
   const navigate = useNavigate();
   const { person, from } = useLoadedData();
-  const { company } = useCompanyLoaderData();
   const { mutateAsync: updateProfile } = People.useUpdateProfile();
 
   const isCurrentUser = me?.id === person.id;
-  const showLanguageSelector = isCurrentUser && hasFeature(company, I18N_FEATURE_FLAG);
 
   // Form state
   const [fullName, setFullName] = React.useState(person.fullName || "");
@@ -41,11 +33,6 @@ function Page() {
     if (!person.description) return emptyContent();
     return parseContent(person.description);
   });
-  const [timezone, setTimezone] = React.useState(person.timezone || "");
-  const [timeFormat, setTimeFormat] = React.useState<ProfileEditPage.TimeFormat>(person.timeFormat || "automatic");
-  const [language, setLanguage] = React.useState<ProfileEditPage.Language>(
-    isSupportedLanguage(person.language) ? person.language : "en",
-  );
   const [manager, setManager] = React.useState<ProfileEditPage.Person | null>(
     person.manager ? People.parsePersonForTurboUi(paths, person.manager) : null,
   );
@@ -80,28 +67,14 @@ function Page() {
         id: person.id,
         fullName: fullName.trim(),
         title: title.trim(),
-        timezone: timezone,
         managerId: manager?.id || null,
       };
 
       if (isCurrentUser) {
         updateParams.description = JSON.stringify(aboutMe);
-        updateParams.timeFormat = timeFormat;
-      }
-
-      if (showLanguageSelector) {
-        updateParams.language = language;
       }
 
       await updateProfile(updateParams);
-
-      if (showLanguageSelector) {
-        try {
-          await applyLanguage(language);
-        } catch (err) {
-          console.error(err);
-        }
-      }
 
       if (isCurrentUser) {
         navigate(paths.accountPath());
@@ -113,21 +86,7 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [
-    fullName,
-    title,
-    aboutMe,
-    timezone,
-    timeFormat,
-    language,
-    manager,
-    person.id,
-    isCurrentUser,
-    showLanguageSelector,
-    navigate,
-    paths,
-    updateProfile,
-  ]);
+  }, [fullName, title, aboutMe, manager, person.id, isCurrentUser, navigate, paths, updateProfile]);
 
   const displayPerson: ProfileEditPage.Person = {
     id: person.id,
@@ -143,16 +102,10 @@ function Page() {
       fullName={fullName}
       title={title}
       aboutMe={aboutMe}
-      timezone={timezone}
-      timeFormat={timeFormat}
-      language={language}
       manager={manager}
       onFullNameChange={setFullName}
       onTitleChange={setTitle}
       onAboutMeChange={setAboutMe}
-      onTimezoneChange={setTimezone}
-      onTimeFormatChange={setTimeFormat}
-      onLanguageChange={setLanguage}
       onManagerChange={setManager}
       onSubmit={handleSubmit}
       onAvatarUpload={avatar.handleAvatarUpload}
@@ -164,9 +117,7 @@ function Page() {
       managerSearch={managerSearch}
       richTextHandlers={richTextHandlers}
       localDraftKeyBase={`profile:${person.id}`}
-      timezones={getTimezones()}
       isCurrentUser={isCurrentUser}
-      showLanguageSelector={showLanguageSelector}
       fromLocation={from}
       companyAdminPath={paths.companyAdminPath()}
       managePeoplePath={paths.companyManagePeoplePath()}

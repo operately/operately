@@ -20,7 +20,7 @@
     "dev": "node scripts/build.mjs --watch",
     "lint": "tsc --noEmit -p tsconfig.json",
     "clean": "rm -rf node_modules && rm -rf dist",
-    "storybook": "storybook dev -p $PORT_STORYBOOK_SERVER",
+    "storybook": "storybook dev -p $PORT_STORYBOOK_SERVER --host 0.0.0.0",
     "build-storybook": "storybook build",
     "test": "jest",
     "test-storybook": "test-storybook",
@@ -30,9 +30,9 @@
     "test:package": "node scripts/check-package.mjs"
   },
   "devDependencies": {
-    "@storybook/addon-docs": "10.5.0",
-    "@storybook/addon-themes": "10.5.0",
-    "@storybook/react-vite": "10.5.0",
+    "@storybook/addon-docs": "10.6.2",
+    "@storybook/addon-themes": "10.6.2",
+    "@storybook/react-vite": "10.6.2",
     "@storybook/test-runner": "^0.24.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
@@ -63,8 +63,8 @@
     "react-select": "^5.8.0",
     "react-spinners": "^0.13.8",
     "react-textarea-autosize": "^8.5.9",
-    "storybook": "10.5.0",
-    "tailwindcss": "^3.4.17",
+    "storybook": "10.6.2",
+    "tailwindcss": "^3.4.19",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.3",
     "vite": "6.4.3",
@@ -75,6 +75,18 @@
   },
   "overrides": {
     "@types/react": "18.3.5",
+    "@joshwooding/vite-plugin-react-docgen-typescript": {
+      "glob": "14.0.2"
+    },
+    "@jest/reporters@30": {
+      "glob": "14.0.2"
+    },
+    "jest-config@30": {
+      "glob": "14.0.2"
+    },
+    "jest-runtime@30": {
+      "glob": "14.0.2"
+    },
     "rollup": "4.62.2",
     "uuid": "11.1.1",
     "vite": "6.4.3"
@@ -109,6 +121,7 @@
     "@tiptap/suggestion": "^3.30.5",
     "canvas-confetti": "^1.9.3",
     "hotkeys-js": "^3.13.15",
+    "linkifyjs": "^4.3.3",
     "react-hook-form": "^7.56.1",
     "react-hot-toast": "^2.5.2",
     "@tiptap/extension-list": "^3.30.5",
@@ -125,7 +138,7 @@
     "classnames": "^2.5.1",
     "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0"
   },
-  "version": "0.3.0",
+  "version": "0.5.0",
   "description": "React components and pages for Operately",
   "repository": {
     "type": "git",

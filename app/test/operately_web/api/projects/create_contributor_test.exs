@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.CreateContributorTest do
   use OperatelyWeb.TurboCase
 
+  import Operately.Support.Api.ProjectAccessHelpers
+
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
@@ -10,6 +12,29 @@ defmodule OperatelyWeb.Api.Projects.CreateContributorTest do
   alias Operately.Access.Binding
   alias Operately.Notifications
   alias Operately.Notifications.Subscription
+
+  describe "company member boundaries" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space, company_permissions: Binding.no_access())
+      |> Factory.add_project(:project, :space, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+      |> Factory.log_in_person(:creator)
+    end
+
+    test "rejects a foreign person without changing project access", ctx do
+      foreign_person = Factory.setup(%{}).creator
+      assert {:error, :not_found} = Operately.Projects.Project.get(foreign_person, id: ctx.project.id)
+      before = project_access_snapshot(ctx.project)
+
+      assert {400, _} = mutation(ctx.conn, [:projects, :create_contributor], boundary_inputs(ctx, foreign_person.id))
+      assert project_access_snapshot(ctx.project) == before
+    end
+  end
+
+  defp boundary_inputs(ctx, person_id) do
+    %{project_id: ctx.project.id, person_id: person_id, responsibility: "Engineering", permissions: "edit_access", role: "contributor"}
+  end
 
   describe "security" do
     test "it requires authentication", ctx do

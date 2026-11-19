@@ -4,6 +4,14 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMapTest do
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
 
+  test "serializes project-wide task completion without assigned tasks", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:project, :space)
+    ctx = ctx |> Factory.add_project_task(:task, nil, project_id: ctx.project.id) |> Factory.log_in_person(:creator)
+    assert {200, %{work_map: [project]}} = query(ctx.conn, [:companies, :get_flat_work_map], %{include_tasks: false})
+    assert project.task_completion == %{completed_count: 0, total_count: 1, percentage: 0}
+    assert project.progress == 0
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:companies, :get_flat_work_map], %{})
@@ -259,10 +267,8 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMapTest do
       ctx
       |> Factory.setup()
       |> Factory.add_space(:space)
-      |> Factory.add_company_member(:assignee)
-      |> Factory.add_company_member(:other_person)
-      |> Factory.add_space_member(:assignee_space_member, :space, person: :assignee)
-      |> Factory.add_space_member(:other_space_member, :space, person: :other_person)
+      |> Factory.add_space_member(:assignee, :space)
+      |> Factory.add_space_member(:other_person, :space)
       |> Factory.add_project(:project, :space)
       |> Factory.add_project_milestone(:milestone, :project)
       |> Factory.add_project_task(:open_task, :milestone)
@@ -306,6 +312,47 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMapTest do
       assert is_nil(space_task.parent_id)
 
       assert open_task.owner.id == Paths.person_id(ctx.assignee)
+    end
+
+    test "includes each task's scope statuses and the viewer's edit permission", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{include_tasks: true, contributor_id: Paths.person_id(ctx.assignee)})
+
+      project_task = Enum.find(res.work_map, &(&1.id == Paths.task_id(ctx.open_task)))
+      space_task = Enum.find(res.work_map, &(&1.id == Paths.task_id(ctx.space_task)))
+
+      assert project_task.task_statuses == Serializer.serialize(Operately.Projects.Project.task_statuses(ctx.project))
+      assert space_task.task_statuses == Serializer.serialize(Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses)
+      assert project_task.can_edit_task
+      assert space_task.can_edit_task
+    end
+
+    test "view-only viewers cannot edit tasks on another person's profile", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:viewer)
+        |> Factory.log_in_person(:viewer)
+
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{include_tasks: true, contributor_id: Paths.person_id(ctx.assignee)})
+      task = Enum.find(res.work_map, &(&1.id == Paths.task_id(ctx.open_task)))
+
+      assert task
+      refute task.can_edit_task
+    end
+
+    test "company read-only mode disables task editing", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      %{company_id: ctx.company.id, access_state: :read_only}
+      |> Operately.Billing.CompanyBillingAccount.changeset()
+      |> Operately.Repo.insert!()
+
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{include_tasks: true, contributor_id: Paths.person_id(ctx.assignee)})
+      tasks = Enum.filter(res.work_map, &(&1.type == "task"))
+
+      assert length(tasks) == 2
+      assert Enum.all?(tasks, &(&1.can_edit_task == false))
     end
   end
 end

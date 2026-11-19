@@ -16,6 +16,20 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
   end
 
   describe "callback/2" do
+    test "resumes template creation after Google authentication", ctx do
+      account = account_fixture()
+      path = "/templates/example/use"
+
+      conn = ctx.conn
+      |> init_test_session(%{oauth_redirect_to: path})
+      |> assign(:ueberauth_auth, %{info: %{email: account.email, name: account.full_name, image: "http://example.com/image.png"}})
+      |> get("/accounts/auth/google/callback", %{"provider" => "google"})
+
+      assert redirected_to(conn) == path
+      refute get_session(conn, :oauth_redirect_to)
+      assert get_session(conn, :account_token)
+    end
+
     test "invitation signup uses saved OAuth attribution during browser login", ctx do
       account = account_fixture()
       previous = Application.get_env(:operately, :conversion_analytics)
@@ -83,7 +97,7 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       assert saved_person.email == "i.exist@text.com"
       assert saved_person.id == person.id
       assert saved_person.avatar_url == "http://example.com/image.png"
-      
+
       saved_account = Operately.Repo.preload(saved_person, :account).account
       assert saved_account.email == "i.exist@text.com"
     end
@@ -92,7 +106,7 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 1 # company creator
 
       person = person_fixture_with_account(%{
-        company_id: ctx.company.id, 
+        company_id: ctx.company.id,
         email: "exist@text.com",
         avatar_url: "http://example.com/old-image.png"
       })

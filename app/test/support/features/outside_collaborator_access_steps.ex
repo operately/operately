@@ -292,7 +292,7 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
     |> UI.click(testid: "disable-assignments-email-toggle")
     |> UI.sleep(100)
     |> UI.click(testid: "save-notification-settings")
-    |> UI.assert_has(testid: "account-settings-page")
+    |> UI.assert_has(testid: "my-account-page")
   end
 
   step :enable_assignments_email, ctx do
@@ -300,7 +300,7 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
     |> UI.click(testid: "enable-assignments-email-toggle")
     |> UI.sleep(100)
     |> UI.click(testid: "save-notification-settings")
-    |> UI.assert_has(testid: "account-settings-page")
+    |> UI.assert_has(testid: "my-account-page")
   end
 
   step :assert_person_not_in_assignments_cron, ctx do

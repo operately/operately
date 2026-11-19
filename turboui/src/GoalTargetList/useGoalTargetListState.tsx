@@ -9,6 +9,7 @@ export type TargetState = GoalTargetList.Target & {
 };
 
 export interface State {
+  canReorder: boolean;
   addActive: boolean;
   targets: TargetState[];
 
@@ -60,6 +61,7 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
   );
 
   const state: State = {
+    canReorder: props.canReorder ?? true,
     targets,
     addActive: !!props.addActive,
 

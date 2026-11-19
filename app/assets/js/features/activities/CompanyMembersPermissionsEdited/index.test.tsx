@@ -1,7 +1,6 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import i18n, { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import type { Activity } from "@/api";
 import type { Paths } from "@/routes/paths";
 import Handler from ".";
@@ -39,10 +38,10 @@ afterEach(async () => {
   await applyLanguage("en");
 });
 
-it.each([0, 1, 3])("preserves English with a saved Portuguese preference and flag off (%i members)", async (count) => {
+it.each([0, 1, 3])("preserves English when English is selected (%i members)", async (count) => {
   i18n.addResourceBundle("pt-BR", "translation", translated, true, true);
   await applyLanguage("pt-BR");
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", false));
+  await applyLanguage("en");
   expect(title(count)).toBe(
     `Alex has updated ${count} ${count === 1 ? "member&#x27;s" : "members&#x27;"} access level`,
   );

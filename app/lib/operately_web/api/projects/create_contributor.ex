@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
 
   alias Operately.Projects.{Contributor, Project, Permissions}
   alias Operately.Access.Binding
+  alias Operately.People
   alias Operately.Repo
 
   inputs do
@@ -27,10 +28,11 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
   def call(conn, inputs) do
     with(
       {:ok, me} <- find_me(conn),
-      {:ok, project} <- Project.get(me, id: inputs.project_id),
+      {:ok, project} <- Project.get(me, id: inputs.project_id, company_id: me.company_id),
       {:ok, :allowed} <- Permissions.check(project.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)),
       {:ok, attrs} <- parse_inputs(inputs),
       {:ok, :allowed} <- validate_permission_level(project.request_info.access_level, attrs.permissions),
+      :ok <- People.validate_active_company_members(project.company_id, [attrs.person_id]),
       {:ok, :allowed} <- ensure_not_already_contributor(attrs.project_id, attrs.person_id),
       {:ok, contributor} <- Operately.Operations.ProjectContributorAddition.run(me, attrs)
     ) do
@@ -38,6 +40,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
     else
       {:error, :not_found} -> {:error, :not_found}
       {:error, :forbidden} -> {:error, :forbidden}
+      {:error, :invalid_company_member} -> {:error, :bad_request}
       {:error, :already_contributor} -> {:error, :bad_request, already_contributor_message()}
       {:error, %Ecto.Changeset{} = changeset} -> map_changeset_error(changeset)
     end

@@ -7,6 +7,15 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateFolderTest do
   alias OperatelyWeb.Mcp.ToolConnHelper
   alias OperatelyWeb.Paths
 
+  test "call/2 accepts an explicit non-default hub and folder-only destination" do
+    ctx = Factory.setup(%{}) |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:other, :space, :creator) |> Factory.add_folder(:parent, :other)
+    for scope <- [%{"resource_hub_id" => Paths.resource_hub_id(ctx.other)}, %{"folder_id" => Paths.folder_id(ctx.parent)}] do
+      assert {:ok, %{resource_hub_id: hub_id}} = CreateFolder.call(ToolConnHelper.conn(ctx), Map.put(scope, "name", "Nested"))
+      assert hub_id == Paths.resource_hub_id(ctx.other.id)
+    end
+  end
+
   test "call/2 creates a folder in a space hub" do
     ctx =
       %{}

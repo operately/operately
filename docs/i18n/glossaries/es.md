@@ -158,7 +158,8 @@ Health, completion, and deadlines are separate dimensions. Choose the label acco
 
 | English | Meaning/context | Español | Capitalization and usage |
 | --- | --- | --- | --- |
-| Docs & Files / Documents & Files | Named content tool | Documentos y archivos | Same name for both variants. Never expose the internal Resource Hub name. |
+| Docs & Files / Documents & Files | Named content tool | Documentos y archivos | Same name for both variants. |
+| Resource Hub / Resource Hubs | Named container of documents, files, links, and folders | Centro de recursos / Centros de recursos | User-facing product term. Use for hub management; preserve user-authored hub names. |
 | document / doc | Rich-text document | Documento | Distinct from an uploaded **archivo**, **carpeta**, **enlace**, or comment **archivo adjunto**. |
 | resource / item | Generic content entry | Recurso / Elemento | Prefer the specific type when known; recurso here is not necessarily personnel or computing capacity. |
 | key resource / support material | Supporting project/goal content | Recurso clave / Material de apoyo | Can include links as well as documents or files. |
@@ -207,7 +208,6 @@ Health, completion, and deadlines are separate dimensions. Choose the label acco
 | package / ZIP file | Import/export artifact | Paquete de datos / Archivo ZIP | Not a pricing plan. |
 | site admin / SaaS admin panel | Instance-wide operator role/screen | Administrador de la instancia / Administración de la instancia | Distinct from company or space administration. |
 | support session / support mode | Operator access for customer assistance | Sesión de soporte / Modo de soporte | Does not make the operator the company owner. |
-| feature flag | Experimental-feature control | Activación de función | Group **Funciones experimentales**; preserve machine keys such as `i18n`. |
 | site message / update badge | Operator banner / new-version indicator | Mensaje del sistema / Indicador de nueva versión | Neither is a check-in. |
 
 ## Context and sentence patterns

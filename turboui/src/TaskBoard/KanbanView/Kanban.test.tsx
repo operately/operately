@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
@@ -73,6 +73,64 @@ const canceledStatus: StatusSelector.StatusOption = {
 };
 
 describe("Kanban", () => {
+  beforeEach(() => window.localStorage.clear());
+  it("loads the browser preference and saves changes for the next board mount", async () => {
+    const user = userEvent.setup();
+    window.localStorage.setItem("board:columnColors", "bordered");
+    const props = {
+      milestone: null,
+      columns: { "follow-up": [] },
+      draggedItemId: null,
+      targetLocation: null,
+      placeholderHeight: null,
+      statuses: [followUpStatus],
+      onTaskClick: jest.fn(),
+      isTaskSlideInOpen: false,
+      canEdit: false,
+    };
+    const { container, unmount } = render(<Kanban {...props} />);
+
+    expect(getKanbanColumn(container, "follow-up")).toHaveAttribute("data-color-mode", "bordered");
+    await user.click(screen.getByRole("button", { name: "Display options" }));
+    await user.click(screen.getByRole("menuitem", { name: /Column colors/ }));
+    act(() => getTestElement(document.body, "column-colors-vivid").focus());
+    await user.keyboard("{Enter}");
+    expect(window.localStorage.getItem("board:columnColors")).toBe("vivid");
+    unmount();
+    const nextBoard = render(<Kanban {...props} />);
+    expect(getKanbanColumn(nextBoard.container, "follow-up")).toHaveAttribute("data-color-mode", "vivid");
+  });
+
+  it("lets viewers change column colors even when there are no closed statuses", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <Kanban
+        milestone={null}
+        columns={{ "follow-up": [] }}
+        draggedItemId={null}
+        targetLocation={null}
+        placeholderHeight={null}
+        statuses={[followUpStatus]}
+        onTaskClick={jest.fn()}
+        isTaskSlideInOpen={false}
+        canEdit={false}
+      />,
+    );
+
+    const column = getKanbanColumn(container, "follow-up");
+    expect(column).toHaveAttribute("data-color-mode", "soft");
+
+    for (const mode of ["vivid", "bordered", "none", "soft"]) {
+      await user.click(screen.getByRole("button", { name: "Display options" }));
+      await user.click(screen.getByRole("menuitem", { name: /Column colors/ }));
+      const option = document.querySelector<HTMLElement>(`[data-test-id="column-colors-${mode}"]`);
+      if (!option) throw new Error(`Missing column color option: ${mode}`);
+      act(() => option.focus());
+      await user.keyboard("{Enter}");
+      expect(getKanbanColumn(container, "follow-up")).toHaveAttribute("data-color-mode", mode);
+    }
+  });
+
   it("shows closed statuses by default and lets users hide them without changing the configured column order", async () => {
     const user = userEvent.setup();
     const { container } = render(
@@ -161,7 +219,7 @@ describe("Kanban", () => {
     expect(getKanbanColumn(container, "pending")).toBeInTheDocument();
   });
 
-  it("keeps the custom header when there are no display options", () => {
+  it("shows color options in the custom header even without closed statuses", () => {
     const { container } = render(
       <Kanban
         milestone={null}
@@ -179,7 +237,7 @@ describe("Kanban", () => {
 
     expect(container.querySelector("header")).toBeInTheDocument();
     expect(container.querySelector('[data-test-id="kanban-toolbar"]')).not.toBeInTheDocument();
-    expect(container.querySelector('[data-test-id="display-menu-trigger"]')).not.toBeInTheDocument();
+    expect(container.querySelector("header")).toContainElement(getTestElement(container, "display-menu-trigger"));
     expect(getKanbanColumn(container, "pending")).toBeInTheDocument();
   });
 

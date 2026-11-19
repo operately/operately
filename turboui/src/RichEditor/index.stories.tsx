@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import React from "react";
 import { Editor, useEditor } from "./index";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
@@ -19,6 +20,25 @@ export default meta;
 
 type Story = StoryObj<typeof Editor>;
 
+async function openMarkdownHelp({ canvasElement }: { canvasElement: HTMLElement }) {
+  const canvas = within(canvasElement);
+  const overflow = canvas.queryByRole("button", { name: "More formatting options" });
+  if (overflow) await userEvent.click(overflow);
+  await userEvent.click(canvas.getByRole("button", { name: "Markdown shortcuts" }));
+
+  const dialog = within(canvasElement.ownerDocument.body).getByRole("dialog", { name: "Markdown shortcuts" });
+  await expect(dialog).toBeVisible();
+  await waitFor(() => {
+    const bounds = dialog.getBoundingClientRect();
+    expect(bounds.width).toBeGreaterThan(0);
+    expect(bounds.left).toBeGreaterThanOrEqual(0);
+    expect(bounds.right).toBeLessThanOrEqual(window.innerWidth);
+    expect(bounds.top).toBeGreaterThanOrEqual(0);
+    expect(bounds.bottom).toBeLessThanOrEqual(window.innerHeight);
+    expect(dialog.scrollWidth).toBeLessThanOrEqual(dialog.clientWidth);
+  });
+}
+
 export const Default: Story = {
   render: () => {
     const editor = useEditor({
@@ -28,6 +48,20 @@ export const Default: Story = {
 
     return <Editor editor={editor} />;
   },
+};
+
+export const MarkdownShortcuts: Story = {
+  render: () => {
+    const editor = useEditor({ handlers: createMockRichEditorHandlers() });
+    return <Editor editor={editor} />;
+  },
+  play: openMarkdownHelp,
+};
+
+export const DarkMarkdownShortcuts: Story = {
+  ...MarkdownShortcuts,
+  globals: { theme: "dark" },
+  play: openMarkdownHelp,
 };
 
 export const WithContent: Story = {

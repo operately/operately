@@ -26,6 +26,15 @@ describe.each([
     endpoint: "/people/update",
     payload: { id: "person1", full_name: "Updated", manager_id: "manager2" },
   },
+  {
+    name: "title setup",
+    useUpdate: () => {
+      const mutation = useUpdateProfile();
+      return () => mutation.mutateAsync({ id: "person1", title: "Designer", titleSetupPending: false });
+    },
+    endpoint: "/people/update",
+    payload: { id: "person1", title: "Designer", title_setup_pending: false },
+  },
   ...["/avatar.png", null].map((avatarUrl) => ({
     name: avatarUrl ? "avatar upload" : "avatar removal",
     useUpdate: () => {

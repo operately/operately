@@ -70,6 +70,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
         full_name: attrs.full_name,
         email: attrs.email,
         title: attrs.title,
+        title_setup_pending: String.trim(attrs.title || "") == "",
       })
     end)
   end

@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.ListTaskStatuses do
     Definition.new!(
       name: "list_task_statuses",
       title: "List Task Statuses",
-      description: "Lists the statuses available for one task's project or space. Use this before update_task_status to discover valid status IDs, values, or labels.",
+      description: "Lists statuses for a task or board, including an empty board. If both IDs are supplied they must match. Use this before update_task_status to discover valid status IDs, values, or labels.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,
@@ -21,13 +21,14 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.ListTaskStatuses do
       input_schema:
         JsonSchema.object(
           %{
-            "task_id" => JsonSchema.string("The task identifier.")
-          },
-          required: ["task_id"]
+            "task_id" => JsonSchema.string("The task identifier."),
+            "board_id" => JsonSchema.string("The board identifier. Supply task_id or board_id.")
+          }
         ),
       output_schema:
         JsonSchema.object(
           %{
+            "board_id" => JsonSchema.nullable(JsonSchema.string("Resolved board identifier, or null for a project task.")),
             "task_statuses" => JsonSchema.array(JsonSchema.any_object(), description: "The statuses available for the task.")
           },
           required: ["task_statuses"]
@@ -36,9 +37,10 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.ListTaskStatuses do
   end
 
   @impl true
-  def call(conn, %{"task_id" => task_id}) do
-    with {:ok, task_id} <- Helpers.decode_id(task_id) do
-      TaskStatusesList.call(conn, %{task_id: task_id})
+  def call(conn, arguments) do
+    with {:ok, task_id} <- Helpers.decode_optional_id(arguments["task_id"]),
+         {:ok, board_id} <- Helpers.decode_optional_id(arguments["board_id"]) do
+      TaskStatusesList.call(conn, %{task_id: task_id, board_id: board_id})
     end
   end
 end

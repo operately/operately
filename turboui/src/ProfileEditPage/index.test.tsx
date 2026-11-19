@@ -20,23 +20,15 @@ function renderPage(overrides: Partial<ProfileEditPage.Props> = {}) {
     fullName: "Ada Lovelace",
     title: "Engineer",
     aboutMe: null,
-    timezone: "America/New_York",
-    timeFormat: "automatic",
-    language: "en",
     manager: null,
     onFullNameChange: jest.fn(),
     onTitleChange: jest.fn(),
     onAboutMeChange: jest.fn(),
-    onTimezoneChange: jest.fn(),
-    onTimeFormatChange: jest.fn(),
-    onLanguageChange: jest.fn(),
     onManagerChange: jest.fn(),
     onSubmit: jest.fn().mockResolvedValue(undefined),
     managerSearch: { people: [], onSearch: jest.fn().mockResolvedValue(undefined) },
     richTextHandlers: createMockRichEditorHandlers(),
-    timezones: [{ value: "America/New_York", label: "Eastern Time (ET)" }],
     isCurrentUser: true,
-    showLanguageSelector: true,
     fromLocation: null,
     companyAdminPath: "/admin",
     managePeoplePath: "/admin/people",
@@ -51,23 +43,12 @@ function renderPage(overrides: Partial<ProfileEditPage.Props> = {}) {
   );
 }
 
-test("associates the language label with the language dropdown", () => {
-  renderPage();
-
-  const trigger = screen.getByTestId("language");
-
-  expect(trigger).toHaveAccessibleName("Language");
-  expect(trigger).toHaveTextContent("English");
-});
-
-test("hides the language picker when the parent does not request it", () => {
-  renderPage({ showLanguageSelector: false });
-
-  expect(screen.queryByTestId("language")).not.toBeInTheDocument();
-});
-
-test("hides the language picker when editing someone else", () => {
-  renderPage({ isCurrentUser: false, showLanguageSelector: true });
-
-  expect(screen.queryByTestId("language")).not.toBeInTheDocument();
+test.each([true, false])("keeps personal preferences out of profile editing (self: %s)", (isCurrentUser) => {
+  renderPage({ isCurrentUser });
+  expect(screen.getByTestId("name")).toBeInTheDocument();
+  expect(screen.getByTestId("title")).toBeInTheDocument();
+  expect(screen.getByTestId("manager")).toBeInTheDocument();
+  for (const field of ["language", "timezone", "time-format"]) {
+    expect(screen.queryByTestId(field)).not.toBeInTheDocument();
+  }
 });

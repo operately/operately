@@ -18,6 +18,7 @@ import {
 
 import { PagePreloading } from "./routes/preloading/PagePreloading";
 import { createAppRoutes } from "./routes";
+import { reportError } from "./routes/reportError";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 import Api from "@/api";
@@ -31,6 +32,7 @@ import { installSentryAxiosInterceptor } from "@/utils/axiosErrorReporting";
 import { configureSentryUser } from "@/utils/sentryContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/api/queryClient";
+import { registerApplicationTeardown } from "@/applicationTeardown";
 
 Api.default.setBasePath("/api/v2");
 AdminApi.default.setBasePath("/admin/api/v1");
@@ -72,7 +74,7 @@ const App: JSX.Element = (
       <ToasterBar />
       <ThemeProvider>
         <PagePreloading router={routes}>
-          <RouterProvider router={routes} />
+          <RouterProvider router={routes} onError={reportError} />
         </PagePreloading>
       </ThemeProvider>
     </QueryClientProvider>
@@ -80,7 +82,12 @@ const App: JSX.Element = (
 );
 
 if (rootElement !== null) {
-  createRoot(rootElement).render(App);
+  const root = createRoot(rootElement);
+  registerApplicationTeardown(() => {
+    root.unmount();
+    routes.dispose();
+  });
+  root.render(App);
 } else {
   console.error("Root element not found");
 }

@@ -12,6 +12,22 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFolderTest do
     |> Factory.fetch_default_resource_hub(:hub, :space)
   end
 
+  test "explicit hub and folder-only requests resolve the non-default hub", ctx do
+    ctx = ctx |> Factory.add_resource_hub(:other, :space, :creator) |> Factory.add_folder(:parent, :other)
+    for scope <- [%{resource_hub_id: Paths.resource_hub_id(ctx.other)}, %{folder_id: Paths.folder_id(ctx.parent)}] do
+      assert {200, response} = external_mutation(ctx.conn, ctx.api_token, "documents/create_folder", Map.put(scope, :name, "Nested"))
+      assert response.resource_hub_id == Paths.resource_hub_id(ctx.other.id)
+    end
+  end
+
+  test "unavailable default returns structured retry details", ctx do
+    ctx.space |> Ecto.Changeset.change(default_resource_hub_id: nil) |> Repo.update!()
+    assert {400, response} = external_mutation(ctx.conn, ctx.api_token, "documents/create_folder", %{space_id: Paths.space_id(ctx.space), name: "Folder"})
+    assert response.details.code == "default_resource_hub_unavailable"
+    assert [%{id: id}] = response.details.candidates
+    assert id == Paths.resource_hub_id(ctx.hub.id)
+  end
+
   test "creates folder by space_id", ctx do
     assert {200, res} =
              external_mutation(ctx.conn, ctx.api_token, "documents/create_folder", %{

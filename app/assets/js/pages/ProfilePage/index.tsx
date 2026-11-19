@@ -4,11 +4,12 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import * as People from "@/models/people";
+import * as Tasks from "@/models/tasks";
 
 import { Feed, useFeedItemsQuery } from "@/features/Feed";
 import { PageModule } from "@/routes/types";
 import { assertPresentOr404 } from "@/utils/assertions";
-import { ProfilePage } from "turboui";
+import { ProfilePage, WorkMap } from "turboui";
 
 import { loader, useLoadedData } from "./loader";
 
@@ -25,7 +26,19 @@ function Page() {
   const me = useMe();
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { person, workMap, reviewerWorkMap } = useLoadedData();
+  const { person, workMap, reviewerWorkMap, taskOrdering } = useLoadedData();
+  const taskOrderingMutation = People.useUpdateTaskOrdering();
+  const updateTaskStatus = Tasks.useUpdateTaskStatus();
+
+  const onTaskStatusChange: WorkMap.TaskStatusChangeFn = async (task, status) => {
+    await updateTaskStatus.mutateAsync({
+      taskId: task.id,
+      type: task.project ? "project" : "space",
+      status: Tasks.serializeTaskStatus(status),
+    });
+  };
+
+  const isOwnProfile = compareIds(me?.id, person.id);
   const taskList = useTaskList({
     resourceType: "person",
     resourceId: person.id,
@@ -50,6 +63,10 @@ function Page() {
 
     workMap: convertToWorkMapItems(paths, workMap),
     reviewerWorkMap: convertToWorkMapItems(paths, reviewerWorkMap),
+    taskOrdering: isOwnProfile ? taskOrdering : [],
+    onTaskOrderingChange: taskOrderingMutation.save,
+    taskOrderingSaving: taskOrderingMutation.isPending,
+    onTaskStatusChange,
 
     canEditProfile: canEditProfile(person),
     editProfilePath: paths.profileEditPath(person.id),

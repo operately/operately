@@ -271,11 +271,11 @@ export function useDeleteProjectContributor() {
 }
 
 export function useUpdateProjectTaskStatuses() {
-  return useProjectTaskMutation(Api.projects.updateTaskStatusesMutationOptions());
+  return useProjectTaskMutation(Api.tasks.updateBoardStatusesMutationOptions());
 }
 
 export function useUpdateProjectKanban() {
-  return useProjectTaskMutation(Api.projects.updateKanbanMutationOptions());
+  return useProjectTaskMutation(Api.tasks.updateBoardKanbanMutationOptions());
 }
 
 function useProjectTaskMutation<TData, TError, TVariables, TContext>(

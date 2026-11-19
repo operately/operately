@@ -11,7 +11,7 @@ export function Page() {
   const paths = usePaths();
 
   return (
-    <Pages.Page title={t("People")}>
+    <Pages.Page title={t("People", { context: "navigation" })}>
       <PeoplePage companyName={company.name} people={people} profileHref={(id) => paths.profilePath(id)} />
     </Pages.Page>
   );

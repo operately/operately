@@ -1,21 +1,25 @@
 import type { Extensions } from "@tiptap/core";
-import { Placeholder } from "@tiptap/extensions";
+import { Placeholder, type PlaceholderOptions } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 import { TaskList } from "@tiptap/extension-list";
 import { tableExtensions } from "./extensions/Table";
 import { TaskItemExtension } from "./extensions/TaskItem";
+
+import { InlineComments, type InlineCommentsOptions } from "./extensions/InlineComments";
 
 import Blob from "./Blob";
 import FakeTextSelection from "./extensions/FakeTextSelection";
 import { HeadingExtension } from "./extensions/Heading";
 import Highlight from "./extensions/Highlight";
 import { LinkExtension } from "./extensions/Link";
+import { AutoLinkSuppression } from "./extensions/Link/AutoLinkSuppression";
 import { mentionExtensions } from "./mentionExtensions";
 import type { RichEditorHandlers } from "./useEditor";
 
 export type CreateRichEditorExtensionsOptions = {
+  inlineComments?: InlineCommentsOptions;
   editable?: boolean;
-  placeholder?: string;
+  placeholder?: PlaceholderOptions["placeholder"];
   thumbnailBlobs?: boolean;
   portalContainer?: HTMLElement;
 };
@@ -56,6 +60,7 @@ export function createRichEditorExtensions(
       editable,
       thumbnail: options.thumbnailBlobs,
     }),
+    AutoLinkSuppression,
     LinkExtension,
   ];
 
@@ -64,6 +69,8 @@ export function createRichEditorExtensions(
   }
 
   extensions.push(...mentionExtensions(handlers, editable, options.portalContainer), Highlight, FakeTextSelection);
+
+  if (options.inlineComments) extensions.push(InlineComments.configure(options.inlineComments));
 
   return extensions;
 }

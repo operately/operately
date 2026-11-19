@@ -30,6 +30,18 @@ defmodule Operately.Operations.GroupCreationTest do
     assert group == Groups.get_group_by_name("my group")
   end
 
+  test "initializes the default board even when tasks are disabled", ctx do
+    {:ok, group} = Operately.Operations.GroupCreation.run(ctx.creator, @group_attrs)
+    board = Repo.get!(Operately.Tasks.TaskBoard, group.default_task_board_id)
+
+    assert board.space_id == group.id
+    assert board.name == "Tasks"
+    assert board.position == 0
+    assert Enum.map(board.task_statuses, & &1.value) == ["pending", "in_progress", "done", "canceled"]
+    assert board.tasks_kanban_state == %{"pending" => [], "in_progress" => [], "done" => [], "canceled" => []}
+    refute group.tools.tasks_enabled
+  end
+
   test "GroupCreation operation adds creator as member of group", ctx do
     {:ok, group} = Operately.Operations.GroupCreation.run(ctx.creator, @group_attrs)
 

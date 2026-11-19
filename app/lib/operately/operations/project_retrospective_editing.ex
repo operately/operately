@@ -35,6 +35,7 @@ defmodule Operately.Operations.ProjectRetrospectiveEditing do
     end)
     |> IndexUpdates.enqueue(:search_project_retrospective, "project_retrospective", fn changes -> changes.retrospective.id end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(retrospective.project_id)
     |> Repo.extract_result(:retrospective_with_project)
   end
 

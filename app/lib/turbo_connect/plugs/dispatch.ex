@@ -50,23 +50,26 @@ defmodule TurboConnect.Plugs.Dispatch do
         internal_server_error(conn, gettext("An unexpected error occurred"))
 
       {:error, message} ->
-        Logger.error("\n")
         Logger.error("Unexpected result from #{conn.assigns.turbo_req_name}: {:error, #{inspect(message)}}")
-        Logger.error("Did you maybe want to use {:error, :not_found, message} or {:error, :bad_request, message} instead?")
 
         internal_server_error(conn, gettext("An unexpected error occurred"))
 
       e ->
-        Logger.error("\n")
-        Logger.error("Unexpected return value from #{conn.assigns.turbo_req_name} handler: #{inspect(e)}\n")
+        Logger.error("Unexpected return value from #{conn.assigns.turbo_req_name} handler: #{inspect(e)}")
 
         internal_server_error(conn, gettext("An unexpected error occurred"))
     end
   rescue
     e ->
-      Logger.error("\nErorr while processing #{conn.assigns.turbo_req_name} \n")
-      Logger.error(Exception.format_banner(:error, e))
-      Logger.error(Exception.format_stacktrace(__STACKTRACE__))
+      # Let the outer database error boundary return 503 instead of the generic 500 below.
+      if OperatelyWeb.DatabaseErrors.queue_timeout?(e) do
+        reraise e, __STACKTRACE__
+      end
+
+      Logger.error(Exception.format(:error, e, __STACKTRACE__),
+        crash_reason: {e, __STACKTRACE__},
+        sentry: [tags: %{error_code: "internal_server_error"}, extra: %{endpoint: conn.request_path}]
+      )
 
       internal_server_error(conn, gettext("An unexpected error occurred"))
   end

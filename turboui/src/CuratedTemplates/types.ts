@@ -37,15 +37,23 @@ export interface TemplateDefinition {
   tasks?: TaskDefinition[];
 }
 
+export interface TemplatePreviewData {
+  // Reporting periods relative to the display date: 0 is current, -1 is previous.
+  entries?: { period_offset: EditableNumber; value: EditableNumber }[];
+  annotations?: { period_offset: EditableNumber; title: string }[];
+}
+
 export interface CuratedTemplate {
   id: string;
   type: TemplateType;
   state: "draft" | "published";
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
   definition?: string;
+  previewData?: string;
   publishedAt?: string | null;
   insertedAt: string;
   updatedAt: string;
@@ -53,11 +61,13 @@ export interface CuratedTemplate {
 
 export interface TemplateInput {
   title: string;
+  slug: string;
   type: TemplateType;
   summary: string;
   category: string;
   contentLanguage: string;
   definition: string;
+  previewData?: string;
 }
 
 export interface TemplateValidationError {

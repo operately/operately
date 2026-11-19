@@ -5,7 +5,6 @@
 
 import AccountApiTokensPage from "./AccountApiTokensPage";
 import AccountApiTokensUsagePage from "./AccountApiTokensUsagePage";
-import AccountAppearancePage from "./AccountAppearancePage";
 import AccountChangeEmailPage from "./AccountChangeEmailPage";
 import AccountChangePasswordPage from "./AccountChangePasswordPage";
 import AccountMcpConnectionsPage from "./AccountMcpConnectionsPage";
@@ -28,6 +27,8 @@ import CompanyImportPage from "./CompanyImportPage";
 import CompanyPermissionsPage from "./CompanyPermissionsPage";
 import CompanyRenamePage from "./CompanyRenamePage";
 import CompanyWorkMapPage from "./CompanyWorkMapPage";
+import CuratedTemplateEntryPage from "./CuratedTemplateEntryPage";
+import CuratedTemplateUsePage from "./CuratedTemplateUsePage";
 import DiscussionDraftsPage from "./DiscussionDraftsPage";
 import DiscussionEditPage from "./DiscussionEditPage";
 import DiscussionNewPage from "./DiscussionNewPage";
@@ -131,7 +132,6 @@ import TaskPage from "./TaskPage";
 export default {
   AccountApiTokensPage,
   AccountApiTokensUsagePage,
-  AccountAppearancePage,
   AccountChangeEmailPage,
   AccountChangePasswordPage,
   AccountMcpConnectionsPage,
@@ -154,6 +154,8 @@ export default {
   CompanyPermissionsPage,
   CompanyRenamePage,
   CompanyWorkMapPage,
+  CuratedTemplateEntryPage,
+  CuratedTemplateUsePage,
   DiscussionDraftsPage,
   DiscussionEditPage,
   DiscussionNewPage,

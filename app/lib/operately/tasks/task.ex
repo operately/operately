@@ -16,12 +16,14 @@ defmodule Operately.Tasks.Task do
           reminders: [Operately.Tasks.Reminder.t()],
           status: String.t(),
           task_status: Operately.Tasks.Status.t() | nil,
+          archived_at: NaiveDateTime.t() | nil,
           closed_at: NaiveDateTime.t() | nil,
           reopened_at: NaiveDateTime.t() | nil,
           creator_id: Ecto.UUID.t() | nil,
           milestone_id: Ecto.UUID.t() | nil,
           project_id: Ecto.UUID.t() | nil,
           space_id: Ecto.UUID.t() | nil,
+          board_id: Ecto.UUID.t() | nil,
           permissions: map() | nil,
           comments_count: integer() | nil,
           available_statuses: list() | nil,
@@ -34,6 +36,7 @@ defmodule Operately.Tasks.Task do
     belongs_to :milestone, Operately.Projects.Milestone
     belongs_to :project, Operately.Projects.Project
     belongs_to :space, Operately.Groups.Group
+    belongs_to :board, Operately.Tasks.TaskBoard
     belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
     has_one :project_space, through: [:project, :group]
@@ -44,7 +47,7 @@ defmodule Operately.Tasks.Task do
     has_many :assignees, Operately.Tasks.Assignee
     has_many :assigned_people, through: [:assignees, :person]
 
-    has_many :comments, Operately.Updates.Comment, where: [entity_type: :project_task], foreign_key: :entity_id
+    has_many :comments, Operately.Updates.Comment, where: [entity_type: {:in, [:project_task, :space_task]}], foreign_key: :entity_id
 
     field :name, :string
     field :priority, :string
@@ -56,6 +59,7 @@ defmodule Operately.Tasks.Task do
     embeds_many :reminders, Operately.Tasks.Reminder, on_replace: :delete
 
     embeds_one :task_status, Operately.Tasks.Status, on_replace: :update
+    field :archived_at, :naive_datetime
     field :closed_at, :naive_datetime
     field :reopened_at, :naive_datetime
 
@@ -87,11 +91,13 @@ defmodule Operately.Tasks.Task do
       :priority,
       :creator_id,
       :status,
+      :archived_at,
       :closed_at,
       :reopened_at,
       :milestone_id,
       :project_id,
       :space_id,
+      :board_id,
       :subscription_list_id
     ])
     |> cast_embed(:due_date)
@@ -100,6 +106,7 @@ defmodule Operately.Tasks.Task do
     |> put_default_task_status()
     |> validate_required([:name, :description, :creator_id, :subscription_list_id])
     |> validate_project_or_group()
+    |> prepare_changes(&assign_and_validate_board/1)
   end
 
   def status_change_attrs(task, new_status) do
@@ -224,7 +231,7 @@ defmodule Operately.Tasks.Task do
 
     counts =
       from(c in Operately.Updates.Comment,
-        where: c.entity_id in ^task_ids and c.entity_type == :project_task,
+        where: c.entity_id in ^task_ids and c.entity_type in [:project_task, :space_task],
         group_by: c.entity_id,
         select: {c.entity_id, count(c.id)}
       )
@@ -243,19 +250,38 @@ defmodule Operately.Tasks.Task do
   end
 
   def available_statuses(task = %__MODULE__{}) do
-    task =
-      if Ecto.assoc_loaded?(task.project) and Ecto.assoc_loaded?(task.space) do
-        task
-      else
-        Operately.Repo.preload(task, [:project, :space])
-      end
+    task = Operately.Repo.preload(task, :board)
+    if task.board && Operately.Tasks.TaskBoard.owns_task?(task.board, task), do: task.board.task_statuses || [], else: []
+  end
 
-    cond do
-      task.project -> task.project.task_statuses || []
-      task.space -> task.space.task_statuses || []
-      true -> []
+  defp assign_and_validate_board(changeset) do
+    space_id = get_field(changeset, :space_id)
+    project_id = get_field(changeset, :project_id)
+    board_id = get_field(changeset, :board_id)
+
+    board_id = board_id || default_board_id(changeset.repo, project_id, space_id)
+    board = board_id && changeset.repo.get(Operately.Tasks.TaskBoard, board_id)
+
+    changeset =
+      if board && {board.project_id, board.space_id} == {project_id, space_id},
+        do: put_change(changeset, :board_id, board.id),
+        else: add_error(changeset, :board_id, "is invalid")
+
+    case get_field(changeset, :milestone_id) do
+      nil -> changeset
+      id ->
+        milestone = changeset.repo.get(Operately.Projects.Milestone, id)
+        if milestone && milestone.project_id == project_id, do: changeset, else: add_error(changeset, :milestone_id, "is invalid")
     end
   end
+
+  defp default_board_id(repo, project_id, nil) when not is_nil(project_id),
+    do: repo.one(from b in Operately.Tasks.TaskBoard, where: b.project_id == ^project_id, select: b.id)
+
+  defp default_board_id(repo, nil, space_id) when not is_nil(space_id),
+    do: repo.one(from s in Operately.Groups.Group, where: s.id == ^space_id, select: s.default_task_board_id)
+
+  defp default_board_id(_repo, _project_id, _space_id), do: nil
 
   def preload_available_statuses(task = %__MODULE__{}) do
     Map.put(task, :available_statuses, available_statuses(task))

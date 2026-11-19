@@ -4,13 +4,18 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
   def serialize(task, level: :essential) do
     %{
       id: OperatelyWeb.Paths.task_id(task),
-      name: task.name
+      space_id: task.space_id && Operately.ShortUuid.encode!(task.space_id),
+      board_id: task.board_id && Operately.ShortUuid.encode!(task.board_id),
+      name: task.name,
+      type: Task.task_type(task)
     }
   end
 
   def serialize(task, level: :full) do
     %{
       id: OperatelyWeb.Paths.task_id(task),
+      space_id: task.space_id && Operately.ShortUuid.encode!(task.space_id),
+      board_id: task.board_id && Operately.ShortUuid.encode!(task.board_id),
       name: task.name,
       description: task.description && Jason.encode!(task.description),
       priority: task.priority,
@@ -20,6 +25,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       reminders: OperatelyWeb.Api.Serializer.serialize(task.reminders || []),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(task.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(task.updated_at),
+      archived_at: OperatelyWeb.Api.Serializer.serialize(task.archived_at),
       closed_at: OperatelyWeb.Api.Serializer.serialize(task.closed_at),
       assignees: OperatelyWeb.Api.Serializer.serialize(task.assigned_people),
       milestone: OperatelyWeb.Api.Serializer.serialize(task.milestone),

@@ -51,7 +51,7 @@ defmodule OperatelyWeb.Mcp.Tools.Milestones.CompleteTest do
       |> Factory.add_project_milestone(:milestone, :project)
       |> Factory.add_project_task(:task, :milestone)
 
-    closed_status = Enum.find(ctx.project.task_statuses, &(&1.closed && &1.color == :green))
+    closed_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.closed && &1.color == :green))
 
     assert {:ok, %{comment: _comment}} =
              Complete.call(ToolConnHelper.conn(ctx), %{

@@ -8,6 +8,8 @@ defmodule Operately.Groups.Group do
 
   schema "groups" do
     belongs_to :company, Operately.Companies.Company
+    belongs_to :default_resource_hub, Operately.ResourceHubs.ResourceHub
+    belongs_to :default_task_board, Operately.Tasks.TaskBoard
 
     has_many :memberships, Operately.Groups.Member, foreign_key: :group_id
     has_many :members, through: [:memberships, :person]
@@ -17,9 +19,8 @@ defmodule Operately.Groups.Group do
     field :mission, :string
 
     has_many :tasks, Operately.Tasks.Task, foreign_key: :space_id
+    has_many :task_boards, Operately.Tasks.TaskBoard, foreign_key: :space_id
     embeds_one :tools, Operately.Groups.SpaceTools, on_replace: :delete
-    embeds_many :task_statuses, Operately.Tasks.Status, on_replace: :delete
-    field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
 
     # populated by after load hooks
     field :is_member, :boolean, virtual: true
@@ -40,11 +41,9 @@ defmodule Operately.Groups.Group do
 
   def changeset(group, attrs) do
     group
-    |> cast(attrs, [:company_id, :name, :mission, :deleted_at, :tasks_kanban_state])
+    |> cast(attrs, [:company_id, :name, :mission, :deleted_at])
     |> cast_embed(:tools)
-    |> cast_embed(:task_statuses)
     |> put_default_tools()
-    |> put_default_task_statuses()
     |> validate_required([:company_id, :name, :mission])
   end
 
@@ -57,31 +56,9 @@ defmodule Operately.Groups.Group do
 
   defp put_default_tools(changeset), do: changeset
 
-  defp put_default_task_statuses(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
-    # Only set defaults for new spaces, and only if task_statuses is empty or not provided
-    case Ecto.Changeset.get_field(changeset, :task_statuses) do
-      [] -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
-      nil -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
-      _ -> changeset
-    end
-  end
-
-  defp put_default_task_statuses(changeset), do: changeset
-
-  def task_status_values(space = %__MODULE__{}) do
-    space.task_statuses
-    |> Elixir.List.wrap()
-    |> Enum.map(& &1.value)
-    |> Enum.filter(& &1)
-    |> Enum.map(&to_string/1)
-  end
-
-  def get_default_task_status(space = %__MODULE__{}) do
-    statuses = space.task_statuses
-
-    Enum.find(statuses, fn s -> s.color == :gray end) ||
-      Enum.find(statuses, fn s -> s.color == :blue end) ||
-      List.first(statuses)
+  def default_task_board_changeset(space, board) do
+    changeset = change(space, default_task_board_id: board.id)
+    if board.space_id == space.id and is_nil(board.archived_at), do: changeset, else: add_error(changeset, :default_task_board_id, "is invalid")
   end
 
   #
@@ -103,6 +80,22 @@ defmodule Operately.Groups.Group do
     is_member = Operately.Groups.is_member?(group, person)
 
     %{group | is_member: is_member}
+  end
+
+  def preload_access_levels(groups) when is_list(groups) do
+    groups = Repo.preload(groups, :access_context)
+
+    identifiers =
+      Enum.map(groups, fn group ->
+        if is_nil(group.access_context), do: raise(Ecto.NoResultsError, queryable: Operately.Access.Context)
+        %{context_id: group.access_context.id, company_id: group.company_id, space_id: group.id}
+      end)
+
+    access_levels = Operately.Access.AccessLevels.load_many(identifiers)
+
+    Enum.map(groups, fn group ->
+      %{group | access_levels: Map.fetch!(access_levels, group.access_context.id)}
+    end)
   end
 
   def preload_access_levels(group) do

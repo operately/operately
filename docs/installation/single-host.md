@@ -82,6 +82,8 @@ and ask you for the following information:
     - For AWS SES users: Set `SMTP_PROVIDER=aws-ses` in your environment for optimized configuration
   - If you choose **Configure later**: Email delivery will be skipped and can be configured later
 - **SSL certificates**: Whether you want Operately to automatically manage SSL certificates via Let's Encrypt
+- **Public URL scheme**: If you decline managed certificates, choose `https` when a
+  reverse proxy terminates HTTPS, or `http` for plain HTTP.
 
 ### Start Operately
 
@@ -94,8 +96,40 @@ docker compose up --wait --detach
 Operately should now be running on your server. You can access it by navigating to the domain you
 configured earlier (e.g. `https://operately.example.com`).
 
-If you enabled HTTPS during installation, Operately will also redirect normal HTTP requests to HTTPS.
+If you enabled managed certificates during installation, Operately will also redirect normal HTTP requests to HTTPS.
 Port 80 remains available for the Let's Encrypt ACME challenge and the local container health check.
+
+### Public URLs and reverse proxies
+
+In `operately.env`, set `OPERATELY_HOST` to the hostname only and match the scheme
+and public port to your browser's URL. Local uploads and downloads depend on these settings.
+
+| Deployment | `OPERATELY_URL_SCHEME` | `OPERATELY_URL_PORT` | `CERT_AUTO_RENEW` |
+| --- | --- | --- | --- |
+| Plain HTTP | `http` | `80` | `no` |
+| Operately-managed HTTPS | `https` | `443` | `yes` |
+| HTTPS through a reverse proxy | `https` | `443` | `no` |
+
+`OPERATELY_URL_PORT` defaults to 80 for HTTP and 443 for HTTPS; override it for a
+custom public port. `PORT` controls the internal HTTP listener (default: 4000).
+
+For proxy HTTPS, forward to Operately over HTTP, preserve `Host`, and set
+`X-Forwarded-Proto: https`. Handle HTTPS redirects at the proxy. If it shares the
+host, replace Operately's entire `ports` list in `docker-compose.yml` with an available
+HTTP mapping, such as `127.0.0.1:8080:4000`, and point the proxy there. Remove any
+`443:4001` mapping so the proxy can bind port 443.
+
+After editing existing settings, remove duplicate entries and recreate the app:
+
+```bash
+docker compose up -d --force-recreate app
+```
+
+### Recovering an interrupted installation
+
+The installer refuses to overwrite `operately.env`, preserving existing secrets.
+After fixing a setup failure, keep that file and run the remaining Docker commands
+from `install.sh` manually. For upgrades, use `./operately update`.
 
 ### Optional database timeout tuning
 

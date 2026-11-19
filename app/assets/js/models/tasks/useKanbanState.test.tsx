@@ -92,9 +92,9 @@ it.each(["space", "template", "project"] as const)("keeps %s Kanban persistence 
     () =>
       useKanbanState(
         type === "project"
-          ? { ...options, type, projectId: "p1", updateKanban: save }
+          ? { ...options, type, boardId: "b1", updateKanban: save }
           : type === "space"
-            ? { ...options, type, spaceId: "s1", updateKanban: save }
+            ? { ...options, type, boardId: "b1", updateKanban: save }
             : {
                 ...options,
                 type,
@@ -110,9 +110,12 @@ it.each(["space", "template", "project"] as const)("keeps %s Kanban persistence 
       expect(await result.current.handleTaskStatusChange("a", options.statuses[1])).toBe(true);
     });
     expect(save).toHaveBeenCalledTimes(type === "template" ? 2 : 1);
+    if (type === "space") {
+      expect(save.mock.calls[0][0]).toMatchObject({ boardId: "b1", taskId: "a" });
+    }
     if (type === "project")
       expect(save.mock.calls[0][0]).toMatchObject({
-        projectId: "p1",
+        boardId: "b1",
         taskId: "a",
         kanbanState: '{"pending":[],"done":["a"]}',
       });

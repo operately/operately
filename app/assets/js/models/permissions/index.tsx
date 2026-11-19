@@ -1,2 +1,2 @@
-export type { AccessOptions, AccessOptionsInt, AccessLevels } from "@/api";
+export type { AccessOptions, AccessOptionsInt } from "@/api";
 export { useGrantResourceAccess } from "./permissionLifecycle";

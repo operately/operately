@@ -13,6 +13,26 @@ description: >-
 Canonical guide for **where tests live**, **how to write them**, and **how to
 run them**. Pairing rules come from [`.projections.json`](../../../.projections.json).
 
+## Choose useful coverage
+
+Before adding or expanding a test, identify the observable behavior or contract,
+a credible regression, and why existing coverage would not catch it. Extend an
+existing case when it covers the same risk. For a bug fix, verify that the
+regression test fails before the fix for the intended reason and passes after it.
+
+Test shared behavior at the component or module that owns it. Handler and
+page-context tests should cover their own mapping, wiring, or lifecycle risks;
+do not repeat the shared component's full interaction matrix for each consumer.
+Keep distinct security, authorization, accessibility, and browser behavior
+coverage. The required checks below and in scoped `AGENTS.md` files still apply.
+
+Use realistic, typed fixtures with the fields the actual payload supplies.
+Avoid universal fixtures that populate fields unrelated to the case,
+or type casts that hide an invalid fixture. Assert the expected result, not
+only the absence of an error or unwanted element. Keep production helpers
+private when their only external caller would be a test; exercise the behavior
+through the component or module's existing public entry point.
+
 ## Projections rule (required)
 
 Follow `.projections.json` when creating or renaming tests.
@@ -285,7 +305,7 @@ Data changes: `app/test/operately/data/change_NNN_*_test.exs`.
 
 ## Checklist
 
-- [ ] New module/endpoint has a matching `*_test.exs` per projections
+- [ ] New test files follow projections; each API endpoint has its own test module
 - [ ] Test module name mirrors the source (`ListVersions` → `ListVersionsTest`)
 - [ ] No grab-bag test file for multiple unrelated modules
 - [ ] New setup uses Factory where practical; API tests use `TurboCase`

@@ -9,6 +9,7 @@ defmodule Operately.Operations.ResourceHubDocumentPublicSharing do
     |> Multi.run(:locked, fn repo, _ -> Locking.lock_for_update(repo, document) end)
     |> Multi.merge(fn %{locked: locked} -> update_sharing(author, document, locked, enabled) end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(document.resource_hub.project_id)
     |> case do
       {:ok, %{document: document}} -> {:ok, document}
       {:error, _step, reason, _changes} -> {:error, reason}

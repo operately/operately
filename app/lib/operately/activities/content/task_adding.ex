@@ -2,6 +2,8 @@ defmodule Operately.Activities.Content.TaskAdding do
   use Operately.Activities.Content
 
   embedded_schema do
+    belongs_to :board, Operately.Tasks.TaskBoard
+
     belongs_to :company, Operately.Companies.Company
     belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project

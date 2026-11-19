@@ -4,14 +4,12 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.List do
   alias OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents, as: DocsAndFilesList
   alias OperatelyWeb.Mcp.Helpers
 
-  @scope_keys ~w(space_id project_id goal_id folder_id)
-
   @impl true
   def definition do
     Definition.new!(
       name: "list_docs_and_files",
       title: "List Docs and Files",
-      description: "Lists documents, files, links, and folders for exactly one space, project, goal, or folder.",
+      description: "Lists documents, files, links, and folders in a hub or folder. Parent identifiers must match the selected hub; space-only requests use the default hub.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,
@@ -25,6 +23,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.List do
       ],
       input_schema:
         JsonSchema.object(%{
+          "resource_hub_id" => JsonSchema.string("Explicit hub identifier. Without it or a folder, space_id selects the default resource hub."),
           "space_id" => JsonSchema.string("Optional space identifier."),
           "project_id" => JsonSchema.string("Optional project identifier."),
           "goal_id" => JsonSchema.string("Optional goal identifier."),
@@ -33,36 +32,19 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.List do
       output_schema:
         JsonSchema.object(
           %{
+            "resource_hub_id" => JsonSchema.string("The resolved resource hub identifier."),
             "nodes" => JsonSchema.array(JsonSchema.any_object(), description: "Published docs-and-files nodes."),
             "draft_nodes" => JsonSchema.array(JsonSchema.any_object(), description: "Draft docs-and-files nodes.")
           },
-          required: ["nodes", "draft_nodes"]
+          required: ["resource_hub_id", "nodes", "draft_nodes"]
         )
     )
   end
 
   @impl true
   def call(conn, arguments) do
-    with :ok <- validate_scope(arguments),
-         {:ok, space_id} <- Helpers.decode_optional_id(arguments["space_id"]),
-         {:ok, project_id} <- Helpers.decode_optional_id(arguments["project_id"]),
-         {:ok, goal_id} <- Helpers.decode_optional_id(arguments["goal_id"]),
-         {:ok, folder_id} <- Helpers.decode_optional_id(arguments["folder_id"]) do
-      DocsAndFilesList.call(
-        conn,
-        %{}
-        |> Helpers.put_optional(:space_id, space_id)
-        |> Helpers.put_optional(:project_id, project_id)
-        |> Helpers.put_optional(:goal_id, goal_id)
-        |> Helpers.put_optional(:folder_id, folder_id)
-      )
-    end
-  end
-
-  defp validate_scope(arguments) do
-    case Enum.count(@scope_keys, &Map.get(arguments, &1)) do
-      1 -> :ok
-      _ -> {:error, :invalid_arguments}
+    with {:ok, inputs} <- Helpers.decode_hub_scope(arguments) do
+      DocsAndFilesList.call(conn, inputs)
     end
   end
 end

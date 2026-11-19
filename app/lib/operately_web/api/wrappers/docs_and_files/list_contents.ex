@@ -1,6 +1,10 @@
 defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents do
   @moduledoc """
   Lists contents in a Docs & Files hub or folder.
+
+  Select a hub with resource_hub_id, or derive it from folder_id where supported.
+  A space_id alone selects its default resource hub. Supplied parent selectors
+  must match the selected hub. Results include the resolved resource_hub_id.
   """
 
   use TurboConnect.Query
@@ -10,6 +14,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents do
   alias OperatelyWeb.Api.ResourceHubs.ListNodes
 
   inputs do
+    field? :resource_hub_id, :id, null: true
     field? :space_id, :id, null: true
     field? :project_id, :id, null: true
     field? :goal_id, :id, null: true
@@ -19,26 +24,16 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents do
   end
 
   outputs do
+    field :resource_hub_id, :id, null: false
     field :nodes, list_of(:resource_hub_node), null: false
     field :draft_nodes, list_of(:resource_hub_node), null: false
   end
 
   def call(conn, inputs) do
     with {:ok, me} <- find_me(conn),
-         {:ok, filter} <- HubScope.resolve_filter(me, inputs),
-         {:ok, internal_inputs} <- build_internal_inputs(filter, inputs) do
+         {:ok, internal_inputs} <- HubScope.to_resource_hub_inputs(me, inputs) do
       ListNodes.call(conn, internal_inputs)
-    else
-      {:error, :bad_request} -> {:error, :bad_request}
-      {:error, :not_found} -> {:error, :not_found}
+      |> HubScope.with_resolved_hub(internal_inputs.resource_hub_id)
     end
-  end
-
-  defp build_internal_inputs(filter, inputs) do
-    {:ok,
-     Map.merge(filter, %{
-       include_comments_count: inputs[:include_comments_count],
-       include_children_count: inputs[:include_children_count]
-     })}
   end
 end

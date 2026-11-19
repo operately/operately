@@ -13,35 +13,35 @@ defmodule Operately.Assignments.Loader do
 
   def load(person, company) do
     [
-      Task.async(fn -> load_pending_project_check_ins(company, person) end),
-      Task.async(fn -> load_pending_project_check_in_acknowledgements(company, person) end),
-      Task.async(fn -> load_pending_project_retrospective_acknowledgements(company, person) end),
-      Task.async(fn -> load_pending_goal_updates(company, person) end),
-      Task.async(fn -> load_pending_goal_update_acknowledgements(company, person) end),
-      Task.async(fn -> load_pending_goal_retrospective_acknowledgements(company, person) end),
-      Task.async(fn -> load_pending_tasks(company, person) end),
-      Task.async(fn -> load_pending_space_tasks(company, person) end),
-      Task.async(fn -> load_pending_milestones(company, person) end),
-      Task.async(fn -> load_pending_kpi_updates(company, person) end)
+      fn -> load_pending_project_check_ins(company, person) end,
+      fn -> load_pending_project_check_in_acknowledgements(company, person) end,
+      fn -> load_pending_project_retrospective_acknowledgements(company, person) end,
+      fn -> load_pending_goal_updates(company, person) end,
+      fn -> load_pending_goal_update_acknowledgements(company, person) end,
+      fn -> load_pending_goal_retrospective_acknowledgements(company, person) end,
+      fn -> load_pending_tasks(company, person) end,
+      fn -> load_pending_space_tasks(company, person) end,
+      fn -> load_pending_milestones(company, person) end,
+      fn -> load_pending_kpi_updates(company, person) end
     ]
-    |> Task.await_many()
+    |> Operately.Parallel.run()
     |> List.flatten()
   end
 
   def count(person) do
     [
-      Task.async(fn -> count_pending_project_check_ins(person) end),
-      Task.async(fn -> count_pending_project_check_in_acknowledgements(person) end),
-      Task.async(fn -> count_pending_project_retrospective_acknowledgements(person) end),
-      Task.async(fn -> count_pending_goal_updates(person) end),
-      Task.async(fn -> count_pending_goal_update_acknowledgements(person) end),
-      Task.async(fn -> count_pending_goal_retrospective_acknowledgements(person) end),
-      Task.async(fn -> count_pending_tasks(person) end),
-      Task.async(fn -> count_pending_space_tasks(person) end),
-      Task.async(fn -> count_pending_milestones(person) end),
-      Task.async(fn -> count_pending_kpi_updates(person) end)
+      fn -> count_pending_project_check_ins(person) end,
+      fn -> count_pending_project_check_in_acknowledgements(person) end,
+      fn -> count_pending_project_retrospective_acknowledgements(person) end,
+      fn -> count_pending_goal_updates(person) end,
+      fn -> count_pending_goal_update_acknowledgements(person) end,
+      fn -> count_pending_goal_retrospective_acknowledgements(person) end,
+      fn -> count_pending_tasks(person) end,
+      fn -> count_pending_space_tasks(person) end,
+      fn -> count_pending_milestones(person) end,
+      fn -> count_pending_kpi_updates(person) end
     ]
-    |> Task.await_many()
+    |> Operately.Parallel.run()
     |> Enum.sum()
   end
 

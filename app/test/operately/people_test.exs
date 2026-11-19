@@ -10,6 +10,43 @@ defmodule Operately.PeopleTest do
   alias Operately.Groups.Member
   alias Operately.Access
 
+  describe "validate_active_company_members/2" do
+    setup ctx do
+      ctx |> Factory.setup() |> Factory.add_company_member(:member)
+    end
+
+    test "accepts active company members and ignores nil and duplicate IDs", ctx do
+      assert :ok = People.validate_active_company_members(ctx.company.id, [ctx.creator.id, nil, ctx.member.id, ctx.member.id])
+      assert :ok = People.validate_active_company_members(ctx.company.id, [])
+      assert :ok = People.validate_active_company_members(ctx.company.id, [nil])
+    end
+
+    test "accepts active guests without company-wide visibility", ctx do
+      {:ok, guest} = Operately.Operations.CompanyMemberConvertingToGuest.run(ctx.creator, ctx.member)
+      assert {:error, :not_found} = Person.get(guest, id: guest.id)
+      assert :ok = People.validate_active_company_members(ctx.company.id, [guest.id])
+    end
+
+    test "rejects a list containing a person from another company", ctx do
+      other = Factory.setup(%{})
+      assert {:error, :invalid_company_member} = People.validate_active_company_members(ctx.company.id, [ctx.member.id, other.creator.id])
+    end
+
+    test "rejects a list containing a missing person", ctx do
+      assert {:error, :invalid_company_member} = People.validate_active_company_members(ctx.company.id, [ctx.member.id, Ecto.UUID.generate()])
+    end
+
+    test "rejects a person flagged as suspended", ctx do
+      ctx.member |> Ecto.Changeset.change(suspended: true) |> Repo.update!()
+      assert {:error, :invalid_company_member} = People.validate_active_company_members(ctx.company.id, [ctx.creator.id, ctx.member.id])
+    end
+
+    test "rejects a person with a suspension timestamp", ctx do
+      ctx.member |> Ecto.Changeset.change(suspended_at: DateTime.utc_now() |> DateTime.truncate(:second)) |> Repo.update!()
+      assert {:error, :invalid_company_member} = People.validate_active_company_members(ctx.company.id, [ctx.creator.id, ctx.member.id])
+    end
+  end
+
   describe "people" do
     import Operately.PeopleFixtures
     import Operately.CompaniesFixtures
@@ -188,6 +225,33 @@ defmodule Operately.PeopleTest do
       assert {:ok, %Person{} = person} = People.update_person(ctx.person, update_attrs)
       assert person.full_name == "some updated full_name"
       assert person.title == "some updated title"
+    end
+
+    test "update_person/2 merges nested preferences from a stale person", ctx do
+      assert {:ok, _} = People.update_person(ctx.person, %{preferences: %{notifications: %{notify_on_mention: false}}})
+
+      assert {:ok, person} = People.update_person(ctx.person, %{preferences: %{notifications: %{send_daily_summary: true}}})
+
+      refute person.preferences.notifications.notify_on_mention
+      assert person.preferences.notifications.send_daily_summary
+      assert Repo.reload!(ctx.person).preferences == person.preferences
+    end
+
+    test "update_person/2 preserves newer preferences with string-keyed attributes", ctx do
+      assert {:ok, _} = People.update_person(ctx.person, %{preferences: %{time_format: :hour_24}})
+
+      assert {:ok, person} = People.update_person(ctx.person, %{"preferences" => %{"dismissed_product_release_id" => "v1.8"}})
+
+      assert person.preferences.time_format == :hour_24
+      assert person.preferences.dismissed_product_release_id == "v1.8"
+      assert Repo.reload!(ctx.person).preferences == person.preferences
+    end
+
+    test "update_person/2 rejects invalid preferences without overwriting newer values", ctx do
+      assert {:ok, current} = People.update_person(ctx.person, %{preferences: %{time_format: :hour_24}})
+
+      assert {:error, %Ecto.Changeset{}} = People.update_person(ctx.person, %{preferences: %{time_format: :invalid}})
+      assert Repo.reload!(ctx.person).preferences == current.preferences
     end
 
     test "update_person/2 with invalid data returns error changeset", ctx do

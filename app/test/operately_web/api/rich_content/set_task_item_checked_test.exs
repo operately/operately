@@ -14,6 +14,16 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemCheckedTest do
     |> Factory.log_in_person(:creator)
   end
 
+  test "generic checkbox updates cannot bypass inline-thread endpoints", ctx do
+    ctx = Factory.add_document(ctx, :document, :hub, content: Operately.Support.RichText.rich_text("Hello"))
+    attrs = %{resource_id: ctx.document.id, source_version: ctx.document.current_version, from: 1, to: 6, quote: "Hello", content: content()}
+    assert {:ok, thread} = Operately.Operations.InlineThreadCreating.run(ctx.creator, ctx.document, attrs)
+    message = hd(thread.messages)
+
+    assert {404, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs(message, :comment, :content, message.content))
+    assert Repo.reload!(message).content == message.content
+  end
+
   test "checkbox snapshots keep URL labels while conflict detection remains active", ctx do
     source = content()
     url = Paths.project_path(ctx.company, ctx.project)
@@ -120,16 +130,29 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemCheckedTest do
 
   test "published documents create exactly one version per change", ctx do
     document = target(ctx, :document) |> Ecto.Changeset.change(content: content(), state: :published) |> Repo.update!()
+    topic = "api:document_updated:#{document.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
     previous_versions = Repo.all(from(v in DocumentVersion, where: v.document_id == ^document.id))
     before = length(previous_versions)
     inputs = inputs(document, :document, :content, document.content)
     assert {200, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs)
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
     assert {200, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs)
     assert Repo.aggregate(from(v in DocumentVersion, where: v.document_id == ^document.id), :count) == before + 1
     version = Repo.one!(from(v in DocumentVersion, where: v.document_id == ^document.id, order_by: [desc: v.version_number], limit: 1))
     Enum.each(previous_versions, fn previous -> assert Repo.reload!(previous) == previous end)
     assert version.editor_id == ctx.creator.id
     assert checked(version.content)
+  end
+
+  test "checkbox changes advance inline anchor versions without moving ranges", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:document, :hub, content: content())
+      |> Factory.add_inline_thread(:thread, :document, from: 3, to: 10, quote: "Ship it")
+
+    assert {200, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs(ctx.document, :document, :content, content()))
+    assert %{status: :attached, current_from: 3, current_to: 10, current_version: 2} = Repo.reload!(ctx.thread).anchor
   end
 
   test "draft documents retain their version and subscription configuration", ctx do

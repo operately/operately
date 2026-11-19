@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.People.Update do
   @updatable_fields_for_oneself [
     :full_name,
     :title,
+    :title_setup_pending,
     :timezone,
     :language,
     :manager_id,
@@ -30,6 +31,7 @@ defmodule OperatelyWeb.Api.People.Update do
     field :id, :id, null: false
     field? :full_name, :string, null: false
     field? :title, :string, null: false
+    field? :title_setup_pending, :boolean, null: false
     field? :timezone, :string, null: false
     field? :language, :language, null: true
     field? :time_format, :time_format, null: false

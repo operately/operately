@@ -37,6 +37,7 @@ defmodule OperatelyWeb.Api.Documents.Publish do
       {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :document, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
+      {:error, :operation, %{error: :forbidden}} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end

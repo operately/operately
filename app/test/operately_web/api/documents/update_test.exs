@@ -12,21 +12,6 @@ defmodule OperatelyWeb.Api.Documents.UpdateTest do
     ctx |> Factory.setup()
   end
 
-  test "mutation responses enrich titles while storing source content", ctx do
-    ctx =
-      ctx
-      |> Factory.setup()
-      |> Factory.add_space(:space)
-      |> Factory.add_resource_hub(:hub, :space, :creator)
-      |> Factory.add_document(:document, :hub)
-      |> Factory.log_in_person(:creator)
-
-    source = Operately.Support.RichText.resource_link(Paths.space_path(ctx.company, ctx.space))
-    assert {200, %{document: document}} = mutation(ctx.conn, [:documents, :update], %{document_id: Paths.document_id(ctx.document), name: ctx.document.name, content: Jason.encode!(source)})
-    assert get_in(Jason.decode!(document.content), ["content", Access.at(0), "content", Access.at(0), "text"]) == ctx.space.name
-    assert Repo.reload!(ctx.document).content == source
-  end
-
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:documents, :update], %{})
@@ -168,6 +153,33 @@ defmodule OperatelyWeb.Api.Documents.UpdateTest do
       assert document.name == "First edit"
       assert document.current_version == 2
     end
+  end
+
+  test "mutation responses enrich titles while storing source content", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_document(:document, :hub)
+      |> Factory.log_in_person(:creator)
+
+    source = Operately.Support.RichText.resource_link(Paths.space_path(ctx.company, ctx.space))
+    assert {200, %{document: document}} = mutation(ctx.conn, [:documents, :update], %{document_id: Paths.document_id(ctx.document), name: ctx.document.name, content: Jason.encode!(source)})
+    assert get_in(Jason.decode!(document.content), ["content", Access.at(0), "content", Access.at(0), "text"]) == ctx.space.name
+    assert Repo.reload!(ctx.document).content == source
+  end
+
+  test "document updates reconcile inline anchors", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_document(:document, :hub, content: RichText.rich_text("Hello world"))
+      |> Factory.add_inline_thread(:thread, :document, from: 1, to: 6, quote: "Hello")
+      |> Factory.log_in_person(:creator)
+
+    assert {200, _} = mutation(ctx.conn, [:documents, :update], %{document_id: Paths.document_id(ctx.document), name: ctx.document.name, content: RichText.rich_text("Say Hello world", :as_string)})
+    assert %{status: :attached, current_from: 5, current_to: 10, current_version: 2} = Repo.reload!(ctx.thread).anchor
   end
 
   #

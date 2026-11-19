@@ -1,3 +1,4 @@
+import { useTaskArchiveChange } from "./useTaskArchiveChange";
 import i18n from "@/i18n";
 import * as React from "react";
 
@@ -24,13 +25,14 @@ import { serializeTaskDescription } from "./descriptionSerialization";
 interface Attrs {
   backendTasks: Tasks.Task[];
   space: Spaces.Space;
+  boardId: string;
 }
 
 interface TasksSnapshot {
   tasks: TaskBoard.Task[];
 }
 
-export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
+export function useSpaceTasksForTurboUi({ backendTasks, space, boardId }: Attrs) {
   const paths = usePaths();
   const createTaskMutation = useCreateTask();
   const updateTaskNameMutation = useUpdateTaskName();
@@ -84,6 +86,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
         dueDate: serializeContextualDate(task.dueDate),
         milestoneId: null,
         id: space.id,
+        boardId,
         type: "space",
       };
 
@@ -288,7 +291,10 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
     }
   };
 
+  const updateTaskArchive = useTaskArchiveChange(setTasks);
+
   return {
+    updateTaskArchive,
     tasks,
     setTasks,
     createTask,

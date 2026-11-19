@@ -25,6 +25,7 @@ defmodule Operately.Operations.ProjectDescriptionUpdating do
     end)
     |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(project.id)
     |> Repo.extract_result(:project)
   end
 end

@@ -26,6 +26,8 @@ defmodule Operately.Projects.Project do
     has_many :check_ins, CheckIn, foreign_key: :project_id
     has_many :tasks, Operately.Tasks.Task, foreign_key: :project_id
 
+    has_one :task_board, Operately.Tasks.TaskBoard
+
     has_one :champion_contributor, Contributor, foreign_key: :project_id, where: [role: "champion"]
     has_one :reviewer_contributor, Contributor, foreign_key: :project_id, where: [role: "reviewer"]
     has_one :resource_hub, Operately.ResourceHubs.ResourceHub, foreign_key: :project_id
@@ -41,7 +43,6 @@ defmodule Operately.Projects.Project do
     field :private, :boolean, default: false
 
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
-    embeds_many :task_statuses, Operately.Tasks.Status, on_replace: :delete
 
     belongs_to :last_check_in, CheckIn, foreign_key: :last_check_in_id
     field :last_check_in_status, Ecto.Enum, values: CheckIn.valid_status()
@@ -62,7 +63,6 @@ defmodule Operately.Projects.Project do
     field :success_status, Ecto.Enum, values: [:achieved, :missed]
 
     field :milestones_ordering_state, {:array, :string}, default: Operately.Projects.OrderingState.initialize()
-    field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
     field :tasks_view, Ecto.Enum, values: @valid_tasks_views, default: :list
 
     # populated with after load hooks
@@ -107,12 +107,9 @@ defmodule Operately.Projects.Project do
       :deadline,
       :milestones_ordering_state,
       :subscription_list_id,
-      :tasks_kanban_state,
       :tasks_view
     ])
     |> cast_embed(:timeframe)
-    |> cast_embed(:task_statuses)
-    |> put_default_task_statuses()
     |> validate_required([
       :name,
       :company_id,
@@ -120,23 +117,13 @@ defmodule Operately.Projects.Project do
       :creator_id,
       :subscription_list_id
     ])
+    |> validate_length(:name, max: 255, count: :codepoints)
   end
-
-  defp put_default_task_statuses(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
-    # Only set defaults for new projects, and only if task_statuses is empty or not provided
-    case Ecto.Changeset.get_field(changeset, :task_statuses) do
-      [] -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
-      nil -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
-      _ -> changeset
-    end
-  end
-
-  defp put_default_task_statuses(changeset), do: changeset
 
   def valid_tasks_views, do: @valid_tasks_views
 
   def task_status_values(project = %__MODULE__{}) do
-    project.task_statuses
+    task_statuses(project)
     |> Elixir.List.wrap()
     |> Enum.map(& &1.value)
     |> Enum.filter(& &1)
@@ -144,12 +131,16 @@ defmodule Operately.Projects.Project do
   end
 
   def get_default_task_status(project = %__MODULE__{}) do
-    statuses = project.task_statuses
+    statuses = task_statuses(project)
 
     Enum.find(statuses, fn s -> s.color == :gray end) ||
       Enum.find(statuses, fn s -> s.color == :blue end) ||
       List.first(statuses)
   end
+
+  def task_board(project), do: Repo.preload(project, :task_board).task_board
+  def task_statuses(project), do: task_board(project).task_statuses || []
+  def tasks_kanban_state(project), do: task_board(project).tasks_kanban_state || %{}
 
   @impl WorkMapItem
   def status(project = %__MODULE__{}) do

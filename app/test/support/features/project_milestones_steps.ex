@@ -407,8 +407,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   step :assert_milestone_deleted, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "overview"))
-    |> UI.assert_text("No milestones yet")
-    |> UI.assert_text("Add milestones to track key deliverables and deadlines")
+    |> assert_project_milestones_zero_state()
   end
 
   step :assert_comment, ctx, comment do
@@ -416,9 +415,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   end
 
   step :assert_project_milestones_zero_state, ctx do
-    ctx
-    |> UI.assert_text("No milestones yet")
-    |> UI.assert_text("Add milestones to track key deliverables and deadlines")
+    UI.assert_has(ctx, testid: "milestones-empty-state")
   end
 
   step :assert_add_milestone_form_closed, ctx do

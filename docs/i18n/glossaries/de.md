@@ -162,9 +162,10 @@ Keep goal health, task workflow, completion, and publication states distinct. Tr
 
 | English | Meaning/context | Deutsch | Capitalization and usage |
 | --- | --- | --- | --- |
-| Docs & Files / Documents & Files | Named content tool | Dokumente & Dateien | Same name for both English variants. Do not expose the internal **Resource Hub** name. |
+| Docs & Files / Documents & Files | Named content tool | Dokumente & Dateien | Same name for both English variants. |
+| Resource Hub / Resource Hubs | Named container of documents, files, links, and folders | Ressourcen-Hub / Ressourcen-Hubs | User-facing product term. Use for hub management; preserve user-authored hub names. |
 | document / doc | Rich-text document | Dokument | **das Dokument / die Dokumente**, distinct from an uploaded **Datei**. Related item types: **Ordner**, **Link**, **Anhang**. |
-| resource / item (content collection) | Generic entry in Docs & Files | Inhalt / Eintrag | Prefer the specific item type when known; avoid a literal translation of internal Resource Hub terminology. |
+| resource / item (content collection) | Generic entry in Docs & Files | Inhalt / Eintrag | Prefer the specific item type when known; use the Resource Hub glossary entry when referring to the container. |
 | key resource / support material | Important supporting project/goal content | Wichtige Unterlage / Begleitmaterial | A resource can also be a link; do not imply it is always an uploaded file. |
 | draft / drafts | Unpublished content | Entwurf / Entwürfe | **der Entwurf / die Entwürfe**. |
 | save as draft / discard draft | Retain / remove unpublished content | Als Entwurf speichern / Entwurf verwerfen | Discard is distinct from canceling a dialog. |
@@ -217,7 +218,6 @@ Keep goal health, task workflow, completion, and publication states distinct. Tr
 | package / ZIP file | Transfer artifact | Datenpaket / ZIP-Datei | **das Datenpaket / die Datenpakete**. Import/export artifact, not a pricing tier. |
 | site admin / SaaS admin panel | Instance-wide operator role/screen | Instanz-Admin / Instanzverwaltung | Plural **Instanz-Admins**. Distinct from company Admin and Unternehmensverwaltung. |
 | support session / support mode | Operator access for customer assistance | Support-Sitzung / Supportmodus | State the access context accurately; do not imply the operator is the account owner. |
-| feature flag | Operator control of an experimental feature | Funktionsschalter | Group heading **Experimentelle Funktionen**. Preserve flag keys such as `i18n`. |
 | site message / update badge | Operator banner / new-version indicator | Systemmitteilung / Hinweis auf neue Version | Neither is a project Update or Check-in. |
 | provider / provider managed | External billing service and controlled plans | Zahlungsanbieter / Vom Zahlungsanbieter verwaltet | Context is billing; not an outside collaborator. |
 

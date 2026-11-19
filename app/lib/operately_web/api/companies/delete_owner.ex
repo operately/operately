@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Companies.DeleteOwner do
   alias Operately.Companies.Company
   alias Operately.Companies.Permissions
   alias Operately.Operations.CompanyOwnerRemoving
+  alias Operately.People.Person
 
   inputs do
     field :person_id, :id, null: false
@@ -19,13 +20,23 @@ defmodule OperatelyWeb.Api.Companies.DeleteOwner do
       {:ok, me} <- find_me(conn),
       {:ok, company} <- get_company(conn),
       {:ok, :allowed} <- authorize(company, company_read_only(conn)),
-      {:ok, _} <- CompanyOwnerRemoving.run(me, inputs.person_id)
+      {:ok, owner} <- find_owner(company, inputs.person_id),
+      {:ok, _} <- CompanyOwnerRemoving.run(me, owner.id)
     ) do
       {:ok, %{}}
     else
       {:error, :forbidden} -> {:error, :forbidden}
       {:error, :not_found} -> {:error, :not_found}
       {:error, _} -> {:error, :internal_server_error}
+    end
+  end
+
+  defp find_owner(company, person_id) do
+    with %Person{} = person <- Repo.get_by(Person, id: person_id, company_id: company.id),
+         true <- Company.is_owner?(company, person) do
+      {:ok, person}
+    else
+      _ -> {:error, :not_found}
     end
   end
 

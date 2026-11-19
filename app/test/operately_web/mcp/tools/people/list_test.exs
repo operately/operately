@@ -22,6 +22,12 @@ defmodule OperatelyWeb.Mcp.Tools.People.ListTest do
     conn = ToolConnHelper.conn_with_assigns(account, company, me)
 
     assert {:ok, %{people: people}} = List.call(conn, %{})
+
+    current_member = Enum.find(people, &(&1.id == Paths.person_id(me)))
+    assert is_integer(current_member.access_level)
+    assert is_boolean(current_member.has_open_invitation)
+    assert current_member.invite_link == nil
+
     assert Enum.map(people, & &1.id) |> Enum.sort() == Enum.sort([Paths.person_id(me), Paths.person_id(coworker)])
   end
 end

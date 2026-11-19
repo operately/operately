@@ -4,14 +4,14 @@ defmodule OperatelyEmail.Emails.EmailActivationCodeEmailTest do
   alias Operately.Support.Factory
   alias OperatelyEmail.Emails.EmailActivationCodeEmail
 
-  test "recipient language is scoped, literal values survive, and flag rollback restores English" do
-    ctx = Factory.setup(%{}) |> Factory.enable_feature("i18n")
+  test "recipient language is scoped, literal values survive, and changing preferences selects English" do
+    ctx = Factory.setup(%{})
     {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     account = Operately.Repo.preload(person, :account).account
     previous = Gettext.get_locale(OperatelyWeb.Gettext)
 
-    for {enabled, subject} <- [{true, "Código de confirmação"}, {false, "Operately confirmation code"}] do
-      unless enabled, do: Operately.Companies.disable_experimental_feature(ctx.company, "i18n")
+    for {language, subject} <- [{"pt-BR", "Código de confirmação"}, {"en", "Operately confirmation code"}] do
+      {:ok, _} = Operately.People.update_person(person, %{language: language})
       assert {:ok, _} = EmailActivationCodeEmail.send(%Operately.People.EmailActivationCode{email: account.email, code: "ABC123"})
 
       assert_email_sent(fn email ->
@@ -25,6 +25,6 @@ defmodule OperatelyEmail.Emails.EmailActivationCodeEmailTest do
       assert Gettext.get_locale(OperatelyWeb.Gettext) == previous
     end
 
-    assert Operately.Repo.reload!(person).language == "pt-BR"
+    assert Operately.Repo.reload!(person).language == "en"
   end
 end

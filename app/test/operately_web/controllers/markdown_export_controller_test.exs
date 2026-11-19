@@ -11,8 +11,7 @@ defmodule OperatelyWeb.MarkdownExportControllerTest do
 
   setup :register_and_log_in_account
 
-  test "export resolves the URL company language and falls back when its flag is disabled", ctx do
-    ctx = Operately.Support.Factory.enable_feature(ctx, "i18n")
+  test "export resolves the URL company language and reflects language preference changes", ctx do
     {:ok, _} = Operately.People.update_person(ctx.person, %{language: "pt-BR"})
     space = group_fixture(ctx.person, company_id: ctx.company.id, name: "Literal Space")
     goal = goal_fixture(ctx.person, %{company_id: ctx.company.id, space_id: space.id, name: "Literal Goal <hello>"})
@@ -23,7 +22,7 @@ defmodule OperatelyWeb.MarkdownExportControllerTest do
     assert response.resp_body =~ "Espaço: Literal Space"
     assert response.resp_body =~ "## Descrição"
 
-    Operately.Companies.update_company(ctx.company, %{enabled_experimental_features: []})
+    Operately.People.update_person(ctx.person, %{language: "en"})
     response = get(conn, Paths.export_goal_markdown_path(ctx.company, goal))
     assert response.resp_body =~ "Space: Literal Space"
     assert response.resp_body =~ "## Description"

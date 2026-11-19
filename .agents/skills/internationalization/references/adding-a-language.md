@@ -1,6 +1,6 @@
 # Adding a language
 
-Add a language's registration, complete translations, and generated resources in one PR. Keep English as the default and preserve the existing language feature flag and fallback behavior. This guide complements the [internationalization guide](../../../../docs/internationalization.md).
+Add a language's registration, complete translations, and generated resources in one PR. Keep English as the default and make every supported language available to all users and companies with English fallback. This guide complements the [internationalization guide](../../../../docs/internationalization.md).
 
 ## 1. Prepare the glossary
 
@@ -25,7 +25,7 @@ Update these locations together; adding a PO directory alone does not enable a l
 
 Search for assumptions tied to existing languages, including tests and third-party widgets. The current locale helper handles language and optional region tags; script/variant tags may need an explicit extension and tests. Do not assume all tags or plural systems work merely because a registry entry exists.
 
-Preserve explicit selection, English for unsupported/absent preferences, company-flag rollback, and account-membership resolution. Reuse [EffectiveLanguage](../../../../app/lib/operately/i18n/effective_language.ex) and [AccountLanguage](../../../../app/lib/operately/i18n/account_language.ex); do not add browser detection or independent locale state. Keep regional formatting and timezone preferences separate.
+Preserve explicit selection, English for unsupported/absent preferences, and account-membership resolution. Reuse [EffectiveLanguage](../../../../app/lib/operately/i18n/effective_language.ex) and [AccountLanguage](../../../../app/lib/operately/i18n/account_language.ex); do not add browser detection or independent locale state. Keep regional formatting and timezone preferences separate.
 
 ## 3. Create and translate the catalog
 
@@ -78,7 +78,7 @@ make test FILE=assets/js/i18n/languages.test.ts
 ./devenv bash -c 'cd turboui && npm test -- --runInBand src/ProfileEditPage/index.test.tsx'
 ```
 
-Verify selection persists, switching updates the UI, flag-off restores English without deleting the preference, and fallback remains functional. Check account conflicts, route errors, escaping/link destinations, and plural boundaries. Exercise immediate, buffered, digest, and billing emails with mixed-language recipients in HTML and plain text. Review representative workflows at narrow widths with longer translations; right-to-left languages also need directionality and interaction checks before release.
+Verify selection persists, switching updates the UI, selecting English restores English, and fallback remains functional. Check account conflicts, route errors, escaping/link destinations, and plural boundaries. Exercise immediate, buffered, digest, and billing emails with mixed-language recipients in HTML and plain text. Review representative workflows at narrow widths with longer translations; right-to-left languages also need directionality and interaction checks before release.
 
 ## 5. Deliver together
 

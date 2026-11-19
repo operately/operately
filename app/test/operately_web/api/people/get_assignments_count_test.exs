@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
   use OperatelyWeb.TurboCase
 
+  import Mock
+
   import Operately.KpisFixtures
 
   alias Operately.Repo
@@ -36,8 +38,8 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
       # 3. Pending task
       project_for_task = create_project(ctx, gen_future_date(3))
 
-      todo = Enum.find(project_for_task.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
-      done = Enum.find(project_for_task.task_statuses, &(&1.color == :green)) |> Map.from_struct()
+      todo = Enum.find(Operately.Projects.Project.task_statuses(project_for_task), &(&1.color == :gray)) |> Map.from_struct()
+      done = Enum.find(Operately.Projects.Project.task_statuses(project_for_task), &(&1.color == :green)) |> Map.from_struct()
 
       create_task(project_for_task, ctx.person, %{
         task_status: todo,
@@ -187,8 +189,8 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
     test "doesn't include tasks with done and canceled status", ctx do
       project_for_task = create_project(ctx, gen_future_date(3))
 
-      done = Enum.find(project_for_task.task_statuses, &(&1.color == :green)) |> Map.from_struct()
-      canceled = Enum.find(project_for_task.task_statuses, &(&1.color == :red)) |> Map.from_struct()
+      done = Enum.find(Operately.Projects.Project.task_statuses(project_for_task), &(&1.color == :green)) |> Map.from_struct()
+      canceled = Enum.find(Operately.Projects.Project.task_statuses(project_for_task), &(&1.color == :red)) |> Map.from_struct()
 
       create_task(project_for_task, ctx.person, %{
         task_status: done,
@@ -528,5 +530,44 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
       |> Repo.update()
 
     update
+  end
+
+  @tag :parallel_failure
+  test "parallel queue failure reaches the HTTP error handler", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+    owner = self()
+    error = %DBConnection.ConnectionError{reason: :queue_timeout, message: "private diagnostic"}
+
+    with_mock Operately.Repo, [:passthrough],
+      one: fn query ->
+        if self() == owner, do: :meck.passthrough([query]), else: raise(error)
+      end do
+      ExUnit.CaptureLog.capture_log(fn ->
+        {503, _, body} =
+          Phoenix.ConnTest.assert_error_sent(503, fn ->
+            Phoenix.ConnTest.dispatch(ctx.conn, OperatelyWeb.Endpoint, :get, "/api/v2/people/get_assignments_count", %{})
+          end)
+
+        assert Jason.decode!(body)["code"] == "database_connection_queue_timeout"
+      end)
+    end
+  end
+
+  @tag :parallel_failure
+  test "parallel unrelated failure reaches the HTTP error handler", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+    owner = self()
+    error = %RuntimeError{message: "private diagnostic"}
+
+    with_mock Operately.Repo, [:passthrough],
+      one: fn query ->
+        if self() == owner, do: :meck.passthrough([query]), else: raise(error)
+      end do
+      ExUnit.CaptureLog.capture_log(fn ->
+        conn = Phoenix.ConnTest.dispatch(ctx.conn, OperatelyWeb.Endpoint, :get, "/api/v2/people/get_assignments_count", %{})
+        assert conn.status == 500
+        refute Map.has_key?(Jason.decode!(conn.resp_body), "code")
+      end)
+    end
   end
 end

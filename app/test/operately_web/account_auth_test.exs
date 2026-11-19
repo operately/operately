@@ -19,6 +19,34 @@ defmodule OperatelyWeb.AccountAuthTest do
   end
 
   describe "log_in_account/3" do
+    test "preserves internal template return paths", %{conn: conn, account: account} do
+      path = "/templates/example/use"
+      conn = AccountAuth.log_in_account(conn, account, %{"redirect_to" => path})
+      assert redirected_to(conn) == path
+    end
+
+    test "preserves encoded query values in internal return paths", %{conn: conn, account: account} do
+      path = "/templates/example/use?source=%2Fcatalog#form"
+      conn = AccountAuth.log_in_account(conn, account, %{"redirect_to" => path})
+      assert redirected_to(conn) == path
+    end
+
+    test "rejects unsafe return paths through Phoenix", %{conn: conn, account: account} do
+      for path <- ["https://evil.test", "//evil.test", "/\\evil.test", "/\nevil.test", "/\t/evil.test"] do
+        assert_raise ArgumentError, fn ->
+          AccountAuth.log_in_account(conn, account, %{"redirect_to" => path})
+        end
+      end
+    end
+
+    test "rejects unsafe session return paths through Phoenix", %{conn: conn, account: account} do
+      for key <- [:redirect_to, :account_return_to] do
+        assert_raise ArgumentError, fn ->
+          conn |> put_session(key, "//evil.test") |> AccountAuth.log_in_account(account)
+        end
+      end
+    end
+
     test "stores the account token in the session", %{conn: conn, account: account} do
       conn = AccountAuth.log_in_account(conn, account)
       assert token = get_session(conn, :account_token)

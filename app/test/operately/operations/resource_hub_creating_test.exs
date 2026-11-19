@@ -97,6 +97,25 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     assert activity.content["goal_id"] == ctx.goal.id
   end
 
+  test "appends new space hubs without changing the default", ctx do
+    Repo.get!(Operately.ResourceHubs.ResourceHub, ctx.space.default_resource_hub_id)
+    |> Ecto.Changeset.change(position: 7)
+    |> Repo.update!()
+
+    {:ok, first} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
+    {:ok, second} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
+    assert second.position == first.position + 1
+    assert first.position == 8
+    assert Repo.reload!(ctx.space).default_resource_hub_id == ctx.space.default_resource_hub_id
+  end
+
+  test "creation leaves a missing default unset", ctx do
+    Repo.delete!(Repo.get!(Operately.ResourceHubs.ResourceHub, ctx.space.default_resource_hub_id))
+    assert {:ok, hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
+    assert hub.position == 0
+    assert is_nil(Repo.reload!(ctx.space).default_resource_hub_id)
+  end
+
   defp get_activity(resource_hub) do
     from(a in Activity, where: a.action == "resource_hub_created" and a.content["resource_hub_id"] == ^resource_hub.id)
     |> Repo.one()

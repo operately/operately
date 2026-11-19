@@ -1,6 +1,8 @@
 defmodule Operately.WorkMaps.GetWorkMapQueryTest do
   use Operately.DataCase
 
+  import Mock
+
   alias Operately.Access.Binding
   alias Operately.WorkMaps.GetWorkMapQuery
 
@@ -94,9 +96,71 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       open_task = Map.fetch!(items_by_id, ctx.open_task.id)
       assert open_task.type == :task
       assert open_task.parent_id == ctx.project.id
+      assert open_task.resource.available_statuses == nil
 
       assignee = Operately.Repo.get_by!(Operately.Tasks.Assignee, task_id: ctx.open_task.id, person_id: ctx.assignee.id)
       assert open_task.assigned_at == assignee.inserted_at
+    end
+
+    for include_statuses <- [false, true], requester <- [:person, :system] do
+      @tag include_statuses: include_statuses, requester: requester
+      test "include_task_statuses=#{include_statuses} controls project and space task statuses for #{requester}", ctx do
+        ctx =
+          ctx
+          |> Factory.create_space_task(:space_task, :space)
+          |> Factory.add_task_assignee(:space_assignment, :space_task, :creator)
+          |> Factory.add_task_assignee(:project_assignment, :open_task, :creator)
+
+        requester = if ctx.requester == :system, do: :system, else: ctx.creator
+
+        assert {:ok, work_map} = GetWorkMapQuery.execute(requester, %{
+          company_id: ctx.company.id,
+          contributor_id: ctx.creator.id,
+          include_tasks: true,
+          include_task_statuses: ctx.include_statuses
+        }, :flat)
+
+        items = index_work_map_by_id(work_map)
+        project_statuses = if ctx.include_statuses, do: Operately.Projects.Project.task_statuses(ctx.project), else: nil
+        space_statuses = if ctx.include_statuses, do: Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses, else: nil
+
+        assert Map.fetch!(items, ctx.open_task.id).resource.available_statuses == project_statuses
+        assert Map.fetch!(items, ctx.space_task.id).resource.available_statuses == space_statuses
+      end
+    end
+
+    test "loads boards in one query when including statuses for multiple space tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:first_task, :space)
+        |> Factory.create_space_task(:second_task, :space)
+        |> Factory.add_task_assignee(:first_assignment, :first_task, :creator)
+        |> Factory.add_task_assignee(:second_assignment, :second_task, :creator)
+
+      statuses = Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses
+      caller = self()
+      handler_id = make_ref()
+
+      :telemetry.attach(handler_id, [:operately, :repo, :query], fn _, _, metadata, _ ->
+        if metadata.source == "task_boards", do: send(caller, :board_query)
+      end, nil)
+
+      on_exit(fn -> :telemetry.detach(handler_id) end)
+
+      assert {:ok, work_map} = GetWorkMapQuery.execute(ctx.creator, %{
+        company_id: ctx.company.id,
+        include_tasks: true,
+        include_task_statuses: true
+      }, :flat)
+
+      items = index_work_map_by_id(work_map)
+
+      for task <- [ctx.first_task, ctx.second_task] do
+        assert Map.fetch!(items, task.id).resource.available_statuses == statuses
+      end
+
+      assert_received :board_query
+      refute_received :board_query
     end
 
     test "prioritizes contributor_id over requester when include_tasks is true", ctx do
@@ -133,6 +197,54 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
       refute Map.has_key?(items_by_id, ctx.closed_task.id)
       refute Map.has_key?(items_by_id, ctx.other_assignee_task.id)
+    end
+
+    for {requester, expected_tasks} <- [assignee: [], other_person: [], system: [:open_task]] do
+      @tag requester: requester, expected_tasks: expected_tasks
+      test "filters task access for #{requester} when viewing an assignee's work map", ctx do
+        ctx = Factory.edit_project_company_members_access(ctx, :project, :no_access)
+        requester = Map.get(ctx, ctx.requester, :system)
+
+        {:ok, work_map} = GetWorkMapQuery.execute(requester, %{
+          company_id: ctx.company.id,
+          include_tasks: true,
+          contributor_id: ctx.assignee.id
+        }, :flat)
+
+        task_ids = for item <- work_map, item.type == :task, do: item.id
+        assert task_ids == Enum.map(ctx.expected_tasks, &Map.fetch!(ctx, &1).id)
+      end
+    end
+
+    test "includes accessible space tasks and excludes private space tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:public_space, company_permissions: Binding.view_access())
+        |> Factory.create_space_task(:space_task, :public_space)
+        |> Factory.add_task_assignee(:space_assignment, :space_task, :assignee)
+        |> Factory.add_space(:private_space, company_permissions: Binding.no_access())
+        |> Factory.create_space_task(:private_task, :private_space)
+        |> Factory.add_task_assignee(:private_assignment, :private_task, :assignee)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.assignee, %{company_id: ctx.company.id, include_tasks: true}, :flat)
+      task_ids = for item <- work_map, item.type == :task, do: item.id
+
+      assert ctx.space_task.id in task_ids
+      refute ctx.private_task.id in task_ids
+    end
+
+    test "excludes tasks closed by timestamp and archived tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:archived_task, :milestone)
+        |> Factory.add_task_assignee(:archived_assignment, :archived_task, :assignee)
+
+      {:ok, _} = Operately.Tasks.update_task(ctx.open_task, %{closed_at: NaiveDateTime.utc_now()})
+      {:ok, _} = Operately.Tasks.update_task(ctx.archived_task, %{archived_at: NaiveDateTime.utc_now()})
+
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.assignee, %{company_id: ctx.company.id, include_tasks: true}, :flat)
+
+      refute Enum.any?(work_map, &(&1.type == :task))
     end
 
     test "preloads project_space as nil when assignee has no access to the space", ctx do
@@ -788,6 +900,10 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_project_milestone(:milestone1, :project)
       |> Factory.add_project_milestone(:milestone2, :project)
       |> Factory.add_project_milestone(:milestone3, :project)
+      |> Factory.add_project_task(:task1, :milestone1)
+      |> Factory.add_project_task(:task2, :milestone2)
+      |> Factory.add_project_task(:task3, :milestone3)
+      |> Factory.add_task_assignee(:assignment, :task3, :creator)
     end
 
     test "0% progress", ctx do
@@ -798,23 +914,48 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
     test "100% progress", ctx do
       ctx
-      |> Factory.close_project_milestone(:milestone1)
-      |> Factory.close_project_milestone(:milestone2)
-      |> Factory.close_project_milestone(:milestone3)
+      |> complete_progress_task(:task1)
+      |> complete_progress_task(:task2)
+      |> complete_progress_task(:task3)
 
       {:ok, [project]} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id })
 
       assert project.progress == 100
     end
 
-    test "66% progress", ctx do
+    test "task completion updates both query shapes independently of assigned task inclusion", ctx do
       ctx
-      |> Factory.close_project_milestone(:milestone1)
-      |> Factory.close_project_milestone(:milestone2)
+      |> complete_progress_task(:task1)
 
       {:ok, [project]} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id })
+      assert project.progress == 33
+      assert project.task_completion == %{completed_count: 1, total_count: 3, percentage: 33}
 
-      assert floor(project.progress) == 66
+      complete_progress_task(ctx, :task2)
+
+      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
+      assert project.progress == 67
+      assert project.task_completion == %{completed_count: 2, total_count: 3, percentage: 67}
+
+      for include_tasks <- [false, true] do
+        {:ok, items} = GetWorkMapQuery.execute(ctx.creator, %{company_id: ctx.company.id, include_tasks: include_tasks}, :flat)
+        flat_project = Enum.find(items, &(&1.id == ctx.project.id))
+        assert flat_project.progress == project.progress
+        assert flat_project.task_completion == project.task_completion
+      end
+    end
+
+    test "counts archived tasks and tasks without milestones, excluding unfinished historical tasks", ctx do
+      ctx =
+        ctx
+        |> complete_progress_task(:task1)
+        |> Factory.add_project_task(:unattached, nil, project_id: ctx.project.id, archived_at: ~N[2026-01-01 00:00:00])
+
+      Operately.Repo.update!(Ecto.Changeset.change(ctx.milestone2, status: :done))
+      Operately.Repo.update!(Ecto.Changeset.change(ctx.milestone1, status: :done))
+
+      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
+      assert project.task_completion == %{completed_count: 1, total_count: 3, percentage: 33}
     end
   end
 
@@ -855,11 +996,22 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
       assert Enum.map(open_project.resource.milestones, & &1.id) == [ctx.open_milestone.id]
       assert open_project.status == :caution
+      assert open_project.progress == 0
+      assert open_project.task_completion == nil
       assert %Ecto.Association.NotLoaded{} = open_project.resource.last_check_in
       assert closed_project.resource.milestones == []
       assert closed_project.progress == nil
+      assert closed_project.task_completion == nil
       assert closed_project.next_step == ""
     end
+  end
+
+  defp complete_progress_task(ctx, key) do
+    task = Map.fetch!(ctx, key)
+    status = Enum.find(Operately.Tasks.Status.default_task_statuses(), &(&1.value == "done"))
+    attrs = Operately.Tasks.Task.status_change_attrs(task, status)
+    Operately.Repo.update!(Operately.Tasks.Task.changeset(task, attrs))
+    ctx
   end
 
   describe "permissions - query root projects" do
@@ -1189,5 +1341,17 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
         acc
       end
     end)
+  end
+
+  @tag :parallel_failure
+  test "flat work map preserves a worker's queue failure" do
+    ctx = Factory.setup(%{})
+    error = %DBConnection.ConnectionError{reason: :queue_timeout, message: "queue diagnostic"}
+
+    with_mock Operately.Repo, [:passthrough], all: fn _ -> raise error end do
+      assert assert_raise(DBConnection.ConnectionError, fn ->
+               GetWorkMapQuery.execute(ctx.creator, %{company_id: ctx.company.id, include_tasks: true}, :flat)
+             end) == error
+    end
   end
 end

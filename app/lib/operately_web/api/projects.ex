@@ -160,44 +160,8 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
-    end
-  end
-
-  defmodule UpdateKanban do
-    @moduledoc """
-    Updates the kanban state of a task in a project.
-    """
-
-    use TurboConnect.Mutation
-
-    inputs do
-      field :project_id, :id, null: false
-      field :task_id, :id, null: false
-      field :status, :task_status, null: false
-      field :kanban_state, :json, null: false
-    end
-
-    outputs do
-      field :project, :project, null: false
-      field :task, :task, null: false
-    end
-
-    def call(conn, inputs) do
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_project(inputs.project_id)
-      |> Steps.find_task(inputs.task_id)
-      |> Steps.check_task_permissions(:can_edit)
-      |> Steps.update_kanban(inputs.status, inputs.kanban_state)
-      |> Steps.commit()
-      |> Steps.broadcast_review_count_update()
-      |> Steps.respond(fn changes ->
-        %{
-          project: Serializer.serialize(changes.updated_project, level: :essential),
-          task: Serializer.serialize(changes.updated_task_with_preloads, level: :full)
-        }
-      end)
     end
   end
 
@@ -233,38 +197,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
-      |> Steps.respond(fn _ -> %{success: true} end)
-    end
-  end
-
-  defmodule UpdateTaskStatuses do
-    @moduledoc """
-    Updates the available task statuses for a project.
-    """
-
-    use TurboConnect.Mutation
-
-    inputs do
-      field :project_id, :id, null: false
-      field :task_statuses, list_of(:task_status), null: false
-      field? :deleted_status_replacements, list_of(:deleted_status_replacement), null: true
-    end
-
-    outputs do
-      field :success, :boolean, null: true
-    end
-
-    def call(conn, inputs) do
-      replacements = inputs[:deleted_status_replacements] || []
-
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_edit)
-      |> Steps.validate_status_replacements(inputs.task_statuses, replacements)
-      |> Steps.update_task_statuses(inputs.task_statuses)
-      |> Steps.replace_deleted_task_statuses(replacements)
-      |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -290,6 +223,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members([inputs.champion_id])
       |> Steps.update_project_champion(inputs.champion_id)
       |> Steps.save_activity(:project_champion_updating, fn changes ->
         %{
@@ -301,6 +235,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -342,6 +277,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -367,6 +303,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members([inputs.reviewer_id])
       |> Steps.update_project_reviewer(inputs.reviewer_id)
       |> Steps.save_activity(:project_reviewer_updating, fn changes ->
         %{
@@ -378,6 +315,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -417,6 +355,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{milestone: OperatelyWeb.Api.Serializer.serialize(changes.milestone)}
@@ -473,6 +412,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{milestone: OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)}
       end)
@@ -506,6 +446,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.delete_reactions()
       |> Steps.delete_project()
       |> Steps.commit()
+      |> Steps.broadcast_project_update()
       |> Steps.respond(fn changes ->
         %{project: OperatelyWeb.Api.Serializer.serialize(changes.deleted_project)}
       end)
@@ -575,6 +516,7 @@ defmodule OperatelyWeb.Api.Projects do
     alias Operately.Projects.{Contributor, OrderingState}
     alias Operately.Notifications.{Subscription, SubscriptionList}
     alias Operately.Operations.Notifications.SubscriptionList, as: SubscriptionListOps
+    alias Operately.People
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -611,21 +553,6 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
-    def find_task(multi, task_id) do
-      Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
-        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:project]]) do
-          {:ok, task} -> {:ok, task}
-          {:error, _} -> {:error, {:not_found, gettext("Task not found")}}
-        end
-      end)
-    end
-
-    def update_kanban(multi, status, kanban_state) do
-      Ecto.Multi.merge(multi, fn %{me: me, project: project, task: task} ->
-        Operately.Operations.KanbanStateUpdating.run(me, %{type: :project, project: project}, task, status, kanban_state)
-      end)
-    end
-
     def find_project_by_milestone(multi, milestone_id) do
       Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
         case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
@@ -642,8 +569,8 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def find_milestone(multi, milestone_id) do
-      Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
-        case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
+      Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me, project: project} ->
+        case Operately.Projects.Milestone.get(me, id: milestone_id, project_id: project.id, opts: [preload: [:project]]) do
           {:ok, milestone} -> {:ok, milestone}
           {:error, _} -> {:error, {:not_found, gettext("Milestone not found")}}
         end
@@ -664,6 +591,21 @@ defmodule OperatelyWeb.Api.Projects do
         end
 
         {:ok, Repo.all(query)}
+      end)
+    end
+
+    def validate_selected_company_members(multi, person_ids) do
+      Ecto.Multi.run(multi, :company_members, fn _repo, %{me: me, project: project} ->
+        cond do
+          project.company_id != me.company_id ->
+            {:error, {:not_found, gettext("Project not found")}}
+
+          true ->
+            case People.validate_active_company_members(me.company_id, person_ids) do
+              :ok -> {:ok, :valid}
+              {:error, :invalid_company_member} -> {:error, :bad_request}
+            end
+        end
       end)
     end
 
@@ -757,91 +699,6 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
-    def update_task_statuses(multi, task_statuses) do
-      case task_statuses do
-        [] ->
-          Ecto.Multi.run(multi, :validate_task_statuses, fn _repo, _changes ->
-            {:error, gettext("At least one task status is required")}
-          end)
-
-        _ ->
-          Ecto.Multi.update(multi, :updated_project, fn %{project: project} ->
-            Operately.Projects.Project.changeset(project, %{task_statuses: task_statuses})
-          end)
-      end
-    end
-
-    def validate_status_replacements(multi, _task_statuses, []), do: multi
-
-    def validate_status_replacements(multi, task_statuses, replacements) do
-      Ecto.Multi.run(multi, :validate_replacements, fn _repo, _changes ->
-        new_status_ids = MapSet.new(task_statuses, & &1.id)
-        deleted_status_ids = MapSet.new(replacements, & &1.deleted_status_id)
-
-        invalid_replacements =
-          Enum.filter(replacements, fn r ->
-            replacement_is_deleted = MapSet.member?(deleted_status_ids, r.replacement_status_id)
-            replacement_not_in_new_statuses = not MapSet.member?(new_status_ids, r.replacement_status_id)
-
-            replacement_is_deleted or replacement_not_in_new_statuses
-          end)
-
-        if Enum.empty?(invalid_replacements) do
-          {:ok, :valid}
-        else
-          {:error, gettext("Replacement statuses must be existing statuses that are not being deleted")}
-        end
-      end)
-    end
-
-    def replace_deleted_task_statuses(multi, []), do: multi
-
-    def replace_deleted_task_statuses(multi, replacements) do
-      Ecto.Multi.run(multi, :replace_task_statuses, fn _repo, changes ->
-        project = Map.get(changes, :updated_project, changes.project)
-        replacement_map =
-          Map.new(replacements, fn r -> {r.deleted_status_id, r.replacement_status_id} end)
-
-        deleted_status_ids = Map.keys(replacement_map)
-
-        tasks =
-          from(t in Operately.Tasks.Task,
-            where: t.project_id == ^project.id,
-            where: fragment("?->>'id' = ANY(?)", t.task_status, ^deleted_status_ids)
-          )
-          |> Repo.all()
-
-        new_statuses_by_id = Map.new(project.task_statuses, fn s -> {s.id, s} end)
-
-        results =
-          Enum.map(tasks, fn task ->
-            old_status_id = task.task_status.id
-            new_status_id = Map.get(replacement_map, old_status_id)
-            new_status = Map.get(new_statuses_by_id, new_status_id)
-
-            if new_status do
-              task
-              |> Operately.Tasks.Task.changeset(%{task_status: Map.from_struct(new_status)})
-              |> Repo.update()
-            else
-              {:ok, task}
-            end
-          end)
-
-        errors = Enum.filter(results, fn
-          {:error, _} -> true
-          _ -> false
-        end)
-
-        if Enum.empty?(errors) do
-          {:ok, Enum.map(tasks, & &1.id)}
-        else
-          List.first(errors)
-        end
-      end)
-      |> Operately.Search.IndexUpdates.enqueue(:search_tasks_with_replaced_status, "task", fn changes -> changes.replace_task_statuses end)
-    end
-
     def update_project_start_date(multi, new_start_date) do
       Ecto.Multi.update(multi, :updated_project, fn %{project: project} ->
         cond do
@@ -929,9 +786,14 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def update_parent_goal(multi, goal_id) do
-      Ecto.Multi.run(multi, :updated_project, fn _repo, %{project: project} ->
-        {:ok, project} = Operately.Projects.update_project(project, %{goal_id: goal_id})
-        {:ok, Repo.preload(project, :goal)}
+      multi
+      |> Ecto.Multi.run(:parent_goal, fn _repo, %{project: project, me: me} ->
+        if goal_id, do: Operately.Goals.Goal.get(me, id: goal_id, company_id: project.company_id), else: {:ok, nil}
+      end)
+      |> Ecto.Multi.run(:updated_project, fn _repo, %{project: project, parent_goal: parent_goal} ->
+        with {:ok, project} <- Operately.Projects.update_project(project, %{goal_id: parent_goal && parent_goal.id}) do
+          {:ok, %{project | goal: parent_goal}}
+        end
       end)
     end
 
@@ -1151,6 +1013,15 @@ defmodule OperatelyWeb.Api.Projects do
       Operately.Repo.transaction(multi)
     end
 
+    def broadcast_project_update(result) do
+      OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(result, fn changes ->
+        case changes[:project] do
+          %Operately.Projects.Project{id: id} -> id
+          _ -> nil
+        end
+      end)
+    end
+
     def broadcast_review_count_update(result) do
       case result do
         {:ok, changes} ->
@@ -1212,13 +1083,10 @@ defmodule OperatelyWeb.Api.Projects do
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
 
+        {:error, _failed_operation, :bad_request, _changes} ->
+          {:error, :bad_request}
+
         {:error, :validate_milestone, message, _changes} ->
-          {:error, :bad_request, message}
-
-        {:error, :validate_task_statuses, message, _changes} ->
-          {:error, :bad_request, message}
-
-        {:error, :validate_replacements, message, _changes} ->
           {:error, :bad_request, message}
 
         {:error, _failed_operation, reason, _changes} ->

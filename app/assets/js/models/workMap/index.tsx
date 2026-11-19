@@ -1,11 +1,11 @@
 import Api, { WorkMapItem } from "@/api";
-import { Paths, usePaths } from "@/routes/paths";
+import { includesId, Paths, usePaths } from "@/routes/paths";
 import React from "react";
 import { WorkMap } from "turboui";
 import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
 import { accessLevelAsNumber } from "../goals";
 import { parseContextualDate } from "../contextualDates";
-import { parseTaskStatusForTurboUi } from "../tasks";
+import { parseTaskStatusForTurboUi, parseTaskStatusesForTurboUi } from "../tasks";
 import { parseSpaceForTurboUI } from "../spaces";
 
 /**
@@ -14,16 +14,24 @@ import { parseSpaceForTurboUI } from "../spaces";
  * the structure matches exactly what the TurboUI component expects
  */
 
-export function convertToWorkMapItems(paths: Paths, items: WorkMapItem[]): WorkMap.Item[] {
-  return items.map((item) => convertToWorkMapItem(paths, item));
+export function convertToWorkMapItems(
+  paths: Paths,
+  items: WorkMapItem[],
+  editableSpaceIds: string[] = [],
+): WorkMap.Item[] {
+  return items.map((item) => convertToWorkMapItem(paths, item, editableSpaceIds));
 }
 
-function convertToWorkMapItem(paths: Paths, item: WorkMapItem): WorkMap.Item {
+function convertToWorkMapItem(paths: Paths, item: WorkMapItem, editableSpaceIds: string[]): WorkMap.Item {
   return {
     ...item,
+    // Creating children requires access to the destination space, independently of access to the goal.
+    canAddChildren: includesId(editableSpaceIds, item.space?.id),
     space: item.space ? parseSpaceForTurboUI(paths, item.space) : null,
     spacePath: item.spacePath,
     taskStatus: parseTaskStatusForTurboUi(item.taskStatus),
+    taskCompletion: item.taskCompletion ?? null,
+    taskStatuses: parseTaskStatusesForTurboUi(item.taskStatuses),
     timeframe: convertTimeframe(item.timeframe),
     milestones: (item.milestones || []).map((milestone) => ({
       id: milestone.id,
@@ -34,7 +42,7 @@ function convertToWorkMapItem(paths: Paths, item: WorkMapItem): WorkMap.Item {
     })),
     targets: item.targets || [],
     checklist: item.checklist || [],
-    children: item.children.map((c) => convertToWorkMapItem(paths, c)),
+    children: item.children.map((c) => convertToWorkMapItem(paths, c, editableSpaceIds)),
   };
 }
 
@@ -112,6 +120,7 @@ export function useWorkMapItems(
       taskStatus: null,
       status: "pending",
       progress: 0,
+      taskCompletion: null,
       owner: null,
       ownerPath: null,
       reviewer: null,
@@ -175,6 +184,7 @@ export function useWorkMapItems(
       taskStatus: null,
       status: "pending",
       progress: 0,
+      taskCompletion: null,
       owner: null,
       ownerPath: null,
       reviewer: null,

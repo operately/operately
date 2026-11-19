@@ -3,12 +3,11 @@ import React, { act } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { Company, WorkMapItem } from "@/api";
-import { useWorkMapItems } from "@/models/workMap";
+import { convertToWorkMapItems, useWorkMapItems } from "@/models/workMap";
 import { dismissToast, showErrorToast, WorkMapPage } from "turboui";
 import { Page } from "./page";
 import { useLoadedData } from "./loader";
 import { i18n, applyLanguage, setupTestCatalog } from "@/__tests__/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 
 setupTestCatalog();
 
@@ -29,7 +28,7 @@ jest.mock("@/models/spaces", () => ({
 }));
 jest.mock("@/models/workMap", () => ({
   useWorkMapItems: jest.fn((items: WorkMapItem[]) => [items, jest.fn()]),
-  convertToWorkMapItems: (_paths: unknown, items: WorkMapItem[]) => items,
+  convertToWorkMapItems: jest.fn((_paths: unknown, items: WorkMapItem[]) => items),
 }));
 jest.mock("@/routes/paths", () => ({
   usePaths: () => ({}),
@@ -54,7 +53,12 @@ describe("CompanyWorkMapPage creation readiness", () => {
     client = new QueryClient();
     root = createRoot(document.createElement("div"));
     loaded = {
-      data: { company, workMap: [], spacesCount: 1, templates: [] },
+      data: {
+        company,
+        workMap: [],
+        editableSpaces: [{ __typename: "space", id: "general", name: "General" }],
+        templates: [],
+      },
       creationData: { isLoading: false, error: null, retry: jest.fn() },
     };
     jest.mocked(useLoadedData).mockImplementation(() => loaded);
@@ -90,7 +94,7 @@ describe("CompanyWorkMapPage creation readiness", () => {
     });
   });
 
-  it.each(["flag-off", "missing-portuguese", "substituted"])(
+  it.each(["english", "missing-portuguese", "substituted"])(
     "looks up the work-map title and loading failure: %s",
     async (mode) => {
       if (mode === "missing-portuguese") i18n.removeResourceBundle("pt-BR", "translation");
@@ -107,7 +111,7 @@ describe("CompanyWorkMapPage creation readiness", () => {
           true,
           true,
         );
-      await applyLanguage(resolveEffectiveLanguage("pt-BR", mode === "missing-portuguese"));
+      await applyLanguage(mode === "missing-portuguese" ? "pt-BR" : "en");
       loaded.creationData.error = new Error("offline");
       const props = await renderPage();
       expect(props.title).toBe(
@@ -141,8 +145,17 @@ describe("CompanyWorkMapPage creation readiness", () => {
   });
 
   it("does not enable creation for a member without editable spaces", async () => {
-    loaded.data.spacesCount = 0;
+    loaded.data.editableSpaces = [];
     expect(await renderPage()).toMatchObject({ addingEnabled: false, creationError: false, creationLoading: false });
+  });
+
+  it("does not preselect a General space that the user can only view", async () => {
+    loaded.data.editableSpaces = [{ __typename: "space", id: "editable", name: "Editable" }];
+    const props = await renderPage();
+    expect(props.addingEnabled).toBe(true);
+    expect(props.addItemDefaultSpace).toBeUndefined();
+    expect(props.emptyStateVariant).toBe("standard");
+    expect(convertToWorkMapItems).toHaveBeenLastCalledWith(expect.anything(), [], ["editable"]);
   });
 
   it("shows one persistent toast after retries fail and uses the latest retry action", async () => {

@@ -30,9 +30,9 @@ defmodule OperatelyWeb.Plugs.SetLocaleTest do
     assert Operately.Repo.reload(ctx.creator).language == nil
   end
 
-  test "uses a saved supported language only when the i18n flag is on", ctx do
+  test "uses a saved supported language for every company", ctx do
     {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
-    ctx = %{ctx | creator: person} |> Factory.enable_feature("i18n")
+    ctx = %{ctx | creator: person}
 
     conn = set_locale(ctx, accept_language: "fr")
 
@@ -41,14 +41,14 @@ defmodule OperatelyWeb.Plugs.SetLocaleTest do
     assert Operately.Repo.reload(person).language == "pt-BR"
   end
 
-  test "forces English when the flag is off without deleting the saved preference", ctx do
+  test "uses saved preferences without a company assignment", ctx do
     {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     ctx = %{ctx | creator: person}
 
-    conn = set_locale(ctx, accept_language: "pt-BR")
+    conn = Phoenix.ConnTest.build_conn() |> Plug.Conn.assign(:current_person, ctx.creator) |> SetLocale.call([])
 
-    assert conn.assigns.locale == "en"
-    assert Gettext.get_locale(@backend) == "en"
+    assert conn.assigns.locale == "pt-BR"
+    assert Gettext.get_locale(@backend) == "pt_BR"
     assert Operately.Repo.reload(person).language == "pt-BR"
   end
 
@@ -63,7 +63,6 @@ defmodule OperatelyWeb.Plugs.SetLocaleTest do
   end
 
   test "account-only browser requests use the agreed active membership language", ctx do
-    ctx = Factory.enable_feature(ctx, "i18n")
     {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     account = Operately.Repo.preload(person, :account).account
 
@@ -71,7 +70,7 @@ defmodule OperatelyWeb.Plugs.SetLocaleTest do
     assert conn.assigns.locale == "pt-BR"
     assert Gettext.get_locale(@backend) == "pt_BR"
 
-    Operately.Companies.update_company(ctx.company, %{enabled_experimental_features: []})
+    Operately.People.update_person(person, %{language: "en"})
     conn = SetLocale.call(conn, [])
     assert conn.assigns.locale == "en"
   end

@@ -9,5 +9,5 @@ export function loginPath(): string {
     return "/log_in";
   }
 
-  return "/log_in?redirect_to=" + encodeURIComponent(window.location.pathname);
+  return "/log_in?redirect_to=" + encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
 }

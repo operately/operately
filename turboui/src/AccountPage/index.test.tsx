@@ -11,6 +11,7 @@ const props: AccountPage.Props = {
   person: { id: "1", fullName: "Ada Lovelace", email: "ada@example.com" },
   profilePath: "/profile",
   settingsPath: "/settings",
+  notificationSettingsPath: "/notifications",
   securityPath: "/security",
   homePath: "/home",
   onLogOut: jest.fn(),
@@ -35,6 +36,8 @@ it.each([
   );
 
   expect(screen.getByRole("heading", { name: title })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Settings" })).toHaveAttribute("href", "/settings");
+  expect(screen.getByRole("link", { name: "Notifications" })).toHaveAttribute("href", "/notifications");
   expect(document.querySelector('[data-test-id="profile-link"]')).toHaveTextContent(profile);
   expect(document.querySelector('[data-test-id="log-out-button"]')).toHaveTextContent(signOut);
 });

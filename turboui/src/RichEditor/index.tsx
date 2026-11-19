@@ -86,3 +86,5 @@ export function Content({ editor, className = "" }: EditorProps): JSX.Element {
     </EditorContext.Provider>
   );
 }
+
+export type { InlineCommentRange, InlineCommentSelection, InlineCommentsOptions } from "./extensions/InlineComments";

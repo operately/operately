@@ -17,13 +17,13 @@ export function ResourceHub(props: Props) {
   const paths = usePaths();
   assertPresent(props.resourceHub.nodes, "nodes must be present in resourceHub");
 
-  const testid = createTestId(props.resourceHub.name!);
-  const path = paths.resourceHubPath(props.resourceHub.id!);
+  const testid = createTestId(props.resourceHub.name);
+  const path = paths.resourceHubPath(props.resourceHub.id);
   const isZeroState = props.resourceHub.nodes.length < 1;
 
   return (
     <Container path={path} testId={testid}>
-      {isZeroState ? <ZeroState /> : <RegularState {...props} />}
+      {isZeroState ? <ZeroState name={props.resourceHub.name} /> : <RegularState {...props} />}
     </Container>
   );
 }

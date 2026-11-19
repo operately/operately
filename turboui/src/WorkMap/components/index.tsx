@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { GoalCheck, Target } from "../../ApiTypes";
+import type { GoalCheck, ProjectTaskCompletion, Target } from "../../ApiTypes";
 import { Navigation } from "../../Page/Navigation";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 
@@ -171,7 +171,11 @@ export namespace WorkMap {
     name: string;
     status: ItemStatus;
     taskStatus: StatusSelector.StatusOption | null;
+    taskStatuses?: StatusSelector.StatusOption[];
+    canEditTask?: boolean | null;
+    canAddChildren?: boolean;
     progress: number | null;
+    taskCompletion?: ProjectTaskCompletion | null;
     project: { id: string; name: string } | null;
     projectPath: string | null;
     space: Space | null;
@@ -195,6 +199,7 @@ export namespace WorkMap {
   }
 
   export type WorkMapType = "company" | "personal";
+  export type TaskStatusChangeFn = (task: Item, status: StatusSelector.StatusOption) => Promise<void>;
   export type Filter = "all" | "goals" | "projects" | "completed" | "paused";
   export type View = "table" | "timeline";
   export type EmptyStateVariant = "standard" | "first-project";

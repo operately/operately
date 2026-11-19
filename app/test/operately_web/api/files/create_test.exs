@@ -14,9 +14,163 @@ defmodule OperatelyWeb.Api.Files.CreateTest do
     ctx |> Factory.setup()
   end
 
+  describe "destination folder authorization" do
+    setup ctx do
+      ctx
+      |> Factory.add_company_member(:actor)
+      |> Factory.add_space(:source_space, company_permissions: Binding.edit_access())
+      |> Factory.fetch_default_resource_hub(:hub, :source_space)
+      |> Factory.add_folder(:folder, :hub)
+      |> Factory.add_blob(:blob, :actor)
+      |> Factory.log_in_person(:actor)
+    end
+
+    for destination <- [:foreign, :inaccessible, :accessible_other_hub, :missing] do
+      @destination destination
+
+      test "rejects #{@destination} destination before writes", ctx do
+        destination_id =
+          case @destination do
+            :foreign ->
+              foreign = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.fetch_default_resource_hub(:hub, :space) |> Factory.add_folder(:folder, :hub)
+              foreign.folder.id
+
+            :missing ->
+              Ecto.UUID.generate()
+
+            scope ->
+              access = if scope == :inaccessible, do: Binding.no_access(), else: Binding.edit_access()
+
+              other =
+                ctx |> Factory.add_space(:other_space, company_permissions: access) |> Factory.fetch_default_resource_hub(:other_hub, :other_space) |> Factory.add_folder(:other_folder, :other_hub)
+
+              other.other_folder.id
+          end
+
+        nodes = Repo.all(Operately.ResourceHubs.Node)
+        activities = Repo.aggregate(Operately.Activities.Activity, :count)
+        subscriptions = Repo.aggregate(Operately.Notifications.SubscriptionList, :count)
+
+        ctx = Factory.add_api_token(ctx, :destination_token, :actor, read_only: false)
+        assert {404, _} = mutation(ctx.conn, [:files, :create], %{resource_hub_id: ctx.hub.id, folder_id: destination_id, files: [%{blob_id: ctx.blob.id, name: "File", description: "{}"}]})
+
+        assert {404, _} =
+                 external_mutation(ctx.conn, ctx.destination_token, "files/create", %{
+                   resource_hub_id: ctx.hub.id,
+                   folder_id: destination_id,
+                   files: [%{blob_id: ctx.blob.id, name: "File", description: "{}"}]
+                 })
+
+        assert Repo.all(Operately.ResourceHubs.Node) == nodes
+        assert Repo.aggregate(Operately.Activities.Activity, :count) == activities
+        assert Repo.aggregate(Operately.Notifications.SubscriptionList, :count) == subscriptions
+        assert Repo.reload(ctx.blob).status == :pending
+      end
+    end
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:files, :create], %{})
+    end
+  end
+
+  describe "blob authorization" do
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.fetch_default_resource_hub(:hub, :space)
+      |> Factory.add_company_member(:other)
+      |> Factory.add_blob(:blob)
+      |> Factory.add_blob(:preview)
+      |> Factory.log_in_person(:creator)
+    end
+
+    for field <- [:blob_id, :preview_blob_id], kind <- [:foreign, :another_author, :deleted, :import_artifact, :missing] do
+      @blob_field field
+      @invalid_kind kind
+
+      test "rejects #{@invalid_kind} #{@blob_field} without changing any file in the batch", ctx do
+        invalid_id = invalid_blob_id(ctx, @invalid_kind)
+        valid_file = %{blob_id: ctx.blob.id, name: "File", description: RichText.rich_text("description", :as_string)}
+        invalid_file = Map.put(valid_file, @blob_field, invalid_id)
+        schemas = [ResourceHubs.Node, ResourceHubs.File, SubscriptionList, Operately.Notifications.Subscription, Operately.Activities.Activity, Oban.Job]
+        counts = Enum.map(schemas, &Repo.aggregate(&1, :count))
+        blobs = Repo.all(Operately.Blobs.Blob)
+
+        assert {404, _} =
+                 mutation(ctx.conn, [:files, :create], %{
+                   resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                   files: [Map.put(valid_file, :preview_blob_id, ctx.preview.id), invalid_file]
+                 })
+
+        assert ResourceHubs.list_files(ctx.hub) == []
+        assert Enum.map(schemas, &Repo.aggregate(&1, :count)) == counts
+        Enum.each(blobs, fn blob -> assert Repo.reload(blob) == blob end)
+      end
+    end
+
+    test "external API enforces blob ownership and read-only tokens", ctx do
+      ctx = ctx |> Factory.add_api_token(:token, :creator, read_only: false) |> Factory.add_api_token(:read_token, :creator)
+
+      inputs = %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        files: [%{blob_id: invalid_blob_id(ctx, :foreign), name: "File", description: RichText.rich_text("description", :as_string)}]
+      }
+
+      assert {404, _} = external_mutation(ctx.conn, ctx.token, "files/create", inputs)
+      assert ResourceHubs.list_files(ctx.hub) == []
+
+      inputs = put_in(inputs, [:files], [%{hd(inputs.files) | blob_id: ctx.blob.id}])
+      assert {403, _} = external_mutation(ctx.conn, ctx.read_token, "files/create", inputs)
+      assert Repo.reload(ctx.blob).status == :pending
+      assert {200, _} = external_mutation(ctx.conn, ctx.token, "files/create", inputs)
+    end
+
+    test "accepts uppercase file and preview UUIDs", ctx do
+      assert {200, _} =
+               mutation(ctx.conn, [:files, :create], %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 files: [
+                   %{
+                     blob_id: String.upcase(ctx.blob.id),
+                     preview_blob_id: String.upcase(ctx.preview.id),
+                     name: "File",
+                     description: RichText.rich_text("description", :as_string)
+                   }
+                 ]
+               })
+
+      assert [file] = ResourceHubs.list_files(ctx.hub)
+      assert file.blob_id == ctx.blob.id
+      assert file.preview_blob_id == ctx.preview.id
+      assert Repo.reload(ctx.blob).status == :uploaded
+      assert Repo.reload(ctx.preview).status == :uploaded
+    end
+
+    test "accepts mixed-case references to the same blob in one batch", ctx do
+      file = %{blob_id: ctx.blob.id, name: "File", description: RichText.rich_text("description", :as_string)}
+
+      assert {200, _} =
+               mutation(ctx.conn, [:files, :create], %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 files: [file, %{file | blob_id: String.upcase(ctx.blob.id)}]
+               })
+
+      assert length(ResourceHubs.list_files(ctx.hub)) == 2
+      assert Repo.reload(ctx.blob).status == :uploaded
+    end
+
+    test "accepts owned uploaded files and pending previews", ctx do
+      {:ok, _} = Operately.Blobs.update_blob(ctx.blob, %{status: :uploaded})
+
+      assert {200, _} =
+               mutation(ctx.conn, [:files, :create], %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 files: [%{blob_id: ctx.blob.id, preview_blob_id: ctx.preview.id, name: "File", description: RichText.rich_text("description", :as_string)}]
+               })
+
+      assert Repo.reload(ctx.preview).status == :uploaded
     end
   end
 
@@ -43,7 +197,7 @@ defmodule OperatelyWeb.Api.Files.CreateTest do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
         resource_hub = resource_hub_fixture(ctx.creator, space)
-        blob = blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
+        blob = blob_fixture(%{author_id: ctx.person.id, company_id: ctx.company.id})
 
         assert {code, res} = mutation(ctx.conn, [:files, :create], %{
           resource_hub_id: Paths.resource_hub_id(resource_hub),
@@ -81,9 +235,9 @@ defmodule OperatelyWeb.Api.Files.CreateTest do
       |> Factory.add_space_member(:person, :space)
       |> Factory.log_in_person(:person)
       |> Factory.fetch_default_resource_hub(:hub, :space)
-      |> Factory.add_blob(:blob1)
-      |> Factory.add_blob(:blob2)
-      |> Factory.add_blob(:blob3)
+      |> Factory.add_blob(:blob1, :person)
+      |> Factory.add_blob(:blob2, :person)
+      |> Factory.add_blob(:blob3, :person)
     end
 
     test "creates a single file within hub", ctx do
@@ -207,5 +361,25 @@ defmodule OperatelyWeb.Api.Files.CreateTest do
     end
 
     space
+  end
+
+  defp invalid_blob_id(ctx, kind) do
+    case kind do
+      :foreign ->
+        foreign = %{} |> Factory.setup() |> Factory.add_blob(:blob)
+        foreign.blob.id
+
+      :another_author ->
+        Factory.add_blob(ctx, :other_blob, :other).other_blob.id
+
+      :deleted ->
+        blob_fixture(%{company_id: ctx.company.id, author_id: ctx.creator.id, status: :deleted}).id
+
+      :import_artifact ->
+        blob_fixture(%{purpose: :company_transfer_import_artifact, account_id: ctx.account.id}).id
+
+      :missing ->
+        Ecto.UUID.generate()
+    end
   end
 end

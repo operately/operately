@@ -57,29 +57,8 @@ defmodule Operately.Companies.Company do
   #
 
   import Ecto.Query, only: [from: 2]
-  require Logger
 
-  alias Operately.Groups.Group
   alias Operately.Access
-
-  def load_general_space(%__MODULE__{company_space_id: nil} = company) do
-    Map.put(company, :general_space, nil)
-  end
-
-  def load_general_space(%__MODULE__{} = company) do
-    case Group.get(:system, id: company.company_space_id) do
-      {:ok, space} ->
-        space = Map.put(space, :company, company)
-        Map.put(company, :general_space, space)
-
-      {:error, :not_found} ->
-        Map.put(company, :general_space, nil)
-
-      e ->
-        Logger.error("Failed to load general space for company #{company.id}: #{inspect(e)}")
-        Map.put(company, :general_space, nil)
-    end
-  end
 
   def load_member_count(companies) when is_list(companies) do
     ids = Enum.map(companies, fn c -> c.id end)

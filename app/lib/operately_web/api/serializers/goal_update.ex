@@ -11,7 +11,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update do
       scheduled_at: OperatelyWeb.Api.Serializer.serialize(update.scheduled_at),
       goal_target_updates: serialize_targets(update.targets),
       checklist: serialize_checks(update.checks),
-      timeframe: OperatelyWeb.Api.Serializer.serialize(update.timeframe),
+      timeframe: OperatelyWeb.Api.Serializer.serialize(Operately.Goals.Update.timeframe(update)),
       acknowledged: !!update.acknowledged_at,
       acknowledged_at: OperatelyWeb.Api.Serializer.serialize(update.acknowledged_at)
     }

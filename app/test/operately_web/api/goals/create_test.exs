@@ -6,6 +6,133 @@ defmodule OperatelyWeb.Api.Goals.CreateTest do
   alias Operately.Access.Binding
   alias Operately.ContextualDates.Timeframe
 
+  describe "company member boundaries" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_api_token(:write_token, :creator, read_only: false)
+    end
+
+    for owner_field <- [:champion_id, :reviewer_id] do
+      @owner_field owner_field
+
+      test "rejects a foreign #{@owner_field} with existing space access before creating anything", ctx do
+        foreign_person = Factory.setup(%{}).creator
+        assert {:error, :not_found} = Operately.Groups.Group.get(foreign_person, id: ctx.space.id)
+
+        context = Operately.Access.get_context!(group_id: ctx.space.id)
+        {:ok, _} = Operately.Access.bind_person(context, foreign_person.id, Binding.view_access())
+        assert {:ok, _} = Operately.Groups.Group.get(foreign_person, id: ctx.space.id)
+
+        schemas = [
+          Operately.Goals.Goal, Operately.Goals.Target, Operately.ResourceHubs.ResourceHub,
+          Operately.Access.Context, Binding, Operately.Access.GroupMembership,
+          Operately.Notifications.SubscriptionList, Operately.Notifications.Subscription, Operately.Activities.Activity
+        ]
+
+        before = Enum.map(schemas, &Repo.aggregate(&1, :count))
+
+        inputs = Map.put(%{
+          space_id: ctx.space.id,
+          name: "New goal",
+          champion_id: ctx.creator.id,
+          reviewer_id: ctx.creator.id,
+          anonymous_access_level: Binding.no_access(),
+          company_access_level: Binding.view_access(),
+          space_access_level: Binding.edit_access()
+        }, @owner_field, foreign_person.id)
+
+        assert {400, _} = mutation(ctx.conn, [:goals, :create], inputs)
+        assert Enum.map(schemas, &Repo.aggregate(&1, :count)) == before
+        assert {400, _} = external_mutation(ctx.conn, ctx.write_token, "goals/create", inputs)
+        assert Enum.map(schemas, &Repo.aggregate(&1, :count)) == before
+      end
+    end
+  end
+
+  describe "goals/create destination authorization" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_company_member(:actor)
+      |> Factory.add_space(:source_space, company_permissions: Binding.edit_access())
+      |> Factory.add_goal(:source_goal, :source_space, champion: :actor, reviewer: :actor)
+      |> Factory.add_project(:source_project, :source_space)
+      |> Factory.log_in_person(:actor)
+    end
+
+    for destination <- [:foreign, :foreign_accessible, :inaccessible, :missing] do
+      @destination destination
+
+      test "rejects #{@destination} parent before writes", ctx do
+        destination_id =
+          case @destination do
+            scope when scope in [:foreign, :foreign_accessible] ->
+              foreign = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+
+              if scope == :foreign_accessible do
+                context = Operately.Access.get_context!(goal_id: foreign.goal.id)
+                {:ok, _} = Operately.Access.bind_person(context, ctx.actor.id, Binding.view_access())
+              end
+
+              foreign.goal.id
+
+            :inaccessible ->
+              other = ctx |> Factory.add_goal(:private_goal, :source_space, company_access: Binding.no_access(), space_access: Binding.no_access())
+              other.private_goal.id
+
+            :missing ->
+              Ecto.UUID.generate()
+          end
+
+        counts = Enum.map([Operately.Goals.Goal, Operately.Projects.Project, Operately.Activities.Activity, Operately.Notifications.SubscriptionList], &Repo.aggregate(&1, :count))
+
+        ctx = Factory.add_api_token(ctx, :destination_token, :actor, read_only: false)
+
+        assert {404, _} =
+                 mutation(ctx.conn, [:goals, :create], %{
+                   space_id: ctx.source_space.id,
+                   parent_goal_id: destination_id,
+                   name: "New goal",
+                   anonymous_access_level: 0,
+                   company_access_level: 10,
+                   space_access_level: 70
+                 })
+
+        assert {404, _} =
+                 external_mutation(ctx.conn, ctx.destination_token, "goals/create", %{
+                   space_id: ctx.source_space.id,
+                   parent_goal_id: destination_id,
+                   name: "New goal",
+                   anonymous_access_level: 0,
+                   company_access_level: 10,
+                   space_access_level: 70
+                 })
+
+        assert Repo.reload(ctx.source_goal).parent_goal_id == nil
+        assert Repo.reload(ctx.source_project).goal_id == nil
+        assert Enum.map([Operately.Goals.Goal, Operately.Projects.Project, Operately.Activities.Activity, Operately.Notifications.SubscriptionList], &Repo.aggregate(&1, :count)) == counts
+      end
+    end
+
+    test "accepts a visible parent in the same company", ctx do
+      ctx = Factory.add_goal(ctx, :visible_parent, :source_space, company_access: Binding.view_access(), space_access: Binding.no_access())
+      destination_id = ctx.visible_parent.id
+
+      assert {200, _} =
+               mutation(ctx.conn, [:goals, :create], %{
+                 space_id: ctx.source_space.id,
+                 parent_goal_id: destination_id,
+                 name: "New goal",
+                 anonymous_access_level: 0,
+                 company_access_level: 10,
+                 space_access_level: 70
+               })
+    end
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :create], %{})

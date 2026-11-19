@@ -270,3 +270,19 @@ export const OutsideCollaboratorAddedWithResourceAccess: Story = {
     );
   },
 };
+
+export const LongInvitationMessage: Story = {
+  args: {
+    companyName: "Northstar International Research & Development",
+    navigationItems,
+    state: {
+      state: "invited",
+      fullName: "Alexandra Morgan Fernández",
+      personId: "person-123",
+      inviteLink: "https://app.operately.com/join?token=Junc5f71WX0GBYEsmasz_CQXJW0e9u4A-long-invitation-token",
+    },
+    formValues: { fullName: "Alexandra Morgan Fernández", email: "alex@example.com", title: "Designer" },
+    onFormChange: () => {},
+    onSubmit: () => {},
+  },
+};

@@ -3,6 +3,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.TaskAdd
 
   def serialize(content, level: :essential) do
     %{
+      board_id: content["board_id"] && Operately.ShortUuid.encode!(content["board_id"]),
+
       space: Serializer.serialize(content["space"], level: :essential),
       project: Serializer.serialize(content["project"], level: :essential),
       milestone: Serializer.serialize(content["milestone"], level: :essential),

@@ -1,24 +1,30 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Tooltip } from "../../Tooltip";
+import { IconEye } from "../../icons";
 import { Tabs } from "../../Tabs";
 import { PrimaryButton } from "../../Button";
 import { Page } from "../../Page";
-import { Link } from "../../Link";
+import { DivLink, Link } from "../../Link";
 import { FormattedTime, FormattedTimePreferences } from "../../FormattedTime";
 import type { CuratedTemplate, TemplateType } from "../types";
 
 export interface CuratedTemplatesCatalogProps {
   templates: CuratedTemplate[];
+  selectedType?: TemplateType;
+  onSelectedTypeChange?: (type: TemplateType) => void;
   createPath: string;
   administrationPath: string;
   templatePath: (template: CuratedTemplate) => string;
+  previewPath: (template: CuratedTemplate) => string;
   formattedTimePreferences: FormattedTimePreferences;
 }
 
 export function CuratedTemplatesCatalogPage(props: CuratedTemplatesCatalogProps) {
   const { t } = useTranslation();
   const typeLabel = { project: t("Projects"), goal: t("Goals"), kpi: t("KPIs") };
-  const [selectedType, setSelectedType] = React.useState<TemplateType>("project");
+  const [localSelectedType, setLocalSelectedType] = React.useState<TemplateType>("project");
+  const selectedType = props.selectedType ?? localSelectedType;
   const templates = props.templates.filter((template) => template.type === selectedType);
 
   return (
@@ -37,7 +43,10 @@ export function CuratedTemplatesCatalogPage(props: CuratedTemplatesCatalogProps)
         </div>
         <Tabs
           onChange={(type) => {
-            if (type === "project" || type === "goal" || type === "kpi") setSelectedType(type);
+            if (type === "project" || type === "goal" || type === "kpi") {
+              setLocalSelectedType(type);
+              props.onSelectedTypeChange?.(type);
+            }
           }}
           tabs={{
             active: selectedType,
@@ -68,7 +77,20 @@ export function CuratedTemplatesCatalogPage(props: CuratedTemplatesCatalogProps)
                   {template.state === "draft" ? t("Draft") : t("Published")}
                 </p>
               </div>
-              <FormattedTime {...props.formattedTimePreferences} time={template.updatedAt} format="long-date" />
+              <div className="flex shrink-0 items-center gap-3">
+                <FormattedTime {...props.formattedTimePreferences} time={template.updatedAt} format="long-date" />
+                <Tooltip content={t("Preview saved template")} size="sm">
+                  <DivLink
+                    to={props.previewPath(template)}
+                    target="_blank"
+                    aria-label={t("Preview saved template")}
+                    testId={`preview-template-${template.id}`}
+                    className="rounded p-2 text-content-subtle hover:bg-surface-dimmed hover:text-content-base"
+                  >
+                    <IconEye size={18} aria-hidden="true" />
+                  </DivLink>
+                </Tooltip>
+              </div>
             </div>
           ))}
         </div>

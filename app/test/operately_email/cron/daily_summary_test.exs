@@ -30,6 +30,8 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
         ctx
         |> Factory.add_company_member(:enabled_member, preferences: %{notifications: %{send_daily_summary: true}})
         |> Factory.add_company_member(:disabled_member, preferences: %{notifications: %{send_daily_summary: false}})
+        |> Factory.add_company_member(:suspended_member, suspended: true, preferences: %{notifications: %{send_daily_summary: true}})
+        |> Factory.add_company_member(:removed_member, suspended_at: DateTime.utc_now(), preferences: %{notifications: %{send_daily_summary: true}})
 
       {:ok, no_account_member} =
         Operately.People.create_person(%{
@@ -56,6 +58,8 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
         |> Factory.add_company_member(:new_york_not_due, timezone: "America/New_York", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "15:00"}})
         |> Factory.add_company_member(:invalid_timezone_due, timezone: "America/New_Jersey", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "18:00"}})
         |> Factory.add_company_member(:disabled_member, preferences: %{notifications: %{send_daily_summary: false, daily_summary_delivery_time: "18:00"}})
+        |> Factory.add_company_member(:suspended_member, suspended: true, preferences: %{notifications: %{send_daily_summary: true}})
+        |> Factory.add_company_member(:removed_member, suspended_at: DateTime.utc_now(), preferences: %{notifications: %{send_daily_summary: true}})
 
       {:ok, no_account_member} =
         Operately.People.create_person(%{
@@ -74,6 +78,8 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
 
       refute Map.has_key?(schedule_by_person, ctx.disabled_member.id)
       refute Map.has_key?(schedule_by_person, no_account_member.id)
+      refute Map.has_key?(schedule_by_person, ctx.suspended_member.id)
+      refute Map.has_key?(schedule_by_person, ctx.removed_member.id)
     end
 
     test "uses default delivery time when preference is missing", ctx do
@@ -160,6 +166,22 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
   end
 
   describe "deliver_daily_summary/2" do
+    test "skips a summary queued before the member was removed", ctx do
+      ctx = Factory.add_company_member(ctx, :member, has_open_invitation: false, preferences: %{notifications: %{send_daily_summary: true}})
+      activity = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
+      notification_fixture(person_id: ctx.member.id, activity_id: activity.id)
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert :ok = DailySummary.send_daily_summaries()
+        assert_enqueued worker: DailySummary, args: %{person_id: ctx.member.id}
+        assert {:ok, %{suspended: true}} = Operately.Operations.CompanyMemberRemoving.run(ctx.creator, ctx.member)
+        flush_emails()
+
+        assert :ok = perform_job(DailySummary, %{person_id: ctx.member.id})
+        refute_email_sent()
+      end)
+    end
+
     test "skips when there are no updates in the last 24 hours", ctx do
       with_mocks([
         {OperatelyEmail.Mailers.DigestMailer, [:passthrough], [send_daily_summary: fn _person, _items -> {:ok, :delivered} end]}
@@ -217,25 +239,34 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
     end
   end
 
-  test "daily summaries localize each recipient and preserve preferences on flag rollback", ctx do
+  test "daily summaries localize each recipient and preserve preferences", ctx do
+    ctx = Factory.add_company_member(ctx, :spanish, name: "Spanish Reader", preferences: %{notifications: %{send_daily_summary: true}})
+    {:ok, _} = Operately.People.update_person(ctx.spanish, %{language: "es"})
+    ctx = Factory.add_company_member(ctx, :french, name: "French Reader", preferences: %{notifications: %{send_daily_summary: true}})
+    {:ok, _} = Operately.People.update_person(ctx.french, %{language: "fr"})
+    ctx = Factory.add_company_member(ctx, :russian, name: "Russian Reader", preferences: %{notifications: %{send_daily_summary: true}})
+    {:ok, _} = Operately.People.update_person(ctx.russian, %{language: "ru"})
     ctx = Factory.add_company_member(ctx, :portuguese, name: "Portuguese Reader", preferences: %{notifications: %{send_daily_summary: true}})
     {:ok, _} = Operately.People.update_person(ctx.portuguese, %{language: "pt-BR"})
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
     activity = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
-    for person <- [ctx.creator, ctx.portuguese], do: notification_at(person.id, activity.id, ~N[2026-04-08 17:00:00])
+    for person <- [ctx.creator, ctx.portuguese, ctx.russian, ctx.french, ctx.spanish], do: notification_at(person.id, activity.id, ~N[2026-04-08 17:00:00])
     previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
 
     for {person, subject, headline} <- [
           {ctx.portuguese, "Você tem 1 nova atualização", "criou o projeto"},
           {ctx.creator, "You have 1 new update", "created the project"},
+          {ctx.russian, "У вас 1 новое обновление", "проект создан"},
+          {ctx.french, "Vous avez 1 nouvelle mise à jour", "a créé le projet"},
+          {ctx.spanish, "Tienes 1 nueva actualización", "creó el proyecto"},
           {ctx.portuguese, "Você tem 1 nova atualização", "criou o projeto"}
         ] do
       assert_daily_language(person, subject, headline)
       assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
     end
 
-    {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
-    assert_daily_language(ctx.portuguese, "You have 1 new update", "created the project")
+    assert Operately.People.get_person!(ctx.french.id).language == "fr"
+    assert Operately.People.get_person!(ctx.spanish.id).language == "es"
+    assert Operately.People.get_person!(ctx.russian.id).language == "ru"
     assert Operately.People.get_person!(ctx.portuguese.id).language == "pt-BR"
   end
 

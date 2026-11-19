@@ -16,7 +16,7 @@ defmodule Operately.MD.Project.TimeframeTest do
 
     assert rendered =~ "## Timeframe"
     assert rendered =~ "Start Date:"
-    assert rendered =~ "Due Date:"
+    assert rendered =~ "Due date:"
     assert rendered =~ "### Timeframe History"
   end
 
@@ -26,7 +26,7 @@ defmodule Operately.MD.Project.TimeframeTest do
     rendered = Timeframe.render(project)
 
     assert rendered =~ "Start Date: Not Set"
-    assert rendered =~ "Due Date: Not Set"
+    assert rendered =~ "Due date: Not Set"
   end
 
   test "renders contextual dates when available", ctx do
@@ -36,7 +36,7 @@ defmodule Operately.MD.Project.TimeframeTest do
 
     # Should show the current date from the factory setup
     assert rendered =~ "Start Date:"
-    assert rendered =~ "Due Date:"
+    assert rendered =~ "Due date:"
     # The factory-created projects have dates set, so they shouldn't show "Not Set"
     refute rendered =~ "Start Date: Not Set"
   end

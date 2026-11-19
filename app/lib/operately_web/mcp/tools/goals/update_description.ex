@@ -9,7 +9,8 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateDescription do
     Definition.new!(
       name: "update_goal_description",
       title: "Update Goal Description",
-      description: "Updates the markdown description of one goal.",
+      description:
+        "Updates the markdown description of one goal. The description is context. Add success criteria with create_goal_check instead of listing them here.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,
@@ -22,7 +23,10 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.UpdateDescription do
         JsonSchema.object(
           %{
             "goal_id" => JsonSchema.string("The goal identifier."),
-            "description" => JsonSchema.string("The new plain text or markdown description. Use an empty string to clear it.")
+            "description" =>
+              JsonSchema.string(
+                "The new plain text or markdown description. Use an empty string to clear it. Add success criteria with create_goal_check instead of listing them here."
+              )
           },
           required: ["goal_id", "description"]
         ),

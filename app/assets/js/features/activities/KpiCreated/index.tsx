@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Link } from "turboui";
 
 import type { ActivityContentKpiCreated } from "@/api";
 import type { Activity } from "@/models/activities";
@@ -52,8 +53,22 @@ const KpiCreated: ActivityHandler = {
     );
   },
 
-  FeedItemContent({ activity }: { activity: Activity }) {
-    return <Trans i18nKey="KPI: {{kpiName}}" values={{ kpiName: content(activity).kpiName }} />;
+  FeedItemContent({ activity, paths }: FeedItemProps) {
+    const data = content(activity);
+    const spaceId = data.space?.id;
+    const kpiId = data.kpi?.id;
+
+    if (!spaceId || !kpiId) {
+      return <Trans i18nKey="KPI: {{kpiName}}" values={{ kpiName: data.kpiName }} />;
+    }
+
+    return (
+      <Trans
+        i18nKey="KPI: <kpi>{{kpiName}}</kpi>"
+        values={{ kpiName: data.kpiName }}
+        components={{ kpi: <Link to={paths.spaceKpiPath(spaceId, kpiId)} /> }}
+      />
+    );
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

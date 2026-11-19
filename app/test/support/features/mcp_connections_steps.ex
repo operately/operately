@@ -70,6 +70,19 @@ defmodule Operately.Support.Features.McpConnectionsSteps do
     ctx
   end
 
+  step :switch_client_setup_instructions, ctx do
+    ctx
+    |> UI.click(testid: "mcp-client-codex")
+    |> UI.assert_has(testid: "mcp-instructions-codex")
+    |> UI.assert_has(testid: "mcp-setup-command")
+    |> UI.assert_has(testid: "mcp-login-command")
+    |> UI.click(testid: "mcp-client-cursor")
+    |> UI.assert_has(testid: "mcp-cursor-config")
+    |> UI.click(testid: "mcp-client-other")
+    |> UI.assert_has(testid: "mcp-server-url")
+    |> UI.assert_has(testid: "mcp-authorize-step")
+  end
+
   step :visit_mcp_connections_page, ctx do
     ctx |> UI.visit(Paths.account_mcp_connections_path(ctx.company))
   end

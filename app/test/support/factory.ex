@@ -97,6 +97,7 @@ defmodule Operately.Support.Factory do
   defdelegate add_draft_message(ctx, testid, board_name, opts \\ []), to: Factory.Messages
 
   # comments
+  defdelegate add_inline_thread(ctx, testid, document_name, opts), to: Factory.Comments
   defdelegate add_comment(ctx, testid, parent_name, opts \\ []), to: Factory.Comments
   defdelegate add_reactions(ctx, testid, parent_name, opts \\ []), to: Factory.Comments
 

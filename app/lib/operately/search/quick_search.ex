@@ -48,16 +48,16 @@ defmodule Operately.Search.QuickSearch do
   defp run_searches(person, search_term) do
     [spaces, projects, goals, milestones, tasks, people, discussions, resource_hub_items] =
       [
-        Task.async(fn -> search_spaces(person, search_term) end),
-        Task.async(fn -> search_projects(person, search_term) end),
-        Task.async(fn -> search_goals(person, search_term) end),
-        Task.async(fn -> search_milestones(person, search_term) end),
-        Task.async(fn -> search_tasks(person, search_term) end),
-        Task.async(fn -> search_people(person, search_term) end),
-        Task.async(fn -> search_discussions(person, search_term) end),
-        Task.async(fn -> ResourceHubItems.search(person, search_term) end)
+        fn -> search_spaces(person, search_term) end,
+        fn -> search_projects(person, search_term) end,
+        fn -> search_goals(person, search_term) end,
+        fn -> search_milestones(person, search_term) end,
+        fn -> search_tasks(person, search_term) end,
+        fn -> search_people(person, search_term) end,
+        fn -> search_discussions(person, search_term) end,
+        fn -> ResourceHubItems.search(person, search_term) end
       ]
-      |> Task.await_many()
+      |> Operately.Parallel.run()
 
     Map.merge(resource_hub_items, %{
       spaces: spaces,

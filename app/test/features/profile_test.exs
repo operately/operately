@@ -7,6 +7,50 @@ defmodule Operately.Features.ProfileTest do
     Operately.Support.Features.UI.login_as(ctx, ctx.person)
   end
 
+  feature "German selection persists after saving and reloading", ctx do
+    ctx
+    |> Steps.use_narrow_window()
+    |> Steps.visit_preferences_page()
+    |> Steps.select_german()
+    |> Steps.submit_preferences()
+    |> Steps.assert_german_account()
+    |> Steps.visit_preferences_page()
+    |> Steps.assert_german_preference()
+  end
+
+  feature "Russian selection persists after saving and reloading", ctx do
+    ctx
+    |> Steps.use_narrow_window()
+    |> Steps.visit_preferences_page()
+    |> Steps.select_russian()
+    |> Steps.submit_preferences()
+    |> Steps.assert_russian_account()
+    |> Steps.visit_preferences_page()
+    |> Steps.assert_russian_preference()
+  end
+
+  feature "Spanish selection persists after saving and reloading", ctx do
+    ctx
+    |> Steps.use_narrow_window()
+    |> Steps.visit_preferences_page()
+    |> Steps.select_spanish()
+    |> Steps.submit_preferences()
+    |> Steps.assert_spanish_account()
+    |> Steps.visit_preferences_page()
+    |> Steps.assert_spanish_preference()
+  end
+
+  feature "French selection persists after saving and reloading", ctx do
+    ctx
+    |> Steps.use_narrow_window()
+    |> Steps.visit_preferences_page()
+    |> Steps.select_french()
+    |> Steps.submit_preferences()
+    |> Steps.assert_french_account()
+    |> Steps.visit_preferences_page()
+    |> Steps.assert_french_preference()
+  end
+
   feature "view recent activity", ctx do
     ctx
     |> Steps.given_projects_exist_for_person()

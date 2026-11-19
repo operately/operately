@@ -4,7 +4,7 @@ import Api from "@/api";
 import { useNavigate } from "react-router";
 
 import * as Hub from "@/models/resourceHubs";
-import { useSubscriptionsAdapter } from "@/models/subscriptions";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds, usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { sortNodesWithFoldersFirst, type FolderSelectLoadResult, type ResourceHubNodesListContextValue } from "turboui";
@@ -17,25 +17,30 @@ export function useCopyDocumentListContext(
   const navigate = useNavigate();
   const { mutateAsync: createDocument } = useCreateDocument();
 
-  assertPresent(parent.potentialSubscribers, "potentialSubscribers must be present in resourceHub or folder");
-
-  const subscriptionsState = useSubscriptionsAdapter(parent.potentialSubscribers, {
-    ignoreMe: true,
-    resourceHubName: parent.name || "",
-  });
+  const me = useMe();
+  const isFolder = Boolean(resource.parentFolderId && compareIds(parent.id, resource.parentFolderId));
 
   return useMemo(
     () => ({
       parent: {
-        id: parent.id!,
+        id: parent.id,
         name: parent.name || "",
-        type: "pathToFolder" in parent ? "folder" : "resource_hub",
-        resourceHubId: "pathToFolder" in parent ? parent.resourceHubId : parent.id,
+        type: isFolder ? "folder" : "resource_hub",
+        resourceHubId: resource.resourceHubId,
       },
       actions: {
         copyDocument: async (args) => {
-          assertPresent(resource.resourceHubId, "resourceHubId must be present in resource");
           assertPresent(args.content, "content must be present in document");
+
+          // Recipients are only needed when submitting the copy, not when opening a document.
+          const { resourceHub } = await Api.resource_hubs.getQuery({
+            id: resource.resourceHubId,
+            includePotentialSubscribers: true,
+          });
+          assertPresent(resourceHub.potentialSubscribers, "Copy recipients are unavailable");
+          const subscriberIds = resourceHub.potentialSubscribers.flatMap(({ person }) =>
+            person && !compareIds(person.id, me?.id) ? [person.id] : [],
+          );
 
           const res = await createDocument({
             resourceHubId: resource.resourceHubId,
@@ -43,7 +48,7 @@ export function useCopyDocumentListContext(
             name: args.name,
             content: args.content,
             sendNotificationsToEveryone: true,
-            subscriberIds: subscriptionsState.currentSubscribersList,
+            subscriberIds,
             copiedDocumentId: args.documentId,
           });
 
@@ -67,8 +72,8 @@ export function useCopyDocumentListContext(
           });
 
           return {
-            current: { type: "folder", folder: res.folder! },
-            nodes: sortNodesWithFoldersFirst(res.folder!.nodes || []),
+            current: { type: "folder", folder: res.folder },
+            nodes: sortNodesWithFoldersFirst(res.folder.nodes ?? []),
           };
         },
         loadResourceHub: async (id: string): Promise<FolderSelectLoadResult> => {
@@ -81,13 +86,13 @@ export function useCopyDocumentListContext(
           });
 
           return {
-            current: { type: "resourceHub", resourceHub: res.resourceHub! },
-            nodes: sortNodesWithFoldersFirst(res.resourceHub!.nodes || []),
+            current: { type: "resourceHub", resourceHub: res.resourceHub },
+            nodes: sortNodesWithFoldersFirst(res.resourceHub.nodes ?? []),
           };
         },
         compareIds,
       },
     }),
-    [parent, resource.resourceHubId, paths, createDocument, subscriptionsState.currentSubscribersList, navigate],
+    [parent, isFolder, resource.resourceHubId, paths, createDocument, me?.id, navigate],
   );
 }

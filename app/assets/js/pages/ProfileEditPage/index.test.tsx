@@ -9,7 +9,6 @@ import * as Pages from "@/components/Pages";
 import * as Blobs from "@/models/blobs";
 import { applyLanguage } from "@/i18n";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { ProfileEditPage } from "turboui";
 import pageModule from ".";
 
@@ -22,7 +21,6 @@ jest.mock("@/i18n", () => ({
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/components/Pages", () => ({ useLoadedData: jest.fn(), getSearchParam: () => null }));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: jest.fn() }));
-jest.mock("@/routes/useCompanyLoaderData", () => ({ useCompanyLoaderData: jest.fn() }));
 jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: () => ({}) }));
 jest.mock("@/models/blobs", () => ({ uploadAvatarFile: jest.fn() }));
 jest.mock("@/models/people/usePossibleManagersSearch", () => ({ usePossibleManagersSearch: () => ({}) }));
@@ -53,29 +51,13 @@ const wrapper = ({ children }: React.PropsWithChildren) => (
   </QueryClientProvider>
 );
 
-function mockCompanyLoader(features: string[]) {
-  jest.mocked(useCompanyLoaderData).mockReturnValue({
-    company: {
-      __typename: "company",
-      id: "company1",
-      name: "Company",
-      setupCompleted: true,
-      enabledExperimentalFeatures: features,
-    },
-    canAddProject: false,
-    canAddGoal: false,
-    siteMessages: [],
-    billingAccessState: null,
-  });
-}
-
 beforeEach(() => {
   jest.clearAllMocks();
   queryClient.clear();
   Api.default.setBasePath("/api/v2");
   Api.default.setHeaders({ "x-company-id": "company1" });
   jest.mocked(useMe).mockReturnValue(person as ReturnType<typeof useMe>);
-  mockCompanyLoader([]);
+
   jest.mocked(axios.get).mockResolvedValue({ data: { person } });
   jest.mocked(axios.post).mockResolvedValue({ data: { person } });
 });
@@ -99,7 +81,6 @@ it.each([true, false])("saves the profile and returns to the correct page (self:
   act(() => {
     props().onFullNameChange(" Updated ");
     props().onManagerChange({ id: "manager2", fullName: "Manager", avatarUrl: null });
-    props().onTimeFormatChange("hour_24");
   });
   await act(() => props().onSubmit());
   const payload = jest.mocked(axios.post).mock.calls[0]?.[1];
@@ -107,7 +88,6 @@ it.each([true, false])("saves the profile and returns to the correct page (self:
   if (self) {
     expect(payload).toMatchObject({
       description: JSON.stringify({ type: "doc", content: [] }),
-      time_format: "hour_24",
     });
   } else {
     expect(payload).not.toHaveProperty("description");
@@ -117,47 +97,15 @@ it.each([true, false])("saves the profile and returns to the correct page (self:
   expect(props().isSubmitting).toBe(false);
 });
 
-it("hides the language selector and does not persist language when i18n is off", async () => {
+it.each([true, false])("does not overwrite preferences when saving a profile (self: %s)", async (self) => {
+  if (!self) jest.mocked(useMe).mockReturnValue({ ...person, id: "admin1" } as ReturnType<typeof useMe>);
   await mountPage();
-  expect(props().showLanguageSelector).toBe(false);
   await act(() => props().onSubmit());
-  expect(jest.mocked(axios.post).mock.calls[0]?.[1]).not.toHaveProperty("language");
-  expect(applyLanguage).not.toHaveBeenCalled();
-});
-
-it("hides the language selector and does not persist language when editing someone else", async () => {
-  jest.mocked(useMe).mockReturnValue({ ...person, id: "admin1" } as ReturnType<typeof useMe>);
-  mockCompanyLoader(["i18n"]);
-  await mountPage();
-  expect(props().showLanguageSelector).toBe(false);
-  await act(() => props().onSubmit());
-  expect(jest.mocked(axios.post).mock.calls[0]?.[1]).not.toHaveProperty("language");
-  expect(applyLanguage).not.toHaveBeenCalled();
-});
-
-it.each(["en", "pt-BR"] as const)("shows the language selector and persists %s when i18n is on", async (language) => {
-  mockCompanyLoader(["i18n"]);
-  await mountPage();
-  expect(props().showLanguageSelector).toBe(true);
-  act(() => props().onLanguageChange?.(language));
-  await act(() => props().onSubmit());
-  expect(jest.mocked(axios.post).mock.calls[0]?.[1]).toMatchObject({ language });
-  expect(applyLanguage).toHaveBeenCalledWith(language);
-});
-
-it("navigates after a successful save even if applying language fails", async () => {
-  mockCompanyLoader(["i18n"]);
-  jest.mocked(applyLanguage).mockRejectedValue(new Error("Failed to apply language"));
-  await mountPage();
-  const log = jest.spyOn(console, "error").mockImplementation(() => {});
-  try {
-    await act(() => props().onSubmit());
-    expect(applyLanguage).toHaveBeenCalledWith("en");
-    expect(mockNavigate).toHaveBeenCalledWith("/account");
-    expect(props().isSubmitting).toBe(false);
-  } finally {
-    log.mockRestore();
+  const payload = jest.mocked(axios.post).mock.calls[0]?.[1];
+  for (const field of ["language", "timezone", "time_format", "theme"]) {
+    expect(payload).not.toHaveProperty(field);
   }
+  expect(applyLanguage).not.toHaveBeenCalled();
 });
 
 it("keeps the draft and stays on the form after a failed save", async () => {

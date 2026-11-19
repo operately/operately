@@ -23,8 +23,26 @@ defmodule OperatelyEmail.CheckInOverviewTest do
     end)
   end
 
-  test "pluralizes overdue and future durations without losing the deadline" do
-    for {days, expected} <- [{-1, "1 dia de atraso."}, {-3, "3 dias de atraso."}, {1, "1 dia até o prazo."}, {14, "2 semanas até o prazo."}, {60, "2 meses até o prazo."}] do
+  test "uses due date terminology for singular and plural future durations" do
+    for resource <- [:goal, :project],
+        {days, expected} <- [{1, "1 day"}, {2, "2 days"}, {7, "1 week"}, {14, "2 weeks"}, {30, "1 month"}, {60, "2 months"}] do
+      doc = CheckInOverview.construct(resource, :on_track, nil, Date.add(Date.utc_today(), days))
+      text = Operately.RichContent.rich_content_to_string(doc)
+      html = doc |> OperatelyEmail.Templates.rich_text() |> Phoenix.HTML.safe_to_string()
+
+      assert text =~ "#{expected} until the due date."
+      assert html =~ "#{expected} until the due date."
+    end
+  end
+
+  test "pluralizes overdue and future durations using the Portuguese due date glossary" do
+    for {days, expected} <- [
+          {-1, "1 dia de atraso."},
+          {-3, "3 dias de atraso."},
+          {1, "1 dia até a data de conclusão."},
+          {14, "2 semanas até a data de conclusão."},
+          {60, "2 meses até a data de conclusão."}
+        ] do
       text =
         Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
           CheckInOverview.construct(:goal, :off_track, nil, Date.add(Date.utc_today(), days))

@@ -273,8 +273,7 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
                    "id" => ctx.project.id,
                    "description" => %{"type" => "doc", "content" => []},
                    "health" => "at_risk",
-                   "timeframe" => timeframe,
-                   "task_statuses" => task_statuses
+                   "timeframe" => timeframe
                  }
                )
 
@@ -284,7 +283,9 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
       assert project.health == :at_risk
       assert project.timeframe.type == "year"
       assert project.timeframe.start_date == ~D[2026-01-01]
-      assert Enum.map(project.task_statuses, & &1.color) == [:gray, :green]
+      board = Project.task_board(project)
+      assert :ok = RowWriter.update_row("task_boards", %{"id" => board.id, "task_statuses" => task_statuses})
+      assert Enum.map(Repo.reload!(board).task_statuses, & &1.color) == [:gray, :green]
     end
   end
 end

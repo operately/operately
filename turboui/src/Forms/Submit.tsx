@@ -52,7 +52,13 @@ export function Submit(props: SubmitProps) {
       </PrimaryButton>
 
       {form.hasCancel ? (
-        <SecondaryButton type="button" size={buttonSize} testId="cancel" onClick={() => void form.actions.cancel()}>
+        <SecondaryButton
+          type="button"
+          size={buttonSize}
+          testId="cancel"
+          disabled={props.cancelDisabled}
+          onClick={() => void form.actions.cancel()}
+        >
           {cancelText}
         </SecondaryButton>
       ) : null}

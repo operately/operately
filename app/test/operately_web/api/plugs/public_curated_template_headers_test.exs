@@ -5,13 +5,14 @@ defmodule OperatelyWeb.Api.Plugs.PublicCuratedTemplateHeadersTest do
 
   @list "/api/v2/curated_templates/list"
   @get "/api/v2/curated_templates/get"
+  @get_by_id "/api/v2/curated_templates/get_by_id"
 
   setup ctx do
     ctx |> Factory.setup() |> Factory.add_curated_template(:template, published: true)
   end
 
   test "both queries support credential-free CORS and preflight", ctx do
-    for path <- [@list, @get] do
+    for path <- [@list, @get, @get_by_id] do
       conn = get(ctx.conn, path, params(path, ctx.template))
       assert conn.status == 200
       assert get_resp_header(conn, "access-control-allow-origin") == ["*"]
@@ -26,7 +27,7 @@ defmodule OperatelyWeb.Api.Plugs.PublicCuratedTemplateHeadersTest do
   end
 
   test "ETags revalidate both queries and change after live edits", ctx do
-    for path <- [@list, @get] do
+    for path <- [@list, @get, @get_by_id] do
       params = params(path, ctx.template)
       first = get(ctx.conn, path, params)
       [etag] = get_resp_header(first, "etag")
@@ -46,7 +47,7 @@ defmodule OperatelyWeb.Api.Plugs.PublicCuratedTemplateHeadersTest do
   end
 
   test "errors retain CORS but are not cached or converted to 304", ctx do
-    for {path, params, status} <- [{@list, %{limit: 101}, 400}, {@get, %{id: "bad!"}, 404}] do
+    for {path, params, status} <- [{@list, %{limit: 101}, 400}, {@get, %{slug: "unknown", language: "en"}, 404}, {@get_by_id, %{id: "bad!"}, 404}] do
       conn = ctx.conn |> put_req_header("if-none-match", "*") |> get(path, params)
       assert conn.status == status
       assert get_resp_header(conn, "access-control-allow-origin") == ["*"]
@@ -63,5 +64,6 @@ defmodule OperatelyWeb.Api.Plugs.PublicCuratedTemplateHeadersTest do
   end
 
   defp params(@list, _template), do: %{}
-  defp params(@get, template), do: %{id: Paths.curated_template_id(template)}
+  defp params(@get, template), do: %{slug: template.slug, language: template.content_language}
+  defp params(@get_by_id, template), do: %{id: Paths.curated_template_id(template)}
 end

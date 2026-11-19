@@ -40,7 +40,7 @@ defmodule OperatelyEmail.Emails.GuestInvitedEmailTest do
 
     invite_url = Paths.join_path(invite_link.token) |> Paths.to_url()
 
-    for {locale, action} <- [{"en", "invited you as an outside collaborator"}, {"pt_BR", "convidou você como colaborador externo"}, {"fr", "invited you as an outside collaborator"}] do
+    for {locale, action} <- [{"en", "invited you as an outside collaborator"}, {"pt_BR", "convidou você como colaborador externo"}, {"nl", "invited you as an outside collaborator"}] do
       Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> GuestInvitedEmail.send(person, activity) end)
       assert_email_sent(fn email ->
         assert email.subject =~ action

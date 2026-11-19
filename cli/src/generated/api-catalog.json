@@ -398,7 +398,11 @@
       ],
       "language": [
         "en",
-        "pt-BR"
+        "pt-BR",
+        "de",
+        "ru",
+        "fr",
+        "es"
       ],
       "rich_text_field": [
         "description",
@@ -436,6 +440,18 @@
         "kpi",
         "goal",
         "project"
+      ],
+      "inline_anchor_status": [
+        "attached",
+        "unattached"
+      ],
+      "inline_thread_resource_type": [
+        "resource_hub_document"
+      ],
+      "task_board_archive_status": [
+        "active",
+        "archived",
+        "all"
       ]
     },
     "int_enums": {
@@ -517,6 +533,18 @@
         },
         {
           "name": "activity_content_kpi_created",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_kpi_deleted",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_kpi_edited",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_kpi_entry_logged",
           "kind": "named"
         },
         {
@@ -732,6 +760,10 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_resource_hub_document_inline_thread_resolution_changed",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_resource_hub_document_created",
           "kind": "named"
         },
@@ -781,6 +813,34 @@
         },
         {
           "name": "activity_content_resource_hub_folder_renamed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_deleted",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_renamed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_board_created",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_board_renamed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_board_default_changed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_board_archived",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_board_restored",
           "kind": "named"
         },
         {
@@ -849,6 +909,10 @@
         },
         {
           "name": "activity_content_task_status_change",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_archive_updating",
           "kind": "named"
         },
         {
@@ -3682,6 +3746,17 @@
           },
           {
             "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "space",
             "type": {
               "name": "space",
@@ -3984,12 +4059,48 @@
           },
           {
             "default": null,
+            "name": "task_statuses",
+            "type": {
+              "item": {
+                "name": "task_status",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "can_edit_task",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "progress",
             "type": {
               "name": "float",
               "kind": "named"
             },
             "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "task_completion",
+            "type": {
+              "name": "project_task_completion",
+              "kind": "named"
+            },
+            "optional": true,
             "nullable": true,
             "has_default": false
           },
@@ -5740,6 +5851,17 @@
           },
           {
             "default": null,
+            "name": "can_rename_hub",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "can_view",
             "type": {
               "name": "boolean",
@@ -5901,6 +6023,17 @@
           },
           {
             "default": null,
+            "name": "tools",
+            "type": {
+              "name": "space_tool_settings",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "potential_subscribers",
             "type": {
               "item": {
@@ -5922,6 +6055,17 @@
                 "kind": "named"
               },
               "kind": "list"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "default_task_board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
             },
             "optional": true,
             "nullable": true,
@@ -8524,6 +8668,20 @@
           },
           {
             "default": null,
+            "name": "task_boards",
+            "type": {
+              "item": {
+                "name": "task_board_summary",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "kpis",
             "type": {
               "item": {
@@ -8932,6 +9090,28 @@
           },
           {
             "default": null,
+            "name": "space_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "id",
             "type": {
               "name": "string",
@@ -8979,6 +9159,17 @@
             "name": "updated_at",
             "type": {
               "name": "date",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "archived_at",
+            "type": {
+              "name": "datetime",
               "kind": "named"
             },
             "optional": true,
@@ -11351,6 +11542,17 @@
           },
           {
             "default": null,
+            "name": "position",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "inserted_at",
             "type": {
               "name": "date",
@@ -11710,6 +11912,17 @@
       },
       "search_navigation_target": {
         "fields": [
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
           {
             "default": null,
             "name": "resource_hub_id",
@@ -15200,6 +15413,17 @@
           },
           {
             "default": null,
+            "name": "title_setup_pending",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "id",
             "type": {
               "name": "string",
@@ -17404,6 +17628,28 @@
           },
           {
             "default": null,
+            "name": "origin_board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "destination_board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "task",
             "type": {
               "name": "task",
@@ -18293,6 +18539,17 @@
             "name": "comment",
             "type": {
               "name": "comment",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "inline_thread_id",
+            "type": {
+              "name": "id",
               "kind": "named"
             },
             "optional": true,
@@ -23656,6 +23913,17 @@
           },
           {
             "default": null,
+            "name": "slug",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "summary",
             "type": {
               "name": "string",
@@ -23708,6 +23976,1346 @@
             "optional": true,
             "nullable": false,
             "has_default": false
+          },
+          {
+            "default": null,
+            "name": "preview_data",
+            "type": {
+              "name": "json",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "curated_template_instantiation": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resource_type",
+            "type": {
+              "name": "curated_template_type",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resource_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_task_archive_updating": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "task",
+            "type": {
+              "name": "task",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "archived",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "inline_anchor": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "source_version",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "source_from",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "source_to",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "quote",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "prefix",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "suffix",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "current_version",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "current_from",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "current_to",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "status",
+            "type": {
+              "name": "inline_anchor_status",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "inline_thread": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resource_type",
+            "type": {
+              "name": "inline_thread_resource_type",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resource_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "author",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resolved_at",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resolved_by",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "anchor",
+            "type": {
+              "name": "inline_anchor",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "messages",
+            "type": {
+              "item": {
+                "name": "comment",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_resource_hub_document_inline_thread_resolution_changed": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "document",
+            "type": {
+              "name": "resource_hub_document",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "inline_thread_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resolved",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_kpi_deleted": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "kpi_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_kpi_edited": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "kpi",
+            "type": {
+              "name": "kpi",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "old_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "new_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_kpi_entry_logged": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "kpi",
+            "type": {
+              "name": "kpi",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "entry",
+            "type": {
+              "name": "kpi_entry",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "value",
+            "type": {
+              "name": "float",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "period",
+            "type": {
+              "name": "date",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_resource_hub_renamed": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "old_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "new_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "resource_hub_summary": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "position",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "is_default",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_resource_hub_deleted": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "task_board_summary": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "project_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "position",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "is_default",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "archived_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_task_board_created": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_task_board_renamed": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "old_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "new_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_task_board_default_changed": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "previous_board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_task_board_archived": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_task_board_restored": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "board_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "task_board": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "project_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "archived_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "task_statuses",
+            "type": {
+              "item": {
+                "name": "task_status",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "tasks_kanban_state",
+            "type": {
+              "name": "json",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "space_tool_settings": {
+        "fields": [
+          {
+            "default": null,
+            "name": "tasks_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "discussions_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "resource_hub_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "kpis_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "templates_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "project_task_completion": {
+        "fields": [
+          {
+            "default": null,
+            "name": "completed_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "total_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "percentage",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
           }
         ]
       }
@@ -23731,7 +25339,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 255,
+  "endpoint_count": 268,
   "endpoints": [
     {
       "name": "create",
@@ -25593,6 +27201,17 @@
       "outputs": [
         {
           "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
           "name": "document",
           "type": {
             "name": "document",
@@ -25604,6 +27223,17 @@
         }
       ],
       "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "space_id",
@@ -25721,7 +27351,7 @@
       "full_name": "documents/create_document",
       "method": "POST",
       "namespace": "documents",
-      "docstring": "Creates a new document in a Docs & Files hub."
+      "docstring": "Creates a new document in a Docs & Files hub.\n\nSelect a hub with resource_hub_id, or derive it from folder_id where supported.\nA space_id alone selects its default resource hub. Supplied parent selectors\nmust match the selected hub. Results include the resolved resource_hub_id."
     },
     {
       "name": "create_folder",
@@ -25729,6 +27359,17 @@
       "path": "/api/external/v1/documents/create_folder",
       "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFolder",
       "outputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "folder",
@@ -25742,6 +27383,17 @@
         }
       ],
       "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "space_id",
@@ -25801,7 +27453,54 @@
       "full_name": "documents/create_folder",
       "method": "POST",
       "namespace": "documents",
-      "docstring": "Creates a new folder in a Docs & Files hub."
+      "docstring": "Creates a new folder in a Docs & Files hub.\n\nSelect a hub with resource_hub_id, or derive it from folder_id where supported.\nA space_id alone selects its default resource hub. Supplied parent selectors\nmust match the selected hub. Results include the resolved resource_hub_id."
+    },
+    {
+      "name": "create_hub",
+      "type": "mutation",
+      "path": "/api/external/v1/documents/create_hub",
+      "handler": "OperatelyWeb.Api.ResourceHubs.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "hub",
+          "type": {
+            "name": "resource_hub_summary",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "documents/create_hub",
+      "method": "POST",
+      "namespace": "documents",
+      "docstring": "Creates a space-owned Resource Hub at the end of the list. Preserves the space's default Resource Hub. Requires space edit access."
     },
     {
       "name": "create_link",
@@ -25809,6 +27508,17 @@
       "path": "/api/external/v1/documents/create_link",
       "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateLink",
       "outputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "link",
@@ -25822,6 +27532,17 @@
         }
       ],
       "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "space_id",
@@ -25939,7 +27660,7 @@
       "full_name": "documents/create_link",
       "method": "POST",
       "namespace": "documents",
-      "docstring": "Creates a new link in a Docs & Files hub."
+      "docstring": "Creates a new link in a Docs & Files hub.\n\nSelect a hub with resource_hub_id, or derive it from folder_id where supported.\nA space_id alone selects its default resource hub. Supplied parent selectors\nmust match the selected hub. Results include the resolved resource_hub_id."
     },
     {
       "name": "delete_document",
@@ -26048,6 +27769,42 @@
       "method": "POST",
       "namespace": "documents",
       "docstring": "Deletes a folder."
+    },
+    {
+      "name": "delete_hub",
+      "type": "mutation",
+      "path": "/api/external/v1/documents/delete_hub",
+      "handler": "OperatelyWeb.Api.ResourceHubs.Delete",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "documents/delete_hub",
+      "method": "POST",
+      "namespace": "documents",
+      "docstring": "Deletes an empty space-owned Resource Hub. Documents, drafts, files, links, and folders must be removed first. The default Resource Hub cannot be deleted. Requires space edit access."
     },
     {
       "name": "delete_link",
@@ -26768,6 +28525,17 @@
       "outputs": [
         {
           "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
           "name": "nodes",
           "type": {
             "item": {
@@ -26796,6 +28564,17 @@
         }
       ],
       "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "space_id",
@@ -26866,7 +28645,7 @@
       "full_name": "documents/list_contents",
       "method": "GET",
       "namespace": "documents",
-      "docstring": "Lists contents in a Docs & Files hub or folder."
+      "docstring": "Lists contents in a Docs & Files hub or folder.\n\nSelect a hub with resource_hub_id, or derive it from folder_id where supported.\nA space_id alone selects its default resource hub. Supplied parent selectors\nmust match the selected hub. Results include the resolved resource_hub_id."
     },
     {
       "name": "list_document_versions",
@@ -26945,6 +28724,45 @@
       "method": "GET",
       "namespace": "documents",
       "docstring": "Lists the requester's drafts across all live folders in a resource hub."
+    },
+    {
+      "name": "list_hubs",
+      "type": "query",
+      "path": "/api/external/v1/documents/list_hubs",
+      "handler": "OperatelyWeb.Api.ResourceHubs.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "hubs",
+          "type": {
+            "item": {
+              "name": "resource_hub_summary",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "documents/list_hubs",
+      "method": "GET",
+      "namespace": "documents",
+      "docstring": "Lists accessible resource hubs in saved order, including their positions and the default designation."
     },
     {
       "name": "publish_document",
@@ -27077,6 +28895,53 @@
       "docstring": "Renames a folder."
     },
     {
+      "name": "rename_hub",
+      "type": "mutation",
+      "path": "/api/external/v1/documents/rename_hub",
+      "handler": "OperatelyWeb.Api.ResourceHubs.Rename",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "new_name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "documents/rename_hub",
+      "method": "POST",
+      "namespace": "documents",
+      "docstring": "Renames a space-owned Resource Hub."
+    },
+    {
       "name": "restore_document_version",
       "type": "mutation",
       "path": "/api/external/v1/documents/restore_document_version",
@@ -27153,6 +29018,17 @@
       "outputs": [
         {
           "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
           "name": "nodes",
           "type": {
             "item": {
@@ -27167,6 +29043,17 @@
         }
       ],
       "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "space_id",
@@ -27215,7 +29102,7 @@
       "full_name": "documents/search",
       "method": "GET",
       "namespace": "documents",
-      "docstring": "Searches Docs & Files by its Space, Project, or Goal scope."
+      "docstring": "Searches Docs & Files by its Space, Project, or Goal scope.\n\nSelect a hub with resource_hub_id, or derive it from folder_id where supported.\nA space_id alone selects its default resource hub. Supplied parent selectors\nmust match the selected hub. Results include the resolved resource_hub_id."
     },
     {
       "name": "update_document",
@@ -27578,53 +29465,6 @@
       "method": "POST",
       "namespace": "goals",
       "docstring": "Acknowledges a goal retrospective by goal ID."
-    },
-    {
-      "name": "change_parent",
-      "type": "mutation",
-      "path": "/api/external/v1/goals/change_parent",
-      "handler": "OperatelyWeb.Api.Goals.ChangeParent",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goal",
-          "type": {
-            "name": "goal",
-            "kind": "named"
-          },
-          "optional": true,
-          "nullable": true,
-          "has_default": false
-        }
-      ],
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "nullable": false,
-          "has_default": false
-        },
-        {
-          "default": null,
-          "name": "parent_goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "nullable": true,
-          "has_default": false
-        }
-      ],
-      "full_name": "goals/change_parent",
-      "method": "POST",
-      "namespace": "goals",
-      "docstring": "Changes the parent goal of a goal."
     },
     {
       "name": "close",
@@ -29631,7 +31471,7 @@
             "name": "contextual_date",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
           "nullable": true,
           "has_default": false
         },
@@ -29642,7 +31482,7 @@
             "name": "goal_check_in_status",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
           "nullable": false,
           "has_default": false
         },
@@ -30406,8 +32246,7 @@
       "full_name": "kpis/add_kpi_annotation",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Marks a date on a KPI chart with a short event title.",
-      "hidden": true
+      "docstring": "Marks a date on a KPI chart with a short event title."
     },
     {
       "name": "create_kpi",
@@ -30498,8 +32337,7 @@
       "full_name": "kpis/create_kpi",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Creates a KPI in a space. Any space member with edit access may create one.",
-      "hidden": true
+      "docstring": "Creates a KPI in a space. Any space member with edit access may create one."
     },
     {
       "name": "delete_kpi",
@@ -30535,8 +32373,7 @@
       "full_name": "kpis/delete_kpi",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Deletes a KPI. Any space member with edit access may delete one.",
-      "hidden": true
+      "docstring": "Deletes a KPI. Any space member with edit access may delete one."
     },
     {
       "name": "delete_kpi_annotation",
@@ -30572,8 +32409,7 @@
       "full_name": "kpis/delete_kpi_annotation",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Removes a KPI chart annotation.",
-      "hidden": true
+      "docstring": "Removes a KPI chart annotation."
     },
     {
       "name": "delete_kpi_entry",
@@ -30609,8 +32445,7 @@
       "full_name": "kpis/delete_kpi_entry",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Deletes a logged KPI value. Any space member with edit access may delete one.",
-      "hidden": true
+      "docstring": "Deletes a logged KPI value. Any space member with edit access may delete one."
     },
     {
       "name": "edit_kpi",
@@ -30701,8 +32536,7 @@
       "full_name": "kpis/edit_kpi",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Edits a KPI. Any space member with edit access may edit one.",
-      "hidden": true
+      "docstring": "Edits a KPI. Any space member with edit access may edit one."
     },
     {
       "name": "edit_kpi_annotation",
@@ -30760,8 +32594,7 @@
       "full_name": "kpis/edit_kpi_annotation",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Edits a KPI chart annotation's date or title.",
-      "hidden": true
+      "docstring": "Edits a KPI chart annotation's date or title."
     },
     {
       "name": "edit_kpi_entry",
@@ -30819,8 +32652,7 @@
       "full_name": "kpis/edit_kpi_entry",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Edits a logged KPI value. Previous values are kept so the change is visible.",
-      "hidden": true
+      "docstring": "Edits a logged KPI value. Previous values are kept so the change is visible."
     },
     {
       "name": "get_kpi",
@@ -30856,8 +32688,7 @@
       "full_name": "kpis/get_kpi",
       "method": "GET",
       "namespace": "kpis",
-      "docstring": "Retrieves a KPI together with its entries (history) for charting.",
-      "hidden": true
+      "docstring": "Retrieves a KPI together with its entries (history) for charting."
     },
     {
       "name": "list_kpis",
@@ -30896,8 +32727,7 @@
       "full_name": "kpis/list_kpis",
       "method": "GET",
       "namespace": "kpis",
-      "docstring": "Lists the KPIs of a space.",
-      "hidden": true
+      "docstring": "Lists the KPIs of a space."
     },
     {
       "name": "log_kpi_entry",
@@ -30955,8 +32785,7 @@
       "full_name": "kpis/log_kpi_entry",
       "method": "POST",
       "namespace": "kpis",
-      "docstring": "Logs a value for a KPI in a given period. Any space member with edit access may log.",
-      "hidden": true
+      "docstring": "Logs a value for a KPI in a given period. Any space member with edit access may log."
     },
     {
       "name": "get_unread_count",
@@ -31636,6 +33465,33 @@
       "docstring": "Lists assignments for the current user."
     },
     {
+      "name": "list_my_tasks",
+      "type": "query",
+      "path": "/api/external/v1/people/list_my_tasks",
+      "handler": "OperatelyWeb.Api.People.ListMyTasks",
+      "outputs": [
+        {
+          "default": null,
+          "name": "tasks",
+          "type": {
+            "item": {
+              "name": "task",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [],
+      "full_name": "people/list_my_tasks",
+      "method": "GET",
+      "namespace": "people",
+      "docstring": "Lists the current person's open assigned tasks."
+    },
+    {
       "name": "list_possible_managers",
       "type": "query",
       "path": "/api/external/v1/people/list_possible_managers",
@@ -31806,6 +33662,17 @@
           "name": "title",
           "type": {
             "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "title_setup_pending",
+          "type": {
+            "name": "boolean",
             "kind": "named"
           },
           "optional": true,
@@ -38113,7 +39980,7 @@
       "name": "update_task_statuses",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_task_statuses",
-      "handler": "OperatelyWeb.Api.Projects.UpdateTaskStatuses",
+      "handler": "OperatelyWeb.Api.Wrappers.Projects.UpdateTaskStatuses",
       "outputs": [
         {
           "default": null,
@@ -39206,12 +41073,23 @@
           "optional": false,
           "nullable": false,
           "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
         }
       ],
       "full_name": "spaces/list_tasks",
       "method": "GET",
       "namespace": "spaces",
-      "docstring": "Lists tasks in a space."
+      "docstring": "Lists tasks across all boards in a space. Supply board_id to filter to one board."
     },
     {
       "name": "list_tools",
@@ -39674,8 +41552,19 @@
       "name": "update_task_statuses",
       "type": "mutation",
       "path": "/api/external/v1/spaces/update_task_statuses",
-      "handler": "OperatelyWeb.Api.Spaces.UpdateTaskStatuses",
+      "handler": "OperatelyWeb.Api.Wrappers.Spaces.UpdateTaskStatuses",
       "outputs": [
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "success",
@@ -39698,6 +41587,17 @@
           },
           "optional": false,
           "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
           "has_default": false
         },
         {
@@ -39732,7 +41632,7 @@
       "full_name": "spaces/update_task_statuses",
       "method": "POST",
       "namespace": "spaces",
-      "docstring": "Updates task statuses for a space."
+      "docstring": "Updates task statuses on the selected board, or the space’s default board when board_id is omitted."
     },
     {
       "name": "update_tools",
@@ -39791,6 +41691,53 @@
       "method": "POST",
       "namespace": "spaces",
       "docstring": "Updates the tools configuration for a space."
+    },
+    {
+      "name": "archive_board",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/archive_board",
+      "handler": "OperatelyWeb.Api.Tasks.ArchiveBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/archive_board",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Archives a non-default task board without deleting its tasks. To archive the current default, first select another default with set_default_board."
     },
     {
       "name": "create",
@@ -39853,6 +41800,17 @@
           },
           "optional": false,
           "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
           "has_default": false
         },
         {
@@ -39939,7 +41897,54 @@
       "full_name": "tasks/create",
       "method": "POST",
       "namespace": "tasks",
-      "docstring": "Creates a new task in a project or space."
+      "docstring": "Creates a task in a project or space. Space requests use the persisted default board unless board_id selects another board in that space."
+    },
+    {
+      "name": "create_board",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/create_board",
+      "handler": "OperatelyWeb.Api.Tasks.CreateBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "board",
+          "type": {
+            "name": "task_board_summary",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/create_board",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Creates a task board at the end of the space's active boards without changing the default. Requires space edit access."
     },
     {
       "name": "delete",
@@ -40146,6 +42151,64 @@
       "docstring": "Retrieves a task by ID with optional related data."
     },
     {
+      "name": "get_board",
+      "type": "query",
+      "path": "/api/external/v1/tasks/get_board",
+      "handler": "OperatelyWeb.Api.Tasks.GetBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "board",
+          "type": {
+            "name": "task_board",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/get_board",
+      "method": "GET",
+      "namespace": "tasks",
+      "docstring": "Returns a task board by board_id, or a project's sole board by project_id. Archived boards remain readable. Optional owner selectors must match."
+    },
+    {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/tasks/list",
@@ -40174,15 +42237,98 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": false,
-          "nullable": false,
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
           "has_default": false
         }
       ],
       "full_name": "tasks/list",
       "method": "GET",
       "namespace": "tasks",
-      "docstring": "Lists all tasks for a project."
+      "docstring": "Lists tasks for a project, a space, or a board. Space-only requests include direct tasks across all space boards. Optional owner and board selectors must match."
+    },
+    {
+      "name": "list_boards",
+      "type": "query",
+      "path": "/api/external/v1/tasks/list_boards",
+      "handler": "OperatelyWeb.Api.Tasks.ListBoards",
+      "outputs": [
+        {
+          "default": null,
+          "name": "boards",
+          "type": {
+            "item": {
+              "name": "task_board_summary",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "archive_status",
+          "type": {
+            "name": "task_board_archive_status",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/list_boards",
+      "method": "GET",
+      "namespace": "tasks",
+      "docstring": "Lists accessible task boards for exactly one project or space in saved order without loading their tasks."
     },
     {
       "name": "list_potential_assignees",
@@ -40267,6 +42413,17 @@
       "outputs": [
         {
           "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
           "name": "task_statuses",
           "type": {
             "item": {
@@ -40288,15 +42445,26 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": false,
-          "nullable": false,
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
           "has_default": false
         }
       ],
       "full_name": "tasks/list_task_statuses",
       "method": "GET",
       "namespace": "tasks",
-      "docstring": "Lists the task statuses available for one task's project or space scope."
+      "docstring": "Lists statuses for a task or a board, including empty boards. Supply task_id or board_id; if both are supplied they must match."
     },
     {
       "name": "move",
@@ -40304,6 +42472,17 @@
       "path": "/api/external/v1/tasks/move",
       "handler": "OperatelyWeb.Api.Tasks.Move",
       "outputs": [
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": true,
+          "has_default": false
+        },
         {
           "default": null,
           "name": "task",
@@ -40371,12 +42550,222 @@
           "optional": false,
           "nullable": false,
           "has_default": false
+        },
+        {
+          "default": null,
+          "name": "destination_board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "destination_status_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
         }
       ],
       "full_name": "tasks/move",
       "method": "POST",
       "namespace": "tasks",
-      "docstring": "Moves a task from one project or space to another."
+      "docstring": "Moves a task to a project or space. Project destinations automatically use their sole board. Space destinations use the default board unless destination_board_id is supplied.\nExplicit board moves require destination_status_id when no equivalent status exists."
+    },
+    {
+      "name": "rename_board",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/rename_board",
+      "handler": "OperatelyWeb.Api.Tasks.RenameBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "new_name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/rename_board",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Renames a task board. Requires space edit access."
+    },
+    {
+      "name": "restore_board",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/restore_board",
+      "handler": "OperatelyWeb.Api.Tasks.RestoreBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/restore_board",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Restores an archived task board at the end of the active list without changing the default."
+    },
+    {
+      "name": "set_default_board",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/set_default_board",
+      "handler": "OperatelyWeb.Api.Tasks.SetDefaultBoard",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/set_default_board",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Selects the active task board used by space requests without a board selector."
+    },
+    {
+      "name": "update_archive",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/update_archive",
+      "handler": "OperatelyWeb.Api.Tasks.UpdateArchive",
+      "outputs": [
+        {
+          "default": null,
+          "name": "task",
+          "type": {
+            "name": "task",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "task_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "archived",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/update_archive",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Archives a closed task or restores an archived task to its board."
     },
     {
       "name": "update_assignee",
@@ -40449,6 +42838,81 @@
       "method": "POST",
       "namespace": "tasks",
       "docstring": "Updates the assignee of a task."
+    },
+    {
+      "name": "update_board_statuses",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/update_board_statuses",
+      "handler": "OperatelyWeb.Api.Tasks.UpdateBoardStatuses",
+      "outputs": [
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "board_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "task_statuses",
+          "type": {
+            "item": {
+              "name": "task_status",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "deleted_status_replacements",
+          "type": {
+            "item": {
+              "name": "deleted_status_replacement",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        }
+      ],
+      "full_name": "tasks/update_board_statuses",
+      "method": "POST",
+      "namespace": "tasks",
+      "docstring": "Updates a board's available task statuses, replacing deleted statuses in use when a mapping is supplied."
     },
     {
       "name": "update_description",
@@ -40874,7 +43338,7 @@
       "docstring": "Updates the status of a task."
     }
   ],
-  "query_count": 76,
-  "mutation_count": 179,
+  "query_count": 80,
+  "mutation_count": 188,
   "schema_version": 1
 }

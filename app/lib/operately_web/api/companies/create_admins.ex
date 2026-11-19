@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Companies.CreateAdmins do
   import Operately.Access.Filters, only: [filter_by_edit_access: 2]
 
   alias Operately.Companies.Company
+  alias Operately.People
 
   inputs do
     field :people_ids, list_of(:id), null: false
@@ -19,8 +20,12 @@ defmodule OperatelyWeb.Api.Companies.CreateAdmins do
     company = company(conn)
 
     if has_permissions?(me, company) do
-      {:ok, _} = Operately.Operations.CompanyAdminAdding.run(me, inputs.people_ids)
-      {:ok, %{}}
+      with :ok <- People.validate_active_company_members(company.id, inputs.people_ids) do
+        {:ok, _} = Operately.Operations.CompanyAdminAdding.run(me, inputs.people_ids)
+        {:ok, %{}}
+      else
+        {:error, :invalid_company_member} -> {:error, :bad_request}
+      end
     else
       {:error, :forbidden}
     end

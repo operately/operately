@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Goals do
   alias Operately.Goals.{Goal, Target}
   alias Operately.Access
   alias Operately.Access.Binding
+  alias Operately.People
   alias OperatelyWeb.Api.Serializer
 
   defmodule SearchParentGoal do
@@ -209,7 +210,7 @@ defmodule OperatelyWeb.Api.Goals do
           space_id: changes.goal.group_id,
           goal_id: changes.goal.id,
           old_parent_goal_id: changes.goal.parent_goal_id,
-          new_parent_goal_id: inputs.parent_goal_id
+          new_parent_goal_id: changes.updated_goal.parent_goal_id
         }
       end)
       |> Steps.commit()
@@ -479,6 +480,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members([inputs.champion_id])
       |> Steps.update_goal_champion(inputs.champion_id)
       |> Steps.save_activity(:goal_champion_updating, fn changes ->
         %{
@@ -515,6 +517,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members([inputs.reviewer_id])
       |> Steps.update_goal_reviewer(inputs.reviewer_id)
       |> Steps.save_activity(:goal_reviewer_updating, fn changes ->
         %{
@@ -614,6 +617,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members(Enum.map(inputs.members, & &1.id))
       |> Steps.add_access_members(inputs.members)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
@@ -642,6 +646,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members([inputs.person_id])
       |> Steps.update_access_member(inputs.person_id, inputs.access_level)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
@@ -731,6 +736,19 @@ defmodule OperatelyWeb.Api.Goals do
         case Operately.Goals.Goal.get(me, id: goal_id, opts: [preload: [:access_context]]) do
           {:ok, goal} -> {:ok, goal}
           {:error, _} -> {:error, {:not_found, gettext("Goal not found")}}
+        end
+      end)
+    end
+
+    def validate_selected_company_members(multi, person_ids) do
+      Ecto.Multi.run(multi, :company_members, fn _repo, %{me: me, goal: goal} ->
+        if goal.company_id != me.company_id do
+          {:error, :not_found}
+        else
+          case People.validate_active_company_members(goal.company_id, person_ids) do
+            :ok -> {:ok, :valid}
+            {:error, :invalid_company_member} -> {:error, :bad_request}
+          end
         end
       end)
     end
@@ -901,13 +919,26 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def update_parent_goal(multi, parent_goal_id) do
-      Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
-        Operately.Goals.Goal.changeset(goal, %{parent_goal_id: parent_goal_id})
+      multi
+      |> Ecto.Multi.run(:parent_goal, fn _repo, %{goal: goal, me: me} ->
+        if parent_goal_id, do: Goal.get(me, id: parent_goal_id, company_id: goal.company_id), else: {:ok, nil}
+      end)
+      |> Ecto.Multi.run(:validate_parent_goal, fn _repo, %{goal: goal, parent_goal: parent_goal} ->
+        Operately.Goals.validate_parent_goal(goal, parent_goal)
+      end)
+      |> Ecto.Multi.update(:updated_goal, fn %{goal: goal, parent_goal: parent_goal} ->
+        Goal.changeset(goal, %{parent_goal_id: parent_goal && parent_goal.id})
       end)
     end
 
     def update_space(multi, space_id) do
       multi
+      |> Ecto.Multi.run(:destination_space, fn _repo, %{goal: goal, me: me} ->
+        Operately.Groups.Group.get(me, id: space_id, company_id: goal.company_id)
+      end)
+      |> Ecto.Multi.run(:destination_permissions, fn _repo, %{destination_space: space, company_read_only: read_only} ->
+        Operately.Groups.Permissions.check(space.request_info.access_level, :can_edit, company_read_only: read_only)
+      end)
       |> Ecto.Multi.update(:updated_goal, fn %{goal: goal} ->
         Operately.Goals.Goal.changeset(goal, %{group_id: space_id})
       end)
@@ -968,8 +999,8 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def find_target(multi, target_id) do
-      Ecto.Multi.run(multi, :target, fn _, _ ->
-        case Operately.Repo.get(Target, target_id) do
+      Ecto.Multi.run(multi, :target, fn _, %{goal: goal} ->
+        case Operately.Repo.get_by(Target, id: target_id, goal_id: goal.id) do
           nil -> {:error, {:not_found, gettext("Target not found")}}
           target -> {:ok, target}
         end
@@ -1062,6 +1093,12 @@ defmodule OperatelyWeb.Api.Goals do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
+
+        {:error, _failed_operation, :bad_request, _changes} ->
+          {:error, :bad_request}
+
+        {:error, operation, %Ecto.Changeset{errors: [{field, error} | _]}, _changes} when operation in [:added_target, :updated_target] and field in [:name, :unit] ->
+          {:error, :bad_request, Operately.I18n.ValidationErrors.translate(error)}
 
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Transaction failed: #{inspect(reason)}")

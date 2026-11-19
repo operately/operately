@@ -20,13 +20,18 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
       |> Factory.add_api_token(:token, :creator, read_only: false)
       |> Factory.log_in_person(:creator)
 
+    topic = "api:project_updated:#{ctx.project.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
+
     source = RichText.resource_link(Paths.project_path(ctx.company, ctx.project))
     enriched = Operately.RichContent.LinkEnrichment.enrich(source, %{person: ctx.creator, company: ctx.company, origin: OperatelyWeb.Endpoint.url()})
     for content <- [source, enriched] do
       inputs = %{project_id: Paths.project_id(ctx.project), description: Jason.encode!(content)}
       assert {200, _} = mutation(ctx.conn, [:projects, :update_description], inputs)
+      assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
       assert Repo.reload!(ctx.project).description == source
       assert {200, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "projects/update_description", inputs)
+      assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
       assert Repo.reload!(ctx.project).description == source
     end
   end

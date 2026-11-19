@@ -1,0 +1,36 @@
+defmodule OperatelyWeb.Api.CuratedTemplates.Instantiate do
+  use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
+
+  alias Operately.Groups.{Group, Permissions}
+  alias Operately.Operations.CuratedTemplateInstantiation
+  alias Operately.People
+
+  inputs do
+    field :template_id, :id, null: false
+    field :space_id, :id, null: false
+    field? :champion_id, :id, null: true
+    field? :reviewer_id, :id, null: true
+    field? :start_date, :date, null: true
+  end
+
+  outputs do
+    field :resource_type, :curated_template_type, null: false
+    field :resource_id, :id, null: false
+    field :space_id, :id, null: false
+  end
+
+  def call(conn, inputs) do
+    with {:ok, person} <- find_me(conn),
+         {:ok, space} <- Group.get(person, id: inputs.space_id, company_id: person.company_id),
+         {:ok, _} <- Permissions.check(space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)),
+         :ok <- People.validate_active_company_members(space.company_id, [inputs[:champion_id], inputs[:reviewer_id]]),
+         {:ok, result} <- CuratedTemplateInstantiation.run(person, Group.preload_access_levels(space), inputs) do
+      {:ok, Serializer.serialize(result)}
+    else
+      {:error, :invalid_company_member} -> {:error, :bad_request}
+      {:error, reason} when reason in [:not_found, :forbidden, :bad_request] -> {:error, reason}
+      {:error, _} -> {:error, :internal_server_error}
+    end
+  end
+end

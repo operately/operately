@@ -77,6 +77,7 @@ export interface InputFieldProps {
   field: string;
   children: React.ReactNode;
   label?: string | React.ReactNode;
+  labelAction?: React.ReactNode;
   labelIcon?: React.ReactNode;
   required?: boolean;
   hidden?: boolean;
@@ -93,6 +94,8 @@ export interface TextInputProps {
   minLength?: number;
   maxLength?: number;
   placeholder?: string;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onEnter?: (event: React.KeyboardEvent) => void;
   okSign?: boolean;
 }
@@ -108,6 +111,7 @@ export interface DateInputProps {
 
 export interface SubmitProps {
   disabled?: boolean;
+  cancelDisabled?: boolean;
   saveText?: string;
   cancelText?: string;
   layout?: "left" | "centered";
@@ -215,6 +219,7 @@ export interface RichTextAreaProps {
 export interface PasswordInputProps {
   field: string;
   label?: string | React.ReactNode;
+  labelAction?: React.ReactNode;
   required?: boolean;
   placeholder?: string;
   minLength?: number;
@@ -253,8 +258,9 @@ export interface RadioButtonsProps {
   field: string;
   label?: string;
   hidden?: boolean;
-  options: FormOption[];
+  options: (FormOption & { icon?: React.ReactNode })[];
   containerClass?: string;
+  variant?: "default" | "cards";
 }
 
 export interface TitleInputProps {

@@ -5,6 +5,13 @@ defmodule OperatelyWeb.Api.CompanyTransfers.ListImportRunsTest do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:company_transfers, :list_import_runs], %{})
     end
+
+    test "a logged-in account can list imports without selecting a company", ctx do
+      ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+      conn = delete_req_header(ctx.conn, "x-company-id")
+
+      assert {200, %{import_runs: []}} = query(conn, [:company_transfers, :list_import_runs], %{})
+    end
   end
 
   describe "list_import_runs functionality" do

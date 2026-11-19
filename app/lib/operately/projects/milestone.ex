@@ -144,14 +144,9 @@ defmodule Operately.Projects.Milestone do
   end
 
   def preload_available_statuses(milestone = %__MODULE__{}) do
-    milestone =
-      if Ecto.assoc_loaded?(milestone.project) do
-        Operately.Repo.preload(milestone, :project)
-      else
-        milestone
-      end
+    milestone = Operately.Repo.preload(milestone, project: :task_board)
 
-    statuses = if milestone.project, do: milestone.project.task_statuses || [], else: []
+    statuses = if milestone.project, do: Operately.Projects.Project.task_statuses(milestone.project), else: []
 
     Map.put(milestone, :available_statuses, statuses)
   end

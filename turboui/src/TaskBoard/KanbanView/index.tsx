@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { StatusSelector } from "../../StatusSelector";
 import { useBoardDnD, useSortableList } from "../../utils/PragmaticDragAndDrop";
 import { Kanban } from "./Kanban";
@@ -8,8 +8,11 @@ import { DeleteStatusModal } from "./DeleteStatusModal";
 import type { KanbanBoardProps, KanbanStatus, KanbanState, TaskSlideInContext } from "./types";
 import type { TaskBoard } from "../components";
 import { useTaskSlideInSelection } from "../hooks/useTaskSlideInSelection";
+import { compareIds } from "../../utils/ids";
+import classNames from "../../utils/classnames";
 
 export function KanbanBoard(props: KanbanBoardProps) {
+  const [archived, setArchived] = useState(false);
   const { statuses, kanbanState: kanbanStateProp, onStatusesChange, onTaskKanbanChange, milestone } = props;
   const [orderedStatuses, setOrderedStatuses] = useState<StatusSelector.StatusOption[]>(() => sortStatuses(statuses));
 
@@ -27,8 +30,25 @@ export function KanbanBoard(props: KanbanBoardProps) {
   const [deletingStatus, setDeletingStatus] = useState<StatusSelector.StatusOption | undefined>();
 
   const { selectedTaskId, setSelectedTaskId, taskPageProps, taskById } = useTaskSlideIn(props);
+  const selectedTask = selectedTaskId ? props.tasks.find((task) => compareIds(task.id, selectedTaskId)) : undefined;
+  const selectedTaskIdRef = useRef(selectedTaskId);
 
-  const canReorderStatuses = Boolean(props.canEdit && props.onStatusesChange);
+  useLayoutEffect(() => {
+    selectedTaskIdRef.current = selectedTaskId;
+    return () => {
+      selectedTaskIdRef.current = null;
+    };
+  }, [selectedTaskId]);
+
+  const canChangeArchive = Boolean(props.canEdit && taskPageProps?.canEdit && props.onTaskArchiveChange);
+
+  const changeArchive = async (archived: boolean) => {
+    if (!selectedTask || !canChangeArchive) return;
+    const saved = await props.onTaskArchiveChange?.(selectedTask.id, archived);
+    if (saved && compareIds(selectedTaskIdRef.current, selectedTask.id)) setSelectedTaskId(null);
+  };
+
+  const canReorderStatuses = Boolean(props.canEdit && !archived && props.onStatusesChange);
 
   useSortableList(
     orderedStatuses.map((status, index) => ({ id: status.value, index })),
@@ -69,11 +89,20 @@ export function KanbanBoard(props: KanbanBoardProps) {
         // Treat drops onto the synthetic Unknown Status column as cancelled
         if (destinationStatus === "unknown-status") return;
 
+        // Drop indexes refer to visible cards; preserve the positions of archived or filtered-out tasks.
+        const destinationIds = (kanbanState[destinationStatus] ?? []).filter((id) => id !== move.itemId);
+        const visibleIds = destinationIds.filter((id) => {
+          const task = taskById.get(id);
+          return task && !task.archivedAt;
+        });
+        const nextVisibleId = visibleIds[move.destination.index];
+        const destinationIndex = nextVisibleId ? destinationIds.indexOf(nextVisibleId) : destinationIds.length;
+
         const nextKanbanState = applyKanbanMove(
           kanbanState,
           move.itemId,
           destinationStatus,
-          move.destination.index,
+          destinationIndex,
           statusKeys,
         );
 
@@ -83,33 +112,47 @@ export function KanbanBoard(props: KanbanBoardProps) {
           milestoneId: milestone?.id ?? null,
           taskId: move.itemId,
           from: { status: sourceStatus, index: move.source.index },
-          to: { status: destinationStatus, index: move.destination.index },
+          to: { status: destinationStatus, index: destinationIndex },
           updatedKanbanState: nextKanbanState,
         });
       },
-      [kanbanState, milestone?.id, onTaskKanbanChange, statusKeys, orderedStatuses],
+      [kanbanState, milestone?.id, onTaskKanbanChange, statusKeys, taskById],
     ),
+    { enabled: props.canEdit && !archived },
   );
+
+  const allColumns = buildColumns(kanbanState, props.tasks, taskById, statusKeys);
+  const columns = Object.fromEntries(
+    Object.entries(allColumns).map(([status, tasks]) => [
+      status,
+      tasks.filter((task) => Boolean(task.archivedAt) === archived),
+    ]),
+  );
+  const visibleStatuses = archived
+    ? orderedStatuses.filter((status) => (columns[status.value]?.length ?? 0) > 0)
+    : orderedStatuses;
 
   const containerClassName = props.unstyled
     ? "flex flex-col flex-1 overflow-hidden"
     : "flex flex-col flex-1 bg-surface-base border border-surface-outline rounded-md overflow-hidden";
 
   return (
-    <div className={containerClassName} data-test-id="kanban-board">
+    <div className={classNames(containerClassName, props.fillHeight && "min-h-0")} data-test-id="kanban-board">
       <Kanban
+        fillHeight={props.fillHeight}
         milestone={milestone || null}
-        columns={buildColumns(kanbanState, props.tasks, taskById, statusKeys)}
+        columns={columns}
         draggedItemId={draggedItemId}
         targetLocation={destination}
         placeholderHeight={draggedItemDimensions?.height ?? null}
-        statuses={orderedStatuses}
+        statuses={visibleStatuses}
+        archiveView={{ archived, onChange: setArchived }}
         onTaskAssigneeChange={props.onTaskAssigneeChange}
         onTaskDueDateChange={props.onTaskDueDateChange}
         onTaskDueOffsetDaysChange={props.onTaskDueOffsetDaysChange}
         assigneePersonSearch={props.assigneePersonSearch}
         onTaskCreate={props.onTaskCreate}
-        canEdit={props.canEdit}
+        canEdit={props.canEdit && !archived}
         canManageStatuses={canReorderStatuses}
         onAddStatusClick={
           canReorderStatuses
@@ -130,7 +173,18 @@ export function KanbanBoard(props: KanbanBoardProps) {
         onDeleteStatus={
           canReorderStatuses
             ? (status) => {
-                setDeletingStatus(status);
+                const isLastStatus = orderedStatuses.filter((s) => s.value !== "unknown-status").length <= 1;
+                const tasks = props.statusUsageTasks ?? props.tasks;
+                const isUsed = tasks.some((task) => statusFromTask(task, statusKeys) === status.value);
+
+                if (isLastStatus || isUsed) {
+                  setDeletingStatus(status);
+                } else {
+                  onStatusesChange?.({
+                    nextStatuses: sortStatuses(orderedStatuses.filter((s) => s.id !== status.id)),
+                    deletedStatusReplacements: {},
+                  });
+                }
               }
             : undefined
         }
@@ -144,7 +198,19 @@ export function KanbanBoard(props: KanbanBoardProps) {
       <TaskSlideIn
         isOpen={Boolean(selectedTaskId)}
         onClose={() => setSelectedTaskId(null)}
-        taskPageProps={taskPageProps}
+        taskPageProps={
+          taskPageProps
+            ? {
+                ...taskPageProps,
+                canEdit: taskPageProps.canEdit && !selectedTask?.archivedAt,
+                onArchive:
+                  canChangeArchive && !selectedTask?.archivedAt && selectedTask?.status?.closed
+                    ? () => changeArchive(true)
+                    : undefined,
+                onRestore: canChangeArchive && selectedTask?.archivedAt ? () => changeArchive(false) : undefined,
+              }
+            : null
+        }
       />
 
       {onStatusesChange && (

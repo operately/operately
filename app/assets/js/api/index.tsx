@@ -520,6 +520,20 @@ export interface ActivityContentKpiCreated {
   kpiName: string;
 }
 
+export interface ActivityContentKpiDeleted {
+  __typename: "activity_content_kpi_deleted";
+  space: Space | null;
+  kpiName: string;
+}
+
+export interface ActivityContentKpiEdited {
+  __typename: "activity_content_kpi_edited";
+  space: Space | null;
+  kpi: Kpi | null;
+  oldName: string;
+  newName: string;
+}
+
 export interface ActivityContentKpiEntryCommented {
   __typename: "activity_content_kpi_entry_commented";
   space: Space;
@@ -545,6 +559,15 @@ export interface ActivityContentKpiEntryEdited {
   newValue: number;
   oldPeriod: string;
   newPeriod: string;
+}
+
+export interface ActivityContentKpiEntryLogged {
+  __typename: "activity_content_kpi_entry_logged";
+  space: Space;
+  kpi: Kpi | null;
+  entry: KpiEntry | null;
+  value: number;
+  period: string;
 }
 
 export interface ActivityContentMessageArchiving {
@@ -869,6 +892,13 @@ export interface ActivityContentProjectTimelineEdited {
   updatedMilestones?: ActivityMilestone[] | null;
 }
 
+export interface ActivityContentResourceHubDeleted {
+  __typename: "activity_content_resource_hub_deleted";
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  name: string;
+}
+
 export interface ActivityContentResourceHubDocumentCommented {
   __typename: "activity_content_resource_hub_document_commented";
   goal?: Goal | null;
@@ -877,6 +907,7 @@ export interface ActivityContentResourceHubDocumentCommented {
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
   comment?: Comment | null;
+  inlineThreadId?: Id | null;
 }
 
 export interface ActivityContentResourceHubDocumentCreated {
@@ -905,6 +936,17 @@ export interface ActivityContentResourceHubDocumentEdited {
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
+}
+
+export interface ActivityContentResourceHubDocumentInlineThreadResolutionChanged {
+  __typename: "activity_content_resource_hub_document_inline_thread_resolution_changed";
+  goal?: Goal | null;
+  project?: Project | null;
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  document?: ResourceHubDocument | null;
+  inlineThreadId: Id;
+  resolved: boolean;
 }
 
 export interface ActivityContentResourceHubDocumentPublicSharingChanged {
@@ -1043,6 +1085,14 @@ export interface ActivityContentResourceHubLinkEdited {
   previousUrl?: string | null;
 }
 
+export interface ActivityContentResourceHubRenamed {
+  __typename: "activity_content_resource_hub_renamed";
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  oldName: string;
+  newName: string;
+}
+
 export interface ActivityContentSpaceAdded {
   __typename: "activity_content_space_added";
   companyId?: string | null;
@@ -1078,11 +1128,21 @@ export interface ActivityContentSpaceTaskCommented {
 
 export interface ActivityContentTaskAdding {
   __typename: "activity_content_task_adding";
+  boardId?: Id | null;
   space: Space;
   project: Project | null;
   milestone: Milestone | null;
   task: Task | null;
   taskName: string;
+}
+
+export interface ActivityContentTaskArchiveUpdating {
+  __typename: "activity_content_task_archive_updating";
+  space: Space;
+  project: Project | null;
+  task: Task | null;
+  name: string;
+  archived: boolean;
 }
 
 export interface ActivityContentTaskAssigneeAssignment {
@@ -1102,6 +1162,43 @@ export interface ActivityContentTaskAssigneeUpdating {
   newAssignee: Person;
   addedAssignees: Person[];
   removedAssignees: Person[];
+}
+
+export interface ActivityContentTaskBoardArchived {
+  __typename: "activity_content_task_board_archived";
+  space: Space | null;
+  boardId: Id;
+  name: string;
+}
+
+export interface ActivityContentTaskBoardCreated {
+  __typename: "activity_content_task_board_created";
+  space: Space | null;
+  boardId: Id;
+  name: string;
+}
+
+export interface ActivityContentTaskBoardDefaultChanged {
+  __typename: "activity_content_task_board_default_changed";
+  space: Space | null;
+  boardId: Id;
+  previousBoardId: Id | null;
+  name: string;
+}
+
+export interface ActivityContentTaskBoardRenamed {
+  __typename: "activity_content_task_board_renamed";
+  space: Space | null;
+  boardId: Id;
+  oldName: string;
+  newName: string;
+}
+
+export interface ActivityContentTaskBoardRestored {
+  __typename: "activity_content_task_board_restored";
+  space: Space | null;
+  boardId: Id;
+  name: string;
 }
 
 export interface ActivityContentTaskClosing {
@@ -1157,6 +1254,8 @@ export interface ActivityContentTaskMilestoneUpdating {
 
 export interface ActivityContentTaskMoving {
   __typename: "activity_content_task_moving";
+  originBoardId?: Id | null;
+  destinationBoardId?: Id | null;
   task: Task | null;
   taskName: string;
   originType: TaskType;
@@ -1562,11 +1661,20 @@ export interface CuratedTemplate {
   id: Id;
   type: CuratedTemplateType;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
   updatedAt: string;
   definition?: Json;
+  previewData?: Json;
+}
+
+export interface CuratedTemplateInstantiation {
+  __typename: "curated_template_instantiation";
+  resourceType: CuratedTemplateType;
+  resourceId: Id;
+  spaceId: Id;
 }
 
 export interface DeletedStatusReplacement {
@@ -1801,6 +1909,33 @@ export interface GoalUpdatePermissions {
   canComment?: boolean | null;
 }
 
+export interface InlineAnchor {
+  __typename: "inline_anchor";
+  sourceVersion: number;
+  sourceFrom: number;
+  sourceTo: number;
+  quote: string;
+  prefix: string;
+  suffix: string;
+  currentVersion: number;
+  currentFrom: number | null;
+  currentTo: number | null;
+  status: InlineAnchorStatus;
+}
+
+export interface InlineThread {
+  __typename: "inline_thread";
+  id: Id;
+  resourceType: InlineThreadResourceType;
+  resourceId: Id;
+  author: Person | null;
+  resolvedAt: string | null;
+  resolvedBy: Person | null;
+  insertedAt: string;
+  anchor: InlineAnchor;
+  messages: Comment[];
+}
+
 export interface InviteLink {
   __typename: "invite_link";
   id?: string | null;
@@ -1937,6 +2072,7 @@ export interface Panel {
 
 export interface Person {
   __typename: "person";
+  titleSetupPending?: boolean;
   id: string;
   url?: string;
   fullName: string;
@@ -2133,6 +2269,12 @@ export interface ProjectReviewRequest {
   reviewId?: string | null;
   content?: string | null;
   author?: Person | null;
+}
+
+export interface ProjectTaskCompletion {
+  completedCount: number;
+  totalCount: number;
+  percentage: number;
 }
 
 export interface ProjectTemplate {
@@ -2374,6 +2516,7 @@ export interface ResourceHub {
   nodes?: ResourceHubNode[] | null;
   potentialSubscribers?: Subscriber[] | null;
   permissions?: ResourceHubPermissions | null;
+  position?: number | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -2512,7 +2655,16 @@ export interface ResourceHubPermissions {
   canEditFile?: boolean | null;
   canEditLink?: boolean | null;
   canRenameFolder?: boolean | null;
+  canRenameHub?: boolean | null;
   canView?: boolean | null;
+}
+
+export interface ResourceHubSummary {
+  __typename: "resource_hub_summary";
+  id: Id;
+  name: string;
+  position: number;
+  isDefault: boolean;
 }
 
 export interface ResourceHubUploadedFile {
@@ -2558,6 +2710,7 @@ export interface ReviewAssignmentOrigin {
 }
 
 export interface SearchNavigationTarget {
+  boardId?: Id | null;
   resourceHubId?: string | null;
   folderId?: string | null;
   documentId?: string | null;
@@ -2616,8 +2769,10 @@ export interface Space {
   permissions?: SpacePermissions | null;
   members?: Person[] | null;
   accessLevels?: AccessLevels | null;
+  tools?: SpaceToolSettings;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  defaultTaskBoardId?: Id | null;
   taskStatuses?: TaskStatus[] | null;
   tasksKanbanState?: Json | null;
 }
@@ -2635,6 +2790,14 @@ export interface SpaceSetupInput {
   description: string;
 }
 
+export interface SpaceToolSettings {
+  tasksEnabled: boolean;
+  discussionsEnabled: boolean;
+  resourceHubEnabled: boolean;
+  kpisEnabled: boolean;
+  templatesEnabled: boolean;
+}
+
 export interface SpaceTools {
   __typename: "space_tools";
   tasksEnabled: boolean;
@@ -2647,6 +2810,7 @@ export interface SpaceTools {
   messagesBoards: MessagesBoard[] | null;
   resourceHubs: ResourceHub[] | null;
   tasks: Task[] | null;
+  taskBoards?: TaskBoardSummary[] | null;
   kpis: Kpi[] | null;
   templates: ProjectTemplate[] | null;
 }
@@ -2688,11 +2852,14 @@ export interface Target {
 
 export interface Task {
   __typename: "task";
+  spaceId?: Id | null;
+  boardId?: Id | null;
   id: string;
   url?: string;
   name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
+  archivedAt?: string | null;
   closedAt?: string | null;
   dueDate?: ContextualDate | null;
   reminders?: TaskReminder[] | null;
@@ -2711,6 +2878,28 @@ export interface Task {
   subscriptionList?: SubscriptionList | null;
   availableStatuses?: TaskStatus[] | null;
   type: TaskType;
+}
+
+export interface TaskBoard {
+  __typename: "task_board";
+  spaceId?: Id | null;
+  projectId?: Id | null;
+  id: Id;
+  name: string;
+  archivedAt: string | null;
+  taskStatuses: TaskStatus[];
+  tasksKanbanState: Json;
+}
+
+export interface TaskBoardSummary {
+  __typename: "task_board_summary";
+  spaceId?: Id | null;
+  projectId?: Id | null;
+  id: Id;
+  name: string;
+  position: number;
+  isDefault: boolean;
+  archivedAt: string | null;
 }
 
 export interface TaskReminder {
@@ -2858,7 +3047,10 @@ export interface WorkMapItem {
   state: WorkMapItemState;
   status: WorkMapItemStatus;
   taskStatus: TaskStatus | null;
+  taskStatuses?: TaskStatus[] | null;
+  canEditTask?: boolean | null;
   progress: number | null;
+  taskCompletion?: ProjectTaskCompletion | null;
   space: Space | null;
   spacePath: string | null;
   project: Project | null;
@@ -2904,6 +3096,9 @@ export type ActivityContent =
   | ActivityContentDiscussionEditing
   | ActivityContentDiscussionPosting
   | ActivityContentKpiCreated
+  | ActivityContentKpiDeleted
+  | ActivityContentKpiEdited
+  | ActivityContentKpiEntryLogged
   | ActivityContentKpiEntryCommented
   | ActivityContentKpiEntryEdited
   | ActivityContentKpiEntryDeleted
@@ -2957,6 +3152,7 @@ export type ActivityContent =
   | ActivityContentProjectReviewSubmitted
   | ActivityContentProjectTimelineEdited
   | ActivityContentResourceHubDocumentCommented
+  | ActivityContentResourceHubDocumentInlineThreadResolutionChanged
   | ActivityContentResourceHubDocumentCreated
   | ActivityContentResourceHubDocumentDeleted
   | ActivityContentResourceHubDocumentEdited
@@ -2970,6 +3166,13 @@ export type ActivityContent =
   | ActivityContentResourceHubFolderCreated
   | ActivityContentResourceHubFolderDeleted
   | ActivityContentResourceHubFolderRenamed
+  | ActivityContentResourceHubDeleted
+  | ActivityContentResourceHubRenamed
+  | ActivityContentTaskBoardCreated
+  | ActivityContentTaskBoardRenamed
+  | ActivityContentTaskBoardDefaultChanged
+  | ActivityContentTaskBoardArchived
+  | ActivityContentTaskBoardRestored
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
   | ActivityContentResourceHubLinkDeleted
@@ -2987,13 +3190,12 @@ export type ActivityContent =
   | ActivityContentTaskReopening
   | ActivityContentTaskSizeChange
   | ActivityContentTaskStatusChange
+  | ActivityContentTaskArchiveUpdating
   | ActivityContentTaskStatusUpdating
   | ActivityContentTaskUpdate;
 
 export type ActivityDataUnion =
-  | ActivityEventDataProjectCreate
-  | ActivityEventDataMilestoneCreate
-  | ActivityEventDataCommentPost;
+  ActivityEventDataProjectCreate | ActivityEventDataMilestoneCreate | ActivityEventDataCommentPost;
 
 export type ActivityResourceUnion = Project | Update | Milestone | Comment;
 
@@ -3017,13 +3219,7 @@ export type UpdateContent =
   | UpdateContentMessage;
 
 export type AccessOptions =
-  | "no_access"
-  | "minimal_access"
-  | "view_access"
-  | "comment_access"
-  | "edit_access"
-  | "admin_access"
-  | "full_access";
+  "no_access" | "minimal_access" | "view_access" | "comment_access" | "edit_access" | "admin_access" | "full_access";
 
 export type AccountTheme = "dark" | "light" | "system";
 
@@ -3101,16 +3297,13 @@ export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type GoalStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
-export type Language = "en" | "pt-BR";
+export type InlineAnchorStatus = "attached" | "unattached";
+
+export type InlineThreadResourceType = "resource_hub_document";
+
+export type Language = "en" | "pt-BR" | "de" | "ru" | "fr" | "es";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
@@ -3133,15 +3326,7 @@ export type ProjectTemplateCommentParentType = "discussion" | "document" | "file
 export type ProjectTemplatePersonRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTemplateResourceLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
 
 export type ProjectTemplateResourceType = "folder" | "document" | "file" | "link";
 
@@ -3181,15 +3366,7 @@ export type ReactionParentType =
 export type ResourceAccessTypes = "space" | "goal" | "project";
 
 export type ResourceHubLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
@@ -3217,11 +3394,11 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"
+  | "kpi"
   | "goal_check_in"
   | "space_discussion"
   | "comment"
@@ -3277,6 +3454,8 @@ export type SubscriptionParentType =
 
 export type SuccessStatus = "achieved" | "missed";
 
+export type TaskBoardArchiveStatus = "active" | "archived" | "all";
+
 export type TaskReminderType = "before_due" | "due_day" | "overdue" | "on_date";
 
 export type TaskType = "space" | "project";
@@ -3288,14 +3467,7 @@ export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secre
 export type WorkMapItemState = "active" | "paused" | "closed";
 
 export type WorkMapItemStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
 
@@ -3496,10 +3668,19 @@ export interface CompanyTransfersListImportRunsResult {
 }
 
 export interface CuratedTemplatesGetInput {
-  id: Id;
+  slug: string;
+  language: string;
 }
 
 export interface CuratedTemplatesGetResult {
+  template: CuratedTemplate;
+}
+
+export interface CuratedTemplatesGetByIdInput {
+  id: Id;
+}
+
+export interface CuratedTemplatesGetByIdResult {
   template: CuratedTemplate;
 }
 
@@ -3709,6 +3890,15 @@ export interface GoalsSearchParentGoalResult {
   goals: Goal[];
 }
 
+export interface InlineThreadsListInput {
+  resourceType: InlineThreadResourceType;
+  resourceId: Id;
+}
+
+export interface InlineThreadsListResult {
+  threads: InlineThread[];
+}
+
 export interface InvitationsGetInvitationInput {
   token: string;
 }
@@ -3843,6 +4033,12 @@ export interface PeopleGetMeResult {
   me: Person;
 }
 
+export interface PeopleGetTaskOrderingInput {}
+
+export interface PeopleGetTaskOrderingResult {
+  taskIds: string[];
+}
+
 export interface PeopleListInput {
   onlySuspended?: boolean;
   includeSuspended?: boolean;
@@ -3862,6 +4058,12 @@ export interface PeopleListAssignmentsResult {
   dueSoon: ReviewAssignmentGroup[];
   needsReview: ReviewAssignmentGroup[];
   upcoming: ReviewAssignmentGroup[];
+}
+
+export interface PeopleListMyTasksInput {}
+
+export interface PeopleListMyTasksResult {
+  tasks: Task[];
 }
 
 export interface PeopleListPossibleManagersInput {
@@ -3888,6 +4090,7 @@ export interface ProductReleasesGetLatestInput {}
 
 export interface ProductReleasesGetLatestResult {
   productRelease?: ProductRelease | null;
+  canAnnounce: boolean;
 }
 
 export interface ProjectTemplatesGetInput {
@@ -4164,6 +4367,14 @@ export interface ResourceHubsGetFolderResult {
   folder: ResourceHubFolder;
 }
 
+export interface ResourceHubsListInput {
+  spaceId: Id;
+}
+
+export interface ResourceHubsListResult {
+  hubs: ResourceHubSummary[];
+}
+
 export interface ResourceHubsListDraftsInput {
   resourceHubId: Id;
 }
@@ -4282,6 +4493,7 @@ export interface SpacesListMembersResult {
 
 export interface SpacesListTasksInput {
   spaceId: Id;
+  boardId?: Id | null;
 }
 
 export interface SpacesListTasksResult {
@@ -4336,12 +4548,34 @@ export interface TasksGetResult {
   markdown?: string;
 }
 
+export interface TasksGetBoardInput {
+  spaceId?: Id | null;
+  projectId?: Id | null;
+  boardId?: Id | null;
+}
+
+export interface TasksGetBoardResult {
+  board: TaskBoard;
+}
+
 export interface TasksListInput {
-  projectId: Id;
+  projectId?: Id | null;
+  spaceId?: Id | null;
+  boardId?: Id | null;
 }
 
 export interface TasksListResult {
   tasks: Task[];
+}
+
+export interface TasksListBoardsInput {
+  spaceId?: Id | null;
+  projectId?: Id | null;
+  archiveStatus?: TaskBoardArchiveStatus;
+}
+
+export interface TasksListBoardsResult {
+  boards: TaskBoardSummary[];
 }
 
 export interface TasksListPotentialAssigneesInput {
@@ -4356,10 +4590,12 @@ export interface TasksListPotentialAssigneesResult {
 }
 
 export interface TasksListTaskStatusesInput {
-  taskId: Id;
+  taskId?: Id | null;
+  boardId?: Id | null;
 }
 
 export interface TasksListTaskStatusesResult {
+  boardId: Id | null;
   taskStatuses: TaskStatus[];
 }
 
@@ -4839,6 +5075,20 @@ export interface CreateEmailActivationCodeInput {
 
 export interface CreateEmailActivationCodeResult {}
 
+export interface CuratedTemplatesInstantiateInput {
+  templateId: Id;
+  spaceId: Id;
+  championId?: Id | null;
+  reviewerId?: Id | null;
+  startDate?: string | null;
+}
+
+export interface CuratedTemplatesInstantiateResult {
+  resourceType: CuratedTemplateType;
+  resourceId: Id;
+  spaceId: Id;
+}
+
 export interface DeleteCompanyInput {}
 
 export interface DeleteCompanyResult {
@@ -5012,7 +5262,7 @@ export interface GoalsChangeParentInput {
 }
 
 export interface GoalsChangeParentResult {
-  goal?: Goal | null;
+  success: boolean;
 }
 
 export interface GoalsCloseInput {
@@ -5211,8 +5461,8 @@ export interface GoalsUpdateCheckResult {
 
 export interface GoalsUpdateCheckInInput {
   id: Id;
-  dueDate: ContextualDate | null;
-  status: GoalCheckInStatus;
+  dueDate?: ContextualDate | null;
+  status?: GoalCheckInStatus;
   content: Json;
   state?: CheckInState | null;
   newTargetValues?: string | null;
@@ -5336,6 +5586,62 @@ export interface GoalsUpdateTargetValueInput {
 
 export interface GoalsUpdateTargetValueResult {
   success: boolean;
+}
+
+export interface InlineThreadsCreateInput {
+  resourceType: InlineThreadResourceType;
+  resourceId: Id;
+  sourceVersion: number;
+  from: number;
+  to: number;
+  quote: string;
+  content: Json;
+}
+
+export interface InlineThreadsCreateResult {
+  thread: InlineThread;
+}
+
+export interface InlineThreadsDeleteMessageInput {
+  messageId: Id;
+}
+
+export interface InlineThreadsDeleteMessageResult {
+  thread: InlineThread | null;
+}
+
+export interface InlineThreadsReopenInput {
+  threadId: Id;
+}
+
+export interface InlineThreadsReopenResult {
+  thread: InlineThread;
+}
+
+export interface InlineThreadsReplyInput {
+  threadId: Id;
+  content: Json;
+}
+
+export interface InlineThreadsReplyResult {
+  thread: InlineThread;
+}
+
+export interface InlineThreadsResolveInput {
+  threadId: Id;
+}
+
+export interface InlineThreadsResolveResult {
+  thread: InlineThread;
+}
+
+export interface InlineThreadsUpdateMessageInput {
+  messageId: Id;
+  content: Json;
+}
+
+export interface InlineThreadsUpdateMessageResult {
+  thread: InlineThread;
 }
 
 export interface InvitationsGetCompanyInviteLinkInput {}
@@ -5568,6 +5874,7 @@ export interface PeopleUpdateInput {
   id: Id;
   fullName?: string;
   title?: string;
+  titleSetupPending?: boolean;
   timezone?: string;
   language?: Language | null;
   timeFormat?: TimeFormat;
@@ -5593,6 +5900,14 @@ export interface PeopleUpdatePictureInput {
 
 export interface PeopleUpdatePictureResult {
   person: Person;
+}
+
+export interface PeopleUpdateTaskOrderingInput {
+  taskIds: Id[];
+}
+
+export interface PeopleUpdateTaskOrderingResult {
+  taskIds: string[];
 }
 
 export interface PeopleUpdateThemeInput {
@@ -6416,6 +6731,15 @@ export interface ResourceHubsCopyFolderResult {
   folderId: Id;
 }
 
+export interface ResourceHubsCreateInput {
+  spaceId: Id;
+  name: string;
+}
+
+export interface ResourceHubsCreateResult {
+  hub: ResourceHubSummary;
+}
+
 export interface ResourceHubsCreateFolderInput {
   resourceHubId: Id;
   folderId?: Id | null;
@@ -6426,11 +6750,28 @@ export interface ResourceHubsCreateFolderResult {
   folder: ResourceHubFolder;
 }
 
+export interface ResourceHubsDeleteInput {
+  resourceHubId: Id;
+}
+
+export interface ResourceHubsDeleteResult {
+  success: boolean;
+}
+
 export interface ResourceHubsDeleteFolderInput {
   folderId: Id;
 }
 
 export interface ResourceHubsDeleteFolderResult {
+  success: boolean;
+}
+
+export interface ResourceHubsRenameInput {
+  resourceHubId: Id;
+  newName: string;
+}
+
+export interface ResourceHubsRenameResult {
   success: boolean;
 }
 
@@ -6440,6 +6781,15 @@ export interface ResourceHubsRenameFolderInput {
 }
 
 export interface ResourceHubsRenameFolderResult {
+  success: boolean;
+}
+
+export interface ResourceHubsReorderInput {
+  spaceId: Id;
+  resourceHubIds: Id[];
+}
+
+export interface ResourceHubsReorderResult {
   success: boolean;
 }
 
@@ -6559,12 +6909,14 @@ export interface SpacesUpdateDiscussionResult {
 
 export interface SpacesUpdateKanbanInput {
   spaceId: Id;
+  boardId?: Id | null;
   taskId: Id;
   status: TaskStatus;
   kanbanState: Json;
 }
 
 export interface SpacesUpdateKanbanResult {
+  boardId: Id;
   task: Task;
 }
 
@@ -6588,11 +6940,13 @@ export interface SpacesUpdatePermissionsResult {
 
 export interface SpacesUpdateTaskStatusesInput {
   spaceId: Id;
+  boardId?: Id | null;
   taskStatuses: TaskStatus[];
   deletedStatusReplacements?: DeletedStatusReplacement[] | null;
 }
 
 export interface SpacesUpdateTaskStatusesResult {
+  boardId: Id;
   success: boolean;
 }
 
@@ -6606,9 +6960,19 @@ export interface SpacesUpdateToolsResult {
   tools: SpaceTools;
 }
 
+export interface TasksArchiveBoardInput {
+  spaceId: Id;
+  boardId: Id;
+}
+
+export interface TasksArchiveBoardResult {
+  success: boolean;
+}
+
 export interface TasksCreateInput {
   type: TaskType;
   id: Id;
+  boardId?: Id | null;
   milestoneId?: Id | null;
   name: string;
   assigneeId?: Id | null;
@@ -6622,6 +6986,15 @@ export interface TasksCreateResult {
   task: Task;
   updatedMilestone?: Milestone;
   updatedSpace?: Space;
+}
+
+export interface TasksCreateBoardInput {
+  spaceId: Id;
+  name: string;
+}
+
+export interface TasksCreateBoardResult {
+  board: TaskBoardSummary;
 }
 
 export interface TasksDeleteInput {
@@ -6638,12 +7011,60 @@ export interface TasksMoveInput {
   taskId: Id;
   destinationType: TaskType;
   destinationId: Id;
+  destinationBoardId?: Id | null;
+  destinationStatusId?: string | null;
 }
 
 export interface TasksMoveResult {
+  boardId: Id | null;
   task: Task;
   destinationType: TaskType;
   destinationId: Id;
+}
+
+export interface TasksRenameBoardInput {
+  boardId: Id;
+  newName: string;
+}
+
+export interface TasksRenameBoardResult {
+  success: boolean;
+}
+
+export interface TasksReorderBoardsInput {
+  spaceId: Id;
+  boardIds: Id[];
+}
+
+export interface TasksReorderBoardsResult {
+  success: boolean;
+}
+
+export interface TasksRestoreBoardInput {
+  spaceId: Id;
+  boardId: Id;
+}
+
+export interface TasksRestoreBoardResult {
+  success: boolean;
+}
+
+export interface TasksSetDefaultBoardInput {
+  spaceId: Id;
+  boardId: Id;
+}
+
+export interface TasksSetDefaultBoardResult {
+  success: boolean;
+}
+
+export interface TasksUpdateArchiveInput {
+  taskId: Id;
+  archived: boolean;
+}
+
+export interface TasksUpdateArchiveResult {
+  task: Task;
 }
 
 export interface TasksUpdateAssigneeInput {
@@ -6655,6 +7076,29 @@ export interface TasksUpdateAssigneeInput {
 
 export interface TasksUpdateAssigneeResult {
   task: Task;
+}
+
+export interface TasksUpdateBoardKanbanInput {
+  boardId: Id;
+  taskId: Id;
+  status: TaskStatus;
+  kanbanState: Json;
+}
+
+export interface TasksUpdateBoardKanbanResult {
+  boardId: Id;
+  task: Task;
+}
+
+export interface TasksUpdateBoardStatusesInput {
+  boardId: Id;
+  taskStatuses: TaskStatus[];
+  deletedStatusReplacements?: DeletedStatusReplacement[] | null;
+}
+
+export interface TasksUpdateBoardStatusesResult {
+  boardId: Id;
+  success: boolean;
 }
 
 export interface TasksUpdateDescriptionInput {
@@ -7085,16 +7529,32 @@ class ApiNamespaceResourceHubs {
     return this.client.post("/resource_hubs/copy_folder", input);
   }
 
+  async create(input: ResourceHubsCreateInput): Promise<ResourceHubsCreateResult> {
+    return this.client.post("/resource_hubs/create", input);
+  }
+
   async createFolder(input: ResourceHubsCreateFolderInput): Promise<ResourceHubsCreateFolderResult> {
     return this.client.post("/resource_hubs/create_folder", input);
+  }
+
+  async delete(input: ResourceHubsDeleteInput): Promise<ResourceHubsDeleteResult> {
+    return this.client.post("/resource_hubs/delete", input);
   }
 
   async deleteFolder(input: ResourceHubsDeleteFolderInput): Promise<ResourceHubsDeleteFolderResult> {
     return this.client.post("/resource_hubs/delete_folder", input);
   }
 
+  async rename(input: ResourceHubsRenameInput): Promise<ResourceHubsRenameResult> {
+    return this.client.post("/resource_hubs/rename", input);
+  }
+
   async renameFolder(input: ResourceHubsRenameFolderInput): Promise<ResourceHubsRenameFolderResult> {
     return this.client.post("/resource_hubs/rename_folder", input);
+  }
+
+  async reorder(input: ResourceHubsReorderInput): Promise<ResourceHubsReorderResult> {
+    return this.client.post("/resource_hubs/reorder", input);
   }
 
   async updateParentFolder(input: ResourceHubsUpdateParentFolderInput): Promise<ResourceHubsUpdateParentFolderResult> {
@@ -7191,6 +7651,10 @@ class ApiNamespacePeople {
 
   async updatePicture(input: PeopleUpdatePictureInput): Promise<PeopleUpdatePictureResult> {
     return this.client.post("/people/update_picture", input);
+  }
+
+  async updateTaskOrdering(input: PeopleUpdateTaskOrderingInput): Promise<PeopleUpdateTaskOrderingResult> {
+    return this.client.post("/people/update_task_ordering", input);
   }
 
   async updateTheme(input: PeopleUpdateThemeInput): Promise<PeopleUpdateThemeResult> {
@@ -7307,8 +7771,16 @@ class ApiNamespaceSpaces {
 class ApiNamespaceTasks {
   constructor(private client: ApiClient) {}
 
+  async archiveBoard(input: TasksArchiveBoardInput): Promise<TasksArchiveBoardResult> {
+    return this.client.post("/tasks/archive_board", input);
+  }
+
   async create(input: TasksCreateInput): Promise<TasksCreateResult> {
     return this.client.post("/tasks/create", input);
+  }
+
+  async createBoard(input: TasksCreateBoardInput): Promise<TasksCreateBoardResult> {
+    return this.client.post("/tasks/create_board", input);
   }
 
   async delete(input: TasksDeleteInput): Promise<TasksDeleteResult> {
@@ -7319,8 +7791,36 @@ class ApiNamespaceTasks {
     return this.client.post("/tasks/move", input);
   }
 
+  async renameBoard(input: TasksRenameBoardInput): Promise<TasksRenameBoardResult> {
+    return this.client.post("/tasks/rename_board", input);
+  }
+
+  async reorderBoards(input: TasksReorderBoardsInput): Promise<TasksReorderBoardsResult> {
+    return this.client.post("/tasks/reorder_boards", input);
+  }
+
+  async restoreBoard(input: TasksRestoreBoardInput): Promise<TasksRestoreBoardResult> {
+    return this.client.post("/tasks/restore_board", input);
+  }
+
+  async setDefaultBoard(input: TasksSetDefaultBoardInput): Promise<TasksSetDefaultBoardResult> {
+    return this.client.post("/tasks/set_default_board", input);
+  }
+
+  async updateArchive(input: TasksUpdateArchiveInput): Promise<TasksUpdateArchiveResult> {
+    return this.client.post("/tasks/update_archive", input);
+  }
+
   async updateAssignee(input: TasksUpdateAssigneeInput): Promise<TasksUpdateAssigneeResult> {
     return this.client.post("/tasks/update_assignee", input);
+  }
+
+  async updateBoardKanban(input: TasksUpdateBoardKanbanInput): Promise<TasksUpdateBoardKanbanResult> {
+    return this.client.post("/tasks/update_board_kanban", input);
+  }
+
+  async updateBoardStatuses(input: TasksUpdateBoardStatusesInput): Promise<TasksUpdateBoardStatusesResult> {
+    return this.client.post("/tasks/update_board_statuses", input);
   }
 
   async updateDescription(input: TasksUpdateDescriptionInput): Promise<TasksUpdateDescriptionResult> {
@@ -7812,11 +8312,47 @@ class ApiNamespaceGoals {
   }
 }
 
+class ApiNamespaceCuratedTemplates {
+  constructor(private client: ApiClient) {}
+
+  async instantiate(input: CuratedTemplatesInstantiateInput): Promise<CuratedTemplatesInstantiateResult> {
+    return this.client.post("/curated_templates/instantiate", input);
+  }
+}
+
 class ApiNamespaceRichContent {
   constructor(private client: ApiClient) {}
 
   async setTaskItemChecked(input: RichContentSetTaskItemCheckedInput): Promise<RichContentSetTaskItemCheckedResult> {
     return this.client.post("/rich_content/set_task_item_checked", input);
+  }
+}
+
+class ApiNamespaceInlineThreads {
+  constructor(private client: ApiClient) {}
+
+  async create(input: InlineThreadsCreateInput): Promise<InlineThreadsCreateResult> {
+    return this.client.post("/inline_threads/create", input);
+  }
+
+  async deleteMessage(input: InlineThreadsDeleteMessageInput): Promise<InlineThreadsDeleteMessageResult> {
+    return this.client.post("/inline_threads/delete_message", input);
+  }
+
+  async reopen(input: InlineThreadsReopenInput): Promise<InlineThreadsReopenResult> {
+    return this.client.post("/inline_threads/reopen", input);
+  }
+
+  async reply(input: InlineThreadsReplyInput): Promise<InlineThreadsReplyResult> {
+    return this.client.post("/inline_threads/reply", input);
+  }
+
+  async resolve(input: InlineThreadsResolveInput): Promise<InlineThreadsResolveResult> {
+    return this.client.post("/inline_threads/resolve", input);
+  }
+
+  async updateMessage(input: InlineThreadsUpdateMessageInput): Promise<InlineThreadsUpdateMessageResult> {
+    return this.client.post("/inline_threads/update_message", input);
   }
 }
 
@@ -7866,7 +8402,9 @@ export class ApiClient {
   public apiNamespaceProjectTemplates: ApiNamespaceProjectTemplates;
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
+  public apiNamespaceCuratedTemplates: ApiNamespaceCuratedTemplates;
   public apiNamespaceRichContent: ApiNamespaceRichContent;
+  public apiNamespaceInlineThreads: ApiNamespaceInlineThreads;
   public apiNamespaceReactions: ApiNamespaceReactions;
   public apiNamespaceAnalytics: ApiNamespaceAnalytics;
 
@@ -7894,7 +8432,9 @@ export class ApiClient {
     this.apiNamespaceProjectTemplates = new ApiNamespaceProjectTemplates(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
+    this.apiNamespaceCuratedTemplates = new ApiNamespaceCuratedTemplates(this);
     this.apiNamespaceRichContent = new ApiNamespaceRichContent(this);
+    this.apiNamespaceInlineThreads = new ApiNamespaceInlineThreads(this);
     this.apiNamespaceReactions = new ApiNamespaceReactions(this);
     this.apiNamespaceAnalytics = new ApiNamespaceAnalytics(this);
   }
@@ -9420,6 +9960,24 @@ export default {
         staleTime: Infinity,
       }),
 
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/resource_hubs/list"),
+    listQueryKey: (input: ResourceHubsListInput) => buildApiQueryKey(defaultApiClient, "/resource_hubs/list", input),
+    listQueryOptions: (input: ResourceHubsListInput) =>
+      buildApiQueryOptions<ResourceHubsListInput, ResourceHubsListResult>(
+        defaultApiClient,
+        "/resource_hubs/list",
+        input,
+      ),
+    listQuery: (input: ResourceHubsListInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<ResourceHubsListInput, ResourceHubsListResult>(
+          defaultApiClient,
+          "/resource_hubs/list",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
     listDraftsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/resource_hubs/list_drafts"),
     listDraftsQueryKey: (input: ResourceHubsListDraftsInput) =>
       buildApiQueryKey(defaultApiClient, "/resource_hubs/list_drafts", input),
@@ -9501,6 +10059,16 @@ export default {
           defaultApiClient.apiNamespaceResourceHubs.updateParentFolder(input),
       }),
 
+    reorder: (input: ResourceHubsReorderInput) => defaultApiClient.apiNamespaceResourceHubs.reorder(input),
+    useReorder: () =>
+      useMutation<ResourceHubsReorderInput, ResourceHubsReorderResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.reorder(input),
+      ),
+    reorderMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsReorderInput) => defaultApiClient.apiNamespaceResourceHubs.reorder(input),
+      }),
+
     renameFolder: (input: ResourceHubsRenameFolderInput) =>
       defaultApiClient.apiNamespaceResourceHubs.renameFolder(input),
     useRenameFolder: () =>
@@ -9533,6 +10101,36 @@ export default {
       mutationOptions({
         mutationFn: (input: ResourceHubsCreateFolderInput) =>
           defaultApiClient.apiNamespaceResourceHubs.createFolder(input),
+      }),
+
+    delete: (input: ResourceHubsDeleteInput) => defaultApiClient.apiNamespaceResourceHubs.delete(input),
+    useDelete: () =>
+      useMutation<ResourceHubsDeleteInput, ResourceHubsDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.delete(input),
+      ),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsDeleteInput) => defaultApiClient.apiNamespaceResourceHubs.delete(input),
+      }),
+
+    create: (input: ResourceHubsCreateInput) => defaultApiClient.apiNamespaceResourceHubs.create(input),
+    useCreate: () =>
+      useMutation<ResourceHubsCreateInput, ResourceHubsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.create(input),
+      ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsCreateInput) => defaultApiClient.apiNamespaceResourceHubs.create(input),
+      }),
+
+    rename: (input: ResourceHubsRenameInput) => defaultApiClient.apiNamespaceResourceHubs.rename(input),
+    useRename: () =>
+      useMutation<ResourceHubsRenameInput, ResourceHubsRenameResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.rename(input),
+      ),
+    renameMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsRenameInput) => defaultApiClient.apiNamespaceResourceHubs.rename(input),
       }),
   },
 
@@ -9932,6 +10530,25 @@ export default {
         staleTime: Infinity,
       }),
 
+    getTaskOrderingQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/get_task_ordering"),
+    getTaskOrderingQueryKey: (input: PeopleGetTaskOrderingInput) =>
+      buildApiQueryKey(defaultApiClient, "/people/get_task_ordering", input),
+    getTaskOrderingQueryOptions: (input: PeopleGetTaskOrderingInput) =>
+      buildApiQueryOptions<PeopleGetTaskOrderingInput, PeopleGetTaskOrderingResult>(
+        defaultApiClient,
+        "/people/get_task_ordering",
+        input,
+      ),
+    getTaskOrderingQuery: (input: PeopleGetTaskOrderingInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<PeopleGetTaskOrderingInput, PeopleGetTaskOrderingResult>(
+          defaultApiClient,
+          "/people/get_task_ordering",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
     listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/list"),
     listQueryKey: (input: PeopleListInput) => buildApiQueryKey(defaultApiClient, "/people/list", input),
     listQueryOptions: (input: PeopleListInput) =>
@@ -9956,6 +10573,25 @@ export default {
         ...buildApiQueryOptions<PeopleListAssignmentsInput, PeopleListAssignmentsResult>(
           defaultApiClient,
           "/people/list_assignments",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    listMyTasksQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/list_my_tasks"),
+    listMyTasksQueryKey: (input: PeopleListMyTasksInput) =>
+      buildApiQueryKey(defaultApiClient, "/people/list_my_tasks", input),
+    listMyTasksQueryOptions: (input: PeopleListMyTasksInput) =>
+      buildApiQueryOptions<PeopleListMyTasksInput, PeopleListMyTasksResult>(
+        defaultApiClient,
+        "/people/list_my_tasks",
+        input,
+      ),
+    listMyTasksQuery: (input: PeopleListMyTasksInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<PeopleListMyTasksInput, PeopleListMyTasksResult>(
+          defaultApiClient,
+          "/people/list_my_tasks",
           input,
         ),
         staleTime: Infinity,
@@ -10007,6 +10643,18 @@ export default {
     updatePictureMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: PeopleUpdatePictureInput) => defaultApiClient.apiNamespacePeople.updatePicture(input),
+      }),
+
+    updateTaskOrdering: (input: PeopleUpdateTaskOrderingInput) =>
+      defaultApiClient.apiNamespacePeople.updateTaskOrdering(input),
+    useUpdateTaskOrdering: () =>
+      useMutation<PeopleUpdateTaskOrderingInput, PeopleUpdateTaskOrderingResult>((input) =>
+        defaultApiClient.apiNamespacePeople.updateTaskOrdering(input),
+      ),
+    updateTaskOrderingMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: PeopleUpdateTaskOrderingInput) =>
+          defaultApiClient.apiNamespacePeople.updateTaskOrdering(input),
       }),
 
     updateTheme: (input: PeopleUpdateThemeInput) => defaultApiClient.apiNamespacePeople.updateTheme(input),
@@ -10454,6 +11102,16 @@ export default {
         staleTime: Infinity,
       }),
 
+    getBoardQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/tasks/get_board"),
+    getBoardQueryKey: (input: TasksGetBoardInput) => buildApiQueryKey(defaultApiClient, "/tasks/get_board", input),
+    getBoardQueryOptions: (input: TasksGetBoardInput) =>
+      buildApiQueryOptions<TasksGetBoardInput, TasksGetBoardResult>(defaultApiClient, "/tasks/get_board", input),
+    getBoardQuery: (input: TasksGetBoardInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<TasksGetBoardInput, TasksGetBoardResult>(defaultApiClient, "/tasks/get_board", input),
+        staleTime: Infinity,
+      }),
+
     listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/tasks/list"),
     listQueryKey: (input: TasksListInput) => buildApiQueryKey(defaultApiClient, "/tasks/list", input),
     listQueryOptions: (input: TasksListInput) =>
@@ -10461,6 +11119,21 @@ export default {
     listQuery: (input: TasksListInput) =>
       queryClient.query({
         ...buildApiQueryOptions<TasksListInput, TasksListResult>(defaultApiClient, "/tasks/list", input),
+        staleTime: Infinity,
+      }),
+
+    listBoardsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/tasks/list_boards"),
+    listBoardsQueryKey: (input: TasksListBoardsInput) =>
+      buildApiQueryKey(defaultApiClient, "/tasks/list_boards", input),
+    listBoardsQueryOptions: (input: TasksListBoardsInput) =>
+      buildApiQueryOptions<TasksListBoardsInput, TasksListBoardsResult>(defaultApiClient, "/tasks/list_boards", input),
+    listBoardsQuery: (input: TasksListBoardsInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<TasksListBoardsInput, TasksListBoardsResult>(
+          defaultApiClient,
+          "/tasks/list_boards",
+          input,
+        ),
         staleTime: Infinity,
       }),
 
@@ -10503,6 +11176,17 @@ export default {
         staleTime: Infinity,
       }),
 
+    updateBoardKanban: (input: TasksUpdateBoardKanbanInput) =>
+      defaultApiClient.apiNamespaceTasks.updateBoardKanban(input),
+    useUpdateBoardKanban: () =>
+      useMutation<TasksUpdateBoardKanbanInput, TasksUpdateBoardKanbanResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.updateBoardKanban(input),
+      ),
+    updateBoardKanbanMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateBoardKanbanInput) => defaultApiClient.apiNamespaceTasks.updateBoardKanban(input),
+      }),
+
     updateReminders: (input: TasksUpdateRemindersInput) => defaultApiClient.apiNamespaceTasks.updateReminders(input),
     useUpdateReminders: () =>
       useMutation<TasksUpdateRemindersInput, TasksUpdateRemindersResult>((input) =>
@@ -10521,6 +11205,26 @@ export default {
     updateAssigneeMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: TasksUpdateAssigneeInput) => defaultApiClient.apiNamespaceTasks.updateAssignee(input),
+      }),
+
+    createBoard: (input: TasksCreateBoardInput) => defaultApiClient.apiNamespaceTasks.createBoard(input),
+    useCreateBoard: () =>
+      useMutation<TasksCreateBoardInput, TasksCreateBoardResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.createBoard(input),
+      ),
+    createBoardMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksCreateBoardInput) => defaultApiClient.apiNamespaceTasks.createBoard(input),
+      }),
+
+    renameBoard: (input: TasksRenameBoardInput) => defaultApiClient.apiNamespaceTasks.renameBoard(input),
+    useRenameBoard: () =>
+      useMutation<TasksRenameBoardInput, TasksRenameBoardResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.renameBoard(input),
+      ),
+    renameBoardMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksRenameBoardInput) => defaultApiClient.apiNamespaceTasks.renameBoard(input),
       }),
 
     create: (input: TasksCreateInput) => defaultApiClient.apiNamespaceTasks.create(input),
@@ -10553,6 +11257,26 @@ export default {
         mutationFn: (input: TasksUpdateMilestoneInput) => defaultApiClient.apiNamespaceTasks.updateMilestone(input),
       }),
 
+    archiveBoard: (input: TasksArchiveBoardInput) => defaultApiClient.apiNamespaceTasks.archiveBoard(input),
+    useArchiveBoard: () =>
+      useMutation<TasksArchiveBoardInput, TasksArchiveBoardResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.archiveBoard(input),
+      ),
+    archiveBoardMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksArchiveBoardInput) => defaultApiClient.apiNamespaceTasks.archiveBoard(input),
+      }),
+
+    updateArchive: (input: TasksUpdateArchiveInput) => defaultApiClient.apiNamespaceTasks.updateArchive(input),
+    useUpdateArchive: () =>
+      useMutation<TasksUpdateArchiveInput, TasksUpdateArchiveResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.updateArchive(input),
+      ),
+    updateArchiveMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateArchiveInput) => defaultApiClient.apiNamespaceTasks.updateArchive(input),
+      }),
+
     updateDescription: (input: TasksUpdateDescriptionInput) =>
       defaultApiClient.apiNamespaceTasks.updateDescription(input),
     useUpdateDescription: () =>
@@ -10582,12 +11306,54 @@ export default {
         mutationFn: (input: TasksUpdateStatusInput) => defaultApiClient.apiNamespaceTasks.updateStatus(input),
       }),
 
+    restoreBoard: (input: TasksRestoreBoardInput) => defaultApiClient.apiNamespaceTasks.restoreBoard(input),
+    useRestoreBoard: () =>
+      useMutation<TasksRestoreBoardInput, TasksRestoreBoardResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.restoreBoard(input),
+      ),
+    restoreBoardMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksRestoreBoardInput) => defaultApiClient.apiNamespaceTasks.restoreBoard(input),
+      }),
+
+    updateBoardStatuses: (input: TasksUpdateBoardStatusesInput) =>
+      defaultApiClient.apiNamespaceTasks.updateBoardStatuses(input),
+    useUpdateBoardStatuses: () =>
+      useMutation<TasksUpdateBoardStatusesInput, TasksUpdateBoardStatusesResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.updateBoardStatuses(input),
+      ),
+    updateBoardStatusesMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateBoardStatusesInput) =>
+          defaultApiClient.apiNamespaceTasks.updateBoardStatuses(input),
+      }),
+
     move: (input: TasksMoveInput) => defaultApiClient.apiNamespaceTasks.move(input),
     useMove: () =>
       useMutation<TasksMoveInput, TasksMoveResult>((input) => defaultApiClient.apiNamespaceTasks.move(input)),
     moveMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: TasksMoveInput) => defaultApiClient.apiNamespaceTasks.move(input),
+      }),
+
+    setDefaultBoard: (input: TasksSetDefaultBoardInput) => defaultApiClient.apiNamespaceTasks.setDefaultBoard(input),
+    useSetDefaultBoard: () =>
+      useMutation<TasksSetDefaultBoardInput, TasksSetDefaultBoardResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.setDefaultBoard(input),
+      ),
+    setDefaultBoardMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksSetDefaultBoardInput) => defaultApiClient.apiNamespaceTasks.setDefaultBoard(input),
+      }),
+
+    reorderBoards: (input: TasksReorderBoardsInput) => defaultApiClient.apiNamespaceTasks.reorderBoards(input),
+    useReorderBoards: () =>
+      useMutation<TasksReorderBoardsInput, TasksReorderBoardsResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.reorderBoards(input),
+      ),
+    reorderBoardsMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksReorderBoardsInput) => defaultApiClient.apiNamespaceTasks.reorderBoards(input),
       }),
 
     updateDueDate: (input: TasksUpdateDueDateInput) => defaultApiClient.apiNamespaceTasks.updateDueDate(input),
@@ -12315,6 +13081,25 @@ export default {
         staleTime: Infinity,
       }),
 
+    getByIdQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/curated_templates/get_by_id"),
+    getByIdQueryKey: (input: CuratedTemplatesGetByIdInput) =>
+      buildApiQueryKey(defaultApiClient, "/curated_templates/get_by_id", input),
+    getByIdQueryOptions: (input: CuratedTemplatesGetByIdInput) =>
+      buildApiQueryOptions<CuratedTemplatesGetByIdInput, CuratedTemplatesGetByIdResult>(
+        defaultApiClient,
+        "/curated_templates/get_by_id",
+        input,
+      ),
+    getByIdQuery: (input: CuratedTemplatesGetByIdInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<CuratedTemplatesGetByIdInput, CuratedTemplatesGetByIdResult>(
+          defaultApiClient,
+          "/curated_templates/get_by_id",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
     listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/curated_templates/list"),
     listQueryKey: (input: CuratedTemplatesListInput) =>
       buildApiQueryKey(defaultApiClient, "/curated_templates/list", input),
@@ -12332,6 +13117,18 @@ export default {
           input,
         ),
         staleTime: Infinity,
+      }),
+
+    instantiate: (input: CuratedTemplatesInstantiateInput) =>
+      defaultApiClient.apiNamespaceCuratedTemplates.instantiate(input),
+    useInstantiate: () =>
+      useMutation<CuratedTemplatesInstantiateInput, CuratedTemplatesInstantiateResult>((input) =>
+        defaultApiClient.apiNamespaceCuratedTemplates.instantiate(input),
+      ),
+    instantiateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CuratedTemplatesInstantiateInput) =>
+          defaultApiClient.apiNamespaceCuratedTemplates.instantiate(input),
       }),
   },
 
@@ -12365,6 +13162,90 @@ export default {
       mutationOptions({
         mutationFn: (input: RichContentSetTaskItemCheckedInput) =>
           defaultApiClient.apiNamespaceRichContent.setTaskItemChecked(input),
+      }),
+  },
+
+  inline_threads: {
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/inline_threads/list"),
+    listQueryKey: (input: InlineThreadsListInput) => buildApiQueryKey(defaultApiClient, "/inline_threads/list", input),
+    listQueryOptions: (input: InlineThreadsListInput) =>
+      buildApiQueryOptions<InlineThreadsListInput, InlineThreadsListResult>(
+        defaultApiClient,
+        "/inline_threads/list",
+        input,
+      ),
+    listQuery: (input: InlineThreadsListInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<InlineThreadsListInput, InlineThreadsListResult>(
+          defaultApiClient,
+          "/inline_threads/list",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    create: (input: InlineThreadsCreateInput) => defaultApiClient.apiNamespaceInlineThreads.create(input),
+    useCreate: () =>
+      useMutation<InlineThreadsCreateInput, InlineThreadsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.create(input),
+      ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsCreateInput) => defaultApiClient.apiNamespaceInlineThreads.create(input),
+      }),
+
+    resolve: (input: InlineThreadsResolveInput) => defaultApiClient.apiNamespaceInlineThreads.resolve(input),
+    useResolve: () =>
+      useMutation<InlineThreadsResolveInput, InlineThreadsResolveResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.resolve(input),
+      ),
+    resolveMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsResolveInput) => defaultApiClient.apiNamespaceInlineThreads.resolve(input),
+      }),
+
+    updateMessage: (input: InlineThreadsUpdateMessageInput) =>
+      defaultApiClient.apiNamespaceInlineThreads.updateMessage(input),
+    useUpdateMessage: () =>
+      useMutation<InlineThreadsUpdateMessageInput, InlineThreadsUpdateMessageResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.updateMessage(input),
+      ),
+    updateMessageMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsUpdateMessageInput) =>
+          defaultApiClient.apiNamespaceInlineThreads.updateMessage(input),
+      }),
+
+    reopen: (input: InlineThreadsReopenInput) => defaultApiClient.apiNamespaceInlineThreads.reopen(input),
+    useReopen: () =>
+      useMutation<InlineThreadsReopenInput, InlineThreadsReopenResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.reopen(input),
+      ),
+    reopenMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsReopenInput) => defaultApiClient.apiNamespaceInlineThreads.reopen(input),
+      }),
+
+    reply: (input: InlineThreadsReplyInput) => defaultApiClient.apiNamespaceInlineThreads.reply(input),
+    useReply: () =>
+      useMutation<InlineThreadsReplyInput, InlineThreadsReplyResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.reply(input),
+      ),
+    replyMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsReplyInput) => defaultApiClient.apiNamespaceInlineThreads.reply(input),
+      }),
+
+    deleteMessage: (input: InlineThreadsDeleteMessageInput) =>
+      defaultApiClient.apiNamespaceInlineThreads.deleteMessage(input),
+    useDeleteMessage: () =>
+      useMutation<InlineThreadsDeleteMessageInput, InlineThreadsDeleteMessageResult>((input) =>
+        defaultApiClient.apiNamespaceInlineThreads.deleteMessage(input),
+      ),
+    deleteMessageMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InlineThreadsDeleteMessageInput) =>
+          defaultApiClient.apiNamespaceInlineThreads.deleteMessage(input),
       }),
   },
 

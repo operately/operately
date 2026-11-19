@@ -1,0 +1,121 @@
+# Document Inline Comments
+
+## Summary and scope
+
+Let people review published native documents by selecting text and opening a comment thread attached to that passage. Support replies, mentions, resolve/reopen, and links to individual threads.
+
+Build reusable rich-text UI and resource-aware backend operations so discussions can adopt the feature later. This release covers documents only. Drafts, suggested edits, live collaborative editing, uploaded files, and commenting on historical versions are out of scope.
+
+## Requirements
+
+- Select text while viewing a document, choose **Add comment**, and submit without entering document edit mode.
+- Highlight passages with open threads; clicking a highlight opens its thread and selecting a thread reveals its passage.
+- Show floating comment cards beside their passages, outside the document paper, and an accessible panel on narrow screens. A comments icon between Edit and the page menu opens all threads, including resolved and unattached threads, in a slide-in at every screen size. Support overlapping ranges and text inside lists and tables. Further keyboard and focus-management improvements are deferred.
+- Support replies, mentions, editing/deleting one's own messages, and resolve/reopen. Resolved threads remain viewable but must be reopened before replying or editing messages. Keep existing whole-document comments separate.
+- Inherit document access: viewing requires document view permission; creating, replying, and resolving/reopening require comment permission. Commenting must not require document edit permission. Enforce company read-only restrictions and recheck access on every request.
+- Preserve threads when their text changes or disappears. Show the original quote and an unattached state when the location cannot be established reliably; never silently attach to another occurrence of the same text.
+- Notify eligible participants/subscribers and mentioned people through existing notification infrastructure. Direct thread links open the document and selected thread. Email and notification links select the thread and message, including resolved threads. Feed links remain deferred.
+- Exclude threads, quotes, and participant information from public document sharing. Existing authenticated activity and notification APIs may return inline-comment events subject to their normal permissions.
+- Translate all system copy and reuse existing TurboUI controls, comment inputs, message rendering, and rich-text components.
+
+## Implementation
+
+### Storage and APIs
+
+Introduce a dedicated inline-thread model with resource type/ID, author, resolved timestamp/person, and anchor data. Initially allow only native documents. Reuse `Operately.Updates.Comment` for thread messages through a new entity type; do not force inline threads into the existing project/activity-specific `CommentThread` model.
+
+Store anchors separately from document JSON: source version, source range, original quote and surrounding context, current version/range, and attached/unattached status. Replies and resolution do not create document versions or edit activities.
+
+Provide authorized list/create/reply/update/delete-message/resolve/reopen operations. Validate anchor ranges and quotes against the stored source document; never trust client-supplied resource ownership or permissions. Use existing message-deletion semantics and retain a thread while replies remain.
+
+### Anchoring and document saves
+
+Extend the shared Tiptap editor with selection actions and ProseMirror decorations. Map ranges through editor transactions for immediate feedback, including undo/redo. Decorations must not become saved document content.
+
+The backend owns durable anchor reconciliation for every content write, including web edits, task-list updates, API/MCP/CLI edits, and version restoration. Define one coordinate convention matching ProseMirror document positions, with fixtures covering Unicode, nested nodes, and inline atoms. Compare old/new snapshots to preserve ranges in confidently corresponding content; use quote/context checks to validate candidates. Ambiguous or deleted targets become unattached. Client transaction maps alone are insufficient because other writers replace complete snapshots.
+
+Lock the document and reconcile all current threads in the same transaction as the content/version write. Thread creation also takes that lock and requires the selected source version to remain current; stale requests return a recoverable conflict and preserve the user's comment draft. This includes threads created after an editor loaded the document.
+
+Restoration reconciles against the newly restored body without rolling back replies or resolution. Title-only edits advance anchor versions without moving ranges. Copies start without threads; document deletion and company export/import must handle thread data and remap references consistently with existing resource lifecycle rules.
+
+### UI and integration
+
+Put the extension, highlights, thread panel, and presentation in TurboUI, extending `RichEditor`, `RichContent`, and `DocumentPage`. The app page bridge owns TanStack Query loading/mutations, permissions, navigation, and cache invalidation. Keep existing document history behavior described in [0016-document-version-history.md](0016-document-version-history.md).
+
+Audit web, external API, MCP wrappers, and generated CLI consumers whenever contracts change. Regenerate affected catalogs and run compatibility checks. If inline-thread actions are initially web-only, document that boundary; all existing document writers must still preserve or safely detach anchors.
+
+## Delivery: five PRs
+
+The feature flag has been removed; inline comments are available on published documents for all companies, subject to existing permissions. The PR breakdown below records the delivery scope. Broader regression coverage remains open; the deferred UI follow-ups below are outside the current release scope. Each PR includes relevant tests; UI PRs include stories, translations, and regenerated resources.
+
+| PR | Deliverable |
+| --- | --- |
+| **1. Backend foundation** | Migrations, inline threads/messages, API types and operations, permissions, resolution, and authorization tests. Establish the anchor payload and version-conflict contract. |
+| **2. Text anchoring** | Shared selection/highlight extension, coordinate fixtures, transaction mapping, server snapshot reconciliation, and atomic integration with every save/restore path. Cover deletion, repeated text, overlaps, Unicode, undo, and concurrent saves/thread creation. |
+| **3. Document UI** | Selection-to-comment flow, floating passage-aligned cards, replies, message actions, unattached states, deep links, and TanStack integration. Reuse TurboUI primitives and preserve normal document comments. |
+| **4. Notifications and activities** | Mentions, subscriptions, deduplicated reply notifications, and thread links. Add required activity content, notification handlers, API types, serializers, and feed handlers. Resolution changes remain auditable without notifying all document subscribers. |
+| **5. Release hardening** | Feature flag removal is complete. Remaining work covers broader end-to-end regression coverage, public-sharing isolation, copy/delete/export/import behavior, and cross-surface checks. Further review UI polish is deferred. |
+
+Discussions and other rich-text resources are a separate follow-up, reusing the components and anchoring contract with resource-specific authorization and save integration.
+
+## Acceptance criteria
+
+- A person with comment access can select, comment, reply, resolve, reopen, and follow a thread link without editing the document.
+- Inserting text before a passage preserves its highlight; deleting or ambiguously replacing it retains an unattached thread and original quote.
+- Reloads, concurrent operations, API edits, and restores never lose replies or display stale ranges as valid highlights.
+- Unauthorized and public readers cannot retrieve thread data; copies contain no source threads.
+- Existing whole-document comments, document history, and normal editing continue to work.
+
+## PR 1 implementation boundary
+
+- Inline-thread actions are authenticated internal web APIs only (`inline_threads/list`, `create`, `reply`, `update_message`, `delete_message`, `resolve`, `reopen`). External API, MCP, and CLI actions are deferred.
+- Document inline comments are available to all companies. The retired `document_inline_comments` flag is removed from the frontend and admin catalog. Existing saved company flags are left unchanged. Authentication, document permissions, message ownership, and company read-only restrictions remain enforced.
+- Endpoints use `Action` pipelines with explicit Getter loads and permission checks. Dedicated operations own transactional writes and document locking; messages retain the polymorphic `entity_id`/`entity_type` relationship. Message endpoints load the comment by ID and type, then load and authorize its owning thread through Getter.
+- `RichContent.Selection.extract/2` validates ranges and extracts quote/context; `InlineAnchor` owns storage and version state. Backend selection tests use coordinate fixtures shared with the actual editor schema tests in PR 2.
+- Selection offsets use ProseMirror positions, including UTF-16 text lengths, container boundaries, and one position per atom. Quotes separate text blocks with a newline and represent non-text atoms with U+FFFC (hard breaks use a newline); context is derived server-side.
+- Creation validates the current source version under the document lock. All thread mutations take the same lock; stale creation returns the existing `version_conflict` error.
+- Reads expose any remaining outdated anchors as unattached with no current range, preserving their source quote and coordinates. PR 2 reconciles them on the next save.
+- Messages use existing comments with entity type `inline_thread` and follow the existing comment convention of sorting by `inserted_at`. Deleting the last message deletes its thread; deleting an initial message retains remaining replies. Resolve/reopen are idempotent. Resolved threads reject replies and message edits; reopen a thread before adding or editing a comment.
+- Existing generic comment and checkbox APIs reject inline messages; edits use the dedicated inline-thread endpoints.
+- Space deletion removes inline messages and their reactions before documents and threads cascade away, including project/goal documents and soft-deleted documents. Other lifecycle integrations remain in PR 5.
+- Company transfers include inline threads, messages, and reactions, with document, person, thread, and message references remapped on import. PR 5 retains broader lifecycle and transfer edge-case coverage.
+- PR 1 changes no document history and sends no notifications or activities. PR 2 owns save/restore remapping, PR 4 owns activities/notifications, and PR 5 owns full lifecycle/export/import coverage and release enablement.
+
+## PR 2 implemented behavior and boundary
+
+- `Selection.index/1` shares ProseMirror coordinates and atom identities with selection validation. `AnchorMapping` computes forward/reverse Myers mappings once per document change using the locked document's content; it follows surviving text, includes interior insertions, excludes boundary insertions, and detaches ambiguous/deleted selections. Repeated text also requires unchanged adjacent context. No fuzzy quote search or anchor history is stored.
+- Editing and version restoration reconcile all threads, including resolved threads, inside the document-locking transaction. Checkbox, web, external API, MCP, and CLI document updates converge on that editing operation. Title-only changes advance anchor versions; no-op saves do nothing. Database failures roll back document, version, and anchor writes together.
+- Original quote, context, source coordinates, messages, and resolution state remain unchanged. Anchors whose current version differs from the locked document's version detach safely, as does unsupported content. Reconciliation does not load historical document versions.
+- Detached threads stay unattached on the backend, even when the original document body is restored or saved again. Their original quote and messages remain available. Local editor undo/redo recovery is independent of this behavior.
+- The optional TurboUI `InlineComments` extension uses decorations, separate from the persistent Highlight mark. `useEditor` and `RichContent` accept ranges, an active thread, selection callbacks, and overlapping-thread click callbacks. Local transactions map highlights; reversible range changes belong to ProseMirror’s undo/redo history, including partial and grouped deletions. Recovery runs only during undo/redo, and range history is pruned with the corresponding editor history events; no document snapshot cache is retained. External content/ranges reset this local baseline. Highlights never enter JSON, HTML, clipboard content, or drafts.
+- Automated editor tests and shared editor/backend coordinate fixtures cover this foundation. Storybook examples are deferred to PR 3 alongside the comment controls and floating cards. No new tables, dependencies, endpoints, app API calls, or production comment controls are introduced. Frontend enablement and permission-aware app integration also remain in PR 3; notifications and lifecycle hardening remain in PRs 4 and 5.
+
+## PR 3 implemented behavior and boundary
+
+- Published document viewing pages expose inline review for all companies. Editing pages, drafts, historical versions, and public pages do not expose this UI.
+- Selecting a passage offers a contextual **Add comment** action: a compact icon-and-text button beside the passage on desktop, and below the selection on narrow screens. The action uses a contrasting primary style and does not shift the document layout. A comments icon between Edit and the page menu opens all threads, including resolved and unattached threads, in a slide-in at every screen size. There is no persistent **Add comment** toolbar button. Desktop comment cards float outside the document paper, aligned with their passages, and scroll with the page. Nearby cards stack without overlapping. Visible cards or a new composer reduce desktop document side padding and use the freed space for wider comment cards; documents without visible comments retain their original centered layout. Existing whole-document comments remain separate.
+- Collapsed cards show the first message, author, and timestamp. Clicking a card expands its messages and immediately opens a reply composer when the viewer can comment and the thread is open. Outside clicks return a card to its collapsed state only when no reply or message-edit input is open. Reply composers are compact and omit the formatting toolbar. Readers can inspect messages without mutation controls. Subtle check and menu icons appear on hover or keyboard focus (always accessible on touch screens). The check resolves/reopens the thread; the menu offers author-only Edit and Delete, with Edit disabled for resolved threads and no copy-link action. Threads retain resolve/reopen, overlapping highlights, original quotes, and unattached states. Resolved threads are hidden from the default passage cards but remain available in the all-thread slide-in and through direct links. Mentions use existing rich-editor handlers; reactions, message checkbox actions, subscriptions, notifications, and activities are not added here.
+- The app bridge uses generated TanStack queries and mutations. Document saves, restores, and checkbox changes invalidate thread queries; highlights require an anchor version matching the displayed document. Version conflicts preserve the message draft and require a fresh selection.
+- Thread links use `?inlineThread=<id>`; existing message hashes remain supported. Link-copying controls are not exposed in inline-comment menus. Direct links reveal resolved threads. On narrow screens, collapsed cards below the document keep threads reachable even without a highlight or comment permission. Selecting a card, selecting text, or clicking a highlight opens the mobile panel. Closing it preserves drafts; explicit cancellation discards them.
+- TurboUI owns presentation and local interaction state. Interactive stories cover the complete review surface. No new backend endpoints, migrations, dependencies, external API, MCP, or CLI actions are introduced. Notification delivery is implemented in PR 4. Feature flag removal is complete; broader regression coverage remains in PR 5.
+
+## PR 4 implemented behavior and boundary
+
+- Creating a thread and posting a reply reuse the document-comment activity, with a thread ID. Activities, messages, automatic document subscriptions, and notification jobs are written in the same transaction. No document versions change.
+- Thread creation and replies notify the document's current subscribers and eligible mentioned people. All threads share the document's existing subscription list and its send-to-everyone setting; there are no separate thread subscriptions. Recipients are deduplicated, the acting author is excluded, and current published-document access is checked at notification dispatch. Email delivery and notification listing use the already-dispatched notification without another eligibility check, following existing notification behavior.
+- Authors and eligible mentioned people automatically join the document subscription list. Existing canceled subscriptions stay canceled. Creating or replying with a mention uses the existing direct-mention email preference and buffering infrastructure. Edits and deletions do not send new notifications.
+- Resolve/reopen record a separate activity only when the state changes; they do not notify subscribers. Resolved threads must be reopened before replying; accepted replies notify document subscribers as usual.
+- Inline-comment emails, both immediate and buffered, include `?inlineThread=<id>#<message-id>` to open the thread and scroll to the message without activating a reply. This also works for resolved threads and the mobile panel. Notifications-page links also include the thread parameter and message hash. Feed links still use the document URL and message hash without selecting the inline thread. Resolution links open the thread, including resolved threads. Existing whole-document comments keep their original links and recipient behavior.
+- No new endpoints, migrations, external API, MCP, or CLI actions are added. Existing authenticated activity and notification reads include inline-thread events for authorized clients, including API-token and MCP OAuth clients. The additive activity fields/types are regenerated in both clients and the CLI catalog. The frontend feature flag has been removed for release.
+- Existing document subscription controls apply to inline comments. Deleting an empty thread preserves the document subscription list. Notification dispatch excludes deleted threads, messages, and documents. Comprehensive thread copy/delete/export/import coverage remains in PR 5.
+
+## Deferred UI follow-ups
+
+These tasks are outside the current release scope:
+
+- [ ] Make feed links select the correct thread and message, including resolved threads.
+- [ ] Preserve the mobile preview’s Edit selection when opening the panel.
+- [ ] Complete keyboard-only selection, commenting, and navigation; handle Escape inside reply editors and restore focus without losing drafts.
+- [ ] Improve dense-thread layouts: active-card priority, long conversations, passage connectors, and overlapping-thread selection.
+
+The header comments icon and all-thread slide-in are implemented. The current layout uses passage alignment with downward stacking. Unattached cards appear after the document body; rich message formatting appears when a card is expanded.

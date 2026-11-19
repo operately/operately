@@ -3,7 +3,6 @@ import React, { act } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { DocumentVersionHistoryPage, showErrorToast, showSuccessToast } from "turboui";
 import { i18n, applyLanguage, setupTestCatalog } from "@/__tests__/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import { Page } from "./page";
 
 const restoreVersion = jest.fn();
@@ -44,7 +43,7 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-it.each(["flag-off", "missing-portuguese", "substituted"])(
+it.each(["english", "missing-portuguese", "substituted"])(
   "looks up document history and restore feedback: %s",
   async (mode) => {
     if (mode === "missing-portuguese") i18n.removeResourceBundle("pt-BR", "translation");
@@ -62,7 +61,7 @@ it.each(["flag-off", "missing-portuguese", "substituted"])(
         true,
         true,
       );
-    await applyLanguage(resolveEffectiveLanguage("pt-BR", mode === "missing-portuguese"));
+    await applyLanguage(mode === "missing-portuguese" ? "pt-BR" : "en");
     act(() => root.render(<Page />));
     const props = jest.mocked(DocumentVersionHistoryPage).mock.calls.at(-1)?.[0];
     if (!props?.onRestore) throw new Error("History page did not expose restore");

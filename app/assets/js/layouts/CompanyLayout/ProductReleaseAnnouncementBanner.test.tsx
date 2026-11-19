@@ -2,7 +2,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router";
 import { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -41,10 +40,10 @@ function stubMe(dismissedProductReleaseId: string | null) {
   mockUseMe.mockReturnValue({ dismissedProductReleaseId } as ReturnType<typeof useMe>);
 }
 
-function renderBanner(productRelease: typeof release | null = release) {
+function renderBanner(productRelease: typeof release | null = release, canAnnounce = true) {
   return renderToStaticMarkup(
     <MemoryRouter>
-      <ProductReleaseAnnouncementBanner productRelease={productRelease} />
+      <ProductReleaseAnnouncementBanner productRelease={productRelease} canAnnounce={canAnnounce} />
     </MemoryRouter>,
   );
 }
@@ -66,6 +65,12 @@ describe("ProductReleaseAnnouncementBanner", () => {
     expect(renderBanner()).toBe("");
   });
 
+  it("does not render when the release is ineligible for announcement", () => {
+    stubMe(null);
+
+    expect(renderBanner(release, false)).not.toContain("product-release-toast");
+  });
+
   it("renders the toast when the release has not been dismissed", () => {
     stubMe(null);
 
@@ -81,10 +86,10 @@ afterEach(async () => {
 });
 
 test.each([
-  [true, "Ver versão"],
-  [false, "View release"],
-])("release controls respect the language flag: %s", async (enabled, label) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+  ["pt-BR", "Ver versão"],
+  ["en", "View release"],
+])("release controls follow the selected language: %s", async (language, label) => {
+  await applyLanguage(language);
   stubMe(null);
 
   const markup = renderBanner();

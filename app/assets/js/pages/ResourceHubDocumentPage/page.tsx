@@ -23,13 +23,17 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { assertPresent } from "@/utils/assertions";
 import { DocumentPage, DocumentPublicSharingModal, displayDate } from "turboui";
 import { useUpdateDocumentPublicSharing } from "@/models/resourceHubs/documentPublicSharingLifecycle";
+import { useDocumentUpdates } from "@/models/resourceHubs/useDocumentUpdates";
 
 import { useLoadedData, useRefresh } from "./loader";
-import { buildDocumentPageNavigation, buildNavigationDocument } from "./navigation";
+import { buildDocumentPageNavigation } from "./navigation";
 import { useDocumentPageOptions } from "./Options";
+import { useDocumentInlineComments } from "./useInlineComments";
 
 export function Page() {
   const { document, folder, resourceHub, isCurrentUserSubscribed } = useLoadedData();
+  useDocumentUpdates(document.id);
+  const inlineComments = useDocumentInlineComments(document);
   const me = useMe();
   const paths = usePaths();
   const navigate = useNavigate();
@@ -56,9 +60,7 @@ export function Page() {
   const { mutateAsync: remove } = useDeleteDocument(mutationScope);
   const { mutateAsync: publish } = usePublishDocument(mutationScope);
 
-  const navigationDocument = buildNavigationDocument(document, resourceHub);
-  const pageResourceHub = navigationDocument.resourceHub;
-  const copyListContext = useCopyDocumentListContext(folder ?? pageResourceHub, document);
+  const copyListContext = useCopyDocumentListContext(folder ?? resourceHub, document);
   const options = useDocumentPageOptions({
     showCopyModal: openCopyForm,
     showDeleteModal: toggleDeleteConfirmModal,
@@ -105,7 +107,7 @@ export function Page() {
     await remove({ documentId: document.id });
 
     if (folder) {
-      navigate(paths.resourceHubFolderPath(folder.id!));
+      navigate(paths.resourceHubFolderPath(folder.id));
     } else {
       navigate(resourceHubLandingPath(paths, document));
     }
@@ -120,7 +122,7 @@ export function Page() {
 
   const shared = {
     pageTitle: document.name!,
-    navigation: buildDocumentPageNavigation(document, resourceHub, paths),
+    navigation: buildDocumentPageNavigation(document, paths),
     options,
     testId: "resource-hub-document-page",
     title: document.name!,
@@ -174,7 +176,7 @@ export function Page() {
 
   return (
     <>
-      <DocumentPage {...shared} hideDraftActions />
+      <DocumentPage key={document.id} {...shared} inlineComments={inlineComments} hideDraftActions />
       <DocumentPublicSharingModal
         isOpen={sharingOpen}
         onClose={() => setSharingOpen(false)}

@@ -424,6 +424,20 @@ export interface ActivityContentKpiCreated {
   kpiName: string;
 }
 
+export interface ActivityContentKpiDeleted {
+  __typename: "activity_content_kpi_deleted";
+  space: Space | null;
+  kpiName: string;
+}
+
+export interface ActivityContentKpiEdited {
+  __typename: "activity_content_kpi_edited";
+  space: Space | null;
+  kpi: Kpi | null;
+  oldName: string;
+  newName: string;
+}
+
 export interface ActivityContentKpiEntryCommented {
   __typename: "activity_content_kpi_entry_commented";
   space: Space;
@@ -449,6 +463,15 @@ export interface ActivityContentKpiEntryEdited {
   newValue: number;
   oldPeriod: string;
   newPeriod: string;
+}
+
+export interface ActivityContentKpiEntryLogged {
+  __typename: "activity_content_kpi_entry_logged";
+  space: Space;
+  kpi: Kpi | null;
+  entry: KpiEntry | null;
+  value: number;
+  period: string;
 }
 
 export interface ActivityContentMessageArchiving {
@@ -773,6 +796,13 @@ export interface ActivityContentProjectTimelineEdited {
   updatedMilestones?: ActivityMilestone[] | null;
 }
 
+export interface ActivityContentResourceHubDeleted {
+  __typename: "activity_content_resource_hub_deleted";
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  name: string;
+}
+
 export interface ActivityContentResourceHubDocumentCommented {
   __typename: "activity_content_resource_hub_document_commented";
   goal?: Goal | null;
@@ -781,6 +811,7 @@ export interface ActivityContentResourceHubDocumentCommented {
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
   comment?: Comment | null;
+  inlineThreadId?: Id | null;
 }
 
 export interface ActivityContentResourceHubDocumentCreated {
@@ -809,6 +840,17 @@ export interface ActivityContentResourceHubDocumentEdited {
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
+}
+
+export interface ActivityContentResourceHubDocumentInlineThreadResolutionChanged {
+  __typename: "activity_content_resource_hub_document_inline_thread_resolution_changed";
+  goal?: Goal | null;
+  project?: Project | null;
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  document?: ResourceHubDocument | null;
+  inlineThreadId: Id;
+  resolved: boolean;
 }
 
 export interface ActivityContentResourceHubDocumentPublicSharingChanged {
@@ -947,6 +989,14 @@ export interface ActivityContentResourceHubLinkEdited {
   previousUrl?: string | null;
 }
 
+export interface ActivityContentResourceHubRenamed {
+  __typename: "activity_content_resource_hub_renamed";
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  oldName: string;
+  newName: string;
+}
+
 export interface ActivityContentSpaceAdded {
   __typename: "activity_content_space_added";
   companyId?: string | null;
@@ -982,11 +1032,21 @@ export interface ActivityContentSpaceTaskCommented {
 
 export interface ActivityContentTaskAdding {
   __typename: "activity_content_task_adding";
+  boardId?: Id | null;
   space: Space;
   project: Project | null;
   milestone: Milestone | null;
   task: Task | null;
   taskName: string;
+}
+
+export interface ActivityContentTaskArchiveUpdating {
+  __typename: "activity_content_task_archive_updating";
+  space: Space;
+  project: Project | null;
+  task: Task | null;
+  name: string;
+  archived: boolean;
 }
 
 export interface ActivityContentTaskAssigneeAssignment {
@@ -1006,6 +1066,43 @@ export interface ActivityContentTaskAssigneeUpdating {
   newAssignee: Person;
   addedAssignees: Person[];
   removedAssignees: Person[];
+}
+
+export interface ActivityContentTaskBoardArchived {
+  __typename: "activity_content_task_board_archived";
+  space: Space | null;
+  boardId: Id;
+  name: string;
+}
+
+export interface ActivityContentTaskBoardCreated {
+  __typename: "activity_content_task_board_created";
+  space: Space | null;
+  boardId: Id;
+  name: string;
+}
+
+export interface ActivityContentTaskBoardDefaultChanged {
+  __typename: "activity_content_task_board_default_changed";
+  space: Space | null;
+  boardId: Id;
+  previousBoardId: Id | null;
+  name: string;
+}
+
+export interface ActivityContentTaskBoardRenamed {
+  __typename: "activity_content_task_board_renamed";
+  space: Space | null;
+  boardId: Id;
+  oldName: string;
+  newName: string;
+}
+
+export interface ActivityContentTaskBoardRestored {
+  __typename: "activity_content_task_board_restored";
+  space: Space | null;
+  boardId: Id;
+  name: string;
 }
 
 export interface ActivityContentTaskClosing {
@@ -1061,6 +1158,8 @@ export interface ActivityContentTaskMilestoneUpdating {
 
 export interface ActivityContentTaskMoving {
   __typename: "activity_content_task_moving";
+  originBoardId?: Id | null;
+  destinationBoardId?: Id | null;
   task: Task | null;
   taskName: string;
   originType: TaskType;
@@ -1466,11 +1565,20 @@ export interface CuratedTemplate {
   id: Id;
   type: CuratedTemplateType;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
   updatedAt: string;
   definition?: Json;
+  previewData?: Json;
+}
+
+export interface CuratedTemplateInstantiation {
+  __typename: "curated_template_instantiation";
+  resourceType: CuratedTemplateType;
+  resourceId: Id;
+  spaceId: Id;
 }
 
 export interface DeletedStatusReplacement {
@@ -1705,6 +1813,33 @@ export interface GoalUpdatePermissions {
   canComment?: boolean | null;
 }
 
+export interface InlineAnchor {
+  __typename: "inline_anchor";
+  sourceVersion: number;
+  sourceFrom: number;
+  sourceTo: number;
+  quote: string;
+  prefix: string;
+  suffix: string;
+  currentVersion: number;
+  currentFrom: number | null;
+  currentTo: number | null;
+  status: InlineAnchorStatus;
+}
+
+export interface InlineThread {
+  __typename: "inline_thread";
+  id: Id;
+  resourceType: InlineThreadResourceType;
+  resourceId: Id;
+  author: Person | null;
+  resolvedAt: string | null;
+  resolvedBy: Person | null;
+  insertedAt: string;
+  anchor: InlineAnchor;
+  messages: Comment[];
+}
+
 export interface InviteLink {
   __typename: "invite_link";
   id?: string | null;
@@ -1841,6 +1976,7 @@ export interface Panel {
 
 export interface Person {
   __typename: "person";
+  titleSetupPending?: boolean;
   id: string;
   url?: string;
   fullName: string;
@@ -2037,6 +2173,12 @@ export interface ProjectReviewRequest {
   reviewId?: string | null;
   content?: string | null;
   author?: Person | null;
+}
+
+export interface ProjectTaskCompletion {
+  completedCount: number;
+  totalCount: number;
+  percentage: number;
 }
 
 export interface ProjectTemplate {
@@ -2278,6 +2420,7 @@ export interface ResourceHub {
   nodes?: ResourceHubNode[] | null;
   potentialSubscribers?: Subscriber[] | null;
   permissions?: ResourceHubPermissions | null;
+  position?: number | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -2416,7 +2559,16 @@ export interface ResourceHubPermissions {
   canEditFile?: boolean | null;
   canEditLink?: boolean | null;
   canRenameFolder?: boolean | null;
+  canRenameHub?: boolean | null;
   canView?: boolean | null;
+}
+
+export interface ResourceHubSummary {
+  __typename: "resource_hub_summary";
+  id: Id;
+  name: string;
+  position: number;
+  isDefault: boolean;
 }
 
 export interface ResourceHubUploadedFile {
@@ -2462,6 +2614,7 @@ export interface ReviewAssignmentOrigin {
 }
 
 export interface SearchNavigationTarget {
+  boardId?: Id | null;
   resourceHubId?: string | null;
   folderId?: string | null;
   documentId?: string | null;
@@ -2520,8 +2673,10 @@ export interface Space {
   permissions?: SpacePermissions | null;
   members?: Person[] | null;
   accessLevels?: AccessLevels | null;
+  tools?: SpaceToolSettings;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  defaultTaskBoardId?: Id | null;
   taskStatuses?: TaskStatus[] | null;
   tasksKanbanState?: Json | null;
 }
@@ -2539,6 +2694,14 @@ export interface SpaceSetupInput {
   description: string;
 }
 
+export interface SpaceToolSettings {
+  tasksEnabled: boolean;
+  discussionsEnabled: boolean;
+  resourceHubEnabled: boolean;
+  kpisEnabled: boolean;
+  templatesEnabled: boolean;
+}
+
 export interface SpaceTools {
   __typename: "space_tools";
   tasksEnabled: boolean;
@@ -2551,6 +2714,7 @@ export interface SpaceTools {
   messagesBoards: MessagesBoard[] | null;
   resourceHubs: ResourceHub[] | null;
   tasks: Task[] | null;
+  taskBoards?: TaskBoardSummary[] | null;
   kpis: Kpi[] | null;
   templates: ProjectTemplate[] | null;
 }
@@ -2592,11 +2756,14 @@ export interface Target {
 
 export interface Task {
   __typename: "task";
+  spaceId?: Id | null;
+  boardId?: Id | null;
   id: string;
   url?: string;
   name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
+  archivedAt?: string | null;
   closedAt?: string | null;
   dueDate?: ContextualDate | null;
   reminders?: TaskReminder[] | null;
@@ -2615,6 +2782,28 @@ export interface Task {
   subscriptionList?: SubscriptionList | null;
   availableStatuses?: TaskStatus[] | null;
   type: TaskType;
+}
+
+export interface TaskBoard {
+  __typename: "task_board";
+  spaceId?: Id | null;
+  projectId?: Id | null;
+  id: Id;
+  name: string;
+  archivedAt: string | null;
+  taskStatuses: TaskStatus[];
+  tasksKanbanState: Json;
+}
+
+export interface TaskBoardSummary {
+  __typename: "task_board_summary";
+  spaceId?: Id | null;
+  projectId?: Id | null;
+  id: Id;
+  name: string;
+  position: number;
+  isDefault: boolean;
+  archivedAt: string | null;
 }
 
 export interface TaskReminder {
@@ -2762,7 +2951,10 @@ export interface WorkMapItem {
   state: WorkMapItemState;
   status: WorkMapItemStatus;
   taskStatus: TaskStatus | null;
+  taskStatuses?: TaskStatus[] | null;
+  canEditTask?: boolean | null;
   progress: number | null;
+  taskCompletion?: ProjectTaskCompletion | null;
   space: Space | null;
   spacePath: string | null;
   project: Project | null;
@@ -2808,6 +3000,9 @@ export type ActivityContent =
   | ActivityContentDiscussionEditing
   | ActivityContentDiscussionPosting
   | ActivityContentKpiCreated
+  | ActivityContentKpiDeleted
+  | ActivityContentKpiEdited
+  | ActivityContentKpiEntryLogged
   | ActivityContentKpiEntryCommented
   | ActivityContentKpiEntryEdited
   | ActivityContentKpiEntryDeleted
@@ -2861,6 +3056,7 @@ export type ActivityContent =
   | ActivityContentProjectReviewSubmitted
   | ActivityContentProjectTimelineEdited
   | ActivityContentResourceHubDocumentCommented
+  | ActivityContentResourceHubDocumentInlineThreadResolutionChanged
   | ActivityContentResourceHubDocumentCreated
   | ActivityContentResourceHubDocumentDeleted
   | ActivityContentResourceHubDocumentEdited
@@ -2874,6 +3070,13 @@ export type ActivityContent =
   | ActivityContentResourceHubFolderCreated
   | ActivityContentResourceHubFolderDeleted
   | ActivityContentResourceHubFolderRenamed
+  | ActivityContentResourceHubDeleted
+  | ActivityContentResourceHubRenamed
+  | ActivityContentTaskBoardCreated
+  | ActivityContentTaskBoardRenamed
+  | ActivityContentTaskBoardDefaultChanged
+  | ActivityContentTaskBoardArchived
+  | ActivityContentTaskBoardRestored
   | ActivityContentResourceHubLinkCommented
   | ActivityContentResourceHubLinkCreated
   | ActivityContentResourceHubLinkDeleted
@@ -2891,13 +3094,12 @@ export type ActivityContent =
   | ActivityContentTaskReopening
   | ActivityContentTaskSizeChange
   | ActivityContentTaskStatusChange
+  | ActivityContentTaskArchiveUpdating
   | ActivityContentTaskStatusUpdating
   | ActivityContentTaskUpdate;
 
 export type ActivityDataUnion =
-  | ActivityEventDataProjectCreate
-  | ActivityEventDataMilestoneCreate
-  | ActivityEventDataCommentPost;
+  ActivityEventDataProjectCreate | ActivityEventDataMilestoneCreate | ActivityEventDataCommentPost;
 
 export type ActivityResourceUnion = Project | Update | Milestone | Comment;
 
@@ -2921,13 +3123,7 @@ export type UpdateContent =
   | UpdateContentMessage;
 
 export type AccessOptions =
-  | "no_access"
-  | "minimal_access"
-  | "view_access"
-  | "comment_access"
-  | "edit_access"
-  | "admin_access"
-  | "full_access";
+  "no_access" | "minimal_access" | "view_access" | "comment_access" | "edit_access" | "admin_access" | "full_access";
 
 export type AccountTheme = "dark" | "light" | "system";
 
@@ -3005,16 +3201,13 @@ export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type GoalStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
-export type Language = "en" | "pt-BR";
+export type InlineAnchorStatus = "attached" | "unattached";
+
+export type InlineThreadResourceType = "resource_hub_document";
+
+export type Language = "en" | "pt-BR" | "de" | "ru" | "fr" | "es";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
@@ -3037,15 +3230,7 @@ export type ProjectTemplateCommentParentType = "discussion" | "document" | "file
 export type ProjectTemplatePersonRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTemplateResourceLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
 
 export type ProjectTemplateResourceType = "folder" | "document" | "file" | "link";
 
@@ -3085,15 +3270,7 @@ export type ReactionParentType =
 export type ResourceAccessTypes = "space" | "goal" | "project";
 
 export type ResourceHubLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
@@ -3181,6 +3358,8 @@ export type SubscriptionParentType =
 
 export type SuccessStatus = "achieved" | "missed";
 
+export type TaskBoardArchiveStatus = "active" | "archived" | "all";
+
 export type TaskReminderType = "before_due" | "due_day" | "overdue" | "on_date";
 
 export type TaskType = "space" | "project";
@@ -3192,14 +3371,7 @@ export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secre
 export type WorkMapItemState = "active" | "paused" | "closed";
 
 export type WorkMapItemStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
 

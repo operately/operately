@@ -1,9 +1,11 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Menu, MenuActionItem } from "../../Menu";
+import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
 import { ConfirmDialog } from "../../ConfirmDialog";
 import { Page } from "../../Page";
+import { ErrorMessage } from "../../Forms";
 import { TemplateEditor } from "./TemplateEditor";
+import { TemplateDetails } from "./TemplateDetails";
 import type { TemplateValidationError } from "../types";
 import type { TemplateDetailProps } from "./types";
 
@@ -13,6 +15,7 @@ export function CuratedTemplateDetailPage(props: TemplateDetailProps) {
   const [busy, setBusy] = React.useState(false);
   const [errors, setErrors] = React.useState<TemplateValidationError[]>([]);
   const template = props.template;
+  const editing = !template || props.editing;
 
   async function run(callback: () => Promise<{ errors?: TemplateValidationError[] } | void>) {
     setBusy(true);
@@ -60,21 +63,46 @@ export function CuratedTemplateDetailPage(props: TemplateDetailProps) {
           </div>
           {template && (
             <Menu testId="template-actions" align="end" readonly={busy}>
+              {!editing && props.editPath && (
+                <MenuLinkItem to={props.editPath} testId="edit-template">
+                  {t("Edit")}
+                </MenuLinkItem>
+              )}
+              {props.previewPath && (
+                <MenuLinkItem to={props.previewPath} target="_blank" testId="preview-template">
+                  {t("Preview")}
+                </MenuLinkItem>
+              )}
               <MenuActionItem danger testId="delete-template" disabled={busy} onClick={() => setAction("delete")}>
                 {t("Delete")}
               </MenuActionItem>
             </Menu>
           )}
         </div>
+        {errors.length > 0 && (
+          <div className="mb-6">
+            {errors.map(({ path, message }) => (
+              <ErrorMessage key={path} error={message} />
+            ))}
+          </div>
+        )}
         <div className="max-w-3xl">
-          <TemplateEditor
-            {...props}
-            validationErrors={errors}
-            onSave={async (input, intent) => {
-              setErrors([]);
-              return props.onSave(input, intent);
-            }}
-          />
+          {!editing && template ? (
+            <TemplateDetails template={template} formattedTimePreferences={props.formattedTimePreferences} />
+          ) : (
+            <TemplateEditor
+              {...props}
+              onSave={async (input, intent) => {
+                setErrors([]);
+                setBusy(true);
+                try {
+                  return await props.onSave(input, intent);
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            />
+          )}
         </div>
         <ConfirmDialog
           testId="template-action-confirmation"

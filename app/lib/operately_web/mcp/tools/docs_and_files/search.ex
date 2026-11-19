@@ -1,8 +1,7 @@
 defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.Search do
   use OperatelyWeb.Mcp.Tool
 
-  alias OperatelyWeb.Api.ResourceHubs.Search, as: ResourceHubSearch
-  alias OperatelyWeb.Api.Wrappers.DocsAndFiles.HubScope
+  alias OperatelyWeb.Api.Wrappers.DocsAndFiles.Search, as: DocsAndFilesSearch
   alias OperatelyWeb.Mcp.Helpers
 
   @impl true
@@ -10,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.Search do
     Definition.new!(
       name: "search_docs_and_files",
       title: "Search Docs & Files",
-      description: "Searches one space, project, or goal Docs & Files hub. Provide exactly one scope identifier.",
+      description: "Searches one Docs & Files hub. Parent identifiers must match an explicit hub; space-only requests use the default hub.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,
@@ -22,6 +21,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.Search do
       input_schema:
         JsonSchema.object(
           %{
+            "resource_hub_id" => JsonSchema.string("Explicit hub identifier. Without it or a folder, space_id selects the default resource hub."),
             "space_id" => JsonSchema.string("The space identifier."),
             "project_id" => JsonSchema.string("The project identifier."),
             "goal_id" => JsonSchema.string("The goal identifier."),
@@ -29,18 +29,20 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.Search do
           },
           required: ["query"]
         ),
-      output_schema: JsonSchema.object(%{"nodes" => JsonSchema.array(JsonSchema.any_object())}, required: ["nodes"])
+      output_schema: JsonSchema.object(
+        %{
+          "resource_hub_id" => JsonSchema.string("The resolved resource hub identifier."),
+          "nodes" => JsonSchema.array(JsonSchema.any_object())
+        },
+        required: ["resource_hub_id", "nodes"]
+      )
     )
   end
 
   @impl true
   def call(conn, arguments) do
-    with {:ok, scope_inputs} <- Helpers.decode_hub_scope(arguments),
-         {:ok, resource_hub_id} <- HubScope.resolve_hub_id(conn.assigns.current_person, scope_inputs) do
-      ResourceHubSearch.call(conn, %{resource_hub_id: resource_hub_id, query: arguments["query"]})
-    else
-      {:error, :bad_request} -> {:error, :invalid_arguments}
-      error -> error
+    with {:ok, inputs} <- Helpers.decode_hub_scope(arguments) do
+      DocsAndFilesSearch.call(conn, Map.put(inputs, :query, arguments["query"]))
     end
   end
 end

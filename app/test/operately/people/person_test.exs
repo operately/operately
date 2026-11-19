@@ -29,7 +29,7 @@ defmodule Operately.People.PersonTest do
     end
 
     test "rejects unsupported languages" do
-      changeset = Person.changeset(%Person{}, %{language: "fr"})
+      changeset = Person.changeset(%Person{}, %{language: "nl"})
 
       refute changeset.valid?
       assert Keyword.has_key?(changeset.errors, :language)

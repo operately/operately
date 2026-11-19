@@ -19,7 +19,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
       |> Factory.add_space_member(:second_assignee, :space, name: "Bob Assignee")
       |> Factory.add_project(:project, :space, name: "Shared Project")
 
-    pending = Enum.find(ctx.project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
+    pending = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.color == :gray)) |> Map.from_struct()
 
     ctx =
       ctx
@@ -54,6 +54,20 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
         email.subject == "#{ctx.company.name}: Your work for today" and
         email.html_body =~ "Shared urgent task"
     end)
+  end
+
+  test "skips a member removed after assignment recipients were loaded", ctx do
+    account = Operately.People.get_account!(ctx.first_assignee.account_id)
+    Operately.People.mark_account_first_login(account)
+    assert Enum.any?(OperatelyEmail.Cron.Assignments.people_who_want_assignment_emails(), &(&1.id == ctx.first_assignee.id))
+    assert {:ok, %{suspended: true}} = Operately.Operations.CompanyMemberRemoving.run(ctx.creator, ctx.first_assignee)
+    flush_emails()
+
+    assert :skip = AssignmentsEmail.send(ctx.first_assignee)
+    refute_email_sent()
+
+    AssignmentsEmail.send(ctx.second_assignee)
+    assert_email_sent(to: ctx.second_assignee.email)
   end
 
   test "includes pending KPI updates for the champion", ctx do
@@ -265,7 +279,6 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
 
   test "work-summary subjects, badges and bodies use the recipient language", ctx do
     {:ok, _} = Operately.People.update_person(ctx.first_assignee, %{language: "pt-BR"})
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
     previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
 
     flush_emails()
@@ -283,7 +296,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
     end)
     assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
 
-    {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
+    {:ok, _} = Operately.People.update_person(ctx.first_assignee, %{language: "en"})
     flush_emails()
     OperatelyEmail.Cron.Assignments.send_assignments()
     emails = collect_emails()
@@ -291,7 +304,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
       email.to == [{"", ctx.first_assignee.email}] and email.subject == "#{ctx.company.name}: Your work for today" and
         email.text_body =~ "Due tomorrow"
     end)
-    assert Operately.People.get_person!(ctx.first_assignee.id).language == "pt-BR"
+    assert Operately.People.get_person!(ctx.first_assignee.id).language == "en"
     assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
   end
 
@@ -314,7 +327,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
     end)
 
     with_mock Operately.Assignments.Loader, [:passthrough], load: fn _, _ -> assignments end do
-      for locale <- ["en", "pt_BR", "fr"] do
+      for locale <- ["en", "pt_BR", "nl"] do
         flush_emails()
         Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> AssignmentsEmail.send(ctx.first_assignee) end)
         assert_email_sent(fn email ->
@@ -344,7 +357,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
         ] do
       due_date = if days, do: Date.utc_today() |> Date.add(days) |> ContextualDate.create_day_date() |> Map.from_struct()
       {:ok, _} = Operately.Tasks.update_task(Repo.reload!(ctx.task), %{due_date: due_date, reminders: [%{type: :on_date, date: Date.utc_today()}]})
-      for {locale, expected} <- [{"en", english}, {"pt_BR", portuguese}, {"fr", english}] do
+      for {locale, expected} <- [{"en", english}, {"pt_BR", portuguese}, {"nl", english}] do
         flush_emails()
         Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> AssignmentsEmail.send(ctx.first_assignee) end)
         assert_email_sent(fn email ->

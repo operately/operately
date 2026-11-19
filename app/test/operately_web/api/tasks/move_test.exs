@@ -44,6 +44,23 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
   @destination_project_permissions_table for row <- @project_permissions_table, origin_type <- [:project, :space], do: Map.put(row, :origin_type, origin_type)
   @destination_space_permissions_table for row <- @space_permissions_table, origin_type <- [:project, :space], do: Map.put(row, :origin_type, origin_type)
 
+  test "publishes to both projects on a move and neither on failure", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:origin, :space)
+      |> Factory.add_project(:destination, :space) |> Factory.add_project_milestone(:milestone, :origin)
+      |> Factory.add_project_task(:task, :milestone) |> Factory.log_in_person(:creator)
+    origin_topic = "api:project_updated:#{ctx.origin.id}"
+    destination_topic = "api:project_updated:#{ctx.destination.id}"
+    Enum.each([origin_topic, destination_topic], &OperatelyWeb.Endpoint.subscribe/1)
+    inputs = %{task_id: Paths.task_id(ctx.task), destination_type: "project", destination_id: Paths.project_id(ctx.destination)}
+
+    assert {200, _} = mutation(ctx.conn, [:tasks, :move], inputs)
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^origin_topic, event: "event"}
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^destination_topic, event: "event"}
+    refute_receive %Phoenix.Socket.Broadcast{event: "event"}
+    assert {400, _} = mutation(ctx.conn, [:tasks, :move], inputs)
+    refute_receive %Phoenix.Socket.Broadcast{event: "event"}
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:tasks, :move], %{})
@@ -215,7 +232,7 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
       })
 
       task = Repo.reload(origin.task)
-      default = Operately.Groups.Group.get_default_task_status(destination_space)
+      default = Operately.Tasks.TaskBoard.get_default_task_status(Repo.get!(Operately.Tasks.TaskBoard, destination_space.default_task_board_id))
 
       assert task.project_id == nil
       assert task.space_id == destination_space.id
@@ -243,6 +260,11 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
 
       assert task.project_id == destination_project.id
       assert task.space_id == nil
+      assert task.board_id == Operately.Projects.Project.task_board(destination_project).id
+
+      board = Repo.get!(Operately.Tasks.TaskBoard, origin.task.board_id)
+
+      refute Paths.task_id(task) in (board.tasks_kanban_state |> Map.values() |> List.flatten())
       assert task.milestone_id == nil
       assert Task.task_type(task) == "project"
       assert task.task_status.value == default.value
@@ -262,10 +284,17 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
       })
 
       task = Repo.reload(origin.task)
-      default = Operately.Groups.Group.get_default_task_status(destination_space)
+      default = Operately.Tasks.TaskBoard.get_default_task_status(Repo.get!(Operately.Tasks.TaskBoard, destination_space.default_task_board_id))
 
       assert task.project_id == nil
       assert task.space_id == destination_space.id
+      assert task.board_id == destination_space.default_task_board_id
+
+      origin_board = Repo.get!(Operately.Tasks.TaskBoard, origin.task.board_id)
+      destination_board = Repo.get!(Operately.Tasks.TaskBoard, task.board_id)
+
+      refute Paths.task_id(task) in (origin_board.tasks_kanban_state |> Map.values() |> List.flatten())
+      assert Paths.task_id(task) in destination_board.tasks_kanban_state[task.task_status.value]
       assert task.milestone_id == nil
       assert Task.task_type(task) == "space"
       assert task.task_status.value == default.value
@@ -385,6 +414,196 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
       assert subscriber2.id in ids
       assert Enum.all?(notifications, & &1.should_send_email)
     end
+  end
+
+  describe "project-to-space status selection" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.enable_space_tool(:space, :tasks)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
+      |> Factory.add_space(:destination_space)
+      |> Factory.enable_space_tool(:destination_space, :tasks)
+    end
+
+    test "preserves an equivalent open status using destination metadata", ctx do
+      source_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.value == "in_progress"))
+      closed_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.value == "done"))
+
+      destination_space =
+        set_space_statuses(ctx.destination_space, [
+          status("Ready", :gray, "ready"),
+          status("Underway", :blue, "in_progress")
+        ])
+
+      destination_status = Enum.find(destination_space.default_task_board.task_statuses, &(&1.value == "in_progress"))
+      {:ok, closed_task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, closed_status))
+      {:ok, task} = Operately.Tasks.update_task(closed_task, Task.status_change_attrs(closed_task, source_status))
+
+      assert task.reopened_at
+      assert {200, res} = move_to_space(ctx.conn, task, destination_space)
+
+      moved_task = Repo.reload(task)
+
+      assert moved_task.id == task.id
+      assert_status_matches(moved_task.task_status, destination_status)
+      assert moved_task.status == "in_progress"
+      assert moved_task.closed_at == task.closed_at
+      assert moved_task.reopened_at == task.reopened_at
+      assert res.task.status.id == destination_status.id
+      assert res.task.status.value == destination_status.value
+      assert res.task.status.closed == destination_status.closed
+    end
+
+    test "preserves an equivalent closed status and closure timestamps when moving to the project's space", ctx do
+      source_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.value == "done"))
+      destination_status = Enum.find(Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses, &(&1.value == "done"))
+      {:ok, task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, source_status))
+      origin_topic = "api:project_updated:#{ctx.project.id}"
+      OperatelyWeb.Endpoint.subscribe(origin_topic)
+
+      assert {200, _res} = move_to_space(ctx.conn, task, ctx.space)
+      assert_receive %Phoenix.Socket.Broadcast{topic: ^origin_topic, event: "event"}
+      refute_receive %Phoenix.Socket.Broadcast{event: "event"}
+
+      moved_task = Repo.reload(task)
+
+      assert_status_matches(moved_task.task_status, destination_status)
+      assert moved_task.status == "done"
+      assert moved_task.closed_at == task.closed_at
+      assert moved_task.reopened_at == task.reopened_at
+    end
+
+    test "uses the destination default and reopens a closed task when no equivalent status exists", ctx do
+      source_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.value == "done"))
+      destination_space = set_space_statuses(ctx.destination_space, [status("Ready", :gray, "ready")])
+      destination_status = hd(destination_space.default_task_board.task_statuses)
+      {:ok, task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, source_status))
+
+      assert task.closed_at
+      refute task.reopened_at
+      assert {200, _res} = move_to_space(ctx.conn, task, destination_space)
+
+      moved_task = Repo.reload(task)
+
+      assert_status_matches(moved_task.task_status, destination_status)
+      assert moved_task.status == "ready"
+      refute moved_task.closed_at
+      assert moved_task.reopened_at
+    end
+
+    test "does not match a destination status with different closed meaning", ctx do
+      source_status = Enum.find(Operately.Projects.Project.task_statuses(ctx.project), &(&1.value == "done"))
+
+      destination_space =
+        set_space_statuses(ctx.destination_space, [
+          status("Ready", :gray, "ready"),
+          status("Still active", :blue, "done")
+        ])
+
+      {:ok, task} = Operately.Tasks.update_task(ctx.task, Task.status_change_attrs(ctx.task, source_status))
+
+      assert {200, _res} = move_to_space(ctx.conn, task, destination_space)
+
+      moved_task = Repo.reload(task)
+
+      assert moved_task.task_status.value == "ready"
+      refute moved_task.task_status.closed
+      refute moved_task.closed_at
+      assert moved_task.reopened_at
+    end
+  end
+
+  describe "explicit board destinations" do
+    setup ctx do
+      ctx = ctx |> Factory.setup() |> Factory.add_space(:board_space) |> Factory.set_space_tools(:board_space, tasks_enabled: true) |> Factory.create_space_task(:board_task, :board_space) |> Factory.log_in_person(:creator)
+      board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.board_space.id, name: "Other", task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.board_space.default_task_board_id).task_statuses})
+      Map.put(ctx, :board, board)
+    end
+
+    test "moves within a space and updates both boards and activity context", ctx do
+      assert {200, response} = mutation(ctx.conn, [:tasks, :move], %{
+        task_id: Paths.task_id(ctx.board_task), destination_type: "space", destination_id: Paths.space_id(ctx.board_space), destination_board_id: ctx.board.id
+      })
+      assert response.board_id == Operately.ShortUuid.encode!(ctx.board.id)
+      task = Repo.reload!(ctx.board_task)
+      assert task.board_id == ctx.board.id
+      source = Repo.get!(Operately.Tasks.TaskBoard, ctx.board_space.default_task_board_id)
+      refute Paths.task_id(task) in List.flatten(Map.values(source.tasks_kanban_state))
+      assert Paths.task_id(task) in List.flatten(Map.values(Repo.reload!(ctx.board).tasks_kanban_state))
+      activity = Repo.one!(from a in Activity, where: a.action == "task_moving" and a.content["task_id"] == ^task.id)
+      assert activity.content["origin_board_id"] == source.id
+      assert activity.content["destination_board_id"] == ctx.board.id
+    end
+
+    test "updates completion when a matching status ID has a different closed state", ctx do
+      status = ctx.board_task.task_status |> Map.from_struct() |> Map.put(:closed, true)
+      ctx.board |> Operately.Tasks.TaskBoard.changeset(%{task_statuses: [status]}) |> Repo.update!()
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :move], %{
+        task_id: Paths.task_id(ctx.board_task),
+        destination_type: "space",
+        destination_id: Paths.space_id(ctx.board_space),
+        destination_board_id: ctx.board.id
+      })
+
+      task = Repo.reload!(ctx.board_task)
+      assert task.task_status.closed
+      assert task.closed_at
+    end
+
+    test "requires a mapping for incompatible statuses and rolls back before retry", ctx do
+      status = %{id: "review", value: "review", label: "Review", color: :blue, index: 0, closed: false}
+      ctx.board |> Operately.Tasks.TaskBoard.changeset(%{task_statuses: [status]}) |> Repo.update!()
+      inputs = %{task_id: Paths.task_id(ctx.board_task), destination_type: "space", destination_id: Paths.space_id(ctx.board_space), destination_board_id: ctx.board.id}
+      source = Repo.get!(Operately.Tasks.TaskBoard, ctx.board_space.default_task_board_id)
+      assert {400, response} = mutation(ctx.conn, [:tasks, :move], inputs)
+      assert response.details.code == "task_board_status_mapping_required"
+      assert [%{id: "review"}] = response.details.task_statuses
+      assert Repo.reload!(ctx.board_task).board_id == source.id
+      assert Repo.reload!(source).tasks_kanban_state == source.tasks_kanban_state
+      assert {200, response} = mutation(ctx.conn, [:tasks, :move], Map.put(inputs, :destination_status_id, "review"))
+      assert response.task.status.id == "review"
+    end
+
+    test "rejects moves out of an archived board without changing either ordering", ctx do
+      source = Repo.get!(Operately.Tasks.TaskBoard, ctx.board_task.board_id)
+      source = source |> Ecto.Changeset.change(archived_at: ~N[2026-11-11 12:00:00]) |> Repo.update!()
+      assert {400, %{details: %{code: "task_board_archived"}}} = mutation(ctx.conn, [:tasks, :move], %{
+        task_id: ctx.board_task.id, destination_type: "space", destination_id: ctx.board_space.id, destination_board_id: ctx.board.id
+      })
+      assert Repo.reload!(ctx.board_task).board_id == source.id
+      assert Repo.reload!(source).tasks_kanban_state == source.tasks_kanban_state
+      assert Repo.reload!(ctx.board).tasks_kanban_state == ctx.board.tasks_kanban_state
+    end
+
+    test "rejects current-board, mismatched-space, and archived destinations", ctx do
+      inputs = %{task_id: Paths.task_id(ctx.board_task), destination_type: "space", destination_id: Paths.space_id(ctx.board_space)}
+      assert {400, _} = mutation(ctx.conn, [:tasks, :move], Map.put(inputs, :destination_board_id, ctx.board_space.default_task_board_id))
+      ctx = Factory.add_space(ctx, :another_space)
+      assert {400, _} = mutation(ctx.conn, [:tasks, :move], Map.put(inputs, :destination_board_id, ctx.another_space.default_task_board_id))
+      ctx.board |> Ecto.Changeset.change(archived_at: ~N[2026-01-01 00:00:00]) |> Repo.update!()
+      assert {400, error} = mutation(ctx.conn, [:tasks, :move], Map.put(inputs, :destination_board_id, ctx.board.id))
+      assert error.details.code == "task_board_archived"
+    end
+  end
+
+  test "project destinations resolve their sole board and reject a board selector", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:destination, :space)
+      |> Factory.log_in_person(:creator)
+    task = task_fixture(%{space_id: ctx.space.id, creator_id: ctx.creator.id})
+    board = Operately.Projects.Project.task_board(ctx.destination)
+    inputs = %{task_id: task.id, destination_type: "project", destination_id: ctx.destination.id}
+
+    assert {400, _} = mutation(ctx.conn, [:tasks, :move], Map.put(inputs, :destination_board_id, board.id))
+    assert Repo.reload!(task).space_id == ctx.space.id
+    assert {200, %{board_id: id}} = mutation(ctx.conn, [:tasks, :move], inputs)
+    assert id == Operately.ShortUuid.encode!(board.id)
+    assert Repo.reload!(task).board_id == board.id
   end
 
   defp assert_destination_changed(task, destination, :project) do
@@ -508,8 +727,9 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
       |> Enum.with_index()
       |> Enum.map(fn {status, index} -> Map.put(status, :index, index) end)
 
-    {:ok, space} = Operately.Groups.update_group(space, %{task_statuses: statuses})
-    space
+    board = Repo.get!(Operately.Tasks.TaskBoard, space.default_task_board_id)
+    {:ok, board} = board |> Operately.Tasks.TaskBoard.changeset(%{task_statuses: statuses}) |> Repo.update()
+    %{space | default_task_board: board}
   end
 
   defp status(label, color, value, opts \\ []) do
@@ -521,5 +741,19 @@ defmodule OperatelyWeb.Api.Tasks.MoveTest do
       index: 0,
       closed: Keyword.get(opts, :closed, false)
     }
+  end
+
+  defp move_to_space(conn, task, destination_space) do
+    mutation(conn, [:tasks, :move], %{
+      task_id: Paths.task_id(task),
+      destination_type: "space",
+      destination_id: Paths.space_id(destination_space)
+    })
+  end
+
+  defp assert_status_matches(actual, expected) do
+    fields = [:id, :label, :color, :index, :value, :closed]
+
+    assert Map.take(actual, fields) == Map.take(expected, fields)
   end
 end

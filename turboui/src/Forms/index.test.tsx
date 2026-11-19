@@ -7,6 +7,7 @@ import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import {
   AccessSelectors,
   DateInput,
+  FieldGroup,
   Form,
   FormError,
   NumberInput,
@@ -23,6 +24,9 @@ import {
   validateIsNumber,
   validateTextLength,
 } from ".";
+import { InputField } from "./FieldGroup";
+import { DimmedLink } from "../Link";
+import { MemoryRouter } from "react-router";
 
 const richEditorMockState = {
   localDraftRestored: false,
@@ -143,6 +147,47 @@ jest.mock("../Avatar", () => ({
 }));
 
 describe("Forms", () => {
+  test.each(["vertical", "horizontal", "grid"] as const)(
+    "%s fields keep required markers in the label and actions separate",
+    (layout) => {
+      function Harness() {
+        const form = useForm({ fields: { password: "" }, submit: async () => undefined });
+        const passwordProps = {
+          field: "password",
+          label: "Password",
+          required: true,
+          labelAction: <DimmedLink to="/forgot_password">Reset</DimmedLink>,
+        };
+
+        return (
+          <MemoryRouter>
+            <Form form={form}>
+              <FieldGroup layout={layout}>
+                <PasswordInput {...passwordProps} />
+                <InputField field="ordinary" label="Ordinary" labelIcon={<svg data-testid="label-icon" />} required>
+                  <input id="ordinary" />
+                </InputField>
+              </FieldGroup>
+            </Form>
+          </MemoryRouter>
+        );
+      }
+
+      const { container } = render(<Harness />);
+      const action = screen.getByRole("link");
+      const label = container.querySelector('label[for="password"]');
+
+      expect(label).toHaveTextContent(/^Password\*$/);
+      expect(action.closest("label")).toBeNull();
+      expect(action).toHaveAttribute("href", "/forgot_password");
+      expect(screen.getByLabelText("Password*")).toHaveAttribute("type", "password");
+
+      const ordinaryLabel = container.querySelector('label[for="ordinary"]');
+      expect(ordinaryLabel).toHaveTextContent(/^Ordinary\*$/);
+      expect(ordinaryLabel).toContainElement(screen.getByTestId("label-icon"));
+    },
+  );
+
   test("date inputs preserve ISO dates and support custom required copy", async () => {
     const onSubmit = jest.fn();
 
@@ -1069,6 +1114,13 @@ describe("Forms", () => {
     expect(await screen.findByText("Can't be empty")).toBeInTheDocument();
     expect(await screen.findByText("Must be a valid number")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText("Password*"), { target: { value: "long-enough" } });
+    fireEvent.change(screen.getByRole("spinbutton"), { target: { value: "587" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   test("shows the default form error when the form has validation errors", async () => {

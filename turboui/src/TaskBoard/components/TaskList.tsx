@@ -15,11 +15,12 @@ import { StatusSelector } from "../../StatusSelector";
 import { TaskWithIndex } from "../types";
 
 export interface TaskListProps {
+  onTaskMilestoneChange?: Types.TaskBoardProps["onTaskMilestoneChange"];
   tasks: Types.Task[];
   milestoneId: string;
-  onTaskAssigneeChange: (taskId: string, assignees: Types.Person[]) => void;
-  onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-  onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
+  onTaskAssigneeChange?: (taskId: string, assignees: Types.Person[]) => void;
+  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskStatusChange?: (taskId: string, status: Types.Status | null) => void;
   assigneePersonSearch?: PersonField.SearchData;
   statusOptions: StatusSelector.StatusOption[];
   /** Whether to show the hidden tasks toggle (ghost row) */
@@ -43,6 +44,7 @@ export interface TaskListProps {
  */
 export function TaskList({
   tasks,
+  onTaskMilestoneChange,
   showHiddenTasksToggle = false,
   milestoneId,
   onTaskAssigneeChange,
@@ -104,7 +106,7 @@ export function TaskList({
 
   useEffect(() => {
     const element = containerRef.current;
-    if (!element) return;
+    if (!element || !onTaskMilestoneChange) return;
 
     return dropTargetForElements({
       element,
@@ -113,7 +115,7 @@ export function TaskList({
         index: visibleTasksProjected.length,
       }),
     });
-  }, [milestoneId, visibleTasksProjected.length]);
+  }, [milestoneId, visibleTasksProjected.length, onTaskMilestoneChange]);
 
   // Count hidden tasks for the ghost row
   const totalHiddenCount = hiddenTasks.length;
@@ -146,7 +148,7 @@ export function TaskList({
                 onTaskStatusChange={onTaskStatusChange}
                 assigneePersonSearch={assigneePersonSearch}
                 statusOptions={statusOptions}
-                draggingDisabled={false}
+                draggingDisabled={!onTaskMilestoneChange}
                 selected={task.id === selectedTaskId}
                 onTaskClick={onTaskClick}
                 onTaskOpen={onTaskOpen}

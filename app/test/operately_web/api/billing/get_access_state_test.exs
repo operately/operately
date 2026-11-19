@@ -32,7 +32,9 @@ defmodule OperatelyWeb.Api.Billing.GetAccessStateTest do
         |> Factory.add_account(:outsider)
         |> Factory.log_in_account(:outsider)
 
-      assert {404, _} = query(ctx.conn, [:billing, :get_access_state], %{})
+      conn = put_req_header(ctx.conn, "x-company-id", Paths.company_id(ctx.company))
+
+      assert {404, _} = query(conn, [:billing, :get_access_state], %{})
     end
 
     test "it returns not found when billing is globally disabled", ctx do

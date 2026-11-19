@@ -39,5 +39,5 @@ it.each([
   const markup = renderToStaticMarkup(<SiteMessageModal isOpen onClose={jest.fn()} onSuccess={jest.fn()} />);
 
   expect(markup).toContain(`<label for="title">${label}</label>`);
-  if (language === "pt-BR") expect(i18n.t("Title")).toBe("Cargo");
+  if (language === "pt-BR") expect(i18n.t("Title", { context: "person" })).toBe("Cargo");
 });

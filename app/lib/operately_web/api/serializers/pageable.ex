@@ -119,9 +119,10 @@ defimpl OperatelyWeb.Api.Pageable, for: Operately.Search.Result do
 
   defp search_path(company, %{type: :task, title: title, context: context, navigation_target: %{space_id: space_id} = target}) when not is_nil(space_id) do
     task_id = target[:task_id]
+    board_id = target[:board_id]
 
-    if task_id do
-      Paths.space_task_path(company, %Group{id: space_id, name: context}, %Task{id: task_id, name: title})
+    if task_id && board_id do
+      Paths.space_task_path(company, %Group{id: space_id, name: context}, %Task{id: task_id, name: title, board_id: board_id})
     end
   end
 

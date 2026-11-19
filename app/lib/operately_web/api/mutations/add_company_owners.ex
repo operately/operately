@@ -5,20 +5,25 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyOwners do
   alias Operately.Companies.Company
   alias Operately.Companies.Permissions
   alias Operately.Operations.CompanyOwnersAdding
+  alias Operately.People
 
   inputs do
     field? :people_ids, list_of(:id), null: true
   end
 
   def call(conn, inputs) do
+    people_ids = inputs[:people_ids] || []
+
     with(
       {:ok, me} <- find_me(conn),
       {:ok, company} <- get_company(conn),
       {:ok, :allowed} <- authorize(company, company_read_only(conn)),
-      {:ok, _} <- CompanyOwnersAdding.run(me, inputs.people_ids)
+      :ok <- People.validate_active_company_members(company.id, people_ids),
+      {:ok, _} <- CompanyOwnersAdding.run(me, people_ids)
     ) do
       {:ok, %{}}
     else
+      {:error, :invalid_company_member} -> {:error, :bad_request}
       {:error, :forbidden} -> {:error, :forbidden}
       {:error, :not_found} -> {:error, :not_found}
       {:error, _} -> {:error, :internal_server_error}

@@ -1,19 +1,17 @@
 import React from "react";
 import type { TFunction } from "i18next";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { Trans } from "../Translate";
+import { McpSetupInstructions } from "./McpSetupInstructions";
 
 import { DangerButton, SecondaryButton } from "../Button";
-import { CopyToClipboard } from "../CopyToClipboard";
 import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
-import { IconExternalLink, IconTrash } from "../icons";
+import { IconTrash } from "../icons";
 import { translationText } from "../i18n";
-import { DivLink } from "../Link";
 import { Menu, MenuActionItem } from "../Menu";
 import { Modal } from "../Modal";
 import { Page } from "../Page";
 import { createTestId } from "../TestableElement";
-
-const MCP_DOCS_URL = "https://operately.com/help/mcp-connections/";
 
 export namespace AccountMcpConnectionsPage {
   export interface Grant {
@@ -62,7 +60,7 @@ export function AccountMcpConnectionsPage(props: AccountMcpConnectionsPage.Props
           </p>
         </header>
 
-        <ServerUrlSection mcpServerUrl={props.mcpServerUrl} />
+        <McpSetupInstructions mcpServerUrl={props.mcpServerUrl} />
 
         <section className="mt-10" data-test-id="existing-mcp-connections-section">
           <h2 className="font-bold">{t("Connected Clients")}</h2>
@@ -85,46 +83,6 @@ export function AccountMcpConnectionsPage(props: AccountMcpConnectionsPage.Props
         </section>
       </div>
     </Page>
-  );
-}
-
-function ServerUrlSection({ mcpServerUrl }: { mcpServerUrl: string }) {
-  const { t } = useTranslation();
-
-  return (
-    <section className="mt-8" data-test-id="mcp-server-url-section">
-      <h2 className="font-bold">{t("Server URL")}</h2>
-      <p className="text-sm text-content-dimmed mt-1">{t("Use this URL to create a connection in your AI client.")}</p>
-
-      <div className="mt-3 rounded-md border border-stroke-base bg-surface-dimmed px-3 py-2.5 flex items-center gap-3">
-        <code className="text-sm font-mono break-all flex-1 select-all" data-test-id="mcp-server-url">
-          {mcpServerUrl}
-        </code>
-        <CopyToClipboard text={mcpServerUrl} size={18} className="shrink-0" testId="copy-mcp-server-url" />
-      </div>
-
-      <p className="text-sm text-content-dimmed mt-3">
-        <Trans
-          i18nKey="More details are in the docs: <actionLink>Setup guides</actionLink>"
-          components={{ actionLink: <SetupGuidesLink /> }}
-        />
-      </p>
-    </section>
-  );
-}
-
-function SetupGuidesLink({ children }: { children?: React.ReactNode }) {
-  return (
-    <DivLink
-      to={MCP_DOCS_URL}
-      external
-      target="_blank"
-      className="text-link-base hover:text-link-hover inline-flex items-center gap-1"
-      testId="mcp-setup-guides-link"
-    >
-      {children}
-      <IconExternalLink size={14} />
-    </DivLink>
   );
 }
 

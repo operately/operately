@@ -25,8 +25,7 @@ defmodule OperatelyWeb.CliLoginControllerTest do
     %{conn: conn, company: company, creator: creator}
   end
 
-  test "authenticated success pages use the saved language with flag rollback", ctx do
-    ctx = Operately.Support.Factory.enable_feature(ctx, "i18n")
+  test "authenticated success pages use the saved language after preference changes", ctx do
     {:ok, _} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     {:ok, session, _} = CliAuthSession.create_pending_google_session()
     {:ok, _} = CliAuthSession.complete_google_auth(session, ctx.creator.account)
@@ -34,7 +33,7 @@ defmodule OperatelyWeb.CliLoginControllerTest do
     response = get(conn, "/cli-login/#{session.id}/success")
     assert html_response(response, 200) =~ "Autenticação concluída"
     assert response.resp_body =~ ~s(lang="pt-BR")
-    Operately.Companies.update_company(ctx.company, %{enabled_experimental_features: []})
+    Operately.People.update_person(ctx.creator, %{language: "en"})
     response = get(conn, "/cli-login/#{session.id}/success")
     assert html_response(response, 200) =~ "Authentication Complete"
   end

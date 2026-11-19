@@ -3,34 +3,23 @@ import i18n from "@/i18n";
 import * as AdminApi from "@/ee/admin_api";
 import * as SaasAdmin from "@/ee/models/saasAdminLifecycle";
 import * as React from "react";
-import { IconShieldLock, IconTrash, Menu, MenuActionItem, showErrorToast, showSuccessToast } from "turboui";
+import { copyToClipboard, SaasAdminAccountActionsMenu, showErrorToast, showSuccessToast } from "turboui";
 
-interface AccountActionsMenuProps {
-  account: AdminApi.Account;
-  onPromote: () => void;
-  onDemote: () => void;
-  onDelete: () => void;
-}
+type AccountActionsMenuProps = Omit<React.ComponentProps<typeof SaasAdminAccountActionsMenu>, "onCopyId">;
 
-export function AccountActionsMenu({ account, onPromote, onDemote, onDelete }: AccountActionsMenuProps) {
+export function AccountActionsMenu(props: AccountActionsMenuProps) {
   const { t } = useTranslation();
-  return (
-    <Menu align="end" testId={`account-actions-${account.id}`}>
-      {!account.siteAdmin && (
-        <MenuActionItem icon={IconShieldLock} onClick={onPromote} testId={`promote-account-${account.id}`}>
-          {t("Promote to site admin")}
-        </MenuActionItem>
-      )}
-      {account.siteAdmin && (
-        <MenuActionItem icon={IconShieldLock} danger onClick={onDemote} testId={`demote-account-${account.id}`}>
-          {t("Remove site admin access")}
-        </MenuActionItem>
-      )}
-      <MenuActionItem icon={IconTrash} danger onClick={onDelete} testId={`delete-account-${account.id}`}>
-        {t("Delete account")}
-      </MenuActionItem>
-    </Menu>
-  );
+
+  const handleCopyId = async () => {
+    try {
+      await copyToClipboard(props.account.id);
+      showSuccessToast(t("Copied"), t("Account ID copied to clipboard"));
+    } catch {
+      showErrorToast(t("Copy failed"), t("Unable to copy to clipboard"));
+    }
+  };
+
+  return <SaasAdminAccountActionsMenu {...props} onCopyId={handleCopyId} />;
 }
 
 export type PendingAccountAction =

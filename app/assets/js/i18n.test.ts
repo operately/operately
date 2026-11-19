@@ -1,9 +1,8 @@
 import i18n, { applyLanguage, tn } from "./i18n";
-import { resolveEffectiveLanguage } from "./i18n/languages";
 
 describe("i18n", () => {
-  it("keeps work-management copy English with the flag off and a saved Portuguese preference", async () => {
-    await applyLanguage(resolveEffectiveLanguage("pt-BR", false));
+  it("renders work-management copy in English when English is selected", async () => {
+    await applyLanguage("en");
     expect(i18n.t("Create milestone")).toBe("Create milestone");
     expect(i18n.t("Failed to update task due date")).toBe("Failed to update task due date");
     expect(i18n.t("No discussions yet")).toBe("No discussions yet");
@@ -50,6 +49,214 @@ describe("i18n", () => {
     i18n.addResourceBundle("en", "translation", { [key]: key }, true, true);
 
     expect(i18n.t(key)).toEqual(key);
+  });
+
+  describe("Spanish", () => {
+    afterEach(async () => {
+      await applyLanguage("en");
+    });
+
+    it("uses the glossary and distinguishes labels by meaning", async () => {
+      await applyLanguage("es");
+      expect(i18n.t("My Account")).toBe("Mi cuenta");
+      expect(i18n.t("Champion")).toBe("Responsable");
+      expect(i18n.t("Reviewer")).toBe("Revisor");
+      expect(i18n.t("Start")).toBe("Valor inicial");
+      expect(i18n.t("Target")).toBe("Valor objetivo");
+      expect(i18n.t("People", { context: "navigation" })).toBe("Personas");
+      expect(i18n.t("People")).toBe("Personas");
+      expect(i18n.t("Edit Access")).toBe("Edición");
+      expect(i18n.t("Edit access")).toBe("Editar acceso");
+      expect(i18n.t("Pending", { context: "work status" })).toBe("Sin iniciar");
+      expect(i18n.t("Pending")).toBe("Pendiente");
+      expect(i18n.t("Title", { context: "person" })).toBe("Cargo");
+      expect(i18n.t("Title", { context: "resource" })).toBe("Título");
+      expect(i18n.t("Return")).toBe("Intro");
+    });
+
+    it("handles zero, fractions, and the million plural category", async () => {
+      await applyLanguage("es");
+      for (const count of [0, 0.5, 1, 1.5, 2, 2.5, 1_000_000]) {
+        expect(tn("1 task", "{{count}} tasks", count)).toBe(`${count} ${count === 1 ? "tarea" : "tareas"}`);
+      }
+    });
+
+    it("preserves user content and falls back to English for missing messages", async () => {
+      await applyLanguage("es");
+      expect(i18n.t("Archive “{{name}}”?", { name: "Launch <QA>" })).toBe("¿Archivar «Launch <QA>»?");
+      expect(i18n.t("Not yet translated")).toBe("Not yet translated");
+      for (const count of [0, 0.5, 1, 1.5, 2, 1_000_000]) {
+        expect(tn("1 missing plural", "{{count}} missing plurals", count)).toBe(
+          count === 1 ? "1 missing plural" : `${count} missing plurals`,
+        );
+      }
+    });
+
+    it("switches back to English when selected", async () => {
+      await applyLanguage("es");
+      expect(i18n.t("My Account")).toBe("Mi cuenta");
+      await applyLanguage("en");
+      expect(i18n.t("My Account")).toBe("My Account");
+    });
+  });
+
+  describe("French", () => {
+    afterEach(async () => {
+      await applyLanguage("en");
+    });
+
+    it("uses the glossary and distinguishes labels by meaning", async () => {
+      await applyLanguage("fr");
+      expect(i18n.t("My Account")).toBe("Mon compte");
+      expect(i18n.t("Champion")).toBe("Responsable");
+      expect(i18n.t("Reviewer")).toBe("Référent");
+      expect(i18n.t("Start")).toBe("Valeur initiale");
+      expect(i18n.t("Target")).toBe("Valeur cible");
+      expect(i18n.t("People", { context: "navigation" })).toBe("Annuaire");
+      expect(i18n.t("People")).toBe("Personnes");
+      expect(i18n.t("Edit Access")).toBe("Peut modifier");
+      expect(i18n.t("Edit access")).toBe("Modifier l’accès");
+      expect(i18n.t("Pending", { context: "work status" })).toBe("Non commencé");
+      expect(i18n.t("Pending")).toBe("En attente");
+      expect(i18n.t("Title", { context: "person" })).toBe("Poste");
+      expect(i18n.t("Title", { context: "resource" })).toBe("Titre");
+      expect(i18n.t("Return")).toBe("Entrée");
+    });
+
+    it("handles zero, fractions, and the million plural category", async () => {
+      await applyLanguage("fr");
+      for (const count of [0, 0.5, 1, 1.5, 2, 2.5, 1_000_000]) {
+        expect(tn("1 task", "{{count}} tasks", count)).toBe(`${count} ${count < 2 ? "tâche" : "tâches"}`);
+      }
+    });
+
+    it("preserves user content and falls back to English for missing messages", async () => {
+      await applyLanguage("fr");
+      expect(i18n.t("Archive “{{name}}”?", { name: "Launch <QA>" })).toBe("Archiver « Launch <QA> » ?");
+      expect(i18n.t("Not yet translated")).toBe("Not yet translated");
+      for (const count of [0, 0.5, 1, 1.5, 2, 1_000_000]) {
+        expect(tn("1 missing plural", "{{count}} missing plurals", count)).toBe(
+          count === 1 ? "1 missing plural" : `${count} missing plurals`,
+        );
+      }
+    });
+
+    it("switches back to English when selected", async () => {
+      await applyLanguage("fr");
+      expect(i18n.t("My Account")).toBe("Mon compte");
+      await applyLanguage("en");
+      expect(i18n.t("My Account")).toBe("My Account");
+    });
+  });
+
+  describe("Russian", () => {
+    afterEach(async () => {
+      await applyLanguage("en");
+    });
+
+    it("uses glossary terms and context-specific labels", async () => {
+      await applyLanguage("ru");
+      expect(i18n.t("My Account")).toBe("Моя учётная запись");
+      expect(i18n.t("Champion")).toBe("Ответственный");
+      expect(i18n.t("Reviewer")).toBe("Куратор");
+      expect(i18n.t("Start")).toBe("Начальное значение");
+      expect(i18n.t("Target")).toBe("Целевое значение");
+      expect(i18n.t("Edit access")).toBe("Изменить доступ");
+      expect(i18n.t("Pending", { context: "work status" })).toBe("Не начато");
+      expect(i18n.t("Title", { context: "person" })).toBe("Должность");
+      expect(i18n.t("Title", { context: "resource" })).toBe("Название");
+    });
+
+    it("selects all four Russian plural forms including fractions and integer boundaries", async () => {
+      await applyLanguage("ru");
+      const cases = [
+        [0, "задач"],
+        [1, "задача"],
+        [2, "задачи"],
+        [5, "задач"],
+        [11, "задач"],
+        [21, "задача"],
+        [22, "задачи"],
+        [25, "задач"],
+        [101, "задача"],
+        [111, "задач"],
+        [0.5, "задачи"],
+        [1.5, "задачи"],
+        [1_000_000, "задач"],
+      ] as const;
+      for (const [count, noun] of cases) {
+        expect(tn("1 task", "{{count}} tasks", count)).toBe(`${count} ${noun}`);
+      }
+    });
+
+    it("preserves user content and falls back for missing messages", async () => {
+      await applyLanguage("ru");
+      expect(i18n.t("<resource>{{name}}</resource>: <date/>", { name: "Launch <QA>" })).toBe(
+        "<resource>Launch <QA></resource>: <date/>",
+      );
+      expect(i18n.t("Not yet translated")).toBe("Not yet translated");
+      for (const count of [0, 1, 2, 5, 11, 21, 22, 1.5]) {
+        expect(tn("1 missing plural", "{{count}} missing plurals", count)).toBe(
+          count === 1 ? "1 missing plural" : `${count} missing plurals`,
+        );
+      }
+    });
+
+    it("switches back to English when selected", async () => {
+      await applyLanguage("ru");
+      expect(i18n.t("My Account")).toBe("Моя учётная запись");
+      await applyLanguage("en");
+      expect(i18n.t("My Account")).toBe("My Account");
+    });
+  });
+
+  describe("German", () => {
+    afterEach(async () => {
+      await applyLanguage("en");
+    });
+
+    it("uses glossary terms and distinguishes labels by meaning", async () => {
+      await applyLanguage("de");
+
+      expect(i18n.t("My Account")).toBe("Mein Konto");
+      expect(i18n.t("Due date")).toBe("Fälligkeitsdatum");
+      expect(i18n.t("Start")).toBe("Ausgangswert");
+      expect(i18n.t("Target")).toBe("Zielwert");
+      expect(i18n.t("Edit Access")).toBe("Bearbeitungszugriff");
+      expect(i18n.t("Edit access")).toBe("Zugriff bearbeiten");
+      expect(i18n.t("Pending", { context: "work status" })).toBe("Noch nicht begonnen");
+      expect(i18n.t("Pending")).toBe("Ausstehend");
+      expect(i18n.t("Title", { context: "person" })).toBe("Position");
+      expect(i18n.t("Title", { context: "resource" })).toBe("Titel");
+      expect(i18n.t("Return")).toBe("Enter");
+      expect(i18n.t("Assign an owner")).toBe("Verantwortliche Person zuweisen");
+      expect(i18n.t("Provider")).toBe("Zahlungsanbieter");
+      expect(i18n.t("Provider", { context: "email" })).toBe("E-Mail-Anbieter");
+    });
+
+    it("selects German plurals at zero, one, fractions, and large counts", async () => {
+      await applyLanguage("de");
+
+      for (const count of [0, 0.5, 1, 1.5, 2, 1_000_000]) {
+        expect(tn("1 task", "{{count}} tasks", count)).toBe(count === 1 ? "1 Aufgabe" : `${count} Aufgaben`);
+      }
+    });
+
+    it("preserves user content and rich-text tags and falls back for missing messages", async () => {
+      await applyLanguage("de");
+
+      expect(i18n.t("Archive “{{name}}”?", { name: "Launch <QA>" })).toBe("„Launch <QA>“ archivieren?");
+      expect(i18n.t("Not yet translated")).toBe("Not yet translated");
+      expect(tn("1 missing plural", "{{count}} missing plurals", 3)).toBe("3 missing plurals");
+    });
+
+    it("switches back to English when selected", async () => {
+      await applyLanguage("de");
+      expect(i18n.t("My Account")).toBe("Mein Konto");
+
+      await applyLanguage("en");
+      expect(i18n.t("My Account")).toBe("My Account");
+    });
   });
 
   describe("Brazilian Portuguese", () => {
@@ -138,7 +345,7 @@ describe("i18n", () => {
     });
 
     it("ignores unsupported languages and keeps English", async () => {
-      await applyLanguage("fr");
+      await applyLanguage("nl");
 
       expect(i18n.language).toBe("en");
       expect(i18n.t("Home")).toBe("Home");
@@ -171,6 +378,10 @@ describe.each([true, false])("initialization with TurboUI first: %s", (turboFirs
       runtime.addResourceBundle("en", "translation", { "Close|button": "Close dialog" }, true, true);
       expect(runtime.t("Close", { context: "button" })).toBe("Close dialog");
       expect(runtime.language).toBe("en");
+      expect(runtime.t("My Account", { lng: "de" })).toBe("Mein Konto");
+      expect(runtime.t("My Account", { lng: "ru" })).toBe("Моя учётная запись");
+      expect(runtime.t("My Account", { lng: "fr" })).toBe("Mon compte");
+      expect(runtime.t("My Account", { lng: "es" })).toBe("Mi cuenta");
       expect(runtime.t("intlDateTime", { val: new Date("2026-01-01T12:00:00Z") })).not.toBe("intlDateTime");
     });
   });

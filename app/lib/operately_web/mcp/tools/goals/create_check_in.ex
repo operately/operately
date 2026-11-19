@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheckIn do
 
   alias OperatelyWeb.Api.Goals.CreateCheckIn, as: GoalCreateCheckIn
   alias Operately.RichContent.FromMarkdown
+  alias OperatelyWeb.Mcp.Tools.Goals.CheckInInputs
   alias OperatelyWeb.Mcp.Helpers
 
   @valid_statuses ["on_track", "caution", "off_track"]
@@ -45,6 +46,8 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheckIn do
           %{
             "goal_id" => JsonSchema.string("The goal identifier."),
             "status" => JsonSchema.string("The goal status for this check-in.", enum: @valid_statuses),
+            "post_as_draft" => JsonSchema.boolean("Save as a draft instead of publishing. Defaults to false."),
+            "scheduled_at" => JsonSchema.string("Schedule publication at an ISO 8601 instant with an explicit timezone offset.", format: "date-time"),
             "content" => JsonSchema.string("Plain text or simple markdown content for the check-in."),
             "notify_person_ids" =>
               JsonSchema.array(
@@ -55,7 +58,8 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheckIn do
               JsonSchema.boolean(
                 "When true, notify everyone eligible for this goal. Defaults to false."
               )
-          },
+          }
+          |> Map.merge(CheckInInputs.schema_properties()),
           required: ["goal_id", "status", "content"]
         ),
       output_schema:
@@ -72,6 +76,8 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheckIn do
   def call(conn, %{"goal_id" => goal_id, "status" => status, "content" => content} = arguments) do
     with {:ok, goal_id} <- Helpers.decode_id(goal_id),
          {:ok, rich_content} <- FromMarkdown.to_rich_text(content),
+         {:ok, progress_inputs} <- CheckInInputs.decode(arguments),
+         {:ok, publishing_inputs} <- Helpers.decode_creation_publishing_inputs(arguments),
          {:ok, notification_inputs} <- Helpers.decode_notification_inputs(arguments),
          {:ok, %{update: check_in}} <-
            GoalCreateCheckIn.call(
@@ -82,7 +88,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheckIn do
                  status: status,
                  content: rich_content
                },
-               notification_inputs
+               notification_inputs |> Map.merge(publishing_inputs) |> Map.merge(progress_inputs)
              )
            ) do
       {:ok, %{check_in: check_in}}

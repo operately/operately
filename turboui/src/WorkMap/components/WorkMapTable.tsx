@@ -14,9 +14,13 @@ import { IsItemExpandedFn, SetItemExpandedFn, TableRow } from "./TableRow";
 import { ZeroState } from "./ZeroState";
 import { compareIds } from "../../utils/ids";
 import type { FormattedTimePreferences } from "../../FormattedTime";
+import { useSortableList } from "../../utils/PragmaticDragAndDrop";
 
 interface Props {
   items: WorkMap.Item[];
+  onTaskStatusChange?: WorkMap.TaskStatusChangeFn;
+  onReorder?: (itemId: string, newIndex: number) => void;
+  reorderingDisabled?: boolean;
   addingEnabled?: boolean;
   tab: WorkMap.Filter;
   columnOptions?: WorkMap.ColumnOptions;
@@ -37,6 +41,9 @@ interface Props {
 
 export function WorkMapTable({
   items,
+  onTaskStatusChange,
+  onReorder,
+  reorderingDisabled = false,
   tab,
   columnOptions,
   addItem,
@@ -54,6 +61,17 @@ export function WorkMapTable({
   projectTemplates,
   onCreateProjectTemplate,
 }: Props) {
+  const sortableItems = React.useMemo(
+    () => (onReorder ? items.map((item, index) => ({ id: item.id, index })) : []),
+    [items, onReorder],
+  );
+  const reorder = React.useCallback(
+    (id: string, index: number) => {
+      if (!reorderingDisabled) onReorder?.(id, index);
+    },
+    [onReorder, reorderingDisabled],
+  );
+  useSortableList(sortableItems, reorder);
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
 
@@ -123,7 +141,9 @@ export function WorkMapTable({
             {items.map((item, idx) => (
               <TableRow
                 key={item.id}
+                reorder={onReorder && item.type === "task" ? { index: idx, disabled: reorderingDisabled } : undefined}
                 item={item}
+                onTaskStatusChange={onTaskStatusChange}
                 level={0}
                 isLast={idx === items.length - 1}
                 tab={tab}
@@ -190,7 +210,7 @@ export function TableHeader({ tab, columnOptions = {}, viewer, profileUser }: He
           hide={columnOptions.hideDueDate}
           className={isCompletedPage ? "md:px-4" : "hidden lg:table-cell md:px-4"}
         >
-          {isCompletedPage ? t("Completed On") : t("Due Date")}
+          {isCompletedPage ? t("Completed On") : t("Due date")}
         </HeaderCell>
         <HeaderCell hide={columnOptions.hideAssignedDate} className="hidden lg:table-cell md:px-4">
           {t("Assigned On")}

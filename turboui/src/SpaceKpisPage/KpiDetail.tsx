@@ -23,9 +23,11 @@ import type { SpaceKpisPage } from "./types";
 import type { KpiFields } from "./useKpiFields";
 import { CADENCE_OPTIONS, formatCadence, latestEntry, latestTrend } from "./utils";
 
+type DetailFields = Omit<KpiFields, "cadence"> & { cadence: SpaceKpisPage.Cadence | null };
+
 interface KpiDetailProps {
   kpi: SpaceKpisPage.Kpi;
-  fields: KpiFields;
+  fields: DetailFields;
   canManage: boolean;
   canComment?: boolean;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
@@ -161,7 +163,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 // A KPI is renamed where its name is read, the way a task is renamed on its own
 // page. The editable field cannot live inside a heading element, so the role is
 // set on its container to keep the page's heading.
-function Heading({ fields, canManage }: { fields: KpiFields; canManage: boolean }) {
+function Heading({ fields, canManage }: { fields: DetailFields; canManage: boolean }) {
   return (
     <div role="heading" aria-level={1} className="min-w-0" data-test-id="kpi-heading">
       <TextField
@@ -206,7 +208,7 @@ function KpiSidebar({
   onDelete,
   subscriptions,
 }: {
-  fields: KpiFields;
+  fields: DetailFields;
   canManage: boolean;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
   onDelete: () => void;
@@ -334,12 +336,12 @@ function CadenceField({
   readonly,
   onChange,
 }: {
-  cadence: SpaceKpisPage.Cadence;
+  cadence: SpaceKpisPage.Cadence | null;
   readonly: boolean;
   onChange: (cadence: SpaceKpisPage.Cadence) => void;
 }) {
-  useTranslation();
-  const label = formatCadence(cadence);
+  const { t } = useTranslation();
+  const label = cadence ? formatCadence(cadence) : t("Not set");
 
   if (readonly) {
     return (

@@ -25,9 +25,9 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
       Map.merge(ctx, %{space: space, creator: creator})
     end
 
-    test "it requires a task_id", ctx do
+    test "it requires a task or board selector", ctx do
       assert {400, res} = query(ctx.conn, [:tasks, :list_task_statuses], %{})
-      assert res.message == "Missing required fields: task_id"
+      assert res.message == "The request was malformed"
     end
 
     test "returns not found for unknown task", ctx do
@@ -57,7 +57,7 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
       project = Repo.preload(task, :project).project
 
       assert {200, res} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(task)})
-      assert_statuses_match(res.task_statuses, project.task_statuses)
+      assert_statuses_match(res.task_statuses, Operately.Projects.Project.task_statuses(project))
     end
 
     test "space members have no access", ctx do
@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
       project = Repo.preload(task, :project).project
 
       assert {200, res} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(task)})
-      assert_statuses_match(res.task_statuses, project.task_statuses)
+      assert_statuses_match(res.task_statuses, Operately.Projects.Project.task_statuses(project))
     end
   end
 
@@ -94,25 +94,39 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
       assert {200, res} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(task)})
       assert length(res.task_statuses) > 0
       assert Enum.any?(res.task_statuses, &(&1.value == "done"))
-      assert_statuses_match(res.task_statuses, project.task_statuses)
+      assert_statuses_match(res.task_statuses, Operately.Projects.Project.task_statuses(project))
     end
 
     test "returns statuses for a space task", ctx do
       add_person_to_space(ctx)
 
+      board = Repo.insert!(%Operately.Tasks.TaskBoard{
+        space_id: ctx.space.id,
+        name: "Other",
+        task_statuses: [%Operately.Tasks.Status{id: Ecto.UUID.generate(), value: "review", label: "Review", color: :blue, index: 0, closed: false}]
+      })
       task =
         task_fixture(%{
           creator_id: ctx.creator.id,
           space_id: ctx.space.id,
+          board_id: board.id,
           name: "Space Task"
         })
 
-      space = Repo.preload(task, :space).space
-
       assert {200, res} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(task)})
       assert length(res.task_statuses) > 0
-      assert_statuses_match(res.task_statuses, space.task_statuses)
+      assert_statuses_match(res.task_statuses, board.task_statuses)
     end
+  end
+
+  test "reads an empty board and rejects conflicting task and board selectors", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space) |> Factory.log_in_person(:creator)
+    board = Repo.insert!(%Operately.Tasks.TaskBoard{space_id: ctx.space.id, name: "Empty", task_statuses: Repo.get!(Operately.Tasks.TaskBoard, ctx.space.default_task_board_id).task_statuses})
+    assert {200, response} = query(ctx.conn, [:tasks, :list_task_statuses], %{board_id: board.id})
+    assert response.board_id == Operately.ShortUuid.encode!(board.id)
+    assert length(response.task_statuses) == length(board.task_statuses)
+    assert {400, _} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(ctx.task), board_id: board.id})
+    assert {200, _} = query(ctx.conn, [:tasks, :list_task_statuses], %{task_id: Paths.task_id(ctx.task), board_id: ctx.task.board_id})
   end
 
   defp create_task(ctx, opts) do
@@ -152,4 +166,5 @@ defmodule OperatelyWeb.Api.Tasks.ListTaskStatusesTest do
       assert serialized.value == status.value
     end)
   end
+
 end

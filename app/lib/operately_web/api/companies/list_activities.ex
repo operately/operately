@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
 
   @resource_hub_resource_actions [
     "resource_hub_document_commented",
+    "resource_hub_document_inline_thread_resolution_changed",
     "resource_hub_document_created",
     "resource_hub_document_edited",
     "resource_hub_document_public_sharing_changed",

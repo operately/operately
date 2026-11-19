@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useState } from "react";
 import * as Types from "../types";
+import { reorderTasks } from "../utils/taskReorderingUtils";
 import { TaskBoard } from "../components";
 import { createContextualDate } from "../../DateField/mockData";
 import { DONE_STATUS, mockMilestones, mockTasks, PENDING_STATUS } from "../tests/mockData";
@@ -158,6 +159,11 @@ export const Default: Story = {
     return (
       <TaskBoard
         tasks={tasks}
+        onTaskMilestoneChange={(taskId, milestoneId, index) => {
+          setTasks((previous) =>
+            reorderTasks(previous, milestoneId ?? "no-milestone", taskId, index, { addHelperTasks: true }, milestones),
+          );
+        }}
         milestones={milestones}
         searchableMilestones={searchableMilestones}
         onTaskCreate={handleTaskCreate}
@@ -258,6 +264,11 @@ export const CompletedMilestonesAtEnd: Story = {
     return (
       <TaskBoard
         tasks={tasks}
+        onTaskMilestoneChange={(taskId, milestoneId, index) => {
+          setTasks((previous) =>
+            reorderTasks(previous, milestoneId ?? "no-milestone", taskId, index, { addHelperTasks: true }, milestones),
+          );
+        }}
         milestones={milestones}
         searchableMilestones={searchableMilestones}
         onTaskCreate={(task) => {

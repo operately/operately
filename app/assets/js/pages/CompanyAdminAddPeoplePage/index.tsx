@@ -234,9 +234,5 @@ function validateInvite(values: InviteMemberForm.Values): InviteMemberForm.Error
     errors.email = translationText(i18n.t("Enter a valid email address"));
   }
 
-  if (values.title.length < 1) {
-    errors.title = translationText(i18n.t("Title is required"));
-  }
-
   return errors;
 }

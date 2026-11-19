@@ -26,7 +26,7 @@ const defaultArgs = {
   onSubmit: async () => undefined,
   onCancel: () => undefined,
   homePath: "#",
-  settingsPath: "#",
+  accountPath: "#",
 };
 
 export const Buffered: Story = {

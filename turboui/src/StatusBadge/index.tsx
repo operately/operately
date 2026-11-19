@@ -156,7 +156,7 @@ const getStatusProperties = (status: BadgeStatus, t: TFunction) => {
         textColor: "text-blue-700 dark:text-blue-300",
         dotColor: "bg-blue-500 dark:bg-blue-400",
         borderColor: "border-blue-200 dark:border-blue-800",
-        label: t("Pending"),
+        label: t("Pending", { context: "work status" }),
       };
 
     default:

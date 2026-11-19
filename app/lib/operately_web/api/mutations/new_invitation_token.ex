@@ -29,6 +29,7 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :company, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, %{error: :not_found}} -> {:error, :not_found, gettext("Team member not found.")}
       {:error, :operation, %{error: [message: message]}} -> {:error, :bad_request, message}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
@@ -38,11 +39,11 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
   defp execute(admin, inputs) do
     {:ok, id} = decode_id(inputs.person_id)
 
-    person = Operately.People.get_person(id) |> Operately.Repo.preload(:account)
+    person = Repo.get_by(Operately.People.Person, id: id, company_id: admin.company_id) |> Repo.preload(:account)
 
     cond do
       is_nil(person) ->
-        {:error, message: gettext("Team member not found.")}
+        {:error, :not_found}
 
       not open_invitation?(person) ->
         {:error, message: gettext("Team member doesn't have an open invitation.")}
@@ -53,25 +54,19 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
   end
 
   defp create_token(admin, person) do
-    invite_link =
-      case Operately.InviteLinks.get_personal_invite_link_for_person(person.id) do
-        {:ok, link} -> link
-        {:error, :not_found} ->
-          {:ok, link} = Operately.InviteLinks.create_personal_invite_link(%{
-            company_id: admin.company_id,
-            author_id: admin.id,
-            person_id: person.id
-          })
-          link
+    case Operately.InviteLinks.get_personal_invite_link_for_person(person.id) do
+      {:ok, link} when link.company_id == admin.company_id ->
+        Operately.InviteLinks.refresh_personal_invite_link(link)
 
-      end
+      {:ok, _foreign_link} ->
+        {:error, :not_found}
 
-    case invite_link do
-      {:error, _} = error ->
-        error
-
-      %Operately.InviteLinks.InviteLink{} = link ->
-        {:ok, _link} = Operately.InviteLinks.refresh_personal_invite_link(link)
+      {:error, :not_found} ->
+        Operately.InviteLinks.create_personal_invite_link(%{
+          company_id: admin.company_id,
+          author_id: admin.id,
+          person_id: person.id
+        })
     end
   end
 

@@ -52,6 +52,14 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     end)
   end
 
+  test "members without a title need role setup", ctx do
+    for title <- [nil, "", "   "] do
+      attrs = %{@member_attrs | title: title, email: "#{System.unique_integer([:positive])}@example.com"}
+      assert {:ok, %{person: person}} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, attrs)
+      assert person.title_setup_pending
+    end
+  end
+
   test "CompanyMemberAdding operation creates person", ctx do
     # company creator + company admin
     assert company_people_count(ctx.company.id) == 2
@@ -66,6 +74,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
 
     assert person.full_name == "John Doe"
     assert person.title == "Developer"
+    refute person.title_setup_pending
     person = Repo.preload(person, :account)
     assert is_nil(person.account.first_login_at)
   end

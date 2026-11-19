@@ -3,7 +3,6 @@ import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router";
 import i18n, { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import HomePageModule from ".";
 import { useFeedItemsQuery } from "@/features/Feed";
 import { useDeleteFeedActivity } from "@/models/activities/activityLifecycle";
@@ -72,10 +71,10 @@ function renderPage() {
 }
 
 test.each([
-  [true, "Nenhum espaço ainda"],
-  [false, "No spaces yet"],
-])("saved Portuguese preference respects flag %s", async (enabled, emptyLabel) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+  ["pt-BR", "Nenhum espaço ainda"],
+  ["en", "No spaces yet"],
+])("selected language %s", async (language, emptyLabel) => {
+  await applyLanguage(language);
   renderPage();
   expect(container.textContent).toContain(emptyLabel);
 });

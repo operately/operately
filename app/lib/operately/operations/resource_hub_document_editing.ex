@@ -31,6 +31,8 @@ defmodule Operately.Operations.ResourceHubDocumentEditing do
       end
     end)
     |> Repo.transaction()
+    |> OperatelyWeb.Api.Subscriptions.DocumentUpdated.broadcast_result(document.id)
+    |> OperatelyWeb.Api.Subscriptions.ProjectUpdated.broadcast_result(document.resource_hub.project_id)
     |> case do
       {:ok, %{document: document}} -> {:ok, document}
       {:error, _step, :version_conflict, _changes} -> {:error, :version_conflict}
@@ -59,6 +61,7 @@ defmodule Operately.Operations.ResourceHubDocumentEditing do
       content: attrs.content,
       current_version: next_version
     }))
+    |> Operately.Operations.InlineThreads.ReconcileAnchors.add(locked)
     |> Multi.insert(:version, fn changes ->
       DocumentVersion.changeset(%{
         document_id: changes.document.id,

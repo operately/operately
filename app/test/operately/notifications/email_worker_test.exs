@@ -43,6 +43,24 @@ defmodule Operately.Notifications.EmailWorkerTest do
     refute is_nil(notification.email_sent_at)
   end
 
+  for suspension <- [%{suspended: true}, %{suspended_at: ~U[2026-04-08 18:00:00Z]}] do
+    test "skips queued delivery when the recipient has #{inspect(suspension)}" do
+      ctx = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:project, :space)
+      activity = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
+      notification = notification_fixture(activity_id: activity.id, person_id: ctx.creator.id, email_sent: false, email_sent_at: nil)
+      assert {:ok, _} = Operately.People.update_person(ctx.creator, unquote(Macro.escape(suspension)))
+      flush_emails()
+
+      assert {:ok, :skipped} = EmailWorker.deliver(notification)
+      assert :ok = EmailWorker.perform(%{args: %{"notification_id" => notification.id}})
+      refute_email_sent()
+
+      notification = Notifications.get_notification!(notification.id)
+      refute notification.email_sent
+      assert is_nil(notification.email_sent_at)
+    end
+  end
+
   test "does not mark notification as sent when delivery returns an error", ctx do
     with_mocks([
       {Operately.People, [:passthrough], [get_person!: fn _id -> ctx.person end]},
@@ -77,7 +95,7 @@ defmodule Operately.Notifications.EmailWorkerTest do
     Gettext.put_locale(OperatelyWeb.Gettext, "en")
     on_exit(fn -> Gettext.put_locale(OperatelyWeb.Gettext, previous) end)
 
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    company = ctx.company
     {:ok, person} = Operately.People.update_person(ctx.person, %{language: "pt-BR"})
     person = %{person | company: company}
 
@@ -123,12 +141,16 @@ defmodule Operately.Notifications.EmailWorkerTest do
     assert is_nil(notification.email_sent_at)
   end
 
-  test "discussion and document deliveries scope language per recipient and honor flag rollback" do
+  test "discussion and document deliveries scope language per recipient" do
     ctx =
       %{}
       |> Factory.setup()
       |> Factory.add_company_member(:portuguese, name: "Portuguese Reader")
       |> Factory.add_company_member(:english, name: "English Reader")
+      |> Factory.add_company_member(:german, name: "German Reader")
+      |> Factory.add_company_member(:russian, name: "Russian Reader")
+      |> Factory.add_company_member(:french, name: "French Reader")
+      |> Factory.add_company_member(:spanish, name: "Spanish Reader")
       |> Factory.add_space(:space, name: "Space <literal>")
       |> Factory.add_messages_board(:board, :space)
       |> Factory.add_message(:discussion, :board, title: "Discussion <literal>")
@@ -138,32 +160,31 @@ defmodule Operately.Notifications.EmailWorkerTest do
       |> Factory.add_comment(:comment, :document)
 
     {:ok, _} = Operately.People.update_person(ctx.portuguese, %{language: "pt-BR"})
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    {:ok, _} = Operately.People.update_person(ctx.german, %{language: "de"})
+    {:ok, _} = Operately.People.update_person(ctx.russian, %{language: "ru"})
+    {:ok, _} = Operately.People.update_person(ctx.french, %{language: "fr"})
+    {:ok, _} = Operately.People.update_person(ctx.spanish, %{language: "es"})
     previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
 
     scenarios = [
-      {"discussion_posting", %{"discussion_id" => ctx.discussion.id}, "publicou:", "posted:", "Discussion <literal>"},
-      {"resource_hub_document_commented", %{"document_id" => ctx.document.id, "comment_id" => ctx.comment.id}, "comentou em:", "commented on:", "Document <literal>"}
+      {"discussion_posting", %{"discussion_id" => ctx.discussion.id}, "publicou:", "posted:", "hat veröffentlicht:", "опубликовано", "a publié", "publicó:", "Discussion <literal>"},
+      {"resource_hub_document_commented", %{"document_id" => ctx.document.id, "comment_id" => ctx.comment.id}, "comentou em:", "commented on:", "hat kommentiert:", "комментарий к", "a ajouté un commentaire sur", "comentó sobre:", "Document <literal>"}
     ]
 
-    for {action, content, portuguese, english, name} <- scenarios do
+    for {action, content, portuguese, english, german, russian, french, spanish, name} <- scenarios do
       activity = activity_fixture(author_id: ctx.creator.id, action: action, content: content)
 
-      for {person, expected} <- [{ctx.portuguese, portuguese}, {ctx.english, english}, {ctx.portuguese, portuguese}] do
+      for {person, expected} <- [{ctx.spanish, spanish}, {ctx.french, french}, {ctx.russian, russian}, {ctx.portuguese, portuguese}, {ctx.german, german}, {ctx.english, english}, {ctx.german, german}] do
         assert_localized_delivery(activity, person, expected, name)
         assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
       end
     end
 
-    {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
-
-    for {action, content, _portuguese, english, name} <- scenarios do
-      activity = activity_fixture(author_id: ctx.creator.id, action: action, content: content)
-      assert_localized_delivery(activity, ctx.portuguese, english, name)
-      assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
-    end
-
     assert Operately.People.get_person!(ctx.portuguese.id).language == "pt-BR"
+    assert Operately.People.get_person!(ctx.german.id).language == "de"
+    assert Operately.People.get_person!(ctx.russian.id).language == "ru"
+    assert Operately.People.get_person!(ctx.french.id).language == "fr"
+    assert Operately.People.get_person!(ctx.spanish.id).language == "es"
   end
 
   defp assert_localized_delivery(activity, person, expected, name) do
@@ -195,8 +216,8 @@ defmodule Operately.Notifications.EmailWorkerTest do
       0 -> :ok
     end
   end
-  test "company and guest activity deliveries scope each recipient and honor flag rollback" do
-    ctx = Operately.Support.Factory.setup(%{}) |> Operately.Support.Factory.enable_feature("i18n")
+  test "company and guest activity deliveries scope each recipient and honor language changes" do
+    ctx = Operately.Support.Factory.setup(%{})
     {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     actions = ~w(company_admin_added company_admin_removed company_owner_removing company_owners_adding
       company_member_restoring company_member_converted_to_guest company_members_permissions_edited guest_invited company_member_added)
@@ -205,11 +226,11 @@ defmodule Operately.Notifications.EmailWorkerTest do
     for action <- actions do
       activity = Operately.ActivitiesFixtures.activity_fixture(author_id: person.id, action: action,
         content: %{"members" => [%{"person_id" => person.id, "previous_access_level" => 10, "updated_access_level" => 70}]})
-      {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+      {:ok, _} = Operately.People.update_person(Operately.Repo.reload!(person), %{language: "pt-BR"})
       notification = Operately.NotificationsFixtures.notification_fixture(person_id: person.id, activity_id: activity.id)
       assert {:ok, :sent} = EmailWorker.deliver(notification)
       assert_receive {:email, portuguese}
-      {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
+      {:ok, _} = Operately.People.update_person(person, %{language: "en"})
       notification = Operately.NotificationsFixtures.notification_fixture(person_id: person.id, activity_id: activity.id)
       assert {:ok, :sent} = EmailWorker.deliver(notification)
       assert_receive {:email, english}

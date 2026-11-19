@@ -69,9 +69,11 @@ function checkModuleImports(content, filename) {
     `Development import in ${filename}`,
   );
 
-  if (filename.endsWith(".d.ts")) {
-    assert.doesNotMatch(content, /@tabler\/icons-react\/dist\//, `Untyped icon import in ${filename}`);
-  }
+  assert.doesNotMatch(
+    content,
+    /(?:from\s*|import\s*\(?)["']@tabler\/icons-react\/dist\//,
+    `Private icon import in ${filename}`,
+  );
 }
 
 async function checkStylesheet(packageDirectory) {

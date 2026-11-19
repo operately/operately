@@ -172,10 +172,12 @@ export interface CuratedTemplate {
   type: CuratedTemplateType;
   state: CuratedTemplateState;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
   definition?: Json;
+  previewData?: Json;
   publishedAt?: string | null;
   insertedAt: string;
   updatedAt: string;
@@ -427,10 +429,12 @@ export interface CreateSiteMessageResult {
 export interface CuratedTemplatesCreateInput {
   type: CuratedTemplateType;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
   definition: Json;
+  previewData?: Json;
 }
 
 export interface CuratedTemplatesCreateResult {
@@ -463,10 +467,12 @@ export interface CuratedTemplatesUpdateInput {
   expectedUpdatedAt: string;
   type: CuratedTemplateType;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
   definition: Json;
+  previewData?: Json;
 }
 
 export interface CuratedTemplatesUpdateResult {
@@ -488,10 +494,12 @@ export interface CuratedTemplatesUpdateMetadataResult {
 export interface CuratedTemplatesValidateInput {
   type: CuratedTemplateType;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
   definition: Json;
+  previewData?: Json;
 }
 
 export interface CuratedTemplatesValidateResult {

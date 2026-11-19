@@ -161,7 +161,8 @@ Translate system statuses according to their meaning; keep user-authored statuse
 
 | English | Meaning/context | Русский | Capitalization and usage |
 | --- | --- | --- | --- |
-| Docs & Files / Documents & Files | Named content tool | Документы и файлы | Same name for both variants. Never expose the internal Resource Hub name. |
+| Docs & Files / Documents & Files | Named content tool | Документы и файлы | Same name for both variants. |
+| Resource Hub / Resource Hubs | Named container of documents, files, links, and folders | Центр ресурсов / Центры ресурсов | User-facing product term. Use for hub management; preserve user-authored hub names. |
 | document / doc | Rich-text document | Документ | Distinct from an uploaded **файл**, a **папка**, a **ссылка**, or a comment **вложение**. |
 | resource / item | Generic content entry | Материал / Элемент | Prefer the specific type when known. Resources here are not personnel or computing capacity. |
 | key resource / support material | Supporting project/goal content | Важный материал / Вспомогательный материал | Can be a link as well as a document or file. |
@@ -209,7 +210,6 @@ Translate system statuses according to their meaning; keep user-authored statuse
 | package / ZIP file | Import/export artifact | Пакет данных / ZIP-архив | Not a pricing tariff. |
 | site admin / SaaS admin panel | Instance-wide operator role/screen | Администратор системы / Управление системой | Distinct from company or space administration. |
 | support session / support mode | Operator access for customer assistance | Сеанс поддержки / Режим поддержки | Does not make the operator the account owner. |
-| feature flag | Experimental-feature control | Переключатель функции | Group **Экспериментальные функции**; preserve keys such as `i18n`. |
 | site message / update badge | Operator banner / new-version indicator | Системное сообщение / Уведомление о новой версии | Neither is a progress report. |
 
 ## Context and sentence patterns

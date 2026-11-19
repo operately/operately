@@ -22,6 +22,88 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
     def call(_conn, _arguments), do: {:error, :bad_request}
   end
 
+  defmodule DetailedBadRequestTool do
+    def call(_conn, _arguments) do
+      {:error, :bad_request, "Choose a hub", %{code: "default_resource_hub_unavailable", candidates: [%{id: "hub_123"}]}}
+    end
+  end
+
+  defmodule NotFoundTool do
+    def call(_conn, _arguments), do: {:error, :not_found}
+  end
+
+  defmodule DetailedNotFoundTool do
+    def call(_conn, _arguments), do: {:error, :not_found, "Private resource details"}
+  end
+
+  defmodule FailingTool do
+    def call(conn, _arguments), do: raise(conn.assigns.failure)
+  end
+
+  defmodule DateTimeTool do
+    def call(_conn, _arguments) do
+      {:ok,
+       %{
+         assignments: [
+           %{
+             "due_date" => ~D[2026-11-04],
+             "schedule" => %{starts_at: ~U[2026-11-04 10:13:15.123456Z], local_time: ~N[2026-11-04 10:13:15], time: ~T[10:13:15]},
+             "completed" => false,
+             "completed_at" => nil
+           }
+         ]
+       }}
+    end
+  end
+
+  test "preserves structured retry details in both error representations", %{conn: conn} do
+    definition = Definition.new!(name: "detailed_error", implementation: DetailedBadRequestTool, input_schema: %{"type" => "object", "properties" => %{}})
+    assert {:ok, result} = Executor.execute(conn, definition, %{})
+    assert result["isError"]
+    assert result["structuredContent"]["details"]["code"] == "default_resource_hub_unavailable"
+    assert [%{"text" => text}] = result["content"]
+    assert Jason.decode!(text) == result["structuredContent"]
+  end
+
+  test "serializes nested dates and times consistently in both MCP output representations", %{conn: conn} do
+    definition = Definition.new!(name: "date_time", implementation: DateTimeTool, input_schema: %{"type" => "object", "properties" => %{}})
+
+    assert {:ok, result} = Executor.execute(conn, definition, %{})
+
+    assert result["structuredContent"] == %{
+             "assignments" => [
+               %{
+                 "due_date" => "2026-11-04",
+                 "schedule" => %{"starts_at" => "2026-11-04T10:13:15.123456Z", "local_time" => "2026-11-04T10:13:15", "time" => "10:13:15"},
+                 "completed" => false,
+                 "completed_at" => nil
+               }
+             ]
+           }
+
+    assert [%{"type" => "text", "text" => text}] = result["content"]
+    assert Jason.decode!(text) == result["structuredContent"]
+  end
+
+  test "queue failures return a localized tool error", %{conn: conn} do
+    conn = Conn.assign(conn, :failure, %DBConnection.ConnectionError{reason: :queue_timeout, message: "private diagnostic"})
+    definition = Definition.new!(name: "failing", implementation: FailingTool, input_schema: %{"type" => "object", "properties" => %{}})
+
+    Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+      assert {:ok, result} = Executor.execute(conn, definition, %{})
+      assert result == %{"isError" => true, "content" => [%{"type" => "text", "text" => "O serviço está temporariamente indisponível. Tente novamente."}]}
+    end)
+  end
+
+  test "unrelated exceptions retain their existing propagation", %{conn: conn} do
+    definition = Definition.new!(name: "failing", implementation: FailingTool, input_schema: %{"type" => "object", "properties" => %{}})
+
+    for error <- [%RuntimeError{message: "unrelated"}, %DBConnection.ConnectionError{reason: :error, message: "connection lost"}] do
+      conn = Conn.assign(conn, :failure, error)
+      assert assert_raise(error.__struct__, fn -> Executor.execute(conn, definition, %{}) end) == error
+    end
+  end
+
   defmodule RichTextTool do
     def call(_conn, %{"content" => content}) do
       send(self(), {:tool_source, content})
@@ -77,7 +159,7 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
       assert {:ok, result} = Executor.execute(conn, definition, %{})
       assert result == %{"isError" => true, "content" => [%{"type" => "text", "text" => "A ferramenta literal_tool ainda não foi implementada."}]}
     end)
-    Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn ->
+    Gettext.with_locale(OperatelyWeb.Gettext, "nl", fn ->
       assert {:ok, result} = Executor.execute(conn, definition, %{})
       assert hd(result["content"])["text"] == "The literal_tool tool is not implemented yet."
     end)
@@ -125,6 +207,19 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
 
   test "returns unknown tool for missing wrappers" do
     assert {:error, :unknown_tool} == Executor.fetch_definition("missing_tool")
+  end
+
+  test "normalizes detailed not-found errors to the same localized generic response", %{conn: conn} do
+    definition = Definition.new!(name: "not_found_tool", implementation: NotFoundTool, input_schema: %{"type" => "object", "properties" => %{}})
+    detailed_definition = %{definition | implementation: DetailedNotFoundTool}
+
+    for locale <- ["en", "pt_BR"] do
+      Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
+        assert {:ok, %{"isError" => true} = result} = Executor.execute(conn, definition, %{})
+        assert Executor.execute(conn, detailed_definition, %{}) == {:ok, result}
+        refute Jason.encode!(result) =~ "Private resource details"
+      end)
+    end
   end
 
   test "requires an authenticated conn" do

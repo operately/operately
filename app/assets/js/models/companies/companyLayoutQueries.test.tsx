@@ -7,6 +7,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@/__tests__/renderHook";
 import {
   companyLayoutInputs,
+  fetchCompany,
   prefetchCompanyLayout,
   useCompanyLayoutQueries,
   useRefreshCompanyLayout,
@@ -37,6 +38,20 @@ function responses(name: string, status: string, count: number) {
           : { accessState: { status } },
   }));
 }
+
+it("reuses the layout's company cache and fetches separately after switching companies", async () => {
+  responses("Original", "active", 1);
+  await prefetchCompanyLayout(companyLayoutInputs());
+  jest.mocked(axios.get).mockClear();
+
+  expect((await fetchCompany()).name).toBe("Original");
+  expect(axios.get).not.toHaveBeenCalled();
+
+  Api.default.setHeaders({ "x-company-id": "destination" });
+  responses("Destination", "active", 1);
+  expect((await fetchCompany()).name).toBe("Destination");
+  expect(axios.get).toHaveBeenCalledTimes(1);
+});
 
 it("refreshes the layout's subscribed data for a billing signal without unrelated queries", async () => {
   responses("Before", "active", 1);
@@ -131,4 +146,18 @@ it("refreshes the mounted billing overview when the layout receives a billing up
   jest.mocked(axios.get).mockResolvedValue({ data: { billing: { account: { status: "active" } } } });
   await act(() => result.current.refresh());
   await waitFor(() => expect(result.current.overview.data?.billing.account.status).toBe("active"));
+});
+
+it("keeps optional failures nonfatal on the first load", async () => {
+  jest.mocked(axios.get).mockImplementation(async (url) => {
+    if (url.endsWith("/list_active") || url.endsWith("/get_access_state")) throw new Error("Unavailable");
+    return { data: url.endsWith("/companies/get") ? { company: { id: "company", name: "Company" } } : { count: 1 } };
+  });
+  const inputs = companyLayoutInputs();
+  await prefetchCompanyLayout(inputs);
+  const { result } = renderHook(() => useCompanyLayoutQueries(inputs), { initialProps: undefined, wrapper });
+  expect(result.current.company.name).toBe("Company");
+  expect(result.current.siteMessages).toEqual([]);
+  expect(result.current.billingAccessState).toBeNull();
+  expect(axios.get).toHaveBeenCalledTimes(4);
 });

@@ -73,6 +73,7 @@ export interface Task {
   dueOffsetDays?: number | null;
   reminders?: TaskPage.Reminder[];
   closedAt?: Date | null;
+  archivedAt?: Date | null;
   hasDescription?: boolean;
   hasComments?: boolean;
   commentCount?: number;
@@ -181,22 +182,24 @@ export interface TaskListSlideInContext {
 }
 
 export interface TaskBoardProps {
+  onTaskArchiveChange?: (taskId: string, archived: boolean) => Promise<boolean>;
   tasks: Task[];
   milestones?: Milestone[];
   searchableMilestones: Milestone[]; // Filtered milestones for task creation modal
-  onTaskCreate: (task: NewTaskPayload) => void;
+  onTaskCreate?: (task: NewTaskPayload) => void;
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
-  onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;
-  onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskAssigneeChange?: (taskId: string, assignees: Person[]) => void;
+  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskDueOffsetDaysChange?: (taskId: string, dueOffsetDays: number | null) => void;
   onTaskRemindersChange?: (taskId: string, reminders: TaskPage.Reminder[]) => Promise<boolean> | boolean;
-  onTaskStatusChange: (taskId: string, status: Status | null) => void;
+  onTaskStatusChange?: (taskId: string, status: Status | null) => void;
   onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;
   onTaskNameChange?: (taskId: string, name: string) => void;
   onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
   onTaskDelete?: (taskId: string) => void | Promise<unknown>;
   onMoveTask?: TaskPage.ContentProps["onMoveTask"];
   onMilestoneUpdate?: (milestoneId: string, updates: UpdateMilestonePayload) => void;
+  onMilestoneComplete?: (milestoneId: string) => Promise<void>;
   onMilestoneSearch: (query: string) => Promise<void>;
   assigneePersonSearch?: PersonField.SearchData;
   projectSearch?: ProjectField.SearchProjectFn;
@@ -210,7 +213,7 @@ export interface TaskBoardProps {
 
   // Status customization
   statuses: StatusSelector.StatusOption[];
-  onSaveCustomStatuses: (data: {
+  onSaveCustomStatuses?: (data: {
     nextStatuses: StatusSelector.StatusOption[];
     deletedStatusReplacements: Record<string, string>;
   }) => void;

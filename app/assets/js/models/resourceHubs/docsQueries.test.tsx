@@ -131,3 +131,18 @@ it("does not show old docs after switching hubs or removing access", async () =>
   await render("");
   expect(result.data).toBeNull();
 });
+
+it("keeps initial failures local so the section can offer a retry", async () => {
+  await render();
+  await act(async () => {
+    requests.forEach(({ response }) => response.reject(new Error("Unavailable")));
+  });
+  await settle();
+  expect(result.error).toBe(true);
+  expect(result.data).toBeNull();
+  requests = [];
+  await act(async () => result.retry());
+  await resolveAll({ resourceHub: { id: "hub-1" }, nodes: [] });
+  expect(result.error).toBe(false);
+  expect(result.data?.resourceHub.id).toBe("hub-1");
+});

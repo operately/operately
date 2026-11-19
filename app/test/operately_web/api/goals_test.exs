@@ -3,6 +3,8 @@ defmodule OperatelyWeb.Api.GoalsTest do
   alias Operately.ContextualDates.Timeframe
   alias Operately.Access
   alias Operately.Access.Binding
+  alias Operately.Activities.Activity
+  alias Operately.Goals.Target
 
   use OperatelyWeb.TurboCase
 
@@ -46,6 +48,130 @@ defmodule OperatelyWeb.Api.GoalsTest do
     |> Factory.setup()
     |> Factory.add_space(:marketing)
     |> Factory.add_goal(:goal, :marketing)
+  end
+
+  describe "company member boundaries" do
+    setup ctx do
+      ctx
+      |> Factory.add_company_member(:new_member)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_api_token(:write_token, :creator, read_only: false)
+    end
+
+    for endpoint <- [:update_champion, :update_reviewer, :create_access_members, :update_access_member] do
+      @endpoint endpoint
+
+      test "#{@endpoint} rejects a foreign person without changing goal access", ctx do
+        foreign_person = Factory.setup(%{}).creator
+        assert {:error, :not_found} = Operately.Goals.Goal.get(foreign_person, id: ctx.goal.id)
+        before = goal_access_snapshot(ctx.goal)
+        inputs = goal_boundary_inputs(@endpoint, ctx.goal.id, foreign_person.id, ctx.new_member.id)
+
+        assert {400, _} = mutation(ctx.conn, [:goals, @endpoint], inputs)
+        assert goal_access_snapshot(ctx.goal) == before
+        assert {400, _} = external_mutation(ctx.conn, ctx.write_token, "goals/#{@endpoint}", inputs)
+        assert goal_access_snapshot(ctx.goal) == before
+      end
+    end
+
+    test "rejects a foreign goal even when the caller already has full access", ctx do
+      foreign = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+      context = Access.get_context!(goal_id: foreign.goal.id)
+      {:ok, _} = Access.bind_person(context, ctx.creator.id, Binding.full_access())
+      assert {:ok, _} = Operately.Goals.Goal.get(ctx.creator, id: foreign.goal.id)
+      before = goal_access_snapshot(foreign.goal)
+
+      for endpoint <- [:update_champion, :update_reviewer, :create_access_members, :update_access_member] do
+        inputs = goal_boundary_inputs(endpoint, foreign.goal.id, ctx.creator.id, ctx.new_member.id)
+        assert {404, _} = mutation(ctx.conn, [:goals, endpoint], inputs)
+        assert goal_access_snapshot(foreign.goal) == before
+      end
+    end
+  end
+
+  defp goal_boundary_inputs(:update_champion, goal_id, person_id, _member_id), do: %{goal_id: goal_id, champion_id: person_id}
+  defp goal_boundary_inputs(:update_reviewer, goal_id, person_id, _member_id), do: %{goal_id: goal_id, reviewer_id: person_id}
+  defp goal_boundary_inputs(:update_access_member, goal_id, person_id, _member_id), do: %{goal_id: goal_id, person_id: person_id, access_level: Binding.edit_access()}
+
+  defp goal_boundary_inputs(:create_access_members, goal_id, person_id, member_id) do
+    %{goal_id: goal_id, members: [%{id: member_id, access_level: Binding.edit_access()}, %{id: person_id, access_level: Binding.edit_access()}]}
+  end
+
+  defp goal_access_snapshot(goal) do
+    context = Access.get_context!(goal_id: goal.id)
+
+    %{
+      goal: Repo.reload(goal),
+      bindings: Repo.all(from(b in Binding, where: b.context_id == ^context.id, order_by: b.id)),
+      activities: Repo.aggregate(Activity, :count),
+      subscriptions: Repo.aggregate(Operately.Notifications.Subscription, :count),
+      memberships: Repo.aggregate(Operately.Access.GroupMembership, :count)
+    }
+  end
+
+  describe "goals/update_parent_goal destination authorization" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_company_member(:actor)
+      |> Factory.add_space(:source_space, company_permissions: Binding.edit_access())
+      |> Factory.add_goal(:source_goal, :source_space, champion: :actor, reviewer: :actor)
+      |> Factory.add_project(:source_project, :source_space)
+      |> Factory.log_in_person(:actor)
+    end
+
+    for destination <- [:foreign, :foreign_accessible, :inaccessible, :missing] do
+      @destination destination
+
+      test "rejects #{@destination} parent before writes", ctx do
+        destination_id =
+          case @destination do
+            scope when scope in [:foreign, :foreign_accessible] ->
+              foreign = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+
+              if scope == :foreign_accessible do
+                context = Operately.Access.get_context!(goal_id: foreign.goal.id)
+                {:ok, _} = Operately.Access.bind_person(context, ctx.actor.id, Binding.view_access())
+              end
+
+              foreign.goal.id
+
+            :inaccessible ->
+              other = ctx |> Factory.add_goal(:private_goal, :source_space, company_access: Binding.no_access(), space_access: Binding.no_access())
+              other.private_goal.id
+
+            :missing ->
+              Ecto.UUID.generate()
+          end
+
+        counts = Enum.map([Operately.Goals.Goal, Operately.Projects.Project, Operately.Activities.Activity, Operately.Notifications.SubscriptionList], &Repo.aggregate(&1, :count))
+
+        ctx = Factory.add_api_token(ctx, :destination_token, :actor, read_only: false)
+        assert {404, _} = mutation(ctx.conn, [:goals, :update_parent_goal], %{goal_id: ctx.source_goal.id, parent_goal_id: destination_id})
+        assert {404, _} = external_mutation(ctx.conn, ctx.destination_token, "goals/update_parent_goal", %{goal_id: ctx.source_goal.id, parent_goal_id: destination_id})
+
+        assert Repo.reload(ctx.source_goal).parent_goal_id == nil
+        assert Repo.reload(ctx.source_project).goal_id == nil
+        assert Enum.map([Operately.Goals.Goal, Operately.Projects.Project, Operately.Activities.Activity, Operately.Notifications.SubscriptionList], &Repo.aggregate(&1, :count)) == counts
+      end
+    end
+
+    test "rejects self-parenting and descendant parents", ctx do
+      ctx = ctx |> Factory.add_goal(:child, :source_space, parent_goal: :source_goal) |> Factory.add_goal(:grandchild, :source_space, parent_goal: :child)
+      activities = Repo.aggregate(Operately.Activities.Activity, :count)
+
+      for parent <- [ctx.source_goal, ctx.child, ctx.grandchild] do
+        assert {400, _} = mutation(ctx.conn, [:goals, :update_parent_goal], %{goal_id: ctx.source_goal.id, parent_goal_id: parent.id})
+        assert Repo.reload(ctx.source_goal).parent_goal_id == nil
+        assert Repo.aggregate(Operately.Activities.Activity, :count) == activities
+      end
+    end
+
+    test "accepts a visible parent in the same company", ctx do
+      ctx = Factory.add_goal(ctx, :visible_parent, :source_space, company_access: Binding.view_access(), space_access: Binding.no_access())
+      destination_id = ctx.visible_parent.id
+      assert {200, _} = mutation(ctx.conn, [:goals, :update_parent_goal], %{goal_id: ctx.source_goal.id, parent_goal_id: destination_id})
+    end
   end
 
   describe "count children" do
@@ -487,6 +613,50 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
+  describe "destination space authorization" do
+    setup ctx do
+      ctx
+      |> Factory.add_company_member(:actor)
+      |> Factory.add_space(:source_space)
+      |> Factory.add_goal(:source_goal, :source_space, champion: :actor, reviewer: :actor)
+      |> Factory.log_in_person(:actor)
+    end
+
+    for destination <- [:foreign, :inaccessible, :view_only, :missing] do
+      @destination destination
+
+      test "rejects #{@destination} space before writes", ctx do
+        destination_id =
+          case @destination do
+            :foreign ->
+              foreign = %{} |> Factory.setup() |> Factory.add_space(:space)
+              foreign.space.id
+
+            :missing ->
+              Ecto.UUID.generate()
+
+            scope ->
+              access = if scope == :view_only, do: Binding.view_access(), else: Binding.no_access()
+              Factory.add_space(ctx, :destination, company_permissions: access).destination.id
+          end
+
+        activities = Repo.aggregate(Activity, :count)
+        expected = if @destination == :view_only, do: 403, else: 404
+        ctx = Factory.add_api_token(ctx, :destination_token, :actor, read_only: false)
+        assert {^expected, _} = mutation(ctx.conn, [:goals, :update_space], %{goal_id: ctx.source_goal.id, space_id: destination_id})
+        assert {^expected, _} = external_mutation(ctx.conn, ctx.destination_token, "goals/update_space", %{goal_id: ctx.source_goal.id, space_id: destination_id})
+        assert Repo.reload(ctx.source_goal).group_id == ctx.source_space.id
+        assert Repo.aggregate(Activity, :count) == activities
+      end
+    end
+
+    test "accepts a destination with edit access", ctx do
+      ctx = Factory.add_space(ctx, :destination, company_permissions: Binding.edit_access())
+      assert {200, _} = mutation(ctx.conn, [:goals, :update_space], %{goal_id: ctx.source_goal.id, space_id: ctx.destination.id})
+      assert Repo.reload(ctx.source_goal).group_id == ctx.destination.id
+    end
+  end
+
   describe "update space" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :update_space], %{})
@@ -540,7 +710,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
       test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
-        new_space = create_space(ctx)
+        new_space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.edit_access()})
 
         assert {code, res} = mutation(ctx.conn, [:goals, :update_space], %{
           goal_id: Paths.goal_id(goal),
@@ -973,6 +1143,42 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert target.goal_id == ctx.goal.id
       assert target.value == inputs.start_value
     end
+
+    test "rejects oversized names and units without changes through either API", ctx do
+      ctx = ctx |> Factory.add_api_token(:token, :creator, read_only: false) |> Factory.log_in_person(:creator)
+      targets_before = Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id))
+      activities_before = Repo.aggregate(Activity, :count)
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), name: "Revenue", start_value: 0, target_value: 100, unit: "USD"}
+
+      for value <- [String.duplicate("a", 256), String.duplicate("e\u0301", 128)], fields <- [[:name], [:unit], [:name, :unit]] do
+        invalid_inputs = Enum.reduce(fields, inputs, &Map.put(&2, &1, value))
+        assert {400, response} = mutation(ctx.conn, [:goals, :create_target], invalid_inputs)
+        assert response.message =~ "255"
+        assert {400, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/create_target", invalid_inputs)
+        assert Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id)) == targets_before
+        assert Repo.aggregate(Activity, :count) == activities_before
+      end
+    end
+
+    test "accepts names and units of 255 Unicode characters", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      value = String.duplicate("😀", 255)
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), name: value, start_value: 0, target_value: 100, unit: value}
+      assert {200, _} = mutation(ctx.conn, [:goals, :create_target], inputs)
+      target = Repo.get_by!(Target, goal_id: ctx.goal.id, name: value)
+      assert target.unit == value
+    end
+
+    test "rejects blank names and units as validation errors", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), name: "Revenue", start_value: 0, target_value: 100, unit: "USD"}
+      targets_before = Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id))
+
+      for field <- [:name, :unit] do
+        assert {400, _} = mutation(ctx.conn, [:goals, :create_target], Map.put(inputs, field, "   "))
+        assert Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id)) == targets_before
+      end
+    end
   end
 
   describe "create target - permissions" do
@@ -1006,6 +1212,30 @@ defmodule OperatelyWeb.Api.GoalsTest do
   end
 
   describe "delete target" do
+    test "it rejects a target from another company without changes", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      other =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space, targets: [])
+        |> Factory.add_goal_target(:target, :goal, index: 5)
+
+      assert {:error, :not_found} = Operately.Goals.Goal.get(ctx.creator, id: other.goal.id)
+
+      goal_ids = [ctx.goal.id, other.goal.id]
+      targets_query = from(t in Target, where: t.goal_id in ^goal_ids, order_by: t.id)
+      targets_before = Repo.all(targets_query)
+      activities_before = Repo.aggregate(Activity, :count)
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), target_id: Paths.target_id(other.target)}
+
+      assert {404, _} = mutation(ctx.conn, [:goals, :delete_target], inputs)
+      assert Repo.all(targets_query) == targets_before
+      assert Repo.aggregate(Activity, :count) == activities_before
+    end
+
     setup ctx do
       Factory.add_goal_target(ctx, :target, :goal)
     end
@@ -1089,6 +1319,30 @@ defmodule OperatelyWeb.Api.GoalsTest do
   end
 
   describe "update target value" do
+    test "it rejects a target from another company without changes", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      other =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space, targets: [])
+        |> Factory.add_goal_target(:target, :goal, index: 5)
+
+      assert {:error, :not_found} = Operately.Goals.Goal.get(ctx.creator, id: other.goal.id)
+
+      goal_ids = [ctx.goal.id, other.goal.id]
+      targets_query = from(t in Target, where: t.goal_id in ^goal_ids, order_by: t.id)
+      targets_before = Repo.all(targets_query)
+      activities_before = Repo.aggregate(Activity, :count)
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), target_id: Paths.target_id(other.target), value: 42}
+
+      assert {404, _} = mutation(ctx.conn, [:goals, :update_target_value], inputs)
+      assert Repo.all(targets_query) == targets_before
+      assert Repo.aggregate(Activity, :count) == activities_before
+    end
+
     setup ctx do
       Factory.add_goal_target(ctx, :target, :goal)
     end
@@ -1177,6 +1431,30 @@ defmodule OperatelyWeb.Api.GoalsTest do
   end
 
   describe "update target" do
+    test "it rejects a target from another company without changes", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      other =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space, targets: [])
+        |> Factory.add_goal_target(:target, :goal, index: 5)
+
+      assert {:error, :not_found} = Operately.Goals.Goal.get(ctx.creator, id: other.goal.id)
+
+      goal_ids = [ctx.goal.id, other.goal.id]
+      targets_query = from(t in Target, where: t.goal_id in ^goal_ids, order_by: t.id)
+      targets_before = Repo.all(targets_query)
+      activities_before = Repo.aggregate(Activity, :count)
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), target_id: Paths.target_id(other.target), name: "Updated target", start_value: 10, target_value: 200, unit: "EUR"}
+
+      assert {404, _} = mutation(ctx.conn, [:goals, :update_target], inputs)
+      assert Repo.all(targets_query) == targets_before
+      assert Repo.aggregate(Activity, :count) == activities_before
+    end
+
     setup ctx do
       Factory.add_goal_target(ctx, :target, :goal)
     end
@@ -1266,6 +1544,42 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert target.unit == original_target.unit
       assert target.updated_at == original_target.updated_at
     end
+
+    test "rejects oversized names and units without changes through either API", ctx do
+      ctx = ctx |> Factory.add_api_token(:token, :creator, read_only: false) |> Factory.log_in_person(:creator)
+      targets_before = Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id))
+      activities_before = Repo.aggregate(Activity, :count)
+      inputs = %{target_id: Paths.target_id(ctx.target), goal_id: Paths.goal_id(ctx.goal), name: "Revenue", start_value: 0, target_value: 100, unit: "USD"}
+
+      for value <- [String.duplicate("a", 256), String.duplicate("e\u0301", 128)], fields <- [[:name], [:unit], [:name, :unit]] do
+        invalid_inputs = Enum.reduce(fields, inputs, &Map.put(&2, &1, value))
+        assert {400, response} = mutation(ctx.conn, [:goals, :update_target], invalid_inputs)
+        assert response.message =~ "255"
+        assert {400, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/update_target", invalid_inputs)
+        assert Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id)) == targets_before
+        assert Repo.aggregate(Activity, :count) == activities_before
+      end
+    end
+
+    test "accepts names and units of 255 Unicode characters", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      value = String.duplicate("😀", 255)
+      inputs = %{target_id: Paths.target_id(ctx.target), goal_id: Paths.goal_id(ctx.goal), name: value, start_value: 0, target_value: 100, unit: value}
+      assert {200, _} = mutation(ctx.conn, [:goals, :update_target], inputs)
+      target = Repo.get_by!(Target, goal_id: ctx.goal.id, name: value)
+      assert target.unit == value
+    end
+
+    test "rejects blank names and units as validation errors", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      inputs = %{target_id: Paths.target_id(ctx.target), goal_id: Paths.goal_id(ctx.goal), name: "Revenue", start_value: 0, target_value: 100, unit: "USD"}
+      targets_before = Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id))
+
+      for field <- [:name, :unit] do
+        assert {400, _} = mutation(ctx.conn, [:goals, :update_target], Map.put(inputs, field, "   "))
+        assert Repo.all(from(t in Target, where: t.goal_id == ^ctx.goal.id, order_by: t.id)) == targets_before
+      end
+    end
   end
 
   describe "update target - permissions" do
@@ -1301,6 +1615,30 @@ defmodule OperatelyWeb.Api.GoalsTest do
   end
 
   describe "update target index" do
+    test "it rejects a target from another company without changes", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      other =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space, targets: [])
+        |> Factory.add_goal_target(:target, :goal, index: 5)
+
+      assert {:error, :not_found} = Operately.Goals.Goal.get(ctx.creator, id: other.goal.id)
+
+      goal_ids = [ctx.goal.id, other.goal.id]
+      targets_query = from(t in Target, where: t.goal_id in ^goal_ids, order_by: t.id)
+      targets_before = Repo.all(targets_query)
+      activities_before = Repo.aggregate(Activity, :count)
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), target_id: Paths.target_id(other.target), index: 0}
+
+      assert {404, _} = mutation(ctx.conn, [:goals, :update_target_index], inputs)
+      assert Repo.all(targets_query) == targets_before
+      assert Repo.aggregate(Activity, :count) == activities_before
+    end
+
     setup ctx do
       targets = Operately.Repo.preload(ctx.goal, :targets).targets |> Enum.sort_by(& &1.index)
 

@@ -211,8 +211,8 @@ operately notifications mark_many_as_read --ids '["n1","n2"]'
 Nested objects and lists use dot-index notation:
 
 ```bash
-operately projects update_task_statuses \
-  --project-id p1 \
+operately tasks update_board_statuses \
+  --board-id b1 \
   --task-statuses.0.id todo \
   --task-statuses.0.label "To Do" \
   --task-statuses.0.color gray \
@@ -268,8 +268,7 @@ an input error. Alignment markers are accepted but not stored. Exporting a heade
 table adds an empty header row, which remains when imported. Mentions retain their `@label`
 text; Markdown does not carry person IDs. Images in cells become links with their labels.
 
-Table input requires the CLI release containing this feature; **1.9.0 and earlier do not
-support it**. Publish the compatible CLI only after the server's table support is deployed.
+Table input requires **CLI 1.10.0 or later**.
 
 Contextual dates let you pass either an exact day or a broader period.
 For `year`, `quarter`, and `month` values, the CLI resolves the value to a real date:
@@ -370,7 +369,9 @@ operately documents create_link --space-id s1 --name "Handbook" --url "https://e
 operately documents create_file --space-id s1 --file ./report.pdf
 ```
 
-Docs & Files commands scope a hub with exactly one of `--space-id`, `--project-id`, or `--goal-id`. For folder listing, `--folder-id` alone is enough.
+Use `operately documents list_hubs --space-id s1` to discover hub IDs and the default. Pass `--resource-hub-id` to select a hub explicitly; `--space-id` alone uses the space's default resource hub. Creation and listing also accept `--folder-id` alone. Any supplied hub, folder, and parent must agree. Use `--project-id` or `--goal-id` to select that project's or goal's hub. Responses include the resolved `resource_hub_id`; an unavailable default returns candidate hubs and retry guidance.
+
+Manage Resource Hubs in a space with `documents create_hub`, `rename_hub`, and `delete_hub` (space edit access required). `list_hubs` returns hubs in saved order. Only empty hubs can be deleted; remove documents, drafts, files, links, and folders first. The default hub is fixed and cannot be changed or deleted. Creating a hub preserves the existing default.
 
 Many create and update commands have additional required fields. Use `--help` on the specific command before scripting it.
 
@@ -402,3 +403,19 @@ Apache-2.0
 ## Support
 
 - [GitHub Issues](https://github.com/operately/operately/issues)
+
+### Task boards
+
+Use `tasks create_board --space-id <id> --name <name>` and `tasks rename_board --board-id <id> --new-name <name>` to manage boards with space edit access. New boards have independent statuses and append to the active list without changing the default. These commands work when the Tasks category is disabled. Reordering is reserved for the web interface.
+
+Use `operately tasks list_boards --space-id <space-id>` to discover boards. Task creation and move destinations use the space’s default board unless `--board-id` or `--destination-board-id` selects another board. Keep the space ID in these requests.
+
+`operately tasks list --space-id <space-id>` lists tasks across all boards; add `--board-id` to filter. Use `operately tasks list_task_statuses --board-id <board-id>` to inspect destination statuses, including on empty boards. Explicit board moves with incompatible statuses return available choices; retry with `--destination-status-id`.
+
+Unavailable-default errors include accessible board candidates. Retry with an explicit board ID.
+
+Project tasks use the same board commands. Resolve the project's sole board with
+`operately tasks get_board --project-id <project-id>`, then use its `id` with
+`tasks update_board_statuses --board-id <board-id>`. List project tasks with
+`tasks list --project-id <project-id>`. Existing `projects update_task_statuses`,
+`spaces update_task_statuses`, and `spaces list_tasks` commands remain compatible.

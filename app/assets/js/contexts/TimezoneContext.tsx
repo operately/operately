@@ -21,7 +21,7 @@ export function TimezoneProvider({ children }) {
   const me = useMe();
   const value = initializeTimezone(me);
 
-  return <TimezoneContext.Provider value={value!}>{children}</TimezoneContext.Provider>;
+  return <TimezoneContext.Provider value={value}>{children}</TimezoneContext.Provider>;
 }
 
 export function useTimezone(): string {
@@ -37,11 +37,9 @@ export function useTimeFormat(): TimeFormat {
 }
 
 function initializeTimezone(me: People.Person | null): TimezoneContextProps {
-  const locale = browserLocale();
-
-  if (!me || !me.timezone) {
-    return { timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, locale, timeFormat: "automatic" };
-  } else {
-    return { timezone: me.timezone, locale, timeFormat: me.timeFormat || "automatic" };
-  }
+  return {
+    timezone: me?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+    locale: browserLocale(),
+    timeFormat: me?.timeFormat ?? "automatic",
+  };
 }

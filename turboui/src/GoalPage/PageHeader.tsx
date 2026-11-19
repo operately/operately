@@ -25,7 +25,7 @@ export function PageHeader(props: GoalPage.State) {
       <IconGoal size={38} className="rounded-lg bg-red-50 dark:bg-red-900" />
 
       <div>
-        <Breadcrumbs navigation={navigation} />
+        {!props.preview && <Breadcrumbs navigation={navigation} />}
 
         <div className="flex items-center gap-2">
           <TextField
@@ -37,7 +37,7 @@ export function PageHeader(props: GoalPage.State) {
             testId="goal-name-field"
           />
 
-          {isInviteOnly && (
+          {!props.preview && isInviteOnly && (
             <PrivacyIndicator
               privacyLevel="secret"
               resourceType="goal"

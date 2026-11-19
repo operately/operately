@@ -2,7 +2,6 @@ import { usePaths } from "@/routes/paths";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import i18n, { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import type { Activity } from "@/models/activities";
 
 import ResourceHubDocumentCommented from ".";
@@ -15,7 +14,8 @@ jest.mock("turboui", () => ({
 
 jest.mock("@/routes/paths", () => ({
   usePaths: () => ({
-    resourceHubDocumentPath: (id: string) => `/documents/${id}`,
+    resourceHubDocumentPath: (id: string, opts?: { inlineThread?: string | null }) =>
+      `/documents/${id}` + (opts?.inlineThread ? `?inlineThread=${encodeURIComponent(opts.inlineThread)}` : ""),
     spacePath: (id: string) => `/spaces/${id}`,
   }),
 }));
@@ -37,24 +37,56 @@ describe("ResourceHubDocumentCommented", () => {
     );
   }
 
+  it.each(["initial-message", "reply-message"])(
+    "links notifications and the feed to the inline thread and %s",
+    (messageId) => {
+      const inlineActivity = {
+        ...activity,
+        content: {
+          ...activity.content,
+          inlineThreadId: "thread-1",
+          comment: { id: messageId },
+        },
+      } as Activity;
+
+      expect(ResourceHubDocumentCommented.pagePath(usePaths(), inlineActivity)).toBe(
+        `/documents/doc-1?inlineThread=thread-1#${messageId}`,
+      );
+
+      const html = renderToStaticMarkup(
+        <>
+          {ResourceHubDocumentCommented.FeedItemTitle({ paths: usePaths(), activity: inlineActivity, page: "feed" })}
+        </>,
+      );
+
+      expect(html).toContain(`href="/documents/doc-1?inlineThread=thread-1#${messageId}"`);
+    },
+  );
+
+  it("keeps the parent fallback when an inline comment's document is unavailable", () => {
+    const inlineActivity = {
+      ...activity,
+      content: { space: { id: "space-1" }, inlineThreadId: "thread-1", comment: { id: "message-1" } },
+    } as Activity;
+
+    expect(ResourceHubDocumentCommented.pagePath(usePaths(), inlineActivity)).toBe("/spaces/space-1");
+  });
+
   afterEach(async () => {
     i18n.removeResourceBundle("pt-BR", "translation");
     i18n.addResourceBundle("pt-BR", "translation", portuguese);
     await applyLanguage("en");
   });
 
-  it.each([false, true])(
-    "preserves English and names with a saved Portuguese preference (flag: %s)",
-    async (enabled) => {
-      i18n.removeResourceBundle("pt-BR", "translation");
-      await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
-      const local =
-        'Jo <a href="/documents/doc-1#comment-1">commented</a> on <a href="/documents/doc-1">Research &amp; &lt;planning&gt;</a>';
-      expect(title("space")).toBe(local);
-      expect(title("feed")).toBe(`${local} in the <a href="/spaces/space-1">General</a> space`);
-      expect(ResourceHubDocumentCommented.NotificationTitle({ activity })).toBe("Re: Research & <planning>");
-    },
-  );
+  it.each(["en", "pt-BR"])("preserves English and names with a selected language: %s", async (language) => {
+    i18n.removeResourceBundle("pt-BR", "translation");
+    await applyLanguage(language);
+    const local =
+      'Jo <a href="/documents/doc-1#comment-1">commented</a> on <a href="/documents/doc-1">Research &amp; &lt;planning&gt;</a>';
+    expect(title("space")).toBe(local);
+    expect(title("feed")).toBe(`${local} in the <a href="/spaces/space-1">General</a> space`);
+    expect(ResourceHubDocumentCommented.NotificationTitle({ activity })).toBe("Re: Research & <planning>");
+  });
 
   it("looks up complete page-context sentences and keeps translated link text at its destination", async () => {
     i18n.addResourceBundle(
@@ -78,6 +110,26 @@ describe("ResourceHubDocumentCommented", () => {
       'SPACE <a href="/spaces/space-1">General</a>: <a href="/documents/doc-1">Research &amp; &lt;planning&gt;</a> — Jo <a href="/documents/doc-1#comment-1">REPLY</a>',
     );
     expect(ResourceHubDocumentCommented.NotificationTitle({ activity })).toBe("REPLY: Research & <planning>");
+  });
+
+  it("renders Spanish sentences with escaped names and unchanged link destinations", async () => {
+    await applyLanguage("es");
+    const html = title("feed");
+    expect(html).toContain('href="/documents/doc-1#comment-1">comentó</a>');
+    expect(html).toContain('href="/documents/doc-1">Research &amp; &lt;planning&gt;</a>');
+    expect(html).toContain('href="/spaces/space-1">General</a>');
+    expect(html).toContain("en el espacio");
+    expect(html).not.toContain("<planning>");
+  });
+
+  it("renders French sentences with escaped names and unchanged link destinations", async () => {
+    await applyLanguage("fr");
+    const html = title("feed");
+    expect(html).toContain('href="/documents/doc-1#comment-1">a commenté</a>');
+    expect(html).toContain('href="/documents/doc-1">Research &amp; &lt;planning&gt;</a>');
+    expect(html).toContain('href="/spaces/space-1">General</a>');
+    expect(html).toContain("dans l’espace");
+    expect(html).not.toContain("<planning>");
   });
 
   it("links the comment verb to the specific comment", () => {

@@ -57,6 +57,115 @@ defmodule Operately.Support.Features.ProfileSteps do
     UI.visit(ctx, Paths.profile_path(ctx.company, ctx.person) <> "/profile/edit")
   end
 
+  step :visit_preferences_page, ctx do
+    UI.visit(ctx, Paths.account_path(ctx.company) <> "/settings")
+  end
+
+  step :submit_preferences, ctx do
+    ctx =
+      if Wallaby.Browser.has?(ctx.session, UI.query(testid: "product-release-toast-dismiss")) do
+        ctx
+        |> UI.click(testid: "product-release-toast-dismiss")
+        |> UI.refute_has(testid: "product-release-toast")
+      else
+        ctx
+      end
+
+    ctx
+    |> UI.scroll_to(testid: "submit")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(css: "[role='status'] .text-callout-success-content")
+    |> UI.assert_has(css: "button[data-test-id='submit']:not([disabled])")
+  end
+
+  step :use_narrow_window, ctx do
+    Map.update!(ctx, :session, &Wallaby.Browser.resize_window(&1, 390, 844))
+  end
+
+  step :select_german, ctx do
+    ctx
+    |> UI.click(testid: "language")
+    |> UI.click(testid: "language-option-de")
+  end
+
+  step :assert_german_account, ctx do
+    assert Operately.Repo.reload!(ctx.person).language == "de"
+
+    ctx
+    |> UI.assert_text("Mein Konto")
+    |> UI.take_screenshot()
+  end
+
+  step :assert_german_preference, ctx do
+    ctx
+    |> UI.assert_has(Wallaby.Query.css("[data-test-id='language']", text: "Deutsch"))
+    |> UI.assert_text("Sprache")
+    |> UI.take_screenshot()
+  end
+
+  step :select_russian, ctx do
+    ctx
+    |> UI.click(testid: "language")
+    |> UI.click(testid: "language-option-ru")
+  end
+
+  step :assert_russian_account, ctx do
+    assert Operately.Repo.reload!(ctx.person).language == "ru"
+
+    ctx
+    |> UI.assert_text("Моя учётная запись")
+    |> UI.take_screenshot()
+  end
+
+  step :assert_russian_preference, ctx do
+    ctx
+    |> UI.assert_has(Wallaby.Query.css("[data-test-id='language']", text: "Русский"))
+    |> UI.assert_text("Язык")
+    |> UI.take_screenshot()
+  end
+
+  step :select_spanish, ctx do
+    ctx
+    |> UI.click(testid: "language")
+    |> UI.click(testid: "language-option-es")
+  end
+
+  step :assert_spanish_account, ctx do
+    assert Operately.Repo.reload!(ctx.person).language == "es"
+
+    ctx
+    |> UI.assert_text("Mi cuenta")
+    |> UI.take_screenshot()
+  end
+
+  step :assert_spanish_preference, ctx do
+    ctx
+    |> UI.assert_has(Wallaby.Query.css("[data-test-id='language']", text: "Español"))
+    |> UI.assert_text("Idioma")
+    |> UI.take_screenshot()
+  end
+
+  step :select_french, ctx do
+    ctx
+    |> UI.click(testid: "language")
+    |> UI.click(testid: "language-option-fr")
+  end
+
+  step :assert_french_account, ctx do
+    assert Operately.Repo.reload!(ctx.person).language == "fr"
+
+    ctx
+    |> UI.assert_text("Mon compte")
+    |> UI.take_screenshot()
+  end
+
+  step :assert_french_preference, ctx do
+    ctx
+    |> UI.assert_has(Wallaby.Query.css("[data-test-id='language']", text: "Français"))
+    |> UI.assert_text("Langue")
+    |> UI.take_screenshot()
+  end
+
   step :visit_notification_settings_page, ctx do
     UI.visit(ctx, Paths.account_notification_settings_path(ctx.company))
   end
@@ -219,7 +328,7 @@ defmodule Operately.Support.Features.ProfileSteps do
     project = Map.fetch!(ctx, project_key)
     task = Map.fetch!(ctx, task_key)
 
-    closed_status = Enum.find(project.task_statuses, & &1.closed)
+    closed_status = Enum.find(Operately.Projects.Project.task_statuses(project), & &1.closed)
 
     assert closed_status
 
@@ -305,7 +414,7 @@ defmodule Operately.Support.Features.ProfileSteps do
     |> UI.click(testid: "disable-assignments-email-toggle")
     |> UI.sleep(100)
     |> UI.click(testid: "save-notification-settings")
-    |> UI.assert_has(testid: "account-settings-page")
+    |> UI.assert_has(testid: "my-account-page")
   end
 
   step :enable_assignments_email, ctx do
@@ -313,7 +422,7 @@ defmodule Operately.Support.Features.ProfileSteps do
     |> UI.click(testid: "enable-assignments-email-toggle")
     |> UI.sleep(100)
     |> UI.click(testid: "save-notification-settings")
-    |> UI.assert_has(testid: "account-settings-page")
+    |> UI.assert_has(testid: "my-account-page")
   end
 
   step :assert_person_not_in_assignments_cron, ctx do

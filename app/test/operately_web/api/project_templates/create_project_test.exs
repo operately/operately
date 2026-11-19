@@ -43,6 +43,15 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateProjectTest do
     assert {400, _} = request(ctx, start_date: nil)
   end
 
+  test "rejects an oversized project name without creating project records", ctx do
+    schemas = [Operately.Projects.Project, Operately.Activities.Activity, Operately.Notifications.SubscriptionList]
+    counts_before = Enum.map(schemas, &Repo.aggregate(&1, :count))
+
+    assert {400, response} = request(ctx, name: String.duplicate("a", 256))
+    assert response.message =~ "255"
+    assert Enum.map(schemas, &Repo.aggregate(&1, :count)) == counts_before
+  end
+
 
   test "rejects archived templates", ctx do
     template = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update!()

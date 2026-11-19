@@ -18,7 +18,8 @@ defmodule OperatelyWeb.Api do
         query(:count_children, OperatelyWeb.Api.Goals.CountChildren)
 
         mutation(:create, OperatelyWeb.Api.Goals.Create)
-        mutation(:change_parent, OperatelyWeb.Api.Goals.ChangeParent)
+        # Keep the legacy route available, but expose only update_parent_goal in the CLI catalog and API docs.
+        mutation(:change_parent, OperatelyWeb.Api.Goals.UpdateParentGoal, catalog: :omit)
         mutation(:close, OperatelyWeb.Api.Goals.Close)
         mutation(:delete, OperatelyWeb.Api.Goals.Delete)
         mutation(:create_access_members, OperatelyWeb.Api.Goals.CreateAccessMembers)
@@ -86,7 +87,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update_parent_goal, OperatelyWeb.Api.Projects.UpdateParentGoal)
         mutation(:create_milestone, OperatelyWeb.Api.Projects.CreateMilestone)
         mutation(:update_milestone, OperatelyWeb.Api.Projects.UpdateMilestone)
-        mutation(:update_task_statuses, OperatelyWeb.Api.Projects.UpdateTaskStatuses)
+        mutation(:update_task_statuses, OperatelyWeb.Api.Wrappers.Projects.UpdateTaskStatuses)
         mutation(:update_tasks_view, OperatelyWeb.Api.Projects.UpdateTasksView)
         mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
         mutation(:update_contributor, OperatelyWeb.Api.Projects.UpdateContributor)
@@ -167,12 +168,21 @@ defmodule OperatelyWeb.Api do
         query(:list, OperatelyWeb.Api.Tasks.List)
         query(:list_potential_assignees, OperatelyWeb.Api.Tasks.ListPotentialAssignees)
         query(:list_task_statuses, OperatelyWeb.Api.Tasks.ListTaskStatuses)
+        query(:list_boards, OperatelyWeb.Api.Tasks.ListBoards)
+        query(:get_board, OperatelyWeb.Api.Tasks.GetBoard)
+        mutation(:update_board_statuses, OperatelyWeb.Api.Tasks.UpdateBoardStatuses)
+        mutation(:create_board, OperatelyWeb.Api.Tasks.CreateBoard)
+        mutation(:rename_board, OperatelyWeb.Api.Tasks.RenameBoard)
+        mutation(:set_default_board, OperatelyWeb.Api.Tasks.SetDefaultBoard)
+        mutation(:archive_board, OperatelyWeb.Api.Tasks.ArchiveBoard)
+        mutation(:restore_board, OperatelyWeb.Api.Tasks.RestoreBoard)
 
         mutation(:create, OperatelyWeb.Api.Tasks.Create)
         mutation(:delete, OperatelyWeb.Api.Tasks.Delete)
         mutation(:move, OperatelyWeb.Api.Tasks.Move)
         mutation(:update_name, OperatelyWeb.Api.Tasks.UpdateName)
         mutation(:update_status, OperatelyWeb.Api.Tasks.UpdateStatus)
+        mutation(:update_archive, OperatelyWeb.Api.Tasks.UpdateArchive)
         mutation(:update_due_date, OperatelyWeb.Api.Tasks.UpdateDueDate)
         mutation(:update_reminders, OperatelyWeb.Api.Tasks.UpdateReminders)
         mutation(:update_assignee, OperatelyWeb.Api.Tasks.UpdateAssignee)
@@ -199,7 +209,7 @@ defmodule OperatelyWeb.Api do
         mutation(:delete, OperatelyWeb.Api.Spaces.Delete)
         mutation(:delete_member, OperatelyWeb.Api.Spaces.DeleteMember)
         mutation(:join, OperatelyWeb.Api.Spaces.Join)
-        mutation(:update_task_statuses, OperatelyWeb.Api.Spaces.UpdateTaskStatuses)
+        mutation(:update_task_statuses, OperatelyWeb.Api.Wrappers.Spaces.UpdateTaskStatuses)
         mutation(:update, OperatelyWeb.Api.Spaces.Update)
         mutation(:update_members_permissions, OperatelyWeb.Api.Spaces.UpdateMembersPermissions)
         mutation(:update_permissions, OperatelyWeb.Api.Spaces.UpdatePermissions)
@@ -211,7 +221,7 @@ defmodule OperatelyWeb.Api do
       end
 
       @doc "Get, list, create and manage Space KPIs"
-      namespace(:kpis, catalog: :hidden) do
+      namespace(:kpis) do
         query(:list_kpis, OperatelyWeb.Api.Kpis.ListKpis)
         query(:get_kpi, OperatelyWeb.Api.Kpis.GetKpi)
 
@@ -231,6 +241,7 @@ defmodule OperatelyWeb.Api do
         query(:get_account, OperatelyWeb.Api.People.GetAccount)
         query(:get_me, OperatelyWeb.Api.People.GetMe)
         query(:list_assignments, OperatelyWeb.Api.People.ListAssignments)
+        query(:list_my_tasks, OperatelyWeb.Api.People.ListMyTasks)
         query(:get_assignments_count, OperatelyWeb.Api.People.GetAssignmentsCount)
         query(:list, OperatelyWeb.Api.People.List)
         query(:get, OperatelyWeb.Api.People.Get)
@@ -283,10 +294,16 @@ defmodule OperatelyWeb.Api do
         mutation(:delete, OperatelyWeb.Api.Reactions.Delete)
       end
 
-      # Legacy Docs & Files routes stay on the external API for CLI <= 1.6.0 backward
-      # compatibility but are omitted from the catalog. The documents namespace
-      # is the supported CLI-facing surface for new clients.
+      # Shared resource hub management and content endpoints.
+      # The CLI catalog exposes the documents aliases instead of this namespace.
       namespace(:resource_hubs, catalog: :omit) do
+        query(:list, OperatelyWeb.Api.ResourceHubs.List)
+
+        mutation(:rename, OperatelyWeb.Api.ResourceHubs.Rename)
+        mutation(:create, OperatelyWeb.Api.ResourceHubs.Create)
+        mutation(:delete, OperatelyWeb.Api.ResourceHubs.Delete)
+
+        # Content endpoints used by the web app and retained externally for CLI <= 1.6.0.
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
         query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
         query(:list_drafts, OperatelyWeb.Api.ResourceHubs.ListDrafts)
@@ -350,13 +367,34 @@ defmodule OperatelyWeb.Api do
       subscription(:reload_comments, S.ReloadComments)
       subscription(:unread_notifications_count, S.UnreadNotificationsCount)
       subscription(:profile_updated, S.ProfileUpdated)
+      subscription(:project_updated, S.ProjectUpdated)
+      subscription(:document_updated, S.DocumentUpdated)
       subscription(:billing_updated, S.BillingUpdated)
     end
   end
 
   defmacro internal_endpoints do
     quote do
+      namespace :tasks do
+        mutation :update_board_kanban, OperatelyWeb.Api.Tasks.UpdateBoardKanban
+        mutation :reorder_boards, OperatelyWeb.Api.Tasks.ReorderBoards
+      end
+
+      namespace :resource_hubs do
+        mutation :reorder, OperatelyWeb.Api.ResourceHubs.Reorder
+      end
+
       query :get_language, OperatelyWeb.Api.Queries.GetLanguage
+
+      namespace :inline_threads do
+        query :list, OperatelyWeb.Api.InlineThreads.List
+        mutation :create, OperatelyWeb.Api.InlineThreads.Create
+        mutation :reply, OperatelyWeb.Api.InlineThreads.Reply
+        mutation :update_message, OperatelyWeb.Api.InlineThreads.UpdateMessage
+        mutation :delete_message, OperatelyWeb.Api.InlineThreads.DeleteMessage
+        mutation :resolve, OperatelyWeb.Api.InlineThreads.Resolve
+        mutation :reopen, OperatelyWeb.Api.InlineThreads.Reopen
+      end
 
       namespace :analytics do
         mutation :sync_context, OperatelyWeb.Api.Analytics.SyncContext
@@ -375,6 +413,13 @@ defmodule OperatelyWeb.Api do
       namespace :curated_templates do
         query :list, OperatelyWeb.Api.CuratedTemplates.List
         query :get, OperatelyWeb.Api.CuratedTemplates.Get
+        query :get_by_id, OperatelyWeb.Api.CuratedTemplates.GetById
+        mutation :instantiate, OperatelyWeb.Api.CuratedTemplates.Instantiate
+      end
+
+      namespace :people do
+        query :get_task_ordering, OperatelyWeb.Api.People.GetTaskOrdering
+        mutation :update_task_ordering, OperatelyWeb.Api.People.UpdateTaskOrdering
       end
 
       common_endpoints()
@@ -431,11 +476,11 @@ defmodule OperatelyWeb.Api do
       end
 
       namespace(:spaces) do
-        mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
+        mutation(:update_kanban, OperatelyWeb.Api.Wrappers.Spaces.UpdateKanban)
       end
 
       namespace(:projects) do
-        mutation(:update_kanban, OperatelyWeb.Api.Projects.UpdateKanban)
+        mutation(:update_kanban, OperatelyWeb.Api.Wrappers.Projects.UpdateKanban)
       end
 
       namespace(:invitations) do
@@ -508,6 +553,10 @@ defmodule OperatelyWeb.Api do
 
       @doc "Browse and manage Docs & Files"
       namespace(:documents) do
+        query(:list_hubs, OperatelyWeb.Api.ResourceHubs.List)
+        mutation(:create_hub, OperatelyWeb.Api.ResourceHubs.Create)
+        mutation(:rename_hub, OperatelyWeb.Api.ResourceHubs.Rename)
+        mutation(:delete_hub, OperatelyWeb.Api.ResourceHubs.Delete)
         query(:list_contents, OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents)
         query(:list_drafts, OperatelyWeb.Api.ResourceHubs.ListDrafts)
         query(:search, OperatelyWeb.Api.Wrappers.DocsAndFiles.Search)

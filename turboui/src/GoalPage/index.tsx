@@ -20,7 +20,7 @@ import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
-import { RichTextHandlers } from "../RichContent/types";
+import { RichTextHandlers, RichTextJSON } from "../RichContent/types";
 import { StatusBanner } from "../ProjectPageLayout/StatusBanner";
 import { GoalPermissions } from "./types";
 import type { FormattedTimePreferences } from "../FormattedTime";
@@ -87,6 +87,7 @@ export namespace GoalPage {
     status: BadgeStatus;
     state?: "draft" | "scheduled" | "published" | null;
     scheduledAt?: string | null;
+    acknowledgedAt?: string | null;
   }
 
   export interface Discussion {
@@ -100,6 +101,7 @@ export namespace GoalPage {
   }
 
   interface CommonProps {
+    preview?: boolean;
     closeLink: string;
     reopenLink: string;
     newCheckInLink: string;
@@ -166,7 +168,7 @@ export namespace GoalPage {
     championSearch: PersonField.SearchData;
     reviewerSearch: PersonField.SearchData;
 
-    description: string;
+    description: RichTextJSON | string | null;
     onDescriptionChange: (description: string | null) => Promise<boolean>;
 
     addTarget: GoalTargetList.AddTargetFn;

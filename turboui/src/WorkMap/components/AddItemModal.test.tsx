@@ -4,9 +4,12 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 
 import { AddItemModal } from "./AddItemModal";
+import { showErrorToast } from "../../Toasts";
 import { i18n, setupTestCatalog } from "../../../test/i18n";
 
 setupTestCatalog();
+
+jest.mock("../../Toasts", () => ({ showErrorToast: jest.fn() }));
 
 jest.mock("react-select", () => {
   return function MockSelect({
@@ -35,12 +38,50 @@ jest.mock("react-select", () => {
 });
 
 const generalSpace = { id: "general", name: "General", link: "/spaces/general" };
+const otherSpace = { id: "other", name: "Other", link: "/spaces/other" };
 const templates = [
   { id: "tpl-general", name: "General campaign", spaceId: "general" },
   { id: "tpl-other", name: "Other space template", spaceId: "other" },
 ];
 
 describe("AddItemModal", () => {
+  it.each(["goal", "project"] as const)("explains a denied %s creation and preserves the draft", async (type) => {
+    const user = userEvent.setup();
+    const close = jest.fn();
+    const save = jest.fn().mockRejectedValue({ response: { status: 403 } });
+    const consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      render(
+        <AddItemModal
+          isOpen
+          close={close}
+          parentGoal={null}
+          spaceSearch={async () => [generalSpace]}
+          save={save}
+          space={generalSpace}
+          initialItemType={type}
+        />,
+      );
+      const name = screen.getByRole("textbox");
+      await user.type(name, "Launch portal");
+      const submit = screen.getByRole("button", { name: type === "goal" ? "Add Goal" : "Add Project" });
+      await user.click(submit);
+
+      await waitFor(() =>
+        expect(showErrorToast).toHaveBeenCalledWith(
+          type === "goal" ? "Failed to create the goal." : "Failed to create the project.",
+          "You don't have permission to create goals or projects in this space. Choose another space or ask a space manager for Edit access.",
+        ),
+      );
+      expect(name).toHaveValue("Launch portal");
+      expect(screen.getByRole("button", { name: "General" })).toBeInTheDocument();
+      expect(submit).toBeEnabled();
+      expect(close).not.toHaveBeenCalled();
+    } finally {
+      consoleError.mockRestore();
+    }
+  });
+
   it("looks up the complete project action and its validation message", async () => {
     i18n.addResourceBundle(
       "en",
@@ -212,6 +253,62 @@ describe("AddItemModal", () => {
         }),
       );
     });
+  });
+
+  it("clears and refocuses only the name when creating more projects", async () => {
+    const user = userEvent.setup();
+    const save = jest
+      .fn()
+      .mockResolvedValueOnce({ id: "project-1" })
+      .mockResolvedValueOnce({ id: "project-2" });
+
+    render(
+      <AddItemModal
+        isOpen
+        close={jest.fn()}
+        parentGoal={null}
+        spaceSearch={jest.fn().mockResolvedValue([otherSpace])}
+        save={save}
+        space={generalSpace}
+        initialItemType="project"
+        hideTypeSelector
+        templates={templates}
+      />,
+    );
+
+    const nameInput = screen.getByPlaceholderText("e.g. Implement new website design");
+    await user.type(nameInput, "First project");
+    await user.click(screen.getByRole("button", { name: "General" }));
+    await user.click(await screen.findByRole("button", { name: "Other" }));
+    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "tpl-other" } });
+    selectCurrentDate("Project start date");
+    await user.click(screen.getByRole("switch", { name: "Create more" }));
+    await user.click(screen.getByRole("button", { name: "Add Project" }));
+
+    await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
+    const firstProjectSettings = expect.objectContaining({
+      name: "First project",
+      space: otherSpace,
+      templateId: "tpl-other",
+      startDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+    });
+    expect(save).toHaveBeenNthCalledWith(1, firstProjectSettings);
+    expect(nameInput).toHaveValue("");
+    await waitFor(() => expect(nameInput).toHaveFocus());
+
+    await user.type(nameInput, "Second project");
+    await user.click(screen.getByRole("button", { name: "Add Project" }));
+
+    await waitFor(() => expect(save).toHaveBeenCalledTimes(2));
+    expect(save).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        name: "Second project",
+        space: otherSpace,
+        templateId: "tpl-other",
+        startDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+      }),
+    );
   });
 });
 

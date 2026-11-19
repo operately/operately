@@ -1,3 +1,4 @@
+import ResourceHubDocumentInlineThreadResolutionChanged from "./ResourceHubDocumentInlineThreadResolutionChanged";
 import * as React from "react";
 import * as interfaces from "./interfaces";
 
@@ -65,6 +66,9 @@ export default ActivityHandler;
 
 export const DISPLAYED_IN_FEED = [
   "kpi_created",
+  "kpi_deleted",
+  "kpi_entry_logged",
+  "kpi_edited",
   "kpi_entry_commented",
   "kpi_entry_edited",
   "kpi_entry_deleted",
@@ -143,6 +147,7 @@ export const DISPLAYED_IN_FEED = [
   "task_adding",
   "task_name_updating",
   "task_status_updating",
+  "task_archive_updating",
   "task_deleting",
   "task_description_change",
   "task_due_date_updating",
@@ -158,6 +163,7 @@ export const DISPLAYED_IN_FEED = [
   "resource_hub_document_public_sharing_changed",
   "resource_hub_document_version_restored",
   "resource_hub_document_commented",
+  "resource_hub_document_inline_thread_resolution_changed",
   "resource_hub_document_deleted",
   "resource_hub_file_created",
   "resource_hub_file_edited",
@@ -167,6 +173,13 @@ export const DISPLAYED_IN_FEED = [
   "resource_hub_folder_created",
   "resource_hub_folder_deleted",
   "resource_hub_folder_renamed",
+  "resource_hub_deleted",
+  "resource_hub_renamed",
+  "task_board_created",
+  "task_board_renamed",
+  "task_board_default_changed",
+  "task_board_restored",
+  "task_board_archived",
   "resource_hub_link_created",
   "resource_hub_link_edited",
   "resource_hub_link_deleted",
@@ -213,6 +226,9 @@ import GoalCheckInCommented from "@/features/activities/GoalCheckInCommented";
 import GoalClosing from "@/features/activities/GoalClosing";
 import GoalCreated from "@/features/activities/GoalCreated";
 import KpiCreated from "@/features/activities/KpiCreated";
+import KpiDeleted from "@/features/activities/KpiDeleted";
+import KpiEntryLogged from "@/features/activities/KpiEntryLogged";
+import KpiEdited from "@/features/activities/KpiEdited";
 import KpiEntryCommented from "@/features/activities/KpiEntryCommented";
 import KpiEntryEdited from "@/features/activities/KpiEntryEdited";
 import KpiEntryDeleted from "@/features/activities/KpiEntryDeleted";
@@ -240,6 +256,7 @@ import ProjectDiscussionSubmitted from "@/features/activities/ProjectDiscussionS
 import ProjectDescriptionChanged from "@/features/activities/ProjectDescriptionChanged";
 import TaskAdding from "@/features/activities/TaskAdding";
 import TaskNameUpdating from "@/features/activities/TaskNameUpdating";
+import TaskArchiveUpdating from "@/features/activities/TaskArchiveUpdating";
 import TaskStatusUpdating from "@/features/activities/TaskStatusUpdating";
 import TaskDescriptionChange from "@/features/activities/TaskDescriptionChange";
 import TaskDueDateUpdating from "@/features/activities/TaskDueDateUpdating";
@@ -279,6 +296,13 @@ import ResourceHubFolderCopied from "@/features/activities/ResourceHubFolderCopi
 import ResourceHubFolderCreated from "@/features/activities/ResourceHubFolderCreated";
 import ResourceHubFolderDeleted from "@/features/activities/ResourceHubFolderDeleted";
 import ResourceHubFolderRenamed from "@/features/activities/ResourceHubFolderRenamed";
+import ResourceHubDeleted from "@/features/activities/ResourceHubDeleted";
+import ResourceHubRenamed from "@/features/activities/ResourceHubRenamed";
+import TaskBoardCreated from "@/features/activities/TaskBoardCreated";
+import TaskBoardRenamed from "@/features/activities/TaskBoardRenamed";
+import TaskBoardDefaultChanged from "@/features/activities/TaskBoardDefaultChanged";
+import TaskBoardRestored from "@/features/activities/TaskBoardRestored";
+import TaskBoardArchived from "@/features/activities/TaskBoardArchived";
 import ResourceHubLinkCommented from "@/features/activities/ResourceHubLinkCommented";
 import ResourceHubLinkCreated from "@/features/activities/ResourceHubLinkCreated";
 import ResourceHubLinkDeleted from "@/features/activities/ResourceHubLinkDeleted";
@@ -336,6 +360,9 @@ function handler(activity: Activity) {
     .with("goal_closing", () => GoalClosing)
     .with("goal_created", () => GoalCreated)
     .with("kpi_created", () => KpiCreated)
+    .with("kpi_deleted", () => KpiDeleted)
+    .with("kpi_entry_logged", () => KpiEntryLogged)
+    .with("kpi_edited", () => KpiEdited)
     .with("kpi_entry_commented", () => KpiEntryCommented)
     .with("kpi_entry_edited", () => KpiEntryEdited)
     .with("kpi_entry_deleted", () => KpiEntryDeleted)
@@ -376,6 +403,10 @@ function handler(activity: Activity) {
     .with("resource_hub_document_edited", () => ResourceHubDocumentEdited)
     .with("resource_hub_document_public_sharing_changed", () => ResourceHubDocumentPublicSharingChanged)
     .with("resource_hub_document_version_restored", () => ResourceHubDocumentVersionRestored)
+    .with(
+      "resource_hub_document_inline_thread_resolution_changed",
+      () => ResourceHubDocumentInlineThreadResolutionChanged,
+    )
     .with("resource_hub_document_commented", () => ResourceHubDocumentCommented)
     .with("resource_hub_document_deleted", () => ResourceHubDocumentDeleted)
     .with("resource_hub_file_created", () => ResourceHubFileCreated)
@@ -386,6 +417,13 @@ function handler(activity: Activity) {
     .with("resource_hub_folder_created", () => ResourceHubFolderCreated)
     .with("resource_hub_folder_deleted", () => ResourceHubFolderDeleted)
     .with("resource_hub_folder_renamed", () => ResourceHubFolderRenamed)
+    .with("resource_hub_deleted", () => ResourceHubDeleted)
+    .with("resource_hub_renamed", () => ResourceHubRenamed)
+    .with("task_board_created", () => TaskBoardCreated)
+    .with("task_board_renamed", () => TaskBoardRenamed)
+    .with("task_board_default_changed", () => TaskBoardDefaultChanged)
+    .with("task_board_restored", () => TaskBoardRestored)
+    .with("task_board_archived", () => TaskBoardArchived)
     .with("resource_hub_link_created", () => ResourceHubLinkCreated)
     .with("resource_hub_link_edited", () => ResourceHubLinkEdited)
     .with("resource_hub_link_deleted", () => ResourceHubLinkDeleted)
@@ -409,6 +447,7 @@ function handler(activity: Activity) {
     .with("task_adding", () => TaskAdding)
     .with("task_name_updating", () => TaskNameUpdating)
     .with("task_status_updating", () => TaskStatusUpdating)
+    .with("task_archive_updating", () => TaskArchiveUpdating)
     .with("task_deleting", () => TaskDeleting)
     .with("task_description_change", () => TaskDescriptionChange)
     .with("task_due_date_updating", () => TaskDueDateUpdating)

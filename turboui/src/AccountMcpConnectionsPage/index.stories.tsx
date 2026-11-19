@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
+import { expect, userEvent, within } from "storybook/test";
 import { AccountMcpConnectionsPage } from "./index";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
@@ -87,5 +88,29 @@ export const EmptyState: Story = {
     securityPath: "#",
     mcpServerUrl: "https://app.operately.com/mcp",
     formattedTimePreferences: defaultFormattedTimePreferences,
+  },
+};
+
+export const ClientSetup: Story = {
+  ...EmptyState,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const client of ["Claude", "Cursor", "Codex CLI", "Claude Code", "Other", "ChatGPT"]) {
+      const button = canvas.getByRole("button", { name: client });
+      await userEvent.click(button);
+      await expect(button).toHaveAttribute("aria-pressed", "true");
+      await expect(canvasElement.querySelector('[data-test-id="mcp-authorize-step"]')).toBeVisible();
+    }
+  },
+};
+
+export const SelfHosted: Story = {
+  ...EmptyState,
+  args: { ...EmptyState.args, mcpServerUrl: "https://work.example.com/mcp" },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Codex CLI" }));
+    await expect(canvas.getByText("codex mcp add operately --url https://work.example.com/mcp")).toBeVisible();
   },
 };

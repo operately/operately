@@ -24,7 +24,7 @@ defmodule Operately.Operations.CompanyMemberRemovingTest do
         has_open_invitation: false
       })
 
-    assert {:ok, removed} = Operately.Operations.CompanyMemberRemoving.run(ctx.admin, member.id)
+    assert {:ok, removed} = Operately.Operations.CompanyMemberRemoving.run(ctx.admin, member)
 
     reloaded = Repo.get(Person, member.id)
 
@@ -41,5 +41,18 @@ defmodule Operately.Operations.CompanyMemberRemovingTest do
     assert activity.content["company_id"] == ctx.company.id
     assert activity.content["name"] == member.full_name
     assert activity.content["title"] == nil
+  end
+
+  test "refuses to remove a person from another company", ctx do
+    other_company = company_fixture()
+    outsider = person_fixture_with_account(%{company_id: other_company.id, has_open_invitation: false})
+
+    assert {:error, :invalid_company} = Operately.Operations.CompanyMemberRemoving.run(ctx.admin, outsider)
+
+    reloaded = Repo.get(Person, outsider.id)
+    assert reloaded
+    refute reloaded.suspended
+
+    refute from(a in Activity, where: a.action == "company_member_removed") |> Repo.one()
   end
 end

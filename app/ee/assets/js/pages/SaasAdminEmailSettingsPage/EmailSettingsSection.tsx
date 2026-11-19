@@ -102,7 +102,7 @@ function EmailSettingsForm({ emailSettings, onUpdate }: FormProps) {
         />
         <Forms.RadioButtons
           field="provider"
-          label={t("Provider")}
+          label={t("Provider", { context: "email" })}
           options={[
             { value: "smtp", label: t("SMTP") },
             { value: "sendgrid", label: t("SendGrid") },

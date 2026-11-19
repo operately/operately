@@ -25,8 +25,16 @@ export class Paths {
     return "/forgot-password";
   }
 
-  static newCompanyPath() {
-    return "/new";
+  static newCompanyPath(params?: { redirectTo: string }) {
+    return "/new" + encodeUrlParams(params ? { redirect_to: params.redirectTo } : undefined);
+  }
+
+  static curatedTemplateEntryPath(templateId: string) {
+    return `/templates/${encodeURIComponent(templateId)}/use`;
+  }
+
+  curatedTemplateUsePath(templateId: string) {
+    return this.createCompanyPath(["templates", encodeURIComponent(templateId), "use"]);
   }
 
   static companyImportPath() {
@@ -86,10 +94,6 @@ export class Paths {
 
   accountPath() {
     return this.createCompanyPath(["account"]);
-  }
-
-  accountAppearancePath() {
-    return this.createCompanyPath(["account", "appearance"]);
   }
 
   accountSettingsPath() {
@@ -328,8 +332,10 @@ export class Paths {
     return this.createCompanyPath(["files", fileId, "edit"]);
   }
 
-  resourceHubDocumentPath(documentId: string) {
-    return this.createCompanyPath(["documents", documentId]);
+  resourceHubDocumentPath(documentId: string, opts?: { inlineThread?: string | null }) {
+    const path = this.createCompanyPath(["documents", documentId]);
+
+    return path + encodeUrlParams(opts?.inlineThread ? { inlineThread: opts.inlineThread } : undefined);
   }
 
   resourceHubDocumentVersionsPath(documentId: string) {
@@ -487,11 +493,11 @@ export class Paths {
     return this.createCompanyPath(["project-templates", templateId, "files", fileId, "edit"]);
   }
 
-  spaceKanbanPath(spaceId: string, opts?: { taskId?: string }) {
+  spaceKanbanPath(spaceId: string, boardId: string, opts?: { taskId?: string }) {
     if (opts?.taskId) {
-      return this.createCompanyPath(["spaces", spaceId, "kanban"]) + "?taskId=" + opts.taskId;
+      return this.createCompanyPath(["spaces", spaceId, "boards", boardId]) + "?taskId=" + opts.taskId;
     }
-    return this.createCompanyPath(["spaces", spaceId, "kanban"]);
+    return this.createCompanyPath(["spaces", spaceId, "boards", boardId]);
   }
 
   spaceEditPath(spaceId: string) {
@@ -707,7 +713,7 @@ function isUUID(id: string) {
   return id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
 }
 
-function idWithoutComments(id: string) {
+export function idWithoutComments(id: string) {
   const parts = id.split("-");
   return parts[parts.length - 1];
 }
@@ -720,4 +726,27 @@ export function encodeUrlParams(params?: Record<any, any>) {
     .join("&");
 
   return queryStr ? "?" + queryStr : "";
+}
+
+/** Return destinations are app-relative; encoded query and fragment values are preserved. */
+export function internalReturnPath(value: string | null | undefined): string | null {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return null;
+  if (/[\\\u0000-\u0020\u007f]/.test(value)) return null;
+
+  const [pathname = ""] = value.split(/[?#]/, 1);
+
+  if (/%(?:2f|5c|0[0-9a-f]|1[0-9a-f]|7f)/i.test(pathname)) return null;
+  return value;
+}
+
+export function authPath(path: string, search = window.location.search): string {
+  const current = new URLSearchParams(search);
+  const params = new URLSearchParams();
+  const returnTo = internalReturnPath(current.get("redirect_to"));
+  const invite = current.get("invite_token");
+
+  if (returnTo) params.set("redirect_to", returnTo);
+  if (invite) params.set("invite_token", invite);
+
+  return params.size ? `${path}?${params}` : path;
 }

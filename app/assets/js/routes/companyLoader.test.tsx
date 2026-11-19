@@ -5,8 +5,11 @@ import Api from "@/api";
 import * as Socket from "@/api/socket";
 import { queryClient } from "@/api/queryClient";
 import { QueryClientProvider, focusManager } from "@tanstack/react-query";
-import { useRouteLoaderData } from "react-router";
+import { useLoaderData, useRouteLoaderData } from "react-router";
 import { act, renderHook, waitFor } from "@/__tests__/renderHook";
+import { createRoot } from "react-dom/client";
+import { CompanyDataBoundary } from "./useCompanyLoaderData";
+import { loader as homeLoader, useLoadedData as useHomeData } from "@/pages/HomePage/loader";
 import { checkAuth } from "./pageRoute";
 import { companyLoader } from "./companyLoader";
 import { useCompanyLoaderData } from "./useCompanyLoaderData";
@@ -15,8 +18,8 @@ jest.mock("axios");
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/api/socket", () => ({ setHeaders: jest.fn() }));
 jest.mock("./pageRoute", () => ({ checkAuth: jest.fn() }));
-jest.mock("react-router", () => ({ useRouteLoaderData: jest.fn() }));
-jest.mock("turboui", () => ({}));
+jest.mock("react-router", () => ({ useLoaderData: jest.fn(), useRouteLoaderData: jest.fn() }));
+jest.mock("turboui", () => ({ ContentListSkeleton: () => <div role="status" /> }));
 const wrapper = ({ children }: React.PropsWithChildren) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
@@ -57,6 +60,59 @@ it("prefetches once across concurrent loads, route reentry, and mounting", async
   expect(result.current.siteMessages).toEqual([{ id: "message" }]);
 });
 
+it.each(["company", "spaces"])(
+  "defers company consumers until an evicted required %s query recovers",
+  async (missing) => {
+    jest.mocked(useRouteLoaderData).mockReturnValue(await load());
+    queryClient.removeQueries({
+      queryKey:
+        missing === "company" ? Api.companies.getQueryKeyPrefix() : Api.spaces.countByAccessLevelQueryKeyPrefix(),
+    });
+    let resolveCompany: (response: unknown) => void = () => {
+      throw new Error("Request not started");
+    };
+    jest.mocked(axios.get).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveCompany = resolve;
+        }),
+    );
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    function Consumers() {
+      const { company, canAddProject } = useCompanyLoaderData();
+      return (
+        <div data-test-id="company-navigation" data-can-add={canAddProject}>
+          {company.name}
+        </div>
+      );
+    }
+    try {
+      act(() =>
+        root.render(
+          <QueryClientProvider client={queryClient}>
+            <CompanyDataBoundary>
+              <Consumers />
+            </CompanyDataBoundary>
+          </QueryClientProvider>,
+        ),
+      );
+      expect(container.querySelector('[role="status"]')).not.toBeNull();
+      expect(container.querySelector('[data-test-id="company-navigation"]')).toBeNull();
+      await act(async () =>
+        resolveCompany({ data: respond(missing === "company" ? "/companies/get" : "/count_by_access_level") }),
+      );
+      await waitFor(() =>
+        expect(container.querySelector('[data-test-id="company-navigation"]')?.textContent).toBe("company"),
+      );
+      expect(container.querySelector('[role="status"]')).toBeNull();
+      expect(container.querySelector('[data-test-id="company-navigation"]')?.getAttribute("data-can-add")).toBe("true");
+    } finally {
+      act(() => root.unmount());
+    }
+  },
+);
+
 it("observes invalidated company names and creation permissions", async () => {
   jest.mocked(useRouteLoaderData).mockReturnValue(await load());
   const { result } = renderHook(useCompanyLoaderData, { initialProps: undefined, wrapper });
@@ -72,6 +128,30 @@ it("observes invalidated company names and creation permissions", async () => {
   await waitFor(() => expect(result.current.company.name).toBe("Renamed"));
   expect(result.current.canAddProject).toBe(false);
   expect(result.current.canAddGoal).toBe(false);
+});
+
+it("keeps the home page's cached data when navigating from an old company name", async () => {
+  const company = { id: "my-demo-0b0k", name: "My Demo", setupCompleted: true };
+  jest.mocked(axios.get).mockImplementation(async (url) => ({
+    data: url.endsWith("/companies/get") ? { company } : url.endsWith("/spaces/list") ? { spaces: [] } : respond(url),
+  }));
+  const inputs = await load("demo-1-0b0k");
+  jest.mocked(useLoaderData).mockReturnValue(await homeLoader());
+  const { result, rerender } = renderHook(useHomeData, { initialProps: undefined, wrapper });
+  expect(result.current.company).toEqual(company);
+  jest.mocked(axios.get).mockClear();
+
+  await act(async () => {
+    await load(company.id);
+  });
+  rerender(undefined);
+
+  expect(result.current.company).toEqual(company);
+  expect(result.current.spaces).toEqual([]);
+  expect(inputs.companyId).toBe(company.id);
+  expect(Api.default.getHeaders()).toEqual({ "x-company-id": "0b0k" });
+  expect(Socket.setHeaders).toHaveBeenLastCalledWith({ "x-company-id": "0b0k" });
+  expect(axios.get).not.toHaveBeenCalled();
 });
 
 it("skips billing entirely when disabled", async () => {

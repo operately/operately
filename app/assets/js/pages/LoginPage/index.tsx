@@ -1,3 +1,4 @@
+import { authPath, internalReturnPath, Paths } from "@/routes/paths";
 import * as Invitations from "@/models/invitations";
 import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
@@ -10,7 +11,6 @@ import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { SignInWithGoogleButton } from "@/features/auth/Buttons";
 import { translationText } from "@/i18n";
 import { logIn } from "@/routes/auth";
-import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import classNames from "classnames";
 import { Forms, DimmedLink, Link, type FormState } from "turboui";
@@ -83,7 +83,7 @@ function Page() {
                 <div className="mt-8 text-center text-sm font-medium">
                   <Trans
                     i18nKey="Don't have an account? <actionLink>Create an account</actionLink>"
-                    components={{ actionLink: <Link to="/sign_up" /> }}
+                    components={{ actionLink: <Link to={authPath("/sign_up")} /> }}
                   />
                 </div>
               )}
@@ -129,12 +129,8 @@ function PasswordInput() {
   return (
     <Forms.PasswordInput
       field={"password"}
-      label={
-        <div className="flex justify-between w-full">
-          <span>{t("Password")}</span>
-          <ForgotPasswordLink />
-        </div>
-      }
+      label={t("Password")}
+      labelAction={<ForgotPasswordLink />}
       placeholder={translationText(t("Password"))}
       required
     />
@@ -145,7 +141,11 @@ function ForgotPasswordLink() {
   const { t } = useTranslation();
 
   return (
-    <DimmedLink to={Paths.forgotPasswordPath()} className="text-sm font-normal" testId="forgot-password-link">
+    <DimmedLink
+      to={Paths.forgotPasswordPath()}
+      className="text-sm font-normal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+      testId="forgot-password-link"
+    >
       {t("Forgot password?")}
     </DimmedLink>
   );
@@ -189,14 +189,5 @@ function OrSeparator() {
 }
 
 function getRedirectTo(): string | null {
-  const query = new URLSearchParams(window.location.search);
-  const redirectTo = query.get("redirect_to");
-
-  if (redirectTo) {
-    const decoded = decodeURIComponent(redirectTo);
-
-    return decoded.startsWith("/") ? decoded : null;
-  } else {
-    return null;
-  }
+  return internalReturnPath(new URLSearchParams(window.location.search).get("redirect_to"));
 }

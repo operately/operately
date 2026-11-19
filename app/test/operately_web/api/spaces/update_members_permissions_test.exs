@@ -1,11 +1,51 @@
 defmodule OperatelyWeb.Api.Spaces.UpdateMembersPermissionsTest do
   use OperatelyWeb.TurboCase
 
+  import Ecto.Query, only: [from: 2]
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
 
   alias Operately.Access
   alias Operately.Access.Binding
+
+  describe "company member boundaries" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:member, :space)
+      |> Factory.log_in_person(:creator)
+    end
+
+    test "rejects a mixed-company batch without partial writes", ctx do
+      foreign_person = Factory.setup(%{}).creator
+      assert {:error, :not_found} = Operately.Groups.Group.get(foreign_person, id: ctx.space.id)
+      before = space_access_snapshot(ctx.space)
+
+      assert {400, _} = request(ctx.conn, ctx.space, [{ctx.member, Binding.edit_access()}, {foreign_person, Binding.edit_access()}])
+      assert space_access_snapshot(ctx.space) == before
+    end
+
+    test "rejects a foreign space even when the caller has full access", ctx do
+      foreign = %{} |> Factory.setup() |> Factory.add_space(:space)
+      context = Access.get_context!(group_id: foreign.space.id)
+      {:ok, _} = Access.bind_person(context, ctx.creator.id, Binding.full_access())
+      before = space_access_snapshot(foreign.space)
+
+      assert {404, _} = request(ctx.conn, foreign.space, [{ctx.member, Binding.edit_access()}])
+      assert space_access_snapshot(foreign.space) == before
+    end
+  end
+
+  defp space_access_snapshot(space) do
+    context = Access.get_context!(group_id: space.id)
+
+    %{
+      bindings: Repo.all(from(b in Binding, where: b.context_id == ^context.id, order_by: b.id)),
+      memberships: Repo.aggregate(Operately.Access.GroupMembership, :count),
+      activities: Repo.aggregate(Operately.Activities.Activity, :count)
+    }
+  end
 
   describe "security" do
     test "it requires authentication", ctx do

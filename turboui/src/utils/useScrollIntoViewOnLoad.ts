@@ -2,15 +2,15 @@ import { useEffect } from "react";
 import { useLocation } from "react-router";
 
 export function useScrollIntoViewOnLoad(id: string) {
-  const location = useLocation();
+  const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    const hash = location.hash.slice(1);
+    if (hash.slice(1) !== id) return;
 
-    if (hash === id) {
-      setTimeout(() => {
-        document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
-      }, 500);
-    }
-  }, [location, id]);
+    const timer = setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [pathname, hash, id]);
 }

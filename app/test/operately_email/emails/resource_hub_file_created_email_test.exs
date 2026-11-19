@@ -8,7 +8,7 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmailTest do
     parent = %{name: "Space <literal>"}
     file = %{name: ~s(File "literal")}
 
-    for {locale, single, multiple} <- [{"en", "uploaded the file", "uploaded 3 files"}, {"pt_BR", "enviou o arquivo", "enviou 3 arquivos"}, {"fr", "uploaded the file", "uploaded 3 files"}] do
+    for {locale, single, multiple} <- [{"en", "uploaded the file", "uploaded 3 files"}, {"pt_BR", "enviou o arquivo", "enviou 3 arquivos"}, {"nl", "uploaded the file", "uploaded 3 files"}] do
       Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
         assert ResourceHubFileCreatedEmail.subject_text(author, parent, [file]) == ~s|(Space <literal>) Ana S. #{single} "#{file.name}"|
         assert ResourceHubFileCreatedEmail.subject_text(author, parent, [file, file, file]) == "(Space <literal>) Ana S. #{multiple}"

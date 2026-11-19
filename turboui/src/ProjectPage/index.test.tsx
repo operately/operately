@@ -90,7 +90,9 @@ function ProjectPageHarness({
   includeQuicktimeFile = false,
   initialEntry = "/projects/project-1",
   search,
+  completeMilestoneModal,
 }: {
+  completeMilestoneModal?: ProjectPage.Props["completeMilestoneModal"];
   includeDocsAndFiles?: boolean;
   includeQuicktimeFile?: boolean;
   initialEntry?: string;
@@ -272,6 +274,7 @@ function ProjectPageHarness({
         onMilestoneUpdate={() => undefined}
         onMilestoneReorder={async () => undefined}
         onMilestoneSearch={async () => undefined}
+        completeMilestoneModal={completeMilestoneModal}
         assigneePersonSearch={{} as any}
         statuses={[]}
         onSaveCustomStatuses={() => undefined}
@@ -293,6 +296,31 @@ function ProjectPageHarness({
 }
 
 describe("ProjectPage", () => {
+  test("renders the milestone completion modal and forwards completion and close callbacks", async () => {
+    const onComplete = jest.fn().mockResolvedValue(true);
+    const onClose = jest.fn();
+    render(
+      <ProjectPageHarness
+        completeMilestoneModal={{
+          isOpen: true,
+          milestoneName: "Launch",
+          openTaskCount: 1,
+          closedStatuses: [],
+          onComplete,
+          onClose,
+        }}
+      />,
+    );
+
+    expect(document.querySelector('[data-test-id="complete-milestone-modal"]')).toBeInTheDocument();
+    const form = document.querySelector('[data-test-id="complete-milestone-form"]');
+    if (!form) throw new Error("Milestone completion form is missing");
+    fireEvent.submit(form);
+
+    await waitFor(() => expect(onComplete).toHaveBeenCalledWith({ action: "move_to_no_milestone" }));
+    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
+  });
+
   test("hides the docs and files tab when project docs are unavailable", () => {
     render(<ProjectPageHarness />);
 

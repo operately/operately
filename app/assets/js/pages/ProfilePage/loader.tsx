@@ -20,6 +20,7 @@ export async function loader({ params }) {
     prefetchPersonWithFallback(personInput),
     Api.companies.getFlatWorkMapQuery(workMapInput),
     Api.companies.getFlatWorkMapQuery(reviewerWorkMapInput),
+    Api.people.getTaskOrderingQuery({}),
   ]);
 
   return { personInput, meInput, workMapInput, reviewerWorkMapInput };
@@ -39,10 +40,16 @@ export function useLoadedData() {
   });
   const { data: workMapData } = useLoadedQuery(Api.companies.getFlatWorkMapQueryOptions(workMapInput));
   const { data: reviewerWorkMapData } = useLoadedQuery(Api.companies.getFlatWorkMapQueryOptions(reviewerWorkMapInput));
+  const { data: taskOrderingData } = useLoadedQuery(Api.people.getTaskOrderingQueryOptions({}));
   const person = meInput === null ? personData?.person : meData?.me;
 
   if (!person?.id || !compareIds(person.id, personInput.id)) throw new Error("Profile data is unavailable");
   if (!workMapData?.workMap || !reviewerWorkMapData?.workMap) throw new Error("Profile work map data is unavailable");
 
-  return { person, workMap: workMapData.workMap, reviewerWorkMap: reviewerWorkMapData.workMap };
+  return {
+    person,
+    workMap: workMapData.workMap,
+    reviewerWorkMap: reviewerWorkMapData.workMap,
+    taskOrdering: taskOrderingData?.taskIds ?? [],
+  };
 }

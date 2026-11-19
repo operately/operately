@@ -9,7 +9,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmailTest do
     document = %{name: "Document <literal>"}
 
     for {copied_id, english, portuguese} <- [{nil, "added", "adicionou"}, {"original", "copied", "copiou"}],
-        {locale, verb, noun} <- [{"en", english, "a document"}, {"pt_BR", portuguese, "um documento"}, {"fr", english, "a document"}] do
+        {locale, verb, noun} <- [{"en", english, "a document"}, {"pt_BR", portuguese, "um documento"}, {"nl", english, "a document"}] do
       Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
         assert ResourceHubDocumentCreatedEmail.subject_text(author, parent, document, copied_id) ==
           "(Space <literal>) Ana S. #{verb} #{noun}: Document <literal>"

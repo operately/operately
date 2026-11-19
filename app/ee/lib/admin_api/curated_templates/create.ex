@@ -5,10 +5,12 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.Create do
   inputs do
     field :type, :curated_template_type
     field :title, :string
+    field :slug, :string
     field? :summary, :string, null: true
     field? :category, :string, null: true
     field :content_language, :string
     field :definition, :json
+    field? :preview_data, :json
   end
 
   outputs do

@@ -6,3 +6,4 @@ export { Figma } from "./Figma";
 export { Notion } from "./Notion";
 export { Dropbox } from "./Dropbox";
 export { Airtable } from "./Airtable";
+export { OpenAI, Claude, Cursor, Codex, ClaudeCode } from "./AiClientLogos";

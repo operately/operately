@@ -6,6 +6,7 @@ import { SubtleDropPlaceholder } from "../../utils/PragmaticDragAndDrop";
 
 export interface EmptyMilestoneDropZoneProps {
   milestoneId: string;
+  disabled?: boolean;
   children?: React.ReactNode;
   draggedItemId?: string | null;
   targetLocation?: BoardLocation | null;
@@ -18,6 +19,7 @@ export interface EmptyMilestoneDropZoneProps {
  */
 export function EmptyMilestoneDropZone({
   milestoneId,
+  disabled = false,
   children,
   draggedItemId = null,
   targetLocation = null,
@@ -28,7 +30,7 @@ export function EmptyMilestoneDropZone({
 
   useEffect(() => {
     const element = containerRef.current;
-    if (!element) return;
+    if (!element || disabled) return;
 
     return dropTargetForElements({
       element,
@@ -37,7 +39,7 @@ export function EmptyMilestoneDropZone({
         index: 0,
       }),
     });
-  }, [milestoneId]);
+  }, [milestoneId, disabled]);
 
   const shouldShowPlaceholder = Boolean(draggedItemId && targetLocation?.containerId === milestoneId);
   const placeholderIndex = targetLocation?.containerId === milestoneId ? targetLocation.index : 0;

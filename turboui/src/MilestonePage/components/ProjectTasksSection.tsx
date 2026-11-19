@@ -133,6 +133,7 @@ export function ProjectTasksSection({
             tasks={orderedTasks}
             showHiddenTasksToggle={hasHiddenTasks}
             milestoneId={milestone.id}
+            onTaskMilestoneChange={onTaskReorder}
             onTaskAssigneeChange={onTaskAssigneeChange}
             onTaskDueDateChange={onTaskDueDateChange}
             onTaskStatusChange={onTaskStatusChange}

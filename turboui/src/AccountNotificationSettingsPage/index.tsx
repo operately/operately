@@ -29,7 +29,7 @@ export namespace AccountNotificationSettingsPage {
     onCancel: () => void;
     isSubmitting?: boolean;
     homePath: string;
-    settingsPath: string;
+    accountPath: string;
   }
 }
 
@@ -46,9 +46,9 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
   const navigation = React.useMemo(
     () => [
       { to: props.homePath, label: t("Home") },
-      { to: props.settingsPath, label: t("Settings") },
+      { to: props.accountPath, label: t("My Account") },
     ],
-    [props.homePath, props.settingsPath, t],
+    [props.homePath, props.accountPath, t],
   );
 
   const windowOptions: WindowOption[] = [

@@ -1,9 +1,9 @@
-import i18n from "@/i18n";
 import { useSetTaskItemChecked } from "@/models/richContent/taskListLifecycle";
 import { useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
+import { useNavigate } from "react-router";
 
-import { DateField, TaskBoard, TaskPage, showErrorToast } from "turboui";
+import { DateField, TaskBoard, TaskPage } from "turboui";
 import { useOptimisticComments } from "@/models/comments/useOptimisticComments";
 import * as People from "@/models/people";
 import { compareIds, Paths } from "@/routes/paths";
@@ -13,7 +13,8 @@ import { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 import { type Person as ApiPerson, type Task as BackendTask } from "@/api";
 import { useSubscription } from "@/models/subscriptions";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useMoveTask } from "./taskLifecycle";
+import { useMoveTask, useTaskMoveBoards, taskMoveErrorResult } from "./taskLifecycle";
+import { resolveTaskMoveDestination, taskMoveDestinationPath, type TaskMoveDestination } from "./taskMoveNavigation";
 
 export function useTaskSlideInProps(opts: {
   backendTasks: BackendTask[];
@@ -25,6 +26,7 @@ export function useTaskSlideInProps(opts: {
   onRefresh?: () => Promise<void>;
 
   canEdit: boolean;
+  boardArchived?: boolean;
   canComment: boolean;
   variant: Extract<TaskPage.Variant, "space-task" | "project-task">;
 
@@ -34,7 +36,7 @@ export function useTaskSlideInProps(opts: {
   onTaskRemindersChange: (taskId: string, reminders: TaskPage.Reminder[]) => Promise<boolean> | boolean;
   onTaskStatusChange: (taskId: string, newStatus: TaskBoard.Status | null) => Promise<boolean> | boolean;
   onTaskDescriptionChange: (taskId: string, content: any) => Promise<boolean>;
-  onMoveTaskSuccess: (result: { movedTaskId: string; destinationType: string; destinationId: string }) => Promise<void>;
+  onMoveTaskSuccess?: (destination: TaskMoveDestination) => void | Promise<void>;
   projectSearch: TaskPage.ContentProps["projectSearch"];
   spaceSearch: TaskPage.ContentProps["spaceSearch"];
 }) {
@@ -43,6 +45,8 @@ export function useTaskSlideInProps(opts: {
   const setTaskItemChecked = useSetTaskItemChecked();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mutateAsync: moveTask } = useMoveTask();
+  const loadMoveBoards = useTaskMoveBoards();
+  const navigate = useNavigate();
 
   const parsedCurrentUser = currentUser ? (People.parsePersonForTurboUi(paths, currentUser) ?? undefined) : undefined;
 
@@ -198,26 +202,24 @@ export function useTaskSlideInProps(opts: {
         onDelete: async () => {
           await ctx.onTaskDelete?.(taskId);
         },
-        onMoveTask: async ({ destinationType, destinationId }) => {
+        onMoveTask: async (input) => {
           try {
-            const res = await moveTask({ taskId, destinationType, destinationId });
-            const movedTaskId = res.task?.id ?? taskId;
-            const resolvedDestinationType = res.destinationType ?? destinationType;
-            const resolvedDestinationId = res.destinationId ?? destinationId;
+            const request = { taskId, ...input };
+            const result = await moveTask(request);
+            const destination = resolveTaskMoveDestination(result, request);
 
-            await opts.onMoveTaskSuccess({
-              movedTaskId,
-              destinationType: resolvedDestinationType,
-              destinationId: resolvedDestinationId,
-            });
+            await opts.onMoveTaskSuccess?.(destination);
+            navigate(taskMoveDestinationPath(paths, destination));
 
             return true;
           } catch (error) {
-            console.error("Failed to move task", error);
-            showErrorToast(i18n.t("Error"), i18n.t("Failed to move task."));
-            return false;
+            const result = taskMoveErrorResult(error);
+            if (result === false) console.error("Failed to move task", error);
+            return result;
           }
         },
+        loadMoveBoards,
+        currentBoardId: backendTask?.boardId,
         projectSearch: opts.projectSearch,
         spaceSearch: opts.spaceSearch,
 
@@ -233,6 +235,7 @@ export function useTaskSlideInProps(opts: {
         localDraftKeyBase: `task:${taskId}`,
 
         canEdit,
+        boardArchived: opts.boardArchived,
 
         currentUser: parsedCurrentUser,
         timelineItems: currentTimelineItems,
@@ -266,6 +269,7 @@ export function useTaskSlideInProps(opts: {
       activeTaskId,
       backendTasks,
       canComment,
+      opts.boardArchived,
       canEdit,
       addComment,
       addReaction,
@@ -281,6 +285,8 @@ export function useTaskSlideInProps(opts: {
       comments,
       opts.onMoveTaskSuccess,
       moveTask,
+      loadMoveBoards,
+      navigate,
       subscriptions,
       opts.projectSearch,
       opts.spaceSearch,

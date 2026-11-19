@@ -24,7 +24,7 @@ export namespace AddItemModal {
   export interface Props {
     isOpen: boolean;
     close: () => void;
-    space: SpaceField.Space;
+    space?: SpaceField.Space;
     parentGoal: { id: string; name: string } | null;
     spaceSearch: SpaceField.SearchSpaceFn;
     save: (props: SaveProps) => Promise<{ id: string }>;
@@ -117,6 +117,7 @@ export function AddItemModal(props: AddItemModal.Props) {
           <div className="flex flex-col gap-4">
             <TextField
               autofocus
+              inputRef={state.nameInputRef}
               label={t("Name")}
               variant="form-field"
               placeholder={
@@ -185,6 +186,7 @@ export function AddItemModal(props: AddItemModal.Props) {
 
 function useAddItemModalState(props: AddItemModal.Props) {
   const { t } = useTranslation();
+  const nameInputRef = React.useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const [itemType, setItemType] = React.useState<"goal" | "project">(props.initialItemType || "goal");
   const [name, setName] = React.useState("");
   const [space, setSpace] = React.useState<SpaceField.Space | null>(props.space || null);
@@ -284,16 +286,21 @@ function useAddItemModalState(props: AddItemModal.Props) {
       });
 
       setName("");
-      setSpace(props.space || null);
-      setTemplateId("");
-      setStartDate("");
       setNameError(undefined);
       setSpaceError(undefined);
       setStartDateError(undefined);
 
+      if (!createMore) {
+        setSpace(props.space || null);
+        setTemplateId("");
+        setStartDate("");
+      }
+
       await props.onSaved?.(itemType, result.id);
 
-      if (!createMore && !props.keepOpenAfterSave) {
+      if (createMore) {
+        requestAnimationFrame(() => nameInputRef.current?.focus());
+      } else if (!props.keepOpenAfterSave) {
         props.close();
       }
 
@@ -302,10 +309,17 @@ function useAddItemModalState(props: AddItemModal.Props) {
       }
     } catch (error) {
       console.error("Failed to create item:", error);
-      showErrorToast(
-        t("Network error"),
-        itemType === "goal" ? t("Failed to create the goal.") : t("Failed to create the project."),
-      );
+      const failureMessage = itemType === "goal" ? t("Failed to create the goal.") : t("Failed to create the project.");
+      if (isPermissionDenied(error)) {
+        showErrorToast(
+          failureMessage,
+          t(
+            "You don't have permission to create goals or projects in this space. Choose another space or ask a space manager for Edit access.",
+          ),
+        );
+      } else {
+        showErrorToast(t("Network error"), failureMessage);
+      }
       setSubmitting(false);
     }
   };
@@ -314,6 +328,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
     createMore,
     setCreateMore,
 
+    nameInputRef,
     name,
     setName,
     itemType,
@@ -333,6 +348,12 @@ function useAddItemModalState(props: AddItemModal.Props) {
     submit,
     submitting,
   };
+}
+
+function isPermissionDenied(error: unknown): boolean {
+  if (!error || typeof error !== "object" || !("response" in error)) return false;
+  const response = error.response;
+  return !!response && typeof response === "object" && "status" in response && response.status === 403;
 }
 
 interface RadioCardOption {

@@ -16,3 +16,19 @@ it("translates default actions and keeps their callbacks", async () => {
   expect(onClose).toHaveBeenCalledTimes(1);
   expect(onConfirm).toHaveBeenCalledTimes(1);
 });
+
+it.each([
+  [undefined, "border-red-500"],
+  ["primary", "border-brand-1"],
+] as const)("uses the %s confirmation button variant", (confirmVariant, expectedClass) => {
+  render(
+    <ActionConfirmation
+      isOpen
+      onClose={jest.fn()}
+      onConfirm={jest.fn()}
+      confirmLabel="Confirm action"
+      confirmVariant={confirmVariant}
+    />,
+  );
+  expect(screen.getByRole("button", { name: "Confirm action" })).toHaveClass(expectedClass);
+});

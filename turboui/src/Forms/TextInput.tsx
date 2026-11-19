@@ -14,7 +14,7 @@ const DEFAULT_VALIDATION_PROPS = {
 };
 
 export function TextInput(props: TextInputProps) {
-  const { field, label, hidden, testId, autoFocus, placeholder, onEnter, okSign } = props;
+  const { field, label, hidden, testId, autoFocus, placeholder, onEnter, onBlur, onChange, okSign } = props;
   const { required, minLength, maxLength } = { ...DEFAULT_VALIDATION_PROPS, ...props };
   const [value, setValue] = useFieldValue<string>(field);
   const error = useFieldError(field);
@@ -37,8 +37,12 @@ export function TextInput(props: TextInputProps) {
         minLength={minLength}
         maxLength={maxLength}
         onEnter={onEnter}
+        onBlur={onBlur}
         okSign={okSign}
-        onChange={(event) => setValue(event.target.value)}
+        onChange={(event) => {
+          setValue(event.target.value);
+          onChange?.(event);
+        }}
       />
     </InputField>
   );

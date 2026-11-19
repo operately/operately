@@ -20,9 +20,12 @@ export function useGoalContentQueries({
   discussionsInput,
 }: ReturnType<typeof goalContentInputs>) {
   // Mount every query immediately; reuse loader-prefetched content without refetching.
-  const workMap = useLoadedQuery(Api.companies.getWorkMapQueryOptions(workMapInput));
-  const checkIns = useLoadedQuery(Api.goals.listCheckInsQueryOptions(checkInsInput));
-  const discussions = useLoadedQuery(Api.goals.listDiscussionsQueryOptions(discussionsInput));
+  const workMap = useLoadedQuery({ ...Api.companies.getWorkMapQueryOptions(workMapInput), throwOnError: false });
+  const checkIns = useLoadedQuery({ ...Api.goals.listCheckInsQueryOptions(checkInsInput), throwOnError: false });
+  const discussions = useLoadedQuery({
+    ...Api.goals.listDiscussionsQueryOptions(discussionsInput),
+    throwOnError: false,
+  });
 
   return {
     workMap: workMap.data?.workMap ?? EMPTY_WORK_MAP,

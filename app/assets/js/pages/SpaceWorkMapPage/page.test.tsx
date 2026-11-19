@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { Space, WorkMapItem } from "@/api";
 import { dismissToast, showErrorToast, WorkMapPage } from "turboui";
 import { Page } from "./page";
-import { useLoadedData } from "./loader";
+import { useLoadedData, type ReadyData } from "./loader";
 
 jest.mock("./loader", () => ({ useLoadedData: jest.fn() }));
 jest.mock("turboui", () => ({
@@ -33,7 +33,7 @@ jest.mock("react-router", () => ({ useNavigate: () => mockNavigate }));
 describe("SpaceWorkMapPage creation readiness", () => {
   let root: Root;
   let client: QueryClient;
-  let loaded: ReturnType<typeof useLoadedData>;
+  let loaded: ReadyData;
   const space: Space = {
     __typename: "space",
     id: "space-1",
@@ -83,7 +83,8 @@ describe("SpaceWorkMapPage creation readiness", () => {
     client = new QueryClient();
     root = createRoot(document.createElement("div"));
     loaded = {
-      data: { space, workMap: [], templates: [] },
+      status: "ready",
+      data: { space, workMap: [], templates: [], editableSpaces: [space] },
       creationData: { isLoading: false, error: null, retry: jest.fn() },
     };
     jest.mocked(useLoadedData).mockImplementation(() => loaded);

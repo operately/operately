@@ -2,7 +2,6 @@
 import React, { act } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { i18n, applyLanguage, setupTestCatalog } from "@/__tests__/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import page from ".";
 import { useLoadedData } from "./loader";
 
@@ -64,7 +63,7 @@ beforeEach(() => {
 });
 afterEach(() => act(() => root.unmount()));
 
-it.each(["flag-off", "missing-portuguese", "substituted"])(
+it.each(["english", "missing-portuguese", "substituted"])(
   "renders the draft empty state from the catalog: %s",
   async (mode) => {
     if (mode === "missing-portuguese") i18n.removeResourceBundle("pt-BR", "translation");
@@ -80,7 +79,7 @@ it.each(["flag-off", "missing-portuguese", "substituted"])(
         true,
         true,
       );
-    await applyLanguage(resolveEffectiveLanguage("pt-BR", mode === "missing-portuguese"));
+    await applyLanguage(mode === "missing-portuguese" ? "pt-BR" : "en");
     act(() => root.render(<page.Page />));
     expect(container.querySelector("h1")?.textContent).toBe(
       mode === "substituted" ? "Expanded translated discussion drafts heading" : "Your Drafts",

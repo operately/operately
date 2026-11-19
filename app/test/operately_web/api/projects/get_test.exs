@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert {401, _} = query(ctx.conn, [:projects, :get], %{})
     end
 
-    test "returns 404 for an authenticated request without a company header", ctx do
+    test "returns 400 for an authenticated request without a company header", ctx do
       ctx =
         ctx
         |> Factory.setup()
@@ -50,7 +50,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
 
       conn = Plug.Conn.delete_req_header(ctx.conn, "x-company-id")
 
-      assert {404, _} = query(conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
+      assert {400, %{code: "missing_company_context"}} = query(conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
     end
 
     test "returns 400 for extra query keys that are not existing atoms", ctx do
@@ -90,7 +90,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       p = create_project(ctx, company_access_level: Binding.view_access())
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
-      expected = Serializer.serialize(p, level: :full) |> normalize_serialized_project()
+      expected = p |> Repo.preload(:task_board) |> Serializer.serialize(level: :full) |> normalize_serialized_project()
       assert res.project == expected
     end
 
@@ -107,7 +107,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       p = create_project(ctx, space_access_level: Binding.view_access())
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
-      expected = Serializer.serialize(p, level: :full) |> normalize_serialized_project()
+      expected = p |> Repo.preload(:task_board) |> Serializer.serialize(level: :full) |> normalize_serialized_project()
       assert res.project == expected
     end
 
@@ -210,7 +210,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       project = create_project(ctx)
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
-      expected = Serializer.serialize(project, level: :full) |> normalize_serialized_project()
+      expected = project |> Repo.preload(:task_board) |> Serializer.serialize(level: :full) |> normalize_serialized_project()
       assert res.project == expected
     end
 

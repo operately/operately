@@ -1,24 +1,13 @@
 defmodule Operately.I18n.EffectiveLanguage do
   @moduledoc false
 
-  alias Operately.Companies
-  alias Operately.Companies.Company
   alias Operately.I18n.{Languages, Locale}
   alias Operately.People.Person
 
-  def resolve(person, company \\ :from_person)
-  def resolve(person, :from_person), do: resolve(person, company_of(person))
+  def resolve(person), do: preferred_language(person) || Languages.default()
 
-  def resolve(person, company) do
-    if feature_enabled?(company) do
-      preferred_language(person) || Languages.default()
-    else
-      Languages.default()
-    end
-  end
-
-  def put_request_locale(person, company) do
-    language = resolve(person, company)
+  def put_request_locale(person) do
+    language = resolve(person)
     Gettext.put_locale(OperatelyWeb.Gettext, Locale.to_gettext(language))
     language
   end
@@ -33,21 +22,4 @@ defmodule Operately.I18n.EffectiveLanguage do
   end
 
   defp preferred_language(_), do: nil
-
-  defp feature_enabled?(%Company{} = company) do
-    Companies.has_experimental_feature?(company, Languages.feature_flag())
-  end
-
-  defp feature_enabled?(_), do: false
-
-  defp company_of(%Person{company: %Company{} = company}), do: company
-
-  defp company_of(%Person{company: %Ecto.Association.NotLoaded{}} = person) do
-    case Operately.Repo.preload(person, :company).company do
-      %Company{} = company -> company
-      _ -> nil
-    end
-  end
-
-  defp company_of(_), do: nil
 end

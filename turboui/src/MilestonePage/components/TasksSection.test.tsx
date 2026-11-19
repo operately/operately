@@ -3,9 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
-jest.mock("@atlaskit/pragmatic-drag-and-drop/element/adapter", () => ({
-  dropTargetForElements: () => () => undefined,
-}));
+jest.mock("@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box", () => ({ DropIndicator: () => null }));
 
 jest.mock("../../TaskBoard", () => ({
   TaskFilter: () => <div data-test-id="task-filter" />,
@@ -13,13 +11,6 @@ jest.mock("../../TaskBoard", () => ({
 
 jest.mock("../../TaskBoard/components/TaskFilter", () => ({
   FilterBadges: () => <div data-test-id="filter-badges" />,
-}));
-
-jest.mock("../../TaskBoard/components/TaskList", () => ({
-  __esModule: true,
-  default: ({ inlineCreateRow }: { inlineCreateRow?: React.ReactNode }) => (
-    <div data-test-id="project-task-list">{inlineCreateRow}</div>
-  ),
 }));
 
 jest.mock("../../TaskBoard/components/InlineTaskCreator", () => ({
@@ -69,6 +60,7 @@ jest.mock("../../TemplateProjectPage/TaskRow", () => ({
 }));
 
 jest.mock("../../utils/PragmaticDragAndDrop", () => ({
+  useSortableItem: jest.requireActual("../../utils/PragmaticDragAndDrop").useSortableItem,
   projectItemsWithPlaceholder: ({ items }: { items: unknown[] }) => ({ items, placeholderIndex: null }),
   SubtleDropPlaceholder: () => null,
   useBoardDnD: () => ({
@@ -197,6 +189,28 @@ function projectState(overrides: Partial<MilestonePage.ProjectState> = {}): Mile
 }
 
 describe("TasksSection", () => {
+  it.each([true, false])("makes project tasks draggable only when reordering is available (%s)", (canReorder) => {
+    const props = projectState({
+      onTaskReorder: canReorder ? jest.fn() : undefined,
+      tasks: [
+        {
+          id: "task-1",
+          title: "Review",
+          type: "project",
+          status,
+          link: "",
+          description: null,
+          milestone: null,
+          dueDate: null,
+        },
+      ],
+    });
+
+    const { container } = renderTasksSection(props);
+
+    expect(container.querySelector('[draggable="true"]') !== null).toBe(canReorder);
+  });
+
   it("uses the shared section shell while preserving template task behavior", () => {
     const props = templateState();
 
@@ -214,10 +228,7 @@ describe("TasksSection", () => {
   it("renders template tasks in the milestone ordering state", () => {
     renderTasksSection(
       templateState({
-        tasks: [
-          templateTask({ id: "task-1", name: "First" }),
-          templateTask({ id: "task-2", name: "Second" }),
-        ],
+        tasks: [templateTask({ id: "task-1", name: "First" }), templateTask({ id: "task-2", name: "Second" })],
         milestones: [
           {
             id: "milestone-1",

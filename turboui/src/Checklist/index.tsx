@@ -272,6 +272,7 @@ function ChecklistItemCard({
 
 function ChecklistItemAdd({ state }: { state: State }) {
   const { t } = useTranslation();
+  const nameValidation = useChecklistNameValidation();
   const [createMore, setCreateMore] = React.useState(false);
 
   const {
@@ -285,7 +286,7 @@ function ChecklistItemAdd({ state }: { state: State }) {
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: { name: string }) => {
     const result = await state.addItem({
       name: data.name,
     });
@@ -317,9 +318,9 @@ function ChecklistItemAdd({ state }: { state: State }) {
           label={t("Check")}
           autoFocus
           placeholder={t("e.g. Sign the contract")}
-          error={errors.name?.message as string}
+          error={errors.name?.message}
           onKeyDown={handleKeyDown}
-          {...register("name", { required: t("Can't be empty") })}
+          {...register("name", nameValidation)}
         />
         <div className="flex items-center mt-4">
           <SwitchToggle value={createMore} setValue={setCreateMore} label={t("Create more")} />
@@ -340,6 +341,7 @@ function ChecklistItemAdd({ state }: { state: State }) {
 
 function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemState }) {
   const { t } = useTranslation();
+  const nameValidation = useChecklistNameValidation();
   const {
     register,
     handleSubmit,
@@ -350,7 +352,7 @@ function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemS
     },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: { name: string }) => {
     state.saveEdit(item.id, {
       name: data.name,
     });
@@ -368,9 +370,9 @@ function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemS
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textfield
           label={t("Check")}
-          error={errors.name?.message as string}
+          error={errors.name?.message}
           onKeyDown={handleKeyDown}
-          {...register("name", { required: t("Can't be empty") })}
+          {...register("name", nameValidation)}
         />
         <div className="flex items-center gap-2 justify-end mt-4">
           <SecondaryButton size="xs" onClick={() => state.cancelEdit(item.id)} type="button">
@@ -383,6 +385,18 @@ function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemS
       </form>
     </InlineModal>
   );
+}
+
+function useChecklistNameValidation() {
+  const { t } = useTranslation();
+
+  return {
+    validate: (name: string) => {
+      if (!name.trim()) return t("Can't be empty");
+      // Match PostgreSQL's character limit, including emoji and combining characters.
+      return Array.from(name).length <= 255 || t("Must be at most {{maxLength}} characters long", { maxLength: 255 });
+    },
+  };
 }
 
 function InlineModal({ index, children }: { index: number; children: React.ReactNode }) {

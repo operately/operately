@@ -13,7 +13,13 @@ export function RouteLanguageProvider({
   const location = useLocation();
   const params = useParams();
   const companyId = accountOnly ? undefined : params.companyId;
-  const options = React.useMemo(() => routeLanguageQueryOptions(companyId, location.key), [companyId, location.key]);
+
+  // Tabs and filters share the page's language; changing them must not hide its content.
+  const options = React.useMemo(
+    () => routeLanguageQueryOptions(companyId, location.pathname),
+    [companyId, location.pathname],
+  );
+
   const query = useQuery(options);
   const language = query.isError ? "en" : query.data?.language;
 

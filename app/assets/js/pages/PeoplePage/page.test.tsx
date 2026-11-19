@@ -2,7 +2,6 @@
 import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import i18n, { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import { Page } from "./page";
 
 jest.mock("./loader", () => ({ useLoadedData: () => ({ company: { name: "Literal company" }, people: [] }) }));
@@ -17,6 +16,7 @@ jest.mock("@/routes/paths", () => ({
   compareIds: (a: string, b: string) => a === b,
 }));
 jest.mock("turboui", () => ({
+  ...jest.requireActual("turboui"),
   PeoplePage: ({ profileHref }) => (
     <a data-testid="page-content" href={profileHref("person")}>
       Person
@@ -29,10 +29,12 @@ afterEach(async () => {
 });
 
 test.each([
-  [true, "Pessoas"],
-  [false, "People"],
-])("page title follows the company language gate: %s", async (enabled, title) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+  ["en", "People"],
+  ["pt-BR", "Pessoas"],
+  ["fr", "Annuaire"],
+  ["es", "Personas"],
+] as const)("page title follows the selected language: %s", async (language, title) => {
+  await applyLanguage(language);
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
   const container = document.createElement("div");
   const root = createRoot(container);
@@ -46,8 +48,8 @@ test.each([
 });
 
 test("page title looks up substituted wording", async () => {
-  const original = i18n.getResource("en", "translation", "People");
-  i18n.addResource("en", "translation", "People", "Translated page title");
+  const original = i18n.getResource("en", "translation", "People|navigation");
+  i18n.addResource("en", "translation", "People|navigation", "Translated page title");
   const container = document.createElement("div");
   const root = createRoot(container);
   try {
@@ -55,6 +57,6 @@ test("page title looks up substituted wording", async () => {
     expect(container.querySelector("main")?.getAttribute("data-title")).toBe("Translated page title");
   } finally {
     act(() => root.unmount());
-    i18n.addResource("en", "translation", "People", original);
+    i18n.addResource("en", "translation", "People|navigation", original);
   }
 });

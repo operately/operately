@@ -2,7 +2,6 @@
 import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { SiteMessageBanner } from "./SiteMessageBanner";
@@ -119,10 +118,10 @@ afterEach(async () => {
 });
 
 test.each([
-  [true, "Dispensar mensagem"],
-  [false, "Dismiss message"],
-])("dismiss respects the company language flag: %s", async (enabled, label) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+  ["pt-BR", "Dispensar mensagem"],
+  ["en", "Dismiss message"],
+])("dismiss follows the selected language: %s", async (language, label) => {
+  await applyLanguage(language);
 
   const setDismissed = jest.fn();
   mockUseStateWithLocalStorage.mockReturnValue([[], setDismissed]);

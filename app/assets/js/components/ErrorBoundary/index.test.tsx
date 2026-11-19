@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import * as Sentry from "@sentry/react";
 
 import { ErrorBoundary } from "./index";
@@ -41,6 +42,13 @@ describe("ErrorBoundary", () => {
     expect(Sentry.captureException).toHaveBeenCalledWith(error, {
       extra: { componentStack: info.componentStack },
     });
+  });
+
+  it("leaves request-error reporting to the Axios interceptor", () => {
+    stubSentryEnabled(true);
+    const boundary = new ErrorBoundary({ children: null });
+    boundary.componentDidCatch(new AxiosError("Request failed"), { componentStack: "" });
+    expect(Sentry.captureException).not.toHaveBeenCalled();
   });
 
   it("does not report to Sentry when disabled", () => {

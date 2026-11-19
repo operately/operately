@@ -1,7 +1,9 @@
+import { internalReturnPath } from "./paths";
 import { disablePreloading } from "./preloading/preloadSession";
 import { queryClient } from "@/api/queryClient";
 
 import { resetAnalytics } from "@/analytics/session";
+import { teardownApplication } from "@/applicationTeardown";
 
 type LogOutResult = "success" | "failure";
 type LogInResult = "success" | "failure";
@@ -15,9 +17,16 @@ export async function logOut(): Promise<LogOutResult> {
 
   resetAnalytics();
   disablePreloading();
+  teardownApplication();
   queryClient.clear();
 
   return "success";
+}
+
+export async function logOutAndRedirect() {
+  if ((await logOut()) === "success") {
+    window.location.href = "/";
+  }
 }
 
 interface LogInOptions {
@@ -42,7 +51,7 @@ export async function logIn(email: string, password: string, options: LogInOptio
 
     if (!skipRedirect) {
       if (redirectTo) {
-        window.location.href = redirectTo;
+        window.location.href = internalReturnPath(redirectTo) || "/";
       } else if (res.redirected) {
         window.location.href = res.url;
       } else {

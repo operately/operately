@@ -7,15 +7,19 @@ defmodule Operately.Operations.KpiCreation do
   alias Operately.Operations.Notifications.SubscriptionList, as: SubscriptionListOps
 
   def run(creator, attrs) do
+    build(creator, attrs)
+    |> Repo.transaction()
+    |> Repo.extract_result(:kpi)
+    |> broadcast_assignments_count()
+  end
+
+  def build(creator, attrs) do
     Multi.new()
     |> SubscriptionListOps.insert(%{send_to_everyone: false, subscription_parent_type: :kpi})
     |> insert_kpi(attrs)
     |> SubscriptionListOps.update(:kpi)
     |> subscribe_people(creator)
     |> insert_activity(creator)
-    |> Repo.transaction()
-    |> Repo.extract_result(:kpi)
-    |> broadcast_assignments_count()
   end
 
   defp insert_kpi(multi, attrs) do
@@ -54,10 +58,10 @@ defmodule Operately.Operations.KpiCreation do
     end)
   end
 
-  defp broadcast_assignments_count({:ok, %Kpi{champion_id: champion_id}} = result) when not is_nil(champion_id) do
+  def broadcast_assignments_count({:ok, %Kpi{champion_id: champion_id}} = result) when not is_nil(champion_id) do
     OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: champion_id)
     result
   end
 
-  defp broadcast_assignments_count(result), do: result
+  def broadcast_assignments_count(result), do: result
 end

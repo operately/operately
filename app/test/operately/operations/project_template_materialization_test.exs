@@ -29,6 +29,14 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     |> Factory.add_goal(:goal, :space)
   end
 
+  test "returns an invalid name error for an oversized project name", ctx do
+    ctx = Factory.add_project_template(ctx, :template, :space)
+
+    assert {:error, {:invalid_name, {_message, validation}}} = materialize(ctx, ~D[2028-02-15], String.duplicate("a", 256))
+    assert validation[:validation] == :length
+    assert validation[:count] == 255
+  end
+
   test "materializes an independent core graph with dates, workflow, ordering, and reminders", ctx do
     [not_started, done] = statuses()
 
@@ -108,8 +116,8 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert [%{type: :before_due, days: 2}] = root_task.reminders
     assert milestone_task.due_date.date == ~D[2028-03-02]
 
-    copied_not_started = Enum.find(project.task_statuses, &(&1.value == not_started.value))
-    copied_done = Enum.find(project.task_statuses, &(&1.value == done.value))
+    copied_not_started = Enum.find(Operately.Projects.Project.task_statuses(project), &(&1.value == not_started.value))
+    copied_done = Enum.find(Operately.Projects.Project.task_statuses(project), &(&1.value == done.value))
     refute copied_not_started.id in Enum.map(ctx.template.task_statuses, & &1.id)
     assert root_task.task_status.id == copied_done.id
     assert root_open_task.task_status.id == copied_not_started.id
@@ -118,11 +126,11 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert Enum.all?(project.tasks, &(is_nil(&1.closed_at) and is_nil(&1.reopened_at)))
 
     assert project.milestones_ordering_state == [Paths.milestone_id(milestone)]
-    assert project.tasks_kanban_state[copied_not_started.value] == [
+    assert Operately.Projects.Project.tasks_kanban_state(project)[copied_not_started.value] == [
              Paths.task_id(root_open_task),
              Paths.task_id(milestone_open_task)
            ]
-    assert project.tasks_kanban_state[copied_done.value] == [Paths.task_id(root_task), Paths.task_id(milestone_task)]
+    assert Operately.Projects.Project.tasks_kanban_state(project)[copied_done.value] == [Paths.task_id(root_task), Paths.task_id(milestone_task)]
     assert milestone.tasks_ordering_state == [Paths.task_id(milestone_task), Paths.task_id(milestone_open_task)]
     assert milestone.tasks_kanban_state[copied_not_started.value] == [Paths.task_id(milestone_open_task)]
     assert milestone.tasks_kanban_state[copied_done.value] == [Paths.task_id(milestone_task)]
@@ -531,14 +539,14 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     end)
   end
 
-  defp materialize(ctx, start_date) do
+  defp materialize(ctx, start_date, name \\ "Generated launch") do
     ProjectTemplateMaterialization.run(%ProjectTemplateMaterialization{
       template_id: ctx.template.id,
       start_date: start_date,
       project: %ProjectCreation{
         company_id: ctx.company.id,
         group_id: ctx.space.id,
-        name: "Generated launch",
+        name: name,
         champion_id: ctx.champion.id,
         reviewer_id: ctx.reviewer.id,
         creator_id: ctx.creator.id,

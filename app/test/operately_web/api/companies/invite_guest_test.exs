@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Companies.InviteGuestTest do
   }
 
   test "email length errors include the limit in the effective language", ctx do
-    ctx = ctx |> Factory.setup() |> Factory.enable_feature("i18n") |> Factory.log_in_person(:creator)
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
     input = Map.put(@invite_guest_input, :email, String.duplicate("a", 150) <> "@example.com")
 
     for {language, expected} <- [
@@ -23,8 +23,7 @@ defmodule OperatelyWeb.Api.Companies.InviteGuestTest do
                mutation(ctx.conn, [:companies, :invite_guest], input)
     end
 
-    {:ok, _} = People.update_person(ctx.creator, %{language: "pt-BR"})
-    {:ok, _} = Operately.Companies.update_company(ctx.company, %{enabled_experimental_features: []})
+    {:ok, _} = Operately.People.update_person(ctx.creator, %{language: "en"})
     assert {400, %{details: %{field: "email"}, message: "Email should be at most 160 character(s)"}} =
              mutation(ctx.conn, [:companies, :invite_guest], input)
   end

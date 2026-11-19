@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.QuickSearchTest do
   use OperatelyWeb.TurboCase
 
+  import Mock
+
   alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.Repo
@@ -141,5 +143,44 @@ defmodule OperatelyWeb.Api.Companies.QuickSearchTest do
     assert {200, result} = query(ctx.conn, [:companies, :quick_search], query: "Company Isolation Marker")
     assert result.discussions == []
     assert result.documents == []
+  end
+
+  @tag :parallel_failure
+  test "parallel queue failure reaches the HTTP error handler", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+    owner = self()
+    error = %DBConnection.ConnectionError{reason: :queue_timeout, message: "private diagnostic"}
+
+    with_mock Operately.Repo, [:passthrough],
+      all: fn query ->
+        if self() == owner, do: :meck.passthrough([query]), else: raise(error)
+      end do
+      ExUnit.CaptureLog.capture_log(fn ->
+        {503, _, body} =
+          Phoenix.ConnTest.assert_error_sent(503, fn ->
+            Phoenix.ConnTest.dispatch(ctx.conn, OperatelyWeb.Endpoint, :get, "/api/v2/companies/quick_search", %{query: "test"})
+          end)
+
+        assert Jason.decode!(body)["code"] == "database_connection_queue_timeout"
+      end)
+    end
+  end
+
+  @tag :parallel_failure
+  test "parallel unrelated failure reaches the HTTP error handler", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+    owner = self()
+    error = %RuntimeError{message: "private diagnostic"}
+
+    with_mock Operately.Repo, [:passthrough],
+      all: fn query ->
+        if self() == owner, do: :meck.passthrough([query]), else: raise(error)
+      end do
+      ExUnit.CaptureLog.capture_log(fn ->
+        conn = Phoenix.ConnTest.dispatch(ctx.conn, OperatelyWeb.Endpoint, :get, "/api/v2/companies/quick_search", %{query: "test"})
+        assert conn.status == 500
+        refute Map.has_key?(Jason.decode!(conn.resp_body), "code")
+      end)
+    end
   end
 end

@@ -24,9 +24,12 @@ export function useProjectContentQueries({
 
   // All queries mount immediately, regardless of the selected tab.
   // Missing data is fetched; loader-prefetched data is reused without a second request.
-  const checkIns = useLoadedQuery(Api.projects.listCheckInsQueryOptions(checkInsInput));
-  const discussions = useLoadedQuery(Api.projects.listDiscussionsQueryOptions(discussionsInput));
-  const tasks = useLoadedQuery(Api.tasks.listQueryOptions(tasksInput));
+  const checkIns = useLoadedQuery({ ...Api.projects.listCheckInsQueryOptions(checkInsInput), throwOnError: false });
+  const discussions = useLoadedQuery({
+    ...Api.projects.listDiscussionsQueryOptions(discussionsInput),
+    throwOnError: false,
+  });
+  const tasks = useLoadedQuery({ ...Api.tasks.listQueryOptions(tasksInput), throwOnError: false });
 
   const refresh = useCallback(async () => {
     await Promise.all([

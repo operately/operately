@@ -6,8 +6,6 @@ import { Paths } from "@/routes/paths";
 
 type Comment = api.Comment;
 
-export type { CommentParentType } from "@/api";
-
 export type { Comment };
 export { useReloadCommentsSignal } from "@/signals";
 export { useEditComment as useEditCommentHandler } from "./useEditComment";

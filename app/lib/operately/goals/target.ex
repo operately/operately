@@ -23,6 +23,8 @@ defmodule Operately.Goals.Target do
     target
     |> cast(attrs, [:name, :from, :to, :unit, :goal_id, :index, :value])
     |> validate_required([:name, :from, :to, :unit, :goal_id, :index, :value])
+    |> validate_length(:name, max: 255, count: :codepoints)
+    |> validate_length(:unit, max: 255, count: :codepoints)
   end
 
   @doc """

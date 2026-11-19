@@ -16,6 +16,8 @@ defmodule Operately.Operations.ResourceHubDocumentVersionRestoringTest do
 
   test "restores an earlier version as a new current snapshot", ctx do
     document = preload_document(ctx.document)
+    topic = "api:document_updated:#{document.id}"
+    OperatelyWeb.Endpoint.subscribe(topic)
     assert document.current_version == 3
     assert document.name == "Version three"
     v1 = DocumentVersion.get_by_document_and_number(document.id, 1)
@@ -27,6 +29,7 @@ defmodule Operately.Operations.ResourceHubDocumentVersionRestoringTest do
              })
 
     assert updated.current_version == 4
+    assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
     assert updated.name == v1.title
     assert updated.content == v1.content
     assert restored.version_number == 4

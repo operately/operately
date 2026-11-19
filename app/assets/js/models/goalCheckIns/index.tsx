@@ -27,6 +27,7 @@ export function parseCheckInsForTurboUi(paths: Paths, checkIns: api.GoalProgress
       status: checkIn.status!,
       state: checkIn.state,
       scheduledAt: checkIn.scheduledAt,
+      acknowledgedAt: checkIn.acknowledgedAt,
     };
   });
 }

@@ -37,29 +37,27 @@ defmodule OperatelyWeb.Mcp.Helpers do
   def decode_optional_id(nil), do: {:ok, nil}
   def decode_optional_id(id), do: decode_id(id)
 
-  def decode_hub_scope(%{"space_id" => _space_id, "project_id" => _project_id}), do: {:error, :invalid_arguments}
-  def decode_hub_scope(%{"space_id" => _space_id, "goal_id" => _goal_id}), do: {:error, :invalid_arguments}
-  def decode_hub_scope(%{"project_id" => _project_id, "goal_id" => _goal_id}), do: {:error, :invalid_arguments}
+  def decode_hub_scope(arguments) do
+    keys = [:resource_hub_id, :space_id, :project_id, :goal_id, :folder_id]
 
-  def decode_hub_scope(%{"space_id" => space_id}) do
-    with {:ok, space_id} <- decode_id(space_id) do
-      {:ok, %{space_id: space_id}}
+    Enum.reduce_while(keys, {:ok, %{}}, fn key, {:ok, inputs} ->
+      case decode_optional_id(arguments[Atom.to_string(key)]) do
+        {:ok, nil} -> {:cont, {:ok, inputs}}
+        {:ok, id} -> {:cont, {:ok, Map.put(inputs, key, id)}}
+        error -> {:halt, error}
+      end
+    end)
+    |> validate_hub_scope()
+  end
+
+  defp validate_hub_scope({:ok, inputs}) do
+    case OperatelyWeb.Api.Wrappers.DocsAndFiles.HubScope.validate_selectors(inputs) do
+      :ok -> {:ok, inputs}
+      {:error, :bad_request} -> {:error, :invalid_arguments}
     end
   end
 
-  def decode_hub_scope(%{"project_id" => project_id}) do
-    with {:ok, project_id} <- decode_id(project_id) do
-      {:ok, %{project_id: project_id}}
-    end
-  end
-
-  def decode_hub_scope(%{"goal_id" => goal_id}) do
-    with {:ok, goal_id} <- decode_id(goal_id) do
-      {:ok, %{goal_id: goal_id}}
-    end
-  end
-
-  def decode_hub_scope(_arguments), do: {:error, :invalid_arguments}
+  defp validate_hub_scope(error), do: error
 
   def decode_id_list(nil), do: {:ok, []}
 
@@ -109,6 +107,20 @@ defmodule OperatelyWeb.Mcp.Helpers do
   end
 
   def decode_access_level(_value, _allowed_values), do: {:error, :invalid_arguments}
+
+  def decode_creation_publishing_inputs(arguments) do
+    with {:ok, draft?} <- decode_optional_boolean(arguments["post_as_draft"]),
+         {:ok, scheduled_at} <- parse_datetime(arguments["scheduled_at"]) do
+      {:ok, %{post_as_draft: draft?, scheduled_at: scheduled_at}}
+    end
+  end
+
+  def decode_update_publishing_inputs(arguments) do
+    with {:ok, state} <- decode_optional_enum(arguments["state"], ["draft", "published"]),
+         {:ok, scheduled_at} <- parse_datetime(arguments["scheduled_at"]) do
+      {:ok, %{} |> put_optional(:state, state) |> put_optional(:scheduled_at, scheduled_at)}
+    end
+  end
 
   def parse_datetime(nil), do: {:ok, nil}
 
@@ -197,11 +209,11 @@ defmodule OperatelyWeb.Mcp.Helpers do
   def decode_template_task_status(%{"id" => id}) when is_binary(id), do: {:ok, %{id: id}}
   def decode_template_task_status(_status), do: {:error, :invalid_arguments}
 
-  def decode_template_task_statuses(statuses) when is_list(statuses) do
+  def decode_task_statuses(statuses) when is_list(statuses) do
     {:ok, Enum.map(statuses, &atomize_known_keys(&1, ~w(id label color index value closed)))}
   end
 
-  def decode_template_task_statuses(_statuses), do: {:error, :invalid_arguments}
+  def decode_task_statuses(_statuses), do: {:error, :invalid_arguments}
 
   def decode_status_replacements(replacements) when is_list(replacements) do
     {:ok, Enum.map(replacements, &atomize_known_keys(&1, ~w(deleted_status_id replacement_status_id)))}
@@ -344,6 +356,10 @@ defmodule OperatelyWeb.Mcp.Helpers do
 
   defp decode_task_reminder(%{"type" => type}) when type in ["due_day", "overdue"] do
     {:ok, %{type: String.to_atom(type)}}
+  end
+
+  defp decode_task_reminder(%{"type" => "on_date", "date" => date}) do
+    with {:ok, date} <- parse_iso_date(date), do: {:ok, %{type: :on_date, date: date}}
   end
 
   defp decode_task_reminder(_reminder), do: {:error, :invalid_arguments}

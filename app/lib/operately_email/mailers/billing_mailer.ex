@@ -5,12 +5,12 @@ defmodule OperatelyEmail.Mailers.BillingMailer do
   alias Operately.Repo
   alias OperatelyEmail.Mailers.BaseMailer
 
-  def deliver(recipients, company, build, job \\ nil) do
+  def deliver(recipients, build, job \\ nil) do
     delivered_ids = delivered_recipient_ids(job)
 
     recipients
     |> Enum.reject(&(Map.get(&1, :id) in delivered_ids))
-    |> Enum.group_by(&EffectiveLanguage.resolve(&1, company))
+    |> Enum.group_by(&EffectiveLanguage.resolve/1)
     |> Enum.sort_by(fn {language, _} -> language end)
     |> Enum.reduce_while({{:ok, :no_recipients}, job}, fn {language, people}, {_result, job} ->
       with {:ok, _} = result <- deliver_group(people, language, build),

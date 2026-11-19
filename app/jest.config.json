@@ -20,6 +20,10 @@
     ]
   ],
   "moduleNameMapper": {
+    "^react$": "<rootDir>/node_modules/react",
+    "^react-i18next$": "<rootDir>/node_modules/react-i18next",
+    "^i18next$": "<rootDir>/node_modules/i18next",
+    "^react-router$": "<rootDir>/node_modules/react-router",
     "^turboui$": "<rootDir>/../turboui/src",
     "^@/ee/(.*)$": "<rootDir>/ee/assets/js/$1",
     "^@/(.*)$": "<rootDir>/assets/js/$1",
