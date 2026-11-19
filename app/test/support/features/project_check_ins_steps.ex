@@ -112,6 +112,20 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.assert_text(@status_to_on_screen[status])
   end
 
+  step :assert_pending_acknowledgement_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "project-check-in-page")
+    |> UI.assert_text("Not yet acknowledged")
+    |> UI.refute_has(testid: "acknowledge-check-in")
+  end
+
+  step :assert_pending_acknowledgement_hidden, ctx do
+    ctx
+    |> UI.assert_has(testid: "project-check-in-page")
+    |> UI.assert_text(ctx.champion.full_name)
+    |> UI.refute_text("Not yet acknowledged")
+  end
+
   step :assert_navigation_elements_displayed, ctx do
     ctx
     |> UI.assert_has(testid: UI.testid(["nav-item", ctx.space.name]))

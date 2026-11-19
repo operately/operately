@@ -48,6 +48,7 @@ export interface CheckInMetadataProps {
   resourceType: CheckInResourceType;
   author?: CheckInAuthor | null;
   acknowledgedBy?: CheckInAcknowledgingPerson | null;
+  showPendingAcknowledgement?: boolean;
   state: CheckInState;
   postedAt: string | Date;
   scheduledAt?: string | Date | null;
@@ -58,6 +59,7 @@ export function CheckInMetadata({
   resourceType,
   author,
   acknowledgedBy,
+  showPendingAcknowledgement = true,
   state,
   postedAt,
   scheduledAt,
@@ -87,9 +89,11 @@ export function CheckInMetadata({
           <MetadataItem showSeparator={Boolean(author)}>
             <PostedTime time={postedAt} formattedTimePreferences={formattedTimePreferences} />
           </MetadataItem>
-          <MetadataItem>
-            <Acknowledgement acknowledgedBy={acknowledgedBy} />
-          </MetadataItem>
+          {(acknowledgedBy || showPendingAcknowledgement) && (
+            <MetadataItem>
+              <Acknowledgement acknowledgedBy={acknowledgedBy} />
+            </MetadataItem>
+          )}
         </>
       )}
     </div>

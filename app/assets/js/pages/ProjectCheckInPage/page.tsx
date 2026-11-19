@@ -125,6 +125,7 @@ function Title() {
         resourceType="project"
         author={checkIn.author}
         acknowledgedBy={checkIn.acknowledgedBy}
+        showPendingAcknowledgement={Boolean(checkIn.project?.reviewer)}
         state={checkIn.state}
         postedAt={checkInDate}
         scheduledAt={checkIn.scheduledAt}
