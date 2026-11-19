@@ -3,6 +3,7 @@ import { Trans } from "../Translate";
 import { useEmbedding, portalPosition } from "../Embedding";
 import * as React from "react";
 import AsyncSelect from "react-select/async";
+import type { StylesConfig } from "react-select";
 import { useTranslation } from "react-i18next";
 import { translationText } from "../i18n";
 
@@ -59,7 +60,7 @@ function SelectPersonInput(props: SelectPersonProps) {
   useValidation(field, validatePresence(required));
 
   return (
-    <div className="flex-1" data-test-id={createTestId(field)}>
+    <div className="min-w-0 flex-1" data-test-id={createTestId(field)}>
       <PersonSearch
         autoFocus={props.autoFocus}
         inputId={createTestId(field)}
@@ -186,21 +187,28 @@ function personAsOption(person: SelectPersonPerson, showTitle = false): Option {
 
 function PersonLabel({ person, showTitle }: { person: SelectPersonPerson; showTitle: boolean }) {
   return (
-    <div className="flex items-center gap-2" data-test-id={createTestId("person-option", person.fullName)}>
+    <div className="flex min-w-0 items-center gap-2" data-test-id={createTestId("person-option", person.fullName)}>
       <Avatar person={person} size="tiny" />
-      {person.fullName}
-      {showTitle && person.title ? (
-        <>
-          <Trans i18nKey="· {{title}}" values={{ title: person.title }} />
-        </>
-      ) : null}
+      <span className="min-w-0 whitespace-normal [overflow-wrap:anywhere]">
+        {person.fullName}
+        {showTitle && person.title ? <Trans i18nKey="· {{title}}" values={{ title: person.title }} /> : null}
+      </span>
     </div>
   );
 }
 
-function asyncSelectStyles(portalMenu: boolean, container?: HTMLElement) {
+function asyncSelectStyles(portalMenu: boolean, container?: HTMLElement): StylesConfig<Option, false> {
   return {
-    input: (provided: Record<string, unknown>) => ({
+    valueContainer: (provided) => ({ ...provided, minWidth: 0 }),
+    singleValue: (provided) => ({
+      ...provided,
+      whiteSpace: "normal",
+      overflowWrap: "anywhere",
+      overflow: "visible",
+      textOverflow: "clip",
+    }),
+    option: (provided) => ({ ...provided, whiteSpace: "normal", overflowWrap: "anywhere" }),
+    input: (provided) => ({
       ...provided,
       "input:focus": {
         boxShadow: "none",

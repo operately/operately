@@ -161,7 +161,10 @@ function Form() {
           <Forms.SelectGoal label={t("Goal")} field="goal" goals={goals} required={false} />
 
           {!form.values.template && (
-            <Forms.FieldGroup layout="grid">
+            <Forms.FieldGroup
+              layout="grid"
+              layoutOptions={{ columns: 2, gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 16rem), 1fr))" }}
+            >
               <SelectChampion me={me} search={search} />
               <SelectReviewer me={me} search={search} />
             </Forms.FieldGroup>
