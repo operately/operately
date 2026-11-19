@@ -1,5 +1,6 @@
 import { internalReturnPath } from "./paths";
 import { disablePreloading } from "./preloading/preloadSession";
+import { beginLogoutTransition } from "./logoutTransition";
 import { queryClient } from "@/api/queryClient";
 
 import { resetAnalytics } from "@/analytics/session";
@@ -17,6 +18,7 @@ export async function logOut(): Promise<LogOutResult> {
 
   resetAnalytics();
   disablePreloading();
+  beginLogoutTransition();
   teardownApplication();
   queryClient.clear();
 
