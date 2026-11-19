@@ -265,6 +265,8 @@ blocks:
 
 after_pipeline:
   task:
+    secrets:
+      - name: discord-bot
     jobs:
       - name: Publish Results
         commands:
@@ -275,16 +277,16 @@ after_pipeline:
           - ./scripts/build_retries_report.sh /tmp/retries-md > /tmp/REPORT.md
           - artifact push workflow -d .semaphore/REPORT.md /tmp/REPORT.md
 
+      - name: Notify Discord
+        commands:
+          - checkout
+          - 'if [[ "$SEMAPHORE_GIT_BRANCH" = "main" && "$SEMAPHORE_GIT_REF_TYPE" = "branch" && "$SEMAPHORE_PIPELINE_RESULT" = "failed" ]]; then ruby scripts/deploy.rb ci-failed; fi'
+
 promotions:
   - name: Production Deployment
     pipeline_file: deploy.yml
     auto_promote:
       when: "result = 'passed' and branch = 'main'"
-
-  - name: Notify CI failure
-    pipeline_file: notify-ci-failure.yml
-    auto_promote:
-      when: "result = 'failed' and branch = 'main'"
 
   - name: Sync API Docs
     pipeline_file: sync_docs.yaml
