@@ -47,7 +47,10 @@ function ProjectPickers() {
     <Form form={form} testId="project-pickers">
       <FieldGroup>
         <SelectBox field="space" label={t("Space")} options={spaces} required />
-        <FieldGroup layout="grid">
+        <FieldGroup
+          layout="grid"
+          layoutOptions={{ columns: 2, gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 16rem), 1fr))" }}
+        >
           <SelectPerson field="champion" label={t("Champion")} searchFn={searchPeople} default={people[0]} />
           <SelectPerson
             field="reviewer"

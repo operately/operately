@@ -95,6 +95,17 @@ describe("project form pickers in a browser", () => {
       await assertPeopleReadable("champion");
       await assertPeopleReadable("reviewer");
       await assertFormFits();
+      const champion = await field("champion").boundingBox();
+      const reviewerBounds = await field("reviewer").boundingBox();
+      assert.ok(champion && reviewerBounds);
+      if (width === 374) {
+        assert.ok(reviewerBounds.y >= champion.y + champion.height, "People fields stack on mobile");
+        assert.equal(reviewerBounds.x, champion.x);
+        assert.equal(reviewerBounds.width, champion.width);
+      } else {
+        assert.equal(reviewerBounds.y, champion.y, "People fields share a row on desktop");
+        assert.ok(reviewerBounds.x >= champion.x + champion.width);
+      }
 
       await field("space").getByRole("combobox").click();
       const spaceOptions = page.getByRole("option");
