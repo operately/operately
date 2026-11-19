@@ -55,7 +55,7 @@ function StartDate(props: GoalPage.State) {
   const testId = isReadonly ? "start-date-field-readonly" : "start-date-field";
 
   return (
-    <SidebarSection title={t("Start Date")}>
+    <SidebarSection title={t("Start date")}>
       <DateField
         date={props.startDate}
         onDateSelect={props.setStartDate}
@@ -119,7 +119,7 @@ function ParentGoal(props: GoalPage.State) {
   }
 
   return (
-    <SidebarSection title={t("Parent Goal")}>
+    <SidebarSection title={t("Parent goal")}>
       <GoalField
         testId="parent-goal-field"
         goal={props.parentGoal}

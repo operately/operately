@@ -72,6 +72,25 @@ function sidebarProps(): GoalPage.State {
 }
 
 it.each([
+  ["en", "Parent goal", "Start date", "Due date"],
+  ["pt-BR", "Objetivo superior", "Data de início", "Data de conclusão"],
+])(
+  "renders goal sidebar field labels with consistent capitalization in %s",
+  async (language, parentGoal, startDate, dueDate) => {
+    await i18n.changeLanguage(language);
+    render(
+      <MemoryRouter>
+        <Sidebar {...sidebarProps()} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(parentGoal, { exact: true })).toBeInTheDocument();
+    expect(screen.getByText(startDate, { exact: true })).toBeInTheDocument();
+    expect(screen.getByText(dueDate, { exact: true })).toBeInTheDocument();
+  },
+);
+
+it.each([
   ["en", "Access"],
   ["pt-BR", "Acesso"],
 ])("labels the non-preview goal sidebar access section in %s", async (language, title) => {
