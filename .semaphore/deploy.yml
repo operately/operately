@@ -12,7 +12,7 @@ blocks:
     task:
       secrets:
         - name: prod-deployment-vars
-        - name: discord-webhook
+        - name: discord-bot
       jobs:
         - name: "Trigger"
           commands:

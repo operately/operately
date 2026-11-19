@@ -10,7 +10,7 @@ blocks:
       when: "branch = 'main'"
     task:
       secrets:
-        - name: discord-webhook
+        - name: discord-bot
       jobs:
         - name: Notify
           commands:
