@@ -15723,8 +15723,6 @@ msgid "Paid plan"
 msgstr "Forfait payant"
 
 #.elixir
-#.frontend
-#: ../turboui/src/GoalPage/Sidebar.tsx:122
 #: lib/operately/md/goal.ex:50
 #: lib/operately/md/project.ex:338
 msgid "Parent Goal"
@@ -15741,6 +15739,7 @@ msgid "Parent Goal: None (Top Level Goal)"
 msgstr "Objectif parent : aucun (objectif de premier niveau)"
 
 #.frontend
+#: ../turboui/src/GoalPage/Sidebar.tsx:122
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:117
 msgid "Parent goal"
 msgstr "Objectif parent"
@@ -19401,8 +19400,6 @@ msgid "Start Claude Code, run /mcp, and select Operately to authenticate."
 msgstr "Lancez Claude Code, exécutez /mcp et sélectionnez Operately pour vous authentifier."
 
 #.elixir
-#.frontend
-#: ../turboui/src/GoalPage/Sidebar.tsx:58
 #: lib/operately/md/goal/timeframe.ex:9
 #: lib/operately/md/project/timeframe.ex:10
 msgid "Start Date"
@@ -19459,6 +19456,7 @@ msgstr "Relancez le paiement du forfait %{plan}."
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:94
+#: ../turboui/src/GoalPage/Sidebar.tsx:58
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:135
 msgid "Start date"
 msgstr "Date de début"
