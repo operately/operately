@@ -276,6 +276,16 @@ after_pipeline:
           - artifact push workflow -d .semaphore/REPORT.md /tmp/REPORT.md
 
 promotions:
+  - name: Production Deployment
+    pipeline_file: deploy.yml
+    auto_promote:
+      when: "result = 'passed' and branch = 'main'"
+
+  - name: Sync API Docs
+    pipeline_file: sync_docs.yaml
+    auto_promote:
+      when: "result = 'passed' and branch = 'main'"
+
   - name: Publish Dev Image
     pipeline_file: devimage.yml
     auto_promote:
