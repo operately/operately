@@ -210,6 +210,7 @@ describe("logout of the mounted application", () => {
     }
     function WorkMapObserver({ renderCount }: { renderCount: number }) {
       const loaded = useLoadedData();
+      if (loaded.status === "pending") return null;
       return React.createElement("span", { "data-space": loaded.data.space.id, "data-render": renderCount });
     }
     await act(async () => {
