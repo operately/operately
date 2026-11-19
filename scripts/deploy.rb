@@ -27,7 +27,11 @@ def ci_workflow_url
   return nil if workflow_id.nil? || workflow_id.empty?
 
   org = ENV.fetch('SEMAPHORE_ORGANIZATION_URL', ORG_URL).chomp('/')
-  "#{org}/workflows/#{workflow_id}"
+  url = "#{org}/workflows/#{workflow_id}"
+  pipeline_id = ENV['SEMAPHORE_PIPELINE_ID']
+  return url if pipeline_id.nil? || pipeline_id.empty?
+
+  "#{url}?pipeline_id=#{pipeline_id}"
 end
 
 def pipeline_url(workflow_id, pipeline_id)
