@@ -51,7 +51,10 @@ export namespace CompanyImportPage {
 
 export function CompanyImportPage(props: CompanyImportPage.Props) {
   const { t } = useTranslation();
-  const navigation = React.useMemo(() => [{ to: props.backPath, label: t("Back to the Lobby") }], [props.backPath, t]);
+  const navigation = React.useMemo(
+    () => [{ to: props.backPath, label: t("Back to company selection") }],
+    [props.backPath, t],
+  );
 
   return (
     <Page title={translationText(t("Import Company"))} size="small" testId="company-import-page" navigation={navigation}>

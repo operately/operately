@@ -25,6 +25,7 @@ jest.mock("@/models/assignments", () => ({
   useReviewRefreshSignal: jest.fn(),
 }));
 jest.mock("@/models/notifications", () => ({ useUnreadCount: () => 0 }));
+jest.mock("@/models/companies", () => ({ useCompanies: () => ({ data: { companies: [{ id: "company-1" }] } }) }));
 jest.mock("@/models/productReleases/useProductRelease", () => ({
   useProductRelease: () => ({ productRelease: null, canAnnounce: false }),
 }));
@@ -35,7 +36,7 @@ jest.mock("@/routes/useCompanyLoaderData", () => ({
 jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: () => ({ id: "person-1" }) }));
 jest.mock("./useGlobalSearch", () => ({ useGlobalSearchHandler: jest.fn(), companySearchPathBuilder: jest.fn() }));
 jest.mock("@/routes/paths", () => ({
-  Paths: { lobbyPath: () => "/lobby" },
+  Paths: { lobbyPath: () => "/lobby", newCompanyPath: () => "/new" },
   usePaths: () => new Proxy({}, { get: () => () => "/path" }),
 }));
 
@@ -46,6 +47,10 @@ it("wires the existing company navigation logout control to shared teardown and 
   try {
     act(() => root.render(<CompanyLayout />));
     expect(jest.mocked(CompanyNavigation).mock.calls[0]?.[0].onLogOut).toBe(logOutAndRedirect);
+    expect(jest.mocked(CompanyNavigation).mock.calls[0]?.[0]).toMatchObject({
+      companyCount: 1,
+      links: { newCompany: "/new" },
+    });
   } finally {
     act(() => root.unmount());
   }

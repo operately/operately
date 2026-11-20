@@ -10,7 +10,7 @@ import { loader, useLoadedData } from "./loader";
 
 jest.mock("axios");
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
-jest.mock("react-router", () => ({}));
+jest.mock("react-router", () => ({ redirect: (location: string) => ({ location }) }));
 jest.mock("turboui", () => ({}));
 jest.mock("@/api/socket", () => ({ setHeaders: jest.fn() }));
 jest.mock("@/components/Pages", () => ({ useLoadedData: jest.fn() }));
@@ -29,7 +29,12 @@ it("prefetches account and companies and observes company-list invalidation", as
   jest.mocked(axios.get).mockImplementation(async (url) => ({
     data: url.endsWith("get_account")
       ? { account: { fullName: "Person" } }
-      : { companies: [{ id: "company", name: "Before" }] },
+      : {
+          companies: [
+            { id: "first", name: "First" },
+            { id: "second", name: "Before" },
+          ],
+        },
   }));
   const inputs = await loader();
   expect(inputs).toEqual({ accountInput: {}, companiesInput: { includeMemberCount: true } });
@@ -43,9 +48,19 @@ it("prefetches account and companies and observes company-list invalidation", as
   await waitFor(() => expect(result.current.companies[0]?.name).toBe("After"));
 });
 
+it("redirects an account with one company to that company", async () => {
+  jest.mocked(axios.get).mockImplementation(async (url) => ({
+    data: url.endsWith("get_account")
+      ? { account: { fullName: "Person" } }
+      : { companies: [{ id: "company", name: "Company" }] },
+  }));
+
+  expect(await loader()).toEqual({ location: "/company" });
+});
+
 it("allows an empty company list while requiring the account", async () => {
   jest.mocked(axios.get).mockImplementation(async (url) => ({
-    data: url.endsWith("get_account") ? { account: { fullName: "Person" } } : {},
+    data: url.endsWith("get_account") ? { account: { fullName: "Person" } } : { companies: [] },
   }));
   jest.mocked(Pages.useLoadedData).mockReturnValue(await loader());
   const { result } = renderHook(useLoadedData, { initialProps: undefined, wrapper });
@@ -55,7 +70,10 @@ it("allows an empty company list while requiring the account", async () => {
 
 it("keeps the prefetched account and companies while navigation changes company headers", async () => {
   const account = { fullName: "Person" };
-  const companies = [{ id: "company", name: "Company" }];
+  const companies = [
+    { id: "company", name: "Company" },
+    { id: "other", name: "Other" },
+  ];
   jest.mocked(axios.get).mockImplementation(async (url) => ({
     data: url.endsWith("get_account") ? { account } : { companies },
   }));
