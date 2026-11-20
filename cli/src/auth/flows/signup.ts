@@ -206,7 +206,7 @@ export async function runSignupFlow(
 async function runEmailSignup(
   baseUrl: string,
   d: SignupFlowDeps,
-  options: Pick<SignupFlagOptions, "fullName" | "email" | "password">,
+  options: Pick<SignupFlagOptions, "fullName" | "email" | "password" | "inviteToken">,
 ): Promise<string> {
   const fullName = options.fullName ?? await d.askQuestion("Full name:");
   const email = options.email ?? await d.askQuestion("Email:");
@@ -222,7 +222,12 @@ async function runEmailSignup(
     throw new Error("An account already exists for this email. Use `operately auth login` or `operately auth join` instead.");
   }
 
-  await d.callInternalMutation(baseUrl, "/create_email_activation_code", { email });
+  await d.callInternalMutation(baseUrl, "/create_email_activation_code", {
+    email,
+    full_name: fullName,
+    password,
+    ...(options.inviteToken ? { invite_token: options.inviteToken } : {}),
+  });
 
   const code = await d.askQuestion("A verification code was sent to your email. Enter the code:");
 

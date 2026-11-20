@@ -5071,6 +5071,9 @@ export interface CreateBlobResult {
 
 export interface CreateEmailActivationCodeInput {
   email?: string | null;
+  fullName?: string | null;
+  password?: string | null;
+  inviteToken?: string | null;
 }
 
 export interface CreateEmailActivationCodeResult {}
