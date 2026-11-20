@@ -15,6 +15,7 @@ defmodule Operately.Features.ProjectCheckIns.SubmissionTest do
     ctx
     |> Steps.submit_check_in(values)
     |> Steps.assert_check_in_submitted(values)
+    |> Steps.assert_pending_acknowledgement_visible()
     |> Steps.assert_check_in_visible_on_project_page(values)
     |> Steps.assert_check_in_visible_on_feed(values)
     |> Steps.assert_email_sent_to_reviewer(values)
@@ -37,6 +38,7 @@ defmodule Operately.Features.ProjectCheckIns.SubmissionTest do
     ctx
     |> Steps.submit_check_in(values)
     |> Steps.assert_check_in_submitted(values)
+    |> Steps.assert_pending_acknowledgement_hidden()
     |> Steps.assert_check_in_visible_on_project_page(values)
     |> Steps.assert_check_in_visible_on_feed(values)
     |> Steps.assert_email_is_sent_to_contributors()

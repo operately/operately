@@ -5050,7 +5050,7 @@ msgid "<icon/>Not active"
 msgstr "<icon/>Compte inactif"
 
 #.frontend
-#: ../turboui/src/CheckInHeader/index.tsx:108
+#: ../turboui/src/CheckInHeader/index.tsx:121
 msgid "<label>Acknowledged by</label> <person>%{name}</person>"
 msgstr "<label>Lecture confirmée par</label> <person>%{name}</person>"
 
@@ -5481,7 +5481,7 @@ msgstr "L’activité de vos espaces, objectifs et projets apparaîtra ici."
 #: ../turboui/src/Checklist/index.tsx:171
 #: ../turboui/src/GoalPage/Targets.tsx:19
 #: ../turboui/src/ResourceHub/AddFilesButton.tsx:38
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:107
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:116
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:266
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
@@ -5507,7 +5507,7 @@ msgstr "Ajouter un élément à la liste de contrôle"
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:123
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:176
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:177
 msgid "Add Goal"
 msgstr "Ajouter un objectif"
 
@@ -5539,8 +5539,9 @@ msgid "Add People"
 msgstr "Ajouter des personnes"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:176
-#: assets/js/pages/ProjectAddPage/page.tsx:175
+#: ../turboui/src/Forms/ProjectPickers.stories.tsx:66
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:177
+#: assets/js/pages/ProjectAddPage/page.tsx:178
 msgid "Add Project"
 msgstr "Ajouter un projet"
 
@@ -6422,7 +6423,7 @@ msgid "Are you sure you want to delete the link \"<name>%{resourceName}</name>\"
 msgstr "Voulez-vous vraiment supprimer le lien « <name>%{resourceName}</name> » ?"
 
 #.frontend
-#: assets/js/pages/ProjectCheckInPage/page.tsx:226
+#: assets/js/pages/ProjectCheckInPage/page.tsx:227
 msgid "Are you sure you want to delete this check-in?"
 msgstr "Voulez-vous vraiment supprimer ce point d’avancement ?"
 
@@ -6434,7 +6435,7 @@ msgstr "Voulez-vous vraiment supprimer cette tâche ? Cette action est irréve
 #.frontend
 #: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:35
 #: assets/js/pages/GoalCheckInPage/Options.tsx:88
-#: assets/js/pages/ProjectCheckInPage/page.tsx:225
+#: assets/js/pages/ProjectCheckInPage/page.tsx:226
 msgid "Are you sure you want to discard this draft?"
 msgstr "Voulez-vous vraiment supprimer ce brouillon ?"
 
@@ -6457,6 +6458,11 @@ msgstr "En tant qu’administrateur ou propriétaire, vous pouvez :"
 #: ../turboui/src/CompanyAdminPage/index.tsx:143
 msgid "As an owner, you can:"
 msgstr "En tant que propriétaire, vous pouvez :"
+
+#.frontend
+#: ../turboui/src/CheckInHeader/index.tsx:103
+msgid "Assign a reviewer on the project page to get feedback on check-ins."
+msgstr "Désignez un référent sur la page du projet pour recevoir des retours sur les points d’avancement."
 
 #.frontend
 #: ../turboui/src/SpaceTaskBoardCard/ZeroState.tsx:37
@@ -7150,7 +7156,7 @@ msgstr "Cette personne ne peut pas être aussi responsable"
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:179
 #: ../turboui/src/ResourceHub/nodeMenus/MoveResource.tsx:95
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:57
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:111
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:120
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:149
 #: ../turboui/src/SchedulePosting/ScheduleModal.tsx:96
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:136
@@ -7174,14 +7180,14 @@ msgstr "Cette personne ne peut pas être aussi responsable"
 #: ../turboui/src/TemplateDiscussionForm/index.tsx:75
 #: ../turboui/src/TemplateProjectPage/MilestoneFormModal.tsx:82
 #: ../turboui/src/TemplateProjectPage/TemplateMoveResourceModal.tsx:63
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:172
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:173
 #: assets/js/features/goals/GoalTargetsV2/EditTargetCard.tsx:114
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:83
 #: assets/js/pages/GoalCheckInPage/Options.tsx:89
 #: assets/js/pages/GoalDiscussionEditPage/index.tsx:60
 #: assets/js/pages/GoalDiscussionNewPage/Form.tsx:68
 #: assets/js/pages/GoalReopenPage/Form.tsx:34
-#: assets/js/pages/ProjectCheckInPage/page.tsx:230
+#: assets/js/pages/ProjectCheckInPage/page.tsx:231
 #: assets/js/pages/ProjectDiscussionEditPage/page.tsx:101
 #: assets/js/pages/ProjectDiscussionNewPage/page.tsx:100
 #: assets/js/pages/SpacePage/page.tsx:256
@@ -7240,7 +7246,7 @@ msgstr "Impossible d’accéder à l’espace."
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:147
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:247
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:249
 msgid "Cannot be empty"
 msgstr "Ce champ ne peut pas être vide"
 
@@ -7294,6 +7300,7 @@ msgstr "Actions de la cellule"
 #.elixir
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:103
+#: ../turboui/src/Forms/ProjectPickers.stories.tsx:54
 #: ../turboui/src/GoalPage/Sidebar.tsx:145
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:168
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:222
@@ -7304,7 +7311,7 @@ msgstr "Actions de la cellule"
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:27
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:225
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:235
-#: assets/js/pages/ProjectAddPage/page.tsx:182
+#: assets/js/pages/ProjectAddPage/page.tsx:185
 #: lib/operately/md/goal.ex:130
 #: lib/operately/md/workmap.ex:102
 #: lib/operately_email/emails/project_created_email.ex:50
@@ -7527,7 +7534,7 @@ msgstr "Point d’avancement du <date/>"
 #: ../turboui/src/ProjectPage/CheckIns.tsx:18
 #: assets/js/pages/ProjectCheckInEditPage/navigation.tsx:19
 #: assets/js/pages/ProjectCheckInNewPage/page.tsx:101
-#: assets/js/pages/ProjectCheckInPage/page.tsx:152
+#: assets/js/pages/ProjectCheckInPage/page.tsx:153
 msgid "Check-Ins"
 msgstr "Points d’avancement"
 
@@ -7538,7 +7545,7 @@ msgid "Check-in"
 msgstr "Point d’avancement"
 
 #.frontend
-#: assets/js/pages/ProjectCheckInPage/page.tsx:214
+#: assets/js/pages/ProjectCheckInPage/page.tsx:215
 msgid "Check-in deleted"
 msgstr "Point d’avancement supprimé"
 
@@ -8818,7 +8825,7 @@ msgstr "Impossible de charger les KPI"
 
 #.frontend
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:42
-#: assets/js/pages/SpaceWorkMapPage/page.tsx:33
+#: assets/js/pages/SpaceWorkMapPage/page.tsx:45
 msgid "Couldn't load options for adding goals and projects."
 msgstr "Impossible de charger les options d’ajout d’objectifs et de projets."
 
@@ -8983,7 +8990,7 @@ msgstr "Créer un jalon"
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:105
 #: ../turboui/src/TaskCreationModal/index.tsx:382
 #: ../turboui/src/TemplateProjectPage/MilestoneFormModal.tsx:76
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:166
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:167
 msgid "Create more"
 msgstr "Créer d’autres éléments"
 
@@ -9351,7 +9358,7 @@ msgstr "Par défaut"
 #: ../turboui/src/TemplateProjectPage/TemplateResourceMenu.tsx:65
 #: assets/js/features/Feed/index.tsx:120
 #: assets/js/pages/DiscussionPage/page.tsx:217
-#: assets/js/pages/ProjectCheckInPage/page.tsx:229
+#: assets/js/pages/ProjectCheckInPage/page.tsx:230
 #: assets/js/pages/ProjectTemplateDocumentPage/index.tsx:69
 #: assets/js/pages/ProjectTemplateFilePage/index.tsx:79
 #: assets/js/pages/ProjectTemplateLinkPage/index.tsx:69
@@ -9445,7 +9452,7 @@ msgid "Delete annotation"
 msgstr "Supprimer l’annotation"
 
 #.frontend
-#: assets/js/pages/ProjectCheckInPage/page.tsx:183
+#: assets/js/pages/ProjectCheckInPage/page.tsx:184
 msgid "Delete check-in"
 msgstr "Supprimer le point d’avancement"
 
@@ -9767,8 +9774,8 @@ msgstr "La désactivation du partage rend ce lien inutilisable. Sa réactivation
 #: assets/js/pages/DiscussionPage/page.tsx:210
 #: assets/js/pages/GoalCheckInPage/Options.tsx:43
 #: assets/js/pages/GoalCheckInPage/Options.tsx:89
-#: assets/js/pages/ProjectCheckInPage/page.tsx:183
-#: assets/js/pages/ProjectCheckInPage/page.tsx:229
+#: assets/js/pages/ProjectCheckInPage/page.tsx:184
+#: assets/js/pages/ProjectCheckInPage/page.tsx:230
 msgid "Discard draft"
 msgstr "Supprimer le brouillon"
 
@@ -10034,7 +10041,7 @@ msgstr "Actions du brouillon"
 #.frontend
 #: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:27
 #: assets/js/pages/GoalCheckInPage/Options.tsx:80
-#: assets/js/pages/ProjectCheckInPage/page.tsx:212
+#: assets/js/pages/ProjectCheckInPage/page.tsx:213
 msgid "Draft discarded"
 msgstr "Brouillon supprimé"
 
@@ -10219,8 +10226,8 @@ msgstr "Version précédente"
 #: assets/js/pages/DiscussionPage/page.tsx:201
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:123
 #: assets/js/pages/GoalCheckInPage/Options.tsx:34
-#: assets/js/pages/ProjectAddPage/page.tsx:240
-#: assets/js/pages/ProjectCheckInPage/page.tsx:174
+#: assets/js/pages/ProjectAddPage/page.tsx:243
+#: assets/js/pages/ProjectCheckInPage/page.tsx:175
 #: assets/js/pages/ProjectDiscussionEditPage/page.tsx:25
 #: assets/js/pages/ProjectDiscussionPage/page.tsx:72
 #: assets/js/pages/ProjectTemplateDiscussionEditPage/index.tsx:25
@@ -11223,12 +11230,12 @@ msgid "Failed to create the goal"
 msgstr "Impossible de créer l’objectif"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:305
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:312
 msgid "Failed to create the goal."
 msgstr "Impossible de créer l’objectif."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:305
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:312
 msgid "Failed to create the project."
 msgstr "Impossible de créer le projet."
 
@@ -14121,7 +14128,7 @@ msgstr "Score NPS"
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:73
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:393
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:120
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:121
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:201
 #: assets/js/pages/SpaceEditPage/index.tsx:51
 msgid "Name"
@@ -14216,7 +14223,7 @@ msgstr "Erreur réseau"
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:183
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:314
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:321
 msgid "Network error"
 msgstr "Erreur réseau"
 
@@ -14918,11 +14925,12 @@ msgid "No result"
 msgstr "Aucun résultat"
 
 #.frontend
+#: ../turboui/src/Forms/ProjectPickers.stories.tsx:61
 #: ../turboui/src/GoalPage/Sidebar.tsx:216
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:239
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:248
 #: ../turboui/src/TemplateProjectPage/People.tsx:96
-#: assets/js/pages/ProjectAddPage/page.tsx:193
+#: assets/js/pages/ProjectAddPage/page.tsx:196
 msgid "No reviewer"
 msgstr "Aucun référent"
 
@@ -15092,7 +15100,7 @@ msgstr "Vous hésitez ? Commencez par un projet ; vous pourrez définir des 
 
 #.frontend
 #: ../turboui/src/CheckInCard/index.tsx:102
-#: ../turboui/src/CheckInHeader/index.tsx:102
+#: ../turboui/src/CheckInHeader/index.tsx:115
 #: assets/js/pages/GoalActivityPage/AckCTA.tsx:56
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:135
 msgid "Not yet acknowledged"
@@ -16133,7 +16141,7 @@ msgstr "Sélectionnez une ressource"
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:154
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:254
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:256
 msgid "Please select a space"
 msgstr "Sélectionnez un espace"
 
@@ -16446,7 +16454,7 @@ msgstr "Priorité"
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:117
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:265
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:159
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:160
 msgid "Privacy"
 msgstr "Visibilité"
 
@@ -17912,6 +17920,7 @@ msgstr "Examiner le point d’avancement hebdomadaire"
 #.elixir
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:116
+#: ../turboui/src/Forms/ProjectPickers.stories.tsx:57
 #: ../turboui/src/GoalPage/Sidebar.tsx:193
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:215
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:165
@@ -17919,7 +17928,7 @@ msgstr "Examiner le point d’avancement hebdomadaire"
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:28
 #: assets/js/features/goals/GoalCheckIn/StatusSelector.tsx:63
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:236
-#: assets/js/pages/ProjectAddPage/page.tsx:189
+#: assets/js/pages/ProjectAddPage/page.tsx:192
 #: lib/operately/md/goal.ex:137
 #: lib/operately_email/emails/project_created_email.ex:51
 msgid "Reviewer"
@@ -18087,7 +18096,7 @@ msgstr "Suivre le système"
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:128
 #: ../turboui/src/PageDescription/index.tsx:195
 #: ../turboui/src/PrivacyField/index.tsx:120
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:97
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:106
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:396
 #: ../turboui/src/TitleSetupPrompt/index.tsx:63
 #: assets/js/features/ProjectRetrospective/Form.tsx:82
@@ -18324,7 +18333,7 @@ msgid "Search for people to promote to owner"
 msgstr "Rechercher des personnes à nommer propriétaires"
 
 #.frontend
-#: ../turboui/src/Forms/SelectPerson.tsx:67
+#: ../turboui/src/Forms/SelectPerson.tsx:68
 msgid "Search for person..."
 msgstr "Rechercher une personne…"
 
@@ -18503,7 +18512,7 @@ msgstr "Sélectionner un objectif…"
 
 #.frontend
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:191
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:261
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:263
 msgid "Select a project start date."
 msgstr "Sélectionnez une date de début du projet."
 
@@ -19258,10 +19267,11 @@ msgstr "Analyse de la source"
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:10
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:89
+#: ../turboui/src/Forms/ProjectPickers.stories.tsx:49
 #: ../turboui/src/GoalAddForm/index.tsx:103
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:424
 #: ../turboui/src/TaskPage/MoveModal.tsx:114
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:132
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:133
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:219
 #: assets/js/pages/ProjectAddPage/page.tsx:147
 #: lib/operately/md/goal.ex:30
@@ -20359,7 +20369,7 @@ msgid "The champion was changed to %{personName}."
 msgstr "Le rôle de responsable a été confié à %{personName}."
 
 #.frontend
-#: assets/js/pages/ProjectCheckInPage/page.tsx:214
+#: assets/js/pages/ProjectCheckInPage/page.tsx:215
 msgid "The check-in has been successfully deleted."
 msgstr "Le point d’avancement a été supprimé."
 
@@ -20400,7 +20410,7 @@ msgid "The company is being imported in the background."
 msgstr "L’entreprise est en cours d’import en arrière-plan."
 
 #.elixir
-#: lib/operately_web/api/rich_content/set_task_item_checked.ex:51
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:58
 msgid "The content has changed. Refresh and try again."
 msgstr "Le contenu a changé. Actualisez la page et réessayez."
 
@@ -20449,7 +20459,7 @@ msgstr "Le document est toujours sur cette page. Réessayez."
 #.frontend
 #: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:27
 #: assets/js/pages/GoalCheckInPage/Options.tsx:80
-#: assets/js/pages/ProjectCheckInPage/page.tsx:212
+#: assets/js/pages/ProjectCheckInPage/page.tsx:213
 msgid "The draft has been discarded."
 msgstr "Le brouillon a été supprimé."
 
@@ -20744,7 +20754,7 @@ msgid "The selected reviewer doesn't have access to the selected space"
 msgstr "Le référent sélectionné n’a pas accès à l’espace sélectionné"
 
 #.elixir
-#: lib/operately_web/api/rich_content/set_task_item_checked.ex:52
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:59
 msgid "The selected task item no longer exists"
 msgstr "L’élément de tâche sélectionné n’existe plus"
 
@@ -21864,7 +21874,7 @@ msgstr "Domaines e-mail autorisés uniquement"
 #: ../turboui/src/InfiniteScroll/index.tsx:117
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:46
 #: assets/js/pages/InviteLinkFullPage/index.tsx:45
-#: assets/js/pages/SpaceWorkMapPage/page.tsx:37
+#: assets/js/pages/SpaceWorkMapPage/page.tsx:49
 msgid "Try again"
 msgstr "Réessayer"
 
@@ -21875,7 +21885,7 @@ msgstr "Réessayer plus tard"
 
 #.frontend
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:42
-#: assets/js/pages/SpaceWorkMapPage/page.tsx:33
+#: assets/js/pages/SpaceWorkMapPage/page.tsx:45
 msgid "Try loading them again."
 msgstr "Essayez de les charger à nouveau."
 
@@ -22164,7 +22174,7 @@ msgid "Unlimited storage"
 msgstr "Stockage illimité"
 
 #.frontend
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:101
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:110
 msgid "Unlink"
 msgstr "Retirer le lien"
 
@@ -23345,13 +23355,13 @@ msgstr "E-mail professionnel"
 #: assets/js/pages/ProjectCheckInEditPage/navigation.tsx:13
 #: assets/js/pages/ProjectCheckInNewPage/page.tsx:95
 #: assets/js/pages/ProjectCheckInNewPage/page.tsx:97
-#: assets/js/pages/ProjectCheckInPage/page.tsx:145
-#: assets/js/pages/ProjectCheckInPage/page.tsx:147
+#: assets/js/pages/ProjectCheckInPage/page.tsx:146
+#: assets/js/pages/ProjectCheckInPage/page.tsx:148
 #: assets/js/pages/ProjectDiscussionNewPage/page.tsx:37
 #: assets/js/pages/ProjectDiscussionNewPage/page.tsx:39
 #: assets/js/pages/ProjectDiscussionPage/page.tsx:109
 #: assets/js/pages/ProjectDiscussionPage/page.tsx:111
-#: assets/js/pages/SpaceWorkMapPage/page.tsx:69
+#: assets/js/pages/SpaceWorkMapPage/page.tsx:81
 msgid "Work Map"
 msgstr "Carte des objectifs et projets"
 
@@ -23563,7 +23573,7 @@ msgid "You don't have any drafts."
 msgstr "Vous n’avez aucun brouillon."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:309
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:316
 msgid "You don't have permission to create goals or projects in this space. Choose another space or ask a space manager for Edit access."
 msgstr "Vous n’avez pas l’autorisation de créer des objectifs ou des projets dans cet espace. Choisissez un autre espace ou demandez à un administrateur de l’espace le droit de le modifier."
 
@@ -24457,7 +24467,7 @@ msgid "e.g. HR System Update"
 msgstr "Par exemple : mise à jour du système RH"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:123
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:124
 msgid "e.g. Implement new website design"
 msgstr "Par exemple : mettre en place le nouveau design du site"
 
@@ -24467,7 +24477,7 @@ msgid "e.g. Increase monthly signup count"
 msgstr "Par exemple : augmenter le nombre d’inscriptions mensuelles"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:123
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:124
 msgid "e.g. Increase user acquisition"
 msgstr "Par exemple : augmenter l’acquisition d’utilisateurs"
 
@@ -24574,7 +24584,7 @@ msgid "eg. https://www.example.com/file/8430762"
 msgstr "Par exemple : https://www.example.com/file/8430762"
 
 #.frontend
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:85
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:94
 msgid "ex. https://example.com"
 msgstr "Par exemple : https://example.com"
 

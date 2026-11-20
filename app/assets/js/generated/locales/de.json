@@ -653,6 +653,7 @@
   "As a reviewer, you are responsible for reviewing the progress of the project, providing feedback, and approving the final deliverables.": "Als Reviewer bist du dafür verantwortlich, den Projektfortschritt zu prüfen, Feedback zu geben und die endgültigen Ergebnisse abzunehmen.",
   "As an admin or owner, you can:": "Mit Admin- oder Inhaberrechten kannst du:",
   "As an owner, you can:": "Mit Inhaberrechten kannst du:",
+  "Assign a reviewer on the project page to get feedback on check-ins.": "Weise auf der Projektseite einer Person die Rolle „Reviewer“ zu, um Feedback zu Check-ins zu erhalten.",
   "Assign an owner": "Verantwortliche Person zuweisen",
   "Assign as champion": "Als Champion zuweisen",
   "Assign as reviewer": "Als Reviewer zuweisen",

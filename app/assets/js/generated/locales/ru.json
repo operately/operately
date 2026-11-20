@@ -779,6 +779,7 @@
   "As a reviewer, you are responsible for reviewing the progress of the project, providing feedback, and approving the final deliverables.": "Как куратор, вы следите за прогрессом проекта, даёте обратную связь и одобряете конечные результаты.",
   "As an admin or owner, you can:": "Как администратор или владелец, вы можете:",
   "As an owner, you can:": "Как владелец, вы можете:",
+  "Assign a reviewer on the project page to get feedback on check-ins.": "Назначьте куратора на странице проекта, чтобы получать обратную связь по отчётам о ходе работы.",
   "Assign an owner": "Назначить исполнителя",
   "Assign as champion": "Назначить ответственным",
   "Assign as reviewer": "Назначить куратором",
