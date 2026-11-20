@@ -84,5 +84,26 @@ defmodule Operately.Features.CompanyAdmin.AccessAndValidationTest do
       |> Steps.invite_company_member(params)
       |> Steps.assert_error_message(error)
     end
+
+    @tag role: :admin
+    feature "corrects client and server invite errors without losing entries", ctx do
+      long_email = "person" <> String.duplicate("a", 150) <> "@example.com"
+
+      ctx
+      |> Steps.assert_logged_in_user_has_admin_access_level()
+      |> Steps.open_company_team_page()
+      |> Steps.invite_company_member(%{full_name: "  ", email: "a@", title: "Engineer"})
+      |> Steps.assert_invite_field_error({:full_name, "Name is required"})
+      |> Steps.assert_invite_field_error({:email, "Enter a valid email address"})
+      |> Steps.assert_invite_field_values({"  ", "a@", "Engineer"})
+      |> Steps.capture_invite_screenshot()
+      |> Steps.correct_invite_fields({"Michael Scott", long_email})
+      |> Steps.assert_invite_field_error({:email, "160"})
+      |> Steps.assert_invite_field_values({"Michael Scott", long_email, "Engineer"})
+      |> Steps.capture_invite_screenshot()
+      |> Steps.correct_invite_fields({"Michael Scott", "m.scott@dmif.com"})
+      |> Steps.assert_invite_success()
+      |> Steps.capture_invite_screenshot()
+    end
   end
 end
