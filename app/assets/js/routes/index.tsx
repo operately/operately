@@ -62,7 +62,7 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("/forgot-password", pages.ForgotPasswordPage, { auth: false }),
         pageRoute("/reset-password", pages.ResetPasswordPage, { auth: false }),
 
-        pageRoute("", pages.LobbyPage),
+        pageRoute("", pages.LobbyPage, { preload: false }),
         pageRoute("/company-import", pages.CompanyImportPage, { preload: false }),
         pageRoute("/billing/pick-company", pages.BillingPickCompanyPage, { preload: false }),
         pageRoute("/new", pages.NewCompanyPage),

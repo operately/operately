@@ -42,7 +42,7 @@ export function ErrorPage({ status, homePath, diagnostics }: ErrorPage.Props) {
 
         <div className="flex w-full justify-center mt-4">
           <GhostButton linkTo={homePath ?? "/"} testId="back-to-lobby">
-            {homePath ? t("Go back to Home") : t("Go back to Lobby")}
+            {homePath ? t("Go back to Home") : t("Go back to company selection")}
           </GhostButton>
         </div>
 

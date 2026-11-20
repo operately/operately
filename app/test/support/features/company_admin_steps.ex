@@ -707,8 +707,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :add_second_company_with_resources, ctx do
     ctx
-    |> UI.visit("/")
-    |> UI.click(testid: "add-company-card")
+    |> UI.visit("/new")
     |> UI.fill(testid: "companyname", with: "Company B")
     |> UI.fill(testid: "title", with: "Founder")
     |> UI.click(testid: "submit")
@@ -734,8 +733,10 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.click(testid: "confirm-delete-button")
   end
 
-  step :assert_redirected_to_lobby, ctx do
-    ctx |> UI.assert_page("/")
+  step :assert_redirected_to_remaining_company, ctx do
+    remaining_company = Operately.Companies.get_company_by_name("Company B")
+
+    ctx |> UI.assert_page(Paths.home_path(remaining_company))
   end
 
   step :assert_company_is_deleted, ctx do
@@ -751,7 +752,6 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     goal = Operately.Goals.list_goals() |> hd()
 
     ctx
-    |> UI.click_text("Company B")
     |> UI.find(UI.query(testid: "your-operately-spaces-section"), fn el ->
       UI.click_text(el, "General")
     end)

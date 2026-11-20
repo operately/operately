@@ -8,8 +8,7 @@ defmodule Operately.Features.CompaniesTest do
   feature "creating another company (not first one)", ctx do
     ctx
     |> Steps.given_a_user_is_logged_in_that_belongs_to_a_company()
-    |> Steps.navigate_to_the_loby()
-    |> Steps.click_on_the_add_company_button()
+    |> Steps.navigate_to_new_company_page()
     |> Steps.fill_in_company_form_and_submit()
     |> Steps.assert_company_is_created()
     |> Steps.assert_first_project_setup_is_shown()
@@ -20,8 +19,7 @@ defmodule Operately.Features.CompaniesTest do
   feature "creating a company requires a name", ctx do
     ctx
     |> Steps.given_a_user_is_logged_in_that_belongs_to_a_company()
-    |> Steps.navigate_to_the_loby()
-    |> Steps.click_on_the_add_company_button()
+    |> Steps.navigate_to_new_company_page()
     |> Steps.submit_company_form_without_name()
     |> Steps.assert_company_name_is_required()
   end

@@ -17,7 +17,9 @@ export const mockLinks: CompanyNavigationLinks = {
   notifications: "/notifications",
   account: "/account",
   companyAdmin: "/admin",
+  adminPanel: "/admin",
   lobby: "/lobby",
+  newCompany: "/new",
   newGoal: "/goals/new",
   newProject: "/projects/new",
   newSpace: "/spaces/new",
@@ -32,6 +34,8 @@ export const mockLinks: CompanyNavigationLinks = {
 
 export const defaultProps: CompanyNavigationProps = {
   companyName: "Nexus",
+  companyCount: 2,
+  isSiteAdmin: false,
   me: mockPerson,
   links: mockLinks,
   canViewCompanyDirectory: true,
