@@ -123,6 +123,18 @@ export const TeamMemberFormToInvited: Story = {
   },
 };
 
+export const TeamMemberFieldErrors: Story = {
+  args: {
+    companyName: "Operately",
+    navigationItems,
+    state: { state: "form" },
+    formValues: { fullName: "  ", email: "alex@example", title: "Product Designer" },
+    formErrors: { fullName: "Name is required", email: "Enter a valid email address" },
+    onFormChange: () => {},
+    onSubmit: () => {},
+  },
+};
+
 export const TeamMemberFormToAdded: Story = {
   args: {} as any,
   render: () => {
