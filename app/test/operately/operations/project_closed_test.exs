@@ -36,7 +36,7 @@ defmodule Operately.Operations.ProjectClosedTest do
 
     assert 0 == notifications_count(action: @action)
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 1 == notifications_count(action: @action)
 
@@ -61,7 +61,7 @@ defmodule Operately.Operations.ProjectClosedTest do
 
     assert 0 == notifications_count(action: @action)
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 4 == notifications_count(action: @action)
 
@@ -88,7 +88,7 @@ defmodule Operately.Operations.ProjectClosedTest do
 
     assert 0 == notifications_count(action: @action)
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 4 == notifications_count(action: @action)
 
@@ -113,7 +113,7 @@ defmodule Operately.Operations.ProjectClosedTest do
     end)
 
     activity = get_activity(retrospective)
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 0 == notifications_count(action: @action)
   end
@@ -134,7 +134,7 @@ defmodule Operately.Operations.ProjectClosedTest do
 
     assert 0 == notifications_count(action: @action)
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 4 == notifications_count(action: @action)
 

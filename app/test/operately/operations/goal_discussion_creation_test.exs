@@ -28,7 +28,7 @@ defmodule Operately.Operations.GoalDiscussionCreationTest do
 
       assert notifications_count(action: action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
       notified_people_ids = Enum.map(notifications, & &1.person_id)
 
@@ -48,7 +48,7 @@ defmodule Operately.Operations.GoalDiscussionCreationTest do
 
       assert notifications_count(action: action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
       notified_people_ids = Enum.map(notifications, & &1.person_id)
 

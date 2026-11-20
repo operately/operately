@@ -23,7 +23,7 @@ defmodule Operately.Support.Notifications do
     |> Repo.aggregate(:count)
   end
 
-  def perform_job(activity_id) do
+  def dispatch_activity_notifications(activity_id) do
     Oban.Testing.perform_job(Operately.Activities.NotificationDispatcher, %{activity_id: activity_id}, [])
   end
 

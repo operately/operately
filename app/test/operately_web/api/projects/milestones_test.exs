@@ -934,7 +934,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 1 == notifications_count(action: action)
@@ -977,7 +977,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 2 == notifications_count(action: action)
@@ -1006,7 +1006,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
       action = "milestone_due_date_updating"
       activity = get_activity(milestone: ctx.milestone, action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       # Creator should not receive notification even though they're subscribed
       assert notifications_count(action: action) == 0
@@ -1043,7 +1043,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
       action = "milestone_due_date_updating"
       activity = get_activity(milestone: ctx.milestone, action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: action) == 0
       assert fetch_notifications(activity.id, action: action) == []
@@ -1063,7 +1063,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
 
       activity = get_activity(milestone: ctx.milestone, action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert notifications_count(action: action) == 1
@@ -1412,7 +1412,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 1 == notifications_count(action: action)
@@ -1440,7 +1440,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 2 == notifications_count(action: action)
@@ -1468,7 +1468,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
       action = "milestone_description_updating"
       activity = get_activity(ctx.milestone.id, action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 1 == notifications_count(action: action)
@@ -1487,7 +1487,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
 
       activity = get_activity(ctx.milestone.id, action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 2 == notifications_count(action: action)
@@ -1515,7 +1515,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
       action = "milestone_description_updating"
       activity = get_activity(ctx.milestone.id, action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: action) == 0
       assert fetch_notifications(activity.id, action: action) == []
@@ -1535,7 +1535,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
 
       activity = get_activity(ctx.milestone.id, action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert notifications_count(action: action) == 1

@@ -216,7 +216,7 @@ defmodule Operately.Operations.GoalCreationTest do
     assert resource_hub_activities == []
     assert 0 == notifications_count()
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 2 == notifications_count() # 1 reviewer + 1 champion = 2
     assert fetch_notifications(activity.id)
@@ -238,7 +238,7 @@ defmodule Operately.Operations.GoalCreationTest do
     |> Operately.Goals.Goal.changeset(%{description: RichText.rich_text("Mention removed before dispatch")})
     |> Repo.update!()
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)
 

@@ -65,7 +65,7 @@ defmodule Operately.Operations.ProjectContributorAdditionTest do
 
     assert 0 == notifications_count()
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert fetch_notification(activity.id)
     assert 1 == notifications_count()
@@ -84,7 +84,7 @@ defmodule Operately.Operations.ProjectContributorAdditionTest do
     activity = from(a in Activity, where: a.action == "project_contributor_addition" and a.content["project_id"] == ^ctx.project.id) |> Repo.one()
 
     assert 0 == notifications_count()
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
     assert 0 == notifications_count()
   end
 end

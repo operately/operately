@@ -29,7 +29,7 @@ defmodule Operately.Operations.ResourceHubFileDeletingTest do
 
     assert 0 == notifications_count(action: @action)
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
     notifications = fetch_notifications(activity.id, action: @action)
 
     assert 3 == notifications_count(action: @action)
@@ -51,7 +51,7 @@ defmodule Operately.Operations.ResourceHubFileDeletingTest do
 
     assert 0 == notifications_count(action: @action)
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
     notifications = fetch_notifications(activity.id, action: @action)
 
     assert 2 == notifications_count(action: @action)
@@ -73,7 +73,7 @@ defmodule Operately.Operations.ResourceHubFileDeletingTest do
     end)
 
     activity = get_activity(file, @action)
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert notifications_count(action: @action) == 0
     assert fetch_notifications(activity.id, action: @action) == []

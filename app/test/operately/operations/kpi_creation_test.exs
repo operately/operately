@@ -111,7 +111,7 @@ defmodule Operately.Operations.KpiCreationTest do
       from(a in Activity, where: a.action == "kpi_created" and a.content["kpi_id"] == ^kpi.id)
       |> Repo.one()
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)
 

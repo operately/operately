@@ -101,7 +101,7 @@ defmodule Operately.Operations.ProjectContributorsAdditionTest do
     activity = fetch_activity(ctx.project.id)
 
     assert 0 == notifications_count()
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert fetch_notifications(activity.id)
     assert 3 == notifications_count()
@@ -121,7 +121,7 @@ defmodule Operately.Operations.ProjectContributorsAdditionTest do
     activity = fetch_activity(ctx.project.id)
     assert 0 == notifications_count()
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 2 == notifications_count()
     notifications = fetch_notifications(activity.id)

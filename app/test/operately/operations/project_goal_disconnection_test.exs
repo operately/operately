@@ -51,7 +51,7 @@
 
     assert 0 == notifications_count()
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 1 == notifications_count()
     assert nil != fetch_notification(activity.id)
