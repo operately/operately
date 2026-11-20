@@ -20,7 +20,7 @@ beforeEach(() => {
 function renderPage(
   state: CompanyAdminAddPeoplePage.PageState,
   memberType: CompanyAdminAddPeoplePage.MemberType,
-  overrides: Partial<CompanyAdminAddPeoplePage.Props> = {},
+  overrides: Partial<Pick<CompanyAdminAddPeoplePage.Props, "formValues" | "formErrors" | "onSubmit">> = {},
 ) {
   return render(
     <MemoryRouter>
