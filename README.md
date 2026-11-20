@@ -10,6 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/operately/operately/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License"></a>
+  <a href="https://app.superplane.com/operately-fpf7ev/workspaces/oper-ubezgzw4/lines/a01a0c67-5aee-4060-a9a7-588243596e58"><img src="https://app.superplane.com/api/v1/public/badges/O7ejOxLh8a_Mq0IFO7LG9Ypuc26kVsIKkowWtto4wBo.svg?period=30&size=small" alt="PRs via SuperPlane"</a>
   <a href="https://operately.semaphoreci.com/projects/operately"><img src="https://operately.semaphoreci.com/badges/operately/branches/main.svg?style=shields" alt="CI Status on Semaphore" /></a>
   <a href="https://github.com/operately/operately/pulse"><img src="https://img.shields.io/github/commit-activity/m/operately/operately" alt="GitHub commit activity"/></a>
   <a href="https://discord.gg/2ngnragJYV"><img src="https://img.shields.io/discord/1080898715268698152?label=discord" alt="Discord server" /></a>
@@ -65,9 +66,11 @@ Operately's main difference is its ready-made structure for running a business. 
 
 ## Who uses Operately
 
-Owners, founders, and management teams of growing businesses that need better visibility into performance, priorities, and progress. Particularly useful for companies with multiple teams, functions, or locations, where responsibilities have been delegated but the owner still spends too much time following up.
+Operately is for growing businesses that need a better way to set goals, manage projects, and keep track of progress.
 
-Works best for teams of roughly 10 to 100 people.
+It helps owners and managers see where things stand, while giving everyone on the team clear responsibilities, visibility into what's happening, and a way to make their contributions count.
+
+Particularly useful for companies with multiple teams, functions, or locations. Works best for teams of roughly 10 to 100 people.
 
 ## Quick start
 
