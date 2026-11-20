@@ -199,9 +199,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
     {:ok, restricted} = Operately.InviteLinks.create_invite_link(%{company_id: ctx.company.id, author_id: ctx.creator.id, allowed_domains: ["company.com"]})
     {:ok, personal} = Operately.InviteLinks.create_personal_invite_link(%{company_id: ctx.company.id, author_id: ctx.creator.id, person_id: ctx.creator.id})
 
-    for {token, field} <- [{restricted.token, "email"}, {personal.token, "invite_token"}] do
+    for {token, details} <- [{restricted.token, %{field: "email", reason: "invite_link_domain_not_allowed"}}, {personal.token, %{field: "invite_token"}}] do
       assert {400, result} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, %{email: "valid@example.com", invite_token: token}))
-      assert result.details.field == field
+      assert result.details == details
     end
 
     assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 0

@@ -104,6 +104,7 @@ test("server email rejection appears at the email field and correction keeps sig
   expect(input("email").getAttribute("aria-invalid")).toBe("true");
   expect(input("email").getAttribute("aria-describedby")).toBe("email-error");
   expect(container.querySelectorAll("[role=alert]")).toHaveLength(1);
+  expect(container.querySelector("[data-test-id=skip-invitation]")).toBeNull();
   expect(container.querySelector("input[name=code]")).toBeNull();
   for (const [field, value] of Object.entries(details)) expect(input(field).value).toBe(value);
 
@@ -619,6 +620,50 @@ test("invitation failure offers recovery without losing entered details", async 
     inviteToken: null,
   });
 });
+
+test.each(["initial", "verification", "resend"])(
+  "invitation domain rejection during %s preserves email focus and allows signup without the invitation",
+  async (stage) => {
+    const domainError = {
+      response: {
+        data: {
+          message: "This email domain is not allowed by the invitation.",
+          details: { field: "email", reason: "invite_link_domain_not_allowed" },
+        },
+      },
+    };
+    const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
+    const account = jest.spyOn(Api.default, "createAccount").mockResolvedValue({});
+    if (stage === "initial") activation.mockRejectedValueOnce(domainError);
+    await fillDetails();
+    await submit();
+    if (stage === "verification") {
+      account.mockRejectedValueOnce(domainError);
+      await edit("code", "ABC123");
+      await submit();
+    } else if (stage === "resend") {
+      activation.mockRejectedValueOnce(domainError);
+      await finishCooldown();
+      await resend();
+    }
+
+    expect(document.activeElement).toBe(input("email"));
+    expect(input("email").getAttribute("aria-invalid")).toBe("true");
+    expect(container.querySelector("#email-error")).not.toBeNull();
+    const recovery = container.querySelector<HTMLButtonElement>("[data-test-id=skip-invitation]");
+    if (!recovery) throw new Error("Missing invitation recovery action");
+    await act(async () => recovery.click());
+    for (const [field, value] of Object.entries(details)) expect(input(field).value).toBe(value);
+    await submit();
+    expect(container.querySelector("input[name=code]")).not.toBeNull();
+    if (stage === "initial")
+      expect(activation).toHaveBeenLastCalledWith(expect.objectContaining({ inviteToken: null }));
+    await edit("code", "NEW123");
+    await submit();
+    expect(account).toHaveBeenLastCalledWith(expect.objectContaining({ email: details.email, inviteToken: null }));
+    expect(logIn).toHaveBeenCalled();
+  },
+);
 
 test("server code failures remain on verification and never log the credential-bearing request", async () => {
   jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});

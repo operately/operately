@@ -20,7 +20,11 @@ defmodule OperatelyWeb.Api.SignupErrors do
   def response(:signup_not_allowed), do: {:error, :forbidden, gettext("Email signup is not available.")}
   def response({:invitation, %LimitError{} = error}), do: field_error(:invite_token, EnforceLimits.public_message(error))
   def response({:invitation, :personal}), do: field_error(:invite_token, gettext("This invitation is for an existing account. Open your invitation link to sign in."))
-  def response({:invitation, :invite_link_domain_not_allowed}), do: field_error(:email, gettext("This email domain is not allowed by the invitation."))
+
+  def response({:invitation, :invite_link_domain_not_allowed}) do
+    {:error, :bad_request, gettext("This email domain is not allowed by the invitation."), %{field: "email", reason: "invite_link_domain_not_allowed"}}
+  end
+
   def response({:invitation, _}), do: field_error(:invite_token, gettext("This invitation is no longer valid. Ask your company administrator for a new link."))
   def response(_), do: {:error, :internal_server_error}
 

@@ -82,12 +82,17 @@ function Page() {
   }, [pageState, focusField]);
 
   const handleSubmissionError = (error: unknown) => {
-    const data = (error as { response?: { data?: { message?: unknown; details?: { field?: unknown } } } })?.response
-      ?.data;
+    const data = (
+      error as { response?: { data?: { message?: unknown; details?: { field?: unknown; reason?: unknown } } } }
+    )?.response?.data;
     const message = typeof data?.message === "string" && data.message.trim() ? data.message : null;
     const fields = { email: "email", full_name: "name", password: "password", code: "code" };
     const apiField = data?.details?.field;
     const field = typeof apiField === "string" ? fields[apiField as keyof typeof fields] : undefined;
+
+    if (data?.details?.reason === "invite_link_domain_not_allowed") {
+      setInvitationError(true);
+    }
 
     if (field && message) {
       form.actions.addErrors({ [field]: message });
