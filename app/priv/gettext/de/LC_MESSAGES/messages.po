@@ -6701,7 +6701,7 @@ msgstr "Die Profilbilddatei ist zu groß"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:95
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:89
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:90
 msgid "Back"
 msgstr "Zurück"
 
@@ -8157,7 +8157,7 @@ msgstr "Unternehmensverwaltung"
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:63
 #: ../turboui/src/ProfileEditPage/index.tsx:77
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:39
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:40
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:29
 #: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:90
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:41
@@ -10544,7 +10544,7 @@ msgid "Email is not valid"
 msgstr "E-Mail-Adresse ist ungültig"
 
 #.frontend
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:232
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:238
 msgid "Email is required"
 msgstr "E-Mail-Adresse ist erforderlich"
 
@@ -10644,7 +10644,7 @@ msgid "Enter a title"
 msgstr "Titel eingeben"
 
 #.frontend
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:234
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:240
 msgid "Enter a valid email address"
 msgstr "Gib eine gültige E-Mail-Adresse ein"
 
@@ -13565,7 +13565,7 @@ msgstr "Das Projekt in Listen aktiver Projekte anzeigen"
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:36
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:148
 #: ../turboui/src/ProfileEditPage/index.tsx:78
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:40
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:41
 #: assets/js/pages/InviteTeamPage/index.tsx:28
 #: assets/js/pages/MemberTypeSelectionPage/index.tsx:18
 msgid "Manage Team Members"
@@ -14083,6 +14083,7 @@ msgstr "Muss eine gültige Zahl sein"
 
 #.frontend
 #: ../turboui/src/Forms/validation.ts:58
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:232
 msgid "Must be at least %{minLength} characters long"
 msgstr "Muss mindestens %{minLength} Zeichen lang sein"
 
@@ -14090,6 +14091,7 @@ msgstr "Muss mindestens %{minLength} Zeichen lang sein"
 #: ../turboui/src/Checklist/index.tsx:397
 #: ../turboui/src/Forms/validation.ts:62
 #: ../turboui/src/GoalTargetList/index.tsx:425
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:234
 msgid "Must be at most %{maxLength} characters long"
 msgstr "Darf höchstens %{maxLength} Zeichen lang sein"
 
@@ -14168,7 +14170,7 @@ msgstr "Name darf nicht leer sein"
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:25
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:41
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:370
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:230
 #: lib/operately_web/api/resource_hubs/create.ex:27
 #: lib/operately_web/api/resource_hubs/rename.ex:37
 #: lib/operately_web/api/tasks/create_board.ex:26

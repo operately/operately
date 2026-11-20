@@ -239,6 +239,39 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.click(testid: "submit")
   end
 
+  step :assert_invite_field_error, ctx, {field, text} do
+    testid = if field == :full_name, do: "fullname-error", else: "email-error"
+
+    ctx
+    |> UI.assert_has(testid: testid)
+    |> UI.assert_text(text, testid: testid)
+  end
+
+  step :assert_invite_field_values, ctx, {full_name, email, title} do
+    ctx
+    |> UI.assert_has(testid: "fullname", value: full_name)
+    |> UI.assert_has(testid: "email", value: email)
+    |> UI.assert_has(testid: "title", value: title)
+  end
+
+  step :correct_invite_fields, ctx, {full_name, email} do
+    ctx
+    |> UI.fill(testid: "fullname", with: full_name)
+    |> UI.fill(testid: "email", with: email)
+    |> UI.click(testid: "submit")
+  end
+
+  step :assert_invite_success, ctx do
+    ctx
+    |> UI.assert_has(testid: "invite-another-button")
+    |> UI.refute_has(testid: "fullname-error")
+    |> UI.refute_has(testid: "email-error")
+  end
+
+  step :capture_invite_screenshot, ctx do
+    UI.take_screenshot(ctx)
+  end
+
   step :invite_outside_collaborator, ctx, params do
     ctx
     |> UI.click(testid: "add-person")

@@ -17,7 +17,11 @@ beforeEach(() => {
   Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
 });
 
-function renderPage(state: CompanyAdminAddPeoplePage.PageState, memberType: CompanyAdminAddPeoplePage.MemberType) {
+function renderPage(
+  state: CompanyAdminAddPeoplePage.PageState,
+  memberType: CompanyAdminAddPeoplePage.MemberType,
+  overrides: Partial<Pick<CompanyAdminAddPeoplePage.Props, "formValues" | "formErrors" | "onSubmit">> = {},
+) {
   return render(
     <MemoryRouter>
       <CompanyAdminAddPeoplePage
@@ -28,10 +32,32 @@ function renderPage(state: CompanyAdminAddPeoplePage.PageState, memberType: Comp
         formValues={{ fullName, email: "alex@example.com", title: "Designer" }}
         onFormChange={jest.fn()}
         onSubmit={jest.fn()}
+        {...overrides}
       />
     </MemoryRouter>,
   );
 }
+
+it("renders field errors beside preserved values and lets short values reach submission", () => {
+  const onSubmit = jest.fn();
+  const { container } = renderPage({ state: "form" }, "team_member", {
+    formValues: { fullName: "Al", email: "a@", title: "Designer" },
+    formErrors: { fullName: "Name error", email: "Email error" },
+    onSubmit,
+  });
+
+  expect(screen.getByLabelText("Full Name")).toHaveValue("Al");
+  expect(screen.getByLabelText("Email")).toHaveValue("a@");
+  expect(container.querySelector('[data-test-id="fullname-error"]')).toHaveTextContent("Name error");
+  expect(container.querySelector('[data-test-id="email-error"]')).toHaveTextContent("Email error");
+
+  const submit = screen.getByRole("button", { name: "Invite Member" });
+  expect(submit.closest("form")).toHaveAttribute("novalidate");
+  expect(screen.getByLabelText("Full Name")).toHaveAttribute("minlength", "3");
+  expect(screen.getByLabelText("Email")).toHaveAttribute("minlength", "3");
+  fireEvent.click(submit);
+  expect(onSubmit).toHaveBeenCalledTimes(1);
+});
 
 describe.each<CompanyAdminAddPeoplePage.MemberType>(["team_member", "outside_collaborator"])("%s", (memberType) => {
   it("explains why an existing user was added without an invitation link", () => {

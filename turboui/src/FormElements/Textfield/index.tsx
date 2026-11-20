@@ -35,7 +35,11 @@ export const Textfield = React.forwardRef<HTMLInputElement, TextfieldProps>((pro
         <input ref={ref} id={id} className={inputCN} data-test-id={testId || "textfield"} {...rest} />
         {addonRight && <span className={addonCN}>{addonRight}</span>}
       </div>
-      {error && <div className="text-red-500 text-xs mt-1 mb-1">{error}</div>}
+      {error && (
+        <div className="text-red-500 text-xs mt-1 mb-1" data-test-id={testId ? `${testId}-error` : undefined}>
+          {error}
+        </div>
+      )}
     </div>
   );
 });

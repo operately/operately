@@ -47,7 +47,7 @@ export function InviteMemberForm(props: InviteMemberForm.Props) {
     <div>
       {props.title && <div className="text-content-accent text-xl sm:text-2xl font-extrabold mb-6 mt-2 sm:mt-0 sm:mb-8">{props.title}</div>}
 
-      <form onSubmit={handleSubmit} data-test-id={props.testId}>
+      <form onSubmit={handleSubmit} data-test-id={props.testId} noValidate>
         <div className="flex flex-col gap-4">
           <FormRow label={t("Full Name")} htmlFor="invite-full-name">
             <Textfield
