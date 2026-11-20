@@ -4951,7 +4951,7 @@ msgid "<author>%{name}</author> on <date/>"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:259
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:265
 msgid "<bold>What happens next?</bold> Operately will send you a code to verify your email address."
 msgstr ""
 
@@ -6509,8 +6509,8 @@ msgstr ""
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:79
 #: assets/js/pages/SetupPage/page.tsx:152
 #: assets/js/pages/SetupPage/page.tsx:164
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:216
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:228
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:222
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:234
 msgid "At least 12 characters"
 msgstr ""
 
@@ -7410,7 +7410,7 @@ msgid "Check your current inbox"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:287
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:293
 msgid "Check your email for a code"
 msgstr ""
 
@@ -8314,7 +8314,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:82
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:226
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:232
 msgid "Confirm Password"
 msgstr ""
 
@@ -8444,8 +8444,8 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/Forms/VerificationCodeInput.stories.tsx:15
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:240
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:309
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:246
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:315
 msgid "Continue ->"
 msgstr ""
 
@@ -10518,6 +10518,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:24
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:84
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:81
 #: lib/operately_web/api/mutations/create_email_activation_code.ex:53
 msgid "Enter a valid email address."
 msgstr ""
@@ -10591,7 +10592,7 @@ msgid "Enter your current password"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:207
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:213
 msgid "Enter your full name"
 msgstr ""
 
@@ -11764,7 +11765,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:52
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:206
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:212
 msgid "Full Name"
 msgstr ""
 
@@ -15573,7 +15574,7 @@ msgstr ""
 #: assets/js/pages/LoginPage/index.tsx:134
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:214
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:220
 msgid "Password"
 msgstr ""
 
@@ -15625,7 +15626,7 @@ msgstr ""
 #: assets/js/pages/JoinPage/index.tsx:93
 #: assets/js/pages/ResetPasswordPage/index.tsx:34
 #: assets/js/pages/SetupPage/page.tsx:72
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:80
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:85
 msgid "Passwords do not match"
 msgstr ""
 
@@ -15934,7 +15935,7 @@ msgstr ""
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:114
 #: assets/js/pages/SetupPage/page.tsx:208
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:239
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:245
 msgid "Please fill in all fields"
 msgstr ""
 
@@ -18778,8 +18779,8 @@ msgstr ""
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:23
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:180
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:281
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:185
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:287
 msgid "Sign Up"
 msgstr ""
 
@@ -18810,7 +18811,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:51
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:185
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:190
 msgid "Sign up for Operately"
 msgstr ""
 
@@ -20685,7 +20686,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:95
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:130
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:135
 #: assets/js/pages/SpaceAddPage/index.tsx:50
 msgid "There was an unexpected error. Please try again later."
 msgstr ""
@@ -22292,7 +22293,7 @@ msgid "Use these values when calling the external Operately API."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:186
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:191
 msgid "Use your work email — keep work and life separate."
 msgstr ""
 
@@ -22853,7 +22854,7 @@ msgid "We've emailed %{name} a link to finish setting up their account. You can 
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:329
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:335
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
 msgstr ""
 
@@ -23043,7 +23044,7 @@ msgid "Will be posted on <date/> at <time/>"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:198
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:203
 msgid "Work Email"
 msgstr ""
 
@@ -24403,7 +24404,7 @@ msgid "name can't be blank"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:199
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:204
 msgid "name@company.com"
 msgstr ""
 

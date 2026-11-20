@@ -5164,7 +5164,7 @@ msgid "<author>%{name}</author> on <date/>"
 msgstr "<author>%{name}</author>, <date/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:259
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:265
 msgid "<bold>What happens next?</bold> Operately will send you a code to verify your email address."
 msgstr "<bold>Что дальше?</bold> Operately отправит вам код для подтверждения адреса электронной почты."
 
@@ -6744,8 +6744,8 @@ msgstr "Хотя бы 1 заглавная буква"
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:79
 #: assets/js/pages/SetupPage/page.tsx:152
 #: assets/js/pages/SetupPage/page.tsx:164
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:216
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:228
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:222
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:234
 msgid "At least 12 characters"
 msgstr "Не менее 12 символов"
 
@@ -7676,7 +7676,7 @@ msgid "Check your current inbox"
 msgstr "Проверьте свой текущий почтовый ящик"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:287
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:293
 msgid "Check your email for a code"
 msgstr "Проверьте свою электронную почту на наличие кода"
 
@@ -8602,7 +8602,7 @@ msgstr "Подтвердить новый пароль"
 
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:82
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:226
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:232
 msgid "Confirm Password"
 msgstr "Подтвердить пароль"
 
@@ -8732,8 +8732,8 @@ msgstr "Продолжить"
 
 #.frontend
 #: ../turboui/src/Forms/VerificationCodeInput.stories.tsx:15
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:240
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:309
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:246
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:315
 msgid "Continue ->"
 msgstr "Продолжить ->"
 
@@ -10828,6 +10828,7 @@ msgstr "Введите действительный адрес электрон�
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:24
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:84
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:81
 #: lib/operately_web/api/mutations/create_email_activation_code.ex:53
 msgid "Enter a valid email address."
 msgstr "Введите действительный адрес электронной почты."
@@ -10901,7 +10902,7 @@ msgid "Enter your current password"
 msgstr "Введите свой текущий пароль"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:207
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:213
 msgid "Enter your full name"
 msgstr "Введите своё полное имя"
 
@@ -12087,7 +12088,7 @@ msgstr "Полный доступ"
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:52
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:206
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:212
 msgid "Full Name"
 msgstr "Полное имя"
 
@@ -15960,7 +15961,7 @@ msgstr "Родительская цель"
 #: assets/js/pages/LoginPage/index.tsx:134
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:214
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:220
 msgid "Password"
 msgstr "Пароль"
 
@@ -16012,7 +16013,7 @@ msgstr "Пароль успешно изменён"
 #: assets/js/pages/JoinPage/index.tsx:93
 #: assets/js/pages/ResetPasswordPage/index.tsx:34
 #: assets/js/pages/SetupPage/page.tsx:72
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:80
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:85
 msgid "Passwords do not match"
 msgstr "Пароли не совпадают"
 
@@ -16326,7 +16327,7 @@ msgstr "Пожалуйста, введите свои данные, чтобы �
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:114
 #: assets/js/pages/SetupPage/page.tsx:208
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:239
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:245
 msgid "Please fill in all fields"
 msgstr "Пожалуйста, заполните все поля"
 
@@ -19249,8 +19250,8 @@ msgstr "Выйти"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:23
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:180
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:281
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:185
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:287
 msgid "Sign Up"
 msgstr "Зарегистрироваться"
 
@@ -19281,7 +19282,7 @@ msgstr "Войти через Google"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:51
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:185
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:190
 msgid "Sign up for Operately"
 msgstr "Зарегистрироваться в Operately"
 
@@ -21185,7 +21186,7 @@ msgstr "Не удалось обновить пароль. Повторите п
 
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:95
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:130
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:135
 #: assets/js/pages/SpaceAddPage/index.tsx:50
 msgid "There was an unexpected error. Please try again later."
 msgstr "Произошла непредвиденная ошибка. Повторите попытку позже."
@@ -22836,7 +22837,7 @@ msgstr "Используйте эти значения при вызове вн�
 #~ msgstr "Используйте этот URL, чтобы настроить подключение в вашем клиенте ИИ."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:186
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:191
 msgid "Use your work email — keep work and life separate."
 msgstr "Используйте рабочую электронную почту — держите работу и жизнь отдельно."
 
@@ -23402,7 +23403,7 @@ msgid "We've emailed %{name} a link to finish setting up their account. You can 
 msgstr "Мы отправили %{name} ссылку по электронной почте для завершения настройки учётной записи. Вы также можете поделиться ею ниже."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:329
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:335
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
 msgstr "Мы отправили код из 6 символов на <email>%{email}</email>. Код действителен 5 минут — введите его до истечения этого срока."
 
@@ -23592,7 +23593,7 @@ msgid "Will be posted on <date/> at <time/>"
 msgstr "Будет опубликовано <date/> в <time/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:198
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:203
 msgid "Work Email"
 msgstr "Рабочая почта"
 
@@ -24965,7 +24966,7 @@ msgid "name can't be blank"
 msgstr "Имя не может быть пустым"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:199
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:204
 msgid "name@company.com"
 msgstr "name@company.com"
 
