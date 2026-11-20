@@ -6,7 +6,7 @@ import i18n, { applyLanguage } from "@/i18n";
 import { queryClient } from "@/api/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook } from "@/__tests__/renderHook";
-import { CompanyAdminAddPeoplePage } from "turboui";
+import { CompanyAdminAddPeoplePage, showErrorToast } from "turboui";
 import pageModule from ".";
 
 jest.mock("axios");
@@ -111,6 +111,36 @@ describe.each([
   ["team_member", "create_member"],
   ["outside_collaborator", "invite_guest"],
 ])("%s invitation", (memberType, endpoint) => {
+  it("shows an inline error for an overlong name and submits after correction", async () => {
+    mockMemberType = memberType;
+    jest.mocked(axios.get).mockResolvedValue({ data: { spaces: [], goals: [], projects: [] } });
+    renderHook(() => null, { initialProps: undefined, wrapper });
+    fillForm();
+    const fullName = "a".repeat(256);
+    act(() => props().onFormChange("fullName", fullName));
+
+    await act(() => props().onSubmit());
+
+    expect(props().formErrors).toEqual({ fullName: "Must be at most 255 characters long" });
+    expect(props().formValues).toEqual({ fullName, email: "person@example.com", title: "Engineer" });
+    expect(props().state.state).toBe("form");
+    expect(axios.post).not.toHaveBeenCalled();
+    expect(showErrorToast).not.toHaveBeenCalled();
+
+    // Count Unicode characters as PostgreSQL does, and ignore surrounding whitespace.
+    const correctedName = "𠮷".repeat(255);
+    act(() => props().onFormChange("fullName", `  ${correctedName}  `));
+    await act(() => props().onSubmit());
+
+    expect(props().formErrors).toEqual({});
+    expect(props().state.state).toBe("added");
+    expect(axios.post).toHaveBeenCalledWith(
+      `/api/v2/companies/${endpoint}`,
+      { full_name: correctedName, email: "person@example.com", title: "Engineer" },
+      expect.anything(),
+    );
+  });
+
   it.each([
     ["untouched", undefined, ""],
     ["whitespace-only", "   ", ""],

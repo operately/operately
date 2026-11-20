@@ -230,6 +230,8 @@ function validateInvite(values: InviteMemberForm.Values): InviteMemberForm.Error
     errors.fullName = translationText(i18n.t("Name is required"));
   } else if (name.length < 3) {
     errors.fullName = translationText(i18n.t("Must be at least {{minLength}} characters long", { minLength: 3 }));
+  } else if (Array.from(name).length > 255) {
+    errors.fullName = translationText(i18n.t("Must be at most {{maxLength}} characters long", { maxLength: 255 }));
   }
 
   if (!email) {
