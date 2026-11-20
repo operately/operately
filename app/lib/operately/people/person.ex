@@ -49,7 +49,6 @@ defmodule Operately.People.Person do
     changeset(%__MODULE__{}, attrs)
   end
 
-  @doc false
   def changeset(person, attrs) do
     person
     |> cast(attrs, [
@@ -70,10 +69,19 @@ defmodule Operately.People.Person do
       :type
     ])
     |> cast_embed(:preferences, with: &Preferences.changeset/2)
+    |> complete_title_setup_on_title_change()
     |> validate_inclusion(:language, Operately.I18n.Languages.supported())
     |> validate_required([:full_name, :company_id])
     |> foreign_key_constraint(:avatar_blob_id, name: :people_avatar_blob_id_fkey)
     |> unique_constraint([:company_id, :account_id], name: :people_company_id_account_id_index, message: "Email has already been taken")
+  end
+
+  defp complete_title_setup_on_title_change(changeset) do
+    if changeset.data.title_setup_pending and changed?(changeset, :title) do
+      put_change(changeset, :title_setup_pending, false)
+    else
+      changeset
+    end
   end
 
   def active?(%__MODULE__{suspended: false, suspended_at: nil}), do: true

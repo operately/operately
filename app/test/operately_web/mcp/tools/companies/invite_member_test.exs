@@ -12,6 +12,14 @@ defmodule OperatelyWeb.Mcp.Tools.Companies.InviteMemberTest do
     person = Repo.get!(Operately.People.Person, ToolConnHelper.decode_id!(id))
     assert person.company_id == ctx.company.id
     assert person.type == :human
+    assert person.title == "Designer"
     assert link.token
+  end
+
+  test "inviting without a title leaves title setup pending" do
+    ctx = Factory.setup(%{})
+    refute "title" in Tool.definition().input_schema["required"]
+    assert {:ok, %{person_id: id}} = Tool.call(ToolConnHelper.conn(ctx), %{"full_name" => "Alex", "email" => "alex@example.com"})
+    assert Repo.get!(Operately.People.Person, ToolConnHelper.decode_id!(id)).title_setup_pending
   end
 end

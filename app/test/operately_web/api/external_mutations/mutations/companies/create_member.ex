@@ -15,8 +15,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Companies.CreateMember do
   def inputs(_) do
     %{
       full_name: "External Member",
-      email: "member@example.com",
-      title: "Updated Title"
+      email: "member@example.com"
     }
   end
 
