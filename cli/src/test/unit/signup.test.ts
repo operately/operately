@@ -5,6 +5,7 @@ import * as os from "os";
 import * as path from "path";
 import { runSignupFlow } from "../../auth/flows/signup";
 import { PromptCancelledError } from "../../core/prompts";
+import { ApiError } from "../../core/http";
 import { cliAuth } from "../../auth/shared/api";
 import type { ChildProcess } from "child_process";
 
@@ -201,6 +202,11 @@ describe("runSignupFlow", () => {
     assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
     assert.strictEqual(calls[1].path, cliAuth.checkAccount);
     assert.strictEqual(calls[2].path, "/create_email_activation_code");
+    assert.deepStrictEqual(calls[2].inputs, {
+      email: calls[3].inputs.email,
+      full_name: calls[3].inputs.full_name,
+      password: calls[3].inputs.password,
+    });
     assert.strictEqual(calls[3].path, cliAuth.signup);
     assert.strictEqual(calls[4].path, cliAuth.setupCompany);
     assert.strictEqual(calls[5].path, cliAuth.createToken);
@@ -411,38 +417,77 @@ describe("runSignupFlow", () => {
     ]);
   });
 
-  it("prompts only for invite token after email signup when next step is join", async () => {
-    promptQueue.push("ABC123", "invite-token-123");
+  for (const inviteProvided of [false, true]) {
+    it(`keeps company joining separate with invite flag provided=${inviteProvided}`, async () => {
+      promptQueue.push("ABC123");
+      if (!inviteProvided) promptQueue.push("invite-token-123");
 
-    responses.push({ configured: true });
-    responses.push({ exists: false });
-    responses.push({});
-    responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
-    responses.push({ company: { id: "joined-company", name: "Joined Company" } });
-    responses.push({ token: "op_joined_token", company: { id: "joined-company", name: "Joined Company" } });
-    responses.push({ me: { full_name: "New User", email: "newuser@example.com" } });
+      responses.push({ configured: true });
+      responses.push({ exists: false });
+      responses.push({});
+      responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
+      responses.push({ company: { id: "joined-company", name: "Joined Company" } });
+      responses.push({ token: "op_joined_token", company: { id: "joined-company", name: "Joined Company" } });
+      responses.push({ me: { full_name: "New User", email: "newuser@example.com" } });
 
+      const result = await runSignupFlow(
+        flagsFrom({
+          method: "email-password",
+          "base-url": "https://app.operately.com",
+          "full-name": "New User",
+          email: "newuser@example.com",
+          password: "secret123456",
+          "next-step": "join-invite",
+          profile: "joined",
+          ...(inviteProvided ? { "invite-token": "invite-token-123" } : {}),
+        }),
+        emptyConfig,
+        registryStub,
+        makeDeps([]),
+      );
+
+      assert.strictEqual(result, 0);
+      assert.deepStrictEqual(askedPrompts, [
+        "A verification code was sent to your email. Enter the code:",
+        ...(!inviteProvided ? ["Invite token:"] : []),
+      ]);
+      assert.strictEqual(calls[2].inputs.invite_token, inviteProvided ? "invite-token-123" : undefined);
+      assert.strictEqual(calls[3].inputs.invite_token, undefined);
+      assert.strictEqual(calls[4].path, cliAuth.joinWithInvite);
+    });
+  }
+
+  it("prints actionable preflight errors without prompting for a code or saving credentials", async () => {
+    responses.push({ configured: true }, { exists: false });
     const result = await runSignupFlow(
       flagsFrom({
-        method: "email-password",
+        method: "password",
         "base-url": "https://app.operately.com",
         "full-name": "New User",
-        email: "newuser@example.com",
-        password: "secret123456",
-        "next-step": "join-invite",
-        profile: "joined",
+        email: "new@example.com",
+        password: "weakpassword",
+        "next-step": "later",
       }),
       emptyConfig,
       registryStub,
-      makeDeps([]),
+      {
+        ...makeDeps([]),
+        callInternalMutation: async (baseUrl, path, inputs, token) => {
+          if (path === "/create_email_activation_code") {
+            throw new ApiError("Validation failed", 400, {
+              message: "Use an uppercase letter, a lowercase letter, and a number.",
+              details: { field: "password" },
+            });
+          }
+          return mockMutation(baseUrl, path, inputs, token);
+        },
+      },
     );
-
-    assert.strictEqual(result, 0);
-    assert.deepStrictEqual(askedPrompts, [
-      "A verification code was sent to your email. Enter the code:",
-      "Invite token:",
-    ]);
-    assert.strictEqual(calls[4].path, cliAuth.joinWithInvite);
+    assert.strictEqual(result, 1);
+    assert.deepStrictEqual(askedPrompts, []);
+    assert.ok(errorsPrinted.some((message) => message.includes("Use an uppercase letter")));
+    assert.ok(!errorsPrinted.some((message) => message.includes("weakpassword")));
+    assert.ok(!fs.existsSync(path.join(tmpDir, ".operately", "config.json")));
   });
 
   it("rejects signup when the email already exists", async () => {
@@ -484,6 +529,11 @@ describe("runSignupFlow", () => {
     assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
     assert.strictEqual(calls[1].path, cliAuth.checkAccount);
     assert.strictEqual(calls[2].path, "/create_email_activation_code");
+    assert.deepStrictEqual(calls[2].inputs, {
+      email: calls[3].inputs.email,
+      full_name: calls[3].inputs.full_name,
+      password: calls[3].inputs.password,
+    });
     assert.strictEqual(calls[3].path, cliAuth.signup);
     assert.deepStrictEqual(calls[3].inputs, {
       email: "newuser@example.com",

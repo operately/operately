@@ -4,23 +4,38 @@ import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { TosAndPrivacyPolicy } from "@/features/auth/AgreeToTosAndPp";
 import { PasswordStrength } from "@/features/auth/PasswordStrength";
-import { validateEmail } from "@/features/auth/validateEmail";
-import { validatePassword } from "@/features/auth/validatePassword";
+import {
+  normalizeSignupEmail,
+  trimSignupValue,
+  validSignupEmail,
+  validSignupName,
+  validSignupPassword,
+  signupPasswordFits,
+} from "@/features/auth/signupValidation";
 
 import { translationText } from "@/i18n";
 import { logIn } from "@/routes/auth";
 import { PageModule } from "@/routes/types";
 import { match } from "ts-pattern";
-import { Forms, SignupCodeResend } from "turboui";
+import { Forms, SignupCodeResend, SecondaryButton, Trans } from "turboui";
 
 export default { name: "SignUpWithEmailPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 type PageState = "form" | "code-verification";
+type SignupFields = {
+  inviteToken: string | null;
+  email: string;
+  name: string;
+  password: string;
+  confirmPassword: string;
+  code: string;
+};
+type SignupForm = ReturnType<typeof Forms.useForm<SignupFields>>;
 
 //
 // The page is split into two states: "form" and "code-verification".
@@ -39,6 +54,9 @@ function Page() {
   const inviteToken = new URLSearchParams(window.location.search).get("invite_token");
   const redirectToParam = internalReturnPath(new URLSearchParams(window.location.search).get("redirect_to"));
   const [pageState, setPageState] = React.useState<PageState>("form");
+  const [codeEmail, setCodeEmail] = React.useState<string | null>(null);
+  const [focusField, setFocusField] = React.useState<string | null>(null);
+  const [invitationError, setInvitationError] = React.useState(false);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const createEmailActivationCode = Accounts.useCreateEmailActivationCode();
   const createAccount = Accounts.useCreateAccount();
@@ -55,6 +73,44 @@ function Page() {
     const interval = window.setInterval(() => setClock(Date.now()), 1000);
     return () => window.clearInterval(interval);
   }, [retryAt, isCoolingDown]);
+
+  React.useEffect(() => {
+    if (pageState === "form" && focusField) {
+      document.getElementById(focusField)?.focus();
+      setFocusField(null);
+    }
+  }, [pageState, focusField]);
+
+  const handleSubmissionError = (error: unknown) => {
+    const data = (error as { response?: { data?: { message?: unknown; details?: { field?: unknown } } } })?.response
+      ?.data;
+    const message = typeof data?.message === "string" && data.message.trim() ? data.message : null;
+    const fields = { email: "email", full_name: "name", password: "password", code: "code" };
+    const apiField = data?.details?.field;
+    const field = typeof apiField === "string" ? fields[apiField as keyof typeof fields] : undefined;
+
+    if (field && message) {
+      form.actions.addErrors({ [field]: message });
+      if (field !== "code") {
+        setPageState("form");
+        setFocusField(field);
+      }
+      return;
+    }
+
+    if (apiField === "invite_token") {
+      setPageState("form");
+      setInvitationError(true);
+    }
+    setSubmitError(message ?? t("There was an unexpected error. Please try again later."));
+  };
+
+  const signupDetails = () => ({
+    email: normalizeSignupEmail(form.values.email),
+    fullName: trimSignupValue(form.values.name),
+    password: form.values.password,
+    inviteToken: form.values.inviteToken,
+  });
 
   const startCooldown = () => {
     const now = Date.now();
@@ -77,8 +133,26 @@ function Page() {
       }
     },
     validate: (addError) => {
-      if (pageState === "form" && form.values.email !== "" && !validateEmail(form.values.email)) {
-        addError("email", t("Enter a valid email address."));
+      if (pageState === "form") {
+        if (!validSignupEmail(form.values.email)) {
+          addError(
+            "email",
+            Array.from(normalizeSignupEmail(form.values.email)).length > 255
+              ? t("Enter an email address with no more than 255 characters.")
+              : t("Enter a valid email address."),
+          );
+        }
+        if (!validSignupName(form.values.name)) {
+          addError("name", t("Enter your full name using no more than 255 characters."));
+        }
+        if (!validSignupPassword(form.values.password)) {
+          addError(
+            "password",
+            signupPasswordFits(form.values.password)
+              ? t("Use at least 12 characters, including an uppercase letter, a lowercase letter, and a number.")
+              : t("Use a password with no more than 72 UTF-8 bytes. Some characters use more than one byte."),
+          );
+        }
       }
 
       if (form.values.password !== form.values.confirmPassword) {
@@ -93,18 +167,20 @@ function Page() {
         if (pageState === "form") {
           setSubmitError(null);
 
-          await createEmailActivationCode.mutateAsync({ email: form.values.email });
-          startCooldown();
+          const email = normalizeSignupEmail(form.values.email);
+          if (codeEmail !== email) {
+            await createEmailActivationCode.mutateAsync(signupDetails());
+            form.actions.setValue("code", "");
+            setCodeEmail(email);
+            startCooldown();
+          }
           setPageState("code-verification");
         } else {
           setSubmitError(null);
 
           const result = await createAccount.mutateAsync({
-            inviteToken: form.values.inviteToken,
             code: form.values.code,
-            email: form.values.email,
-            fullName: form.values.name,
-            password: form.values.password,
+            ...signupDetails(),
           });
 
           const redirectTo = buildPostSignupRedirect({
@@ -118,23 +194,17 @@ function Page() {
             console.warn("createAccount invite join warning", result.error);
           }
 
-          await logIn(form.values.email, form.values.password, { redirectTo });
+          await logIn(normalizeSignupEmail(form.values.email), form.values.password, { redirectTo });
         }
         return true;
+      } catch (error) {
+        handleSubmissionError(error);
+        return false;
       } finally {
+        createEmailActivationCode.reset();
+        createAccount.reset();
         requestPending.current = false;
       }
-    },
-    onError: (error) => {
-      const data = error?.response?.data as { message?: unknown; details?: { field?: unknown } } | undefined;
-      const message = typeof data?.message === "string" && data.message.trim() ? data.message : null;
-
-      if (pageState === "form" && data?.details?.field === "email" && message) {
-        form.actions.addErrors({ email: message });
-        return;
-      }
-
-      setSubmitError(message ?? t("There was an unexpected error. Please try again later."));
     },
   });
 
@@ -145,27 +215,46 @@ function Page() {
     setResendState("sending");
 
     try {
-      await createEmailActivationCode.mutateAsync({ email: form.values.email });
+      await createEmailActivationCode.mutateAsync(signupDetails());
       form.actions.setValue("code", "");
       form.actions.clearErrors();
       setSubmitError(null);
       setResendState("success");
       // Remount to focus the input and reset any rejected edit held by its validator.
       setCodeInputVersion((version) => version + 1);
-    } catch {
+    } catch (error) {
+      handleSubmissionError(error);
       setResendState("error");
     } finally {
+      createEmailActivationCode.reset();
       requestPending.current = false;
     }
   };
 
   return match(pageState)
-    .with("form", () => <Form form={form} submitError={submitError} />)
+    .with("form", () => (
+      <Form
+        form={form}
+        submitError={submitError}
+        invitationError={invitationError}
+        onSkipInvitation={() => {
+          form.actions.setValue("inviteToken", null);
+          setInvitationError(false);
+          setSubmitError(null);
+        }}
+      />
+    ))
     .with("code-verification", () => (
       <CodeVerification
         form={form}
         submitError={submitError}
         codeInputVersion={codeInputVersion}
+        onEditDetails={() => {
+          setSubmitError(null);
+          form.actions.clearErrors();
+          setPageState("form");
+          setFocusField("email");
+        }}
         resend={{
           email: form.values.email,
           state: resendState,
@@ -178,7 +267,17 @@ function Page() {
     .exhaustive();
 }
 
-function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; submitError: string | null }) {
+function Form({
+  form,
+  submitError,
+  invitationError,
+  onSkipInvitation,
+}: {
+  form: SignupForm;
+  submitError: string | null;
+  invitationError: boolean;
+  onSkipInvitation: () => void;
+}) {
   const { t } = useTranslation();
   const validation = validateForm(form);
 
@@ -195,6 +294,22 @@ function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; s
               {submitError && (
                 <div className="mb-4" role="alert">
                   <Forms.ErrorMessage error={submitError} />
+                </div>
+              )}
+
+              {invitationError && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {form.values.inviteToken && (
+                    <SecondaryButton
+                      linkTo={`/log_in?invite_token=${encodeURIComponent(form.values.inviteToken)}`}
+                      testId="invitation-sign-in"
+                    >
+                      {t("Sign in")}
+                    </SecondaryButton>
+                  )}
+                  <SecondaryButton onClick={onSkipInvitation} testId="skip-invitation">
+                    {t("Continue without this invitation")}
+                  </SecondaryButton>
                 </div>
               )}
 
@@ -276,11 +391,13 @@ function CodeVerification({
   submitError,
   codeInputVersion,
   resend,
+  onEditDetails,
 }: {
-  form: ReturnType<typeof Forms.useForm>;
+  form: SignupForm;
   submitError: string | null;
   codeInputVersion: number;
   resend: SignupCodeResend.Props;
+  onEditDetails: () => void;
 }) {
   const { t } = useTranslation();
 
@@ -320,6 +437,13 @@ function CodeVerification({
               </div>
 
               <SignupCodeResend {...resend} />
+              <SecondaryButton
+                onClick={onEditDetails}
+                disabled={form.state !== "idle" || resend.state === "sending"}
+                testId="edit-signup-details"
+              >
+                {t("Edit signup details")}
+              </SecondaryButton>
             </div>
           </Forms.Form>
         </Paper.Body>
@@ -350,10 +474,10 @@ interface FormValidation {
   isValid: boolean;
 }
 
-function validateForm(form: any): FormValidation {
-  const email = validateEmail(form.values.email);
-  const name = form.values.name.trim() !== "";
-  const password = validatePassword(form.values.password).isValid;
+function validateForm(form: SignupForm): FormValidation {
+  const email = validSignupEmail(form.values.email);
+  const name = validSignupName(form.values.name);
+  const password = validSignupPassword(form.values.password);
   const confirmPassword = password && form.values.password === form.values.confirmPassword;
 
   const isValid = email && name && password && confirmPassword;
