@@ -4320,10 +4320,10 @@ msgstr "**%{date}** – %{author} hat den Projektzeitplan aktualisiert"
 msgid "**Item Format:** Name (Type) [ID: id] | Status | State | Progress | Champion | Space | Timeframe"
 msgstr "**Eintragsformat:** Name (Typ) [ID: id] | Status | Zustand | Fortschritt | Champion | Arbeitsbereich | Zeitraum"
 
-#.frontend
-#: ../turboui/src/LobbyPage/index.tsx:117
-msgid "+ Create organization"
-msgstr "+ Unternehmen erstellen"
+#~ #.frontend
+#~ #: ../turboui/src/LobbyPage/index.tsx:117
+#~ msgid "+ Create organization"
+#~ msgstr "+ Unternehmen erstellen"
 
 #.elixir
 #: lib/operately_email/templates/project_created.html.eex:7
@@ -4798,8 +4798,8 @@ msgstr[0] "1 Jahr"
 msgstr[1] "%{count} Jahre"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:236
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:249
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:235
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:248
 #: assets/js/features/projectCheckIns/StatusSection.tsx:17
 msgid "1. How's the project going?"
 msgstr "1. Wie läuft das Projekt?"
@@ -4830,13 +4830,13 @@ msgid "15 minutes"
 msgstr "15 Minuten"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:300
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:299
 msgid "2. What is the current progress on the project?"
 msgstr "2. Wie ist der aktuelle Fortschritt im Projekt?"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:262
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:299
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:261
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:298
 #: assets/js/features/projectCheckIns/DescriptionSection.tsx:23
 msgid "2. What's new since the last check-in?"
 msgstr "2. Was gibt es seit dem letzten Check-in Neues?"
@@ -5290,7 +5290,7 @@ msgstr "Zugriffsmodus für neues Token"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/User.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:129
+#: ../turboui/src/CompanyNavigation/index.tsx:131
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:311
 msgid "Account"
 msgstr "Konto"
@@ -6746,6 +6746,12 @@ msgstr "Zurück zur Anmeldung"
 msgid "Back to Team & Access"
 msgstr "Zurück zu Team & Zugriff"
 
+#.frontend
+#: ../turboui/src/CompanyImportPage/index.tsx:55
+#: assets/js/pages/NewCompanyPage/index.tsx:54
+msgid "Back to company selection"
+msgstr "Zurück zur Unternehmensauswahl"
+
 #~ #.frontend
 #~ #: ../turboui/src/CuratedTemplates/PreviewPage/index.tsx:39
 #~ msgid "Back to editor"
@@ -6761,11 +6767,11 @@ msgstr "Zurück zur Startseite"
 msgid "Back to template"
 msgstr "Zurück zur Vorlage"
 
-#.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:54
-#: assets/js/pages/NewCompanyPage/index.tsx:54
-msgid "Back to the Lobby"
-msgstr "Zurück zur Unternehmensauswahl"
+#~ #.frontend
+#~ #: ../turboui/src/CompanyImportPage/index.tsx:54
+#~ #: assets/js/pages/NewCompanyPage/index.tsx:54
+#~ msgid "Back to the Lobby"
+#~ msgstr "Zurück zur Unternehmensauswahl"
 
 #.frontend
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:285
@@ -7633,11 +7639,13 @@ msgid "Checkout unavailable"
 msgstr "Bezahlvorgang nicht verfügbar"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:79
+#: ../turboui/src/CompanyImportPage/index.tsx:82
 msgid "Choose ZIP"
 msgstr "ZIP-Datei auswählen"
 
 #.elixir
+#.frontend
+#: ../turboui/src/LobbyPage/index.tsx:32
 #: lib/operately_web/controllers/mcp_oauth_controller.ex:165
 msgid "Choose a Company"
 msgstr "Unternehmen auswählen"
@@ -7785,7 +7793,7 @@ msgid "Clear"
 msgstr "Leeren"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:195
+#: ../turboui/src/CompanyImportPage/index.tsx:198
 msgid "Clear ZIP"
 msgstr "ZIP-Datei entfernen"
 
@@ -8140,8 +8148,8 @@ msgid "Company"
 msgstr "Unternehmen"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:50
-#: ../turboui/src/CompanyNavigation/index.tsx:133
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:62
+#: ../turboui/src/CompanyNavigation/index.tsx:135
 msgid "Company Admin"
 msgstr "Unternehmensverwaltung"
 
@@ -8174,7 +8182,7 @@ msgid "Company Full"
 msgstr "Mitgliederlimit erreicht"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:61
+#: ../turboui/src/CompanyImportPage/index.tsx:64
 msgid "Company Import"
 msgstr "Unternehmensimport"
 
@@ -8302,7 +8310,7 @@ msgstr "„%{name}“ abschließen?"
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:244
-#: ../turboui/src/CompanyImportPage/index.tsx:424
+#: ../turboui/src/CompanyImportPage/index.tsx:427
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:124
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:144
 #: ../turboui/src/MilestonePage/index.tsx:363
@@ -8374,7 +8382,7 @@ msgstr "Mit Fehlern abgeschlossen"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:178
-#: ../turboui/src/CompanyImportPage/index.tsx:315
+#: ../turboui/src/CompanyImportPage/index.tsx:318
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:187
 msgid "Completed:"
 msgstr "Abgeschlossen:"
@@ -8872,6 +8880,9 @@ msgid "Create API token"
 msgstr "API-Token erstellen"
 
 #.frontend
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:68
+#: ../turboui/src/CompanyNavigation/index.tsx:142
+#: ../turboui/src/LobbyPage/index.tsx:117
 #: assets/js/pages/NewCompanyPage/index.tsx:85
 msgid "Create Company"
 msgstr "Unternehmen erstellen"
@@ -10447,13 +10458,13 @@ msgid "Editing Retrospective"
 msgstr "Rückblick bearbeiten"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:214
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:213
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:183
 msgid "Editing locked after 3 days"
 msgstr "Bearbeitung nach 3 Tagen gesperrt"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:195
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:194
 msgid "Editing the Check-In from <date/>"
 msgstr "Check-in vom <date/> bearbeiten"
 
@@ -11132,7 +11143,7 @@ msgid "FOLDERS"
 msgstr "ORDNER"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:350
+#: ../turboui/src/CompanyImportPage/index.tsx:353
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:207
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:278
 msgid "Failed"
@@ -11690,7 +11701,7 @@ msgid "File:"
 msgstr "Datei:"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:331
+#: ../turboui/src/CompanyImportPage/index.tsx:334
 msgid "File: %{name}"
 msgstr "Datei: %{name}"
 
@@ -11706,7 +11717,7 @@ msgid "Files not uploaded"
 msgstr "Dateien nicht hochgeladen"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:165
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:164
 #: ../turboui/src/TemplateDiscussionForm/index.tsx:66
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:78
 #: assets/js/pages/GoalDiscussionEditPage/index.tsx:56
@@ -11722,7 +11733,7 @@ msgid "Filter"
 msgstr "Filter"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:422
+#: ../turboui/src/CompanyImportPage/index.tsx:425
 msgid "Finalizing Import"
 msgstr "Import wird abgeschlossen"
 
@@ -11969,11 +11980,18 @@ msgstr "Global"
 msgid "Go back to Home"
 msgstr "Zurück zur Startseite"
 
+#~ #.elixir
+#~ #.frontend
+#~ #: ../turboui/src/ErrorPage/index.tsx:45
+#~ #: lib/operately_web/controllers/error_html/service_unavailable.html.heex:22
+#~ msgid "Go back to Lobby"
+#~ msgstr "Zurück zur Unternehmensauswahl"
+
 #.elixir
 #.frontend
 #: ../turboui/src/ErrorPage/index.tsx:45
 #: lib/operately_web/controllers/error_html/service_unavailable.html.heex:22
-msgid "Go back to Lobby"
+msgid "Go back to company selection"
 msgstr "Zurück zur Unternehmensauswahl"
 
 #.frontend
@@ -12211,7 +12229,7 @@ msgid "Hide list"
 msgstr "Liste ausblenden"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:309
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:308
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Hide previous check-in"
 msgstr "Vorherigen Check-in ausblenden"
@@ -12255,8 +12273,8 @@ msgstr "Mit diesem Link stimmt etwas nicht. Prüfe ihn oder bitte die Person, vo
 #: ../turboui/src/AccountSecurityPage/index.tsx:21
 #: ../turboui/src/AccountSettingsPage/index.tsx:45
 #: ../turboui/src/CompanyAdminPage/index.tsx:53
-#: ../turboui/src/CompanyNavigation/index.tsx:105
-#: ../turboui/src/CompanyNavigation/index.tsx:205
+#: ../turboui/src/CompanyNavigation/index.tsx:107
+#: ../turboui/src/CompanyNavigation/index.tsx:218
 #: ../turboui/src/HomePage/index.tsx:20
 #: ../turboui/src/ProfileEditPage/index.tsx:81
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
@@ -12332,12 +12350,12 @@ msgid "Image preview"
 msgstr "Bildvorschau"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:57
+#: ../turboui/src/CompanyImportPage/index.tsx:60
 msgid "Import Company"
 msgstr "Unternehmen importieren"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:62
+#: ../turboui/src/CompanyImportPage/index.tsx:65
 msgid "Import company"
 msgstr "Unternehmen importieren"
 
@@ -12357,12 +12375,12 @@ msgid "Import started"
 msgstr "Import gestartet"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:420
+#: ../turboui/src/CompanyImportPage/index.tsx:423
 msgid "Importing Rows"
 msgstr "Zeilen werden importiert"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:100
+#: ../turboui/src/CompanyImportPage/index.tsx:103
 msgid "Imports"
 msgstr "Importe"
 
@@ -13201,7 +13219,7 @@ msgid "Let teammates know what you focus on. You can change this later."
 msgstr "Lass dein Team wissen, worauf du dich konzentrierst. Du kannst dies später ändern."
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:187
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:186
 msgid "Let's Check In"
 msgstr "Zeit für einen Check-in"
 
@@ -13351,7 +13369,7 @@ msgid "Load more"
 msgstr "Mehr laden"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:416
+#: ../turboui/src/CompanyImportPage/index.tsx:419
 msgid "Loading Package"
 msgstr "Datenpaket wird geladen"
 
@@ -13442,13 +13460,13 @@ msgstr "Aufgaben werden geladen"
 msgid "Loading..."
 msgstr "Wird geladen …"
 
-#.frontend
-#: ../turboui/src/LobbyPage/index.tsx:32
-msgid "Lobby"
-msgstr "Unternehmensauswahl"
+#~ #.frontend
+#~ #: ../turboui/src/LobbyPage/index.tsx:32
+#~ msgid "Lobby"
+#~ msgstr "Unternehmensauswahl"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:141
+#: ../turboui/src/CompanyNavigation/index.tsx:152
 msgid "Log Out"
 msgstr "Abmelden"
 
@@ -14097,8 +14115,8 @@ msgid "My upcoming work"
 msgstr "Meine anstehende Arbeit"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:113
-#: ../turboui/src/CompanyNavigation/index.tsx:213
+#: ../turboui/src/CompanyNavigation/index.tsx:115
+#: ../turboui/src/CompanyNavigation/index.tsx:226
 msgid "My work"
 msgstr "Meine Arbeit"
 
@@ -14188,7 +14206,7 @@ msgid "Navbar update badge"
 msgstr "Hinweis auf neue Version in der Navigationsleiste"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:90
+#: ../turboui/src/CompanyNavigation/index.tsx:92
 msgid "Navigation menu"
 msgstr "Navigationsmenü"
 
@@ -14686,9 +14704,9 @@ msgid "No feature flags are available."
 msgstr "Keine Funktionsschalter verfügbar."
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:184
 #: ../turboui/src/CompanyImportPage/index.tsx:187
-#: ../turboui/src/CompanyImportPage/index.tsx:331
+#: ../turboui/src/CompanyImportPage/index.tsx:190
+#: ../turboui/src/CompanyImportPage/index.tsx:334
 msgid "No file selected"
 msgstr "Keine Datei ausgewählt"
 
@@ -14703,7 +14721,7 @@ msgid "No goals to show."
 msgstr "Keine Ziele anzuzeigen."
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:288
+#: ../turboui/src/CompanyImportPage/index.tsx:291
 msgid "No imports yet. Upload a package above to create the first one."
 msgstr "Noch keine Importe. Lade oben ein Datenpaket hoch, um den ersten Import zu erstellen."
 
@@ -15179,7 +15197,7 @@ msgstr "Benachrichtigungseinstellungen"
 #: ../turboui/src/AccountPage/index.tsx:61
 #: ../turboui/src/CompanyNavigation/Bell.tsx:26
 #: ../turboui/src/CompanyNavigation/User.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:125
+#: ../turboui/src/CompanyNavigation/index.tsx:127
 #: ../turboui/src/SidebarSection/index.tsx:34
 #: assets/js/pages/NotificationsPage/index.tsx:38
 #: assets/js/pages/NotificationsPage/index.tsx:41
@@ -15424,7 +15442,7 @@ msgid "Open assignee picker for the selected task"
 msgstr "Personenauswahl für die ausgewählte Aufgabe öffnen"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:264
+#: ../turboui/src/CompanyImportPage/index.tsx:267
 msgid "Open company"
 msgstr "Unternehmen öffnen"
 
@@ -15522,7 +15540,7 @@ msgid "Operately is what I wished I had when I started my first company. We had 
 msgstr "Operately ist das, was ich mir bei der Gründung meines ersten Unternehmens gewünscht hätte. Wir hatten viele Werkzeuge, aber keinen gemeinsamen Ort für Pläne und tägliche Arbeit."
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:75
+#: ../turboui/src/CompanyImportPage/index.tsx:78
 msgid "Operately package"
 msgstr "Operately-Datenpaket"
 
@@ -15574,9 +15592,9 @@ msgid "Or, <discard>Discard this message</discard>"
 msgstr "Oder <discard>diesen Beitrag verwerfen</discard>"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:402
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:434
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:481
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:401
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:433
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:480
 msgid "Or, <resource>Cancel</resource>"
 msgstr "Oder <resource>abbrechen</resource>"
 
@@ -15591,7 +15609,7 @@ msgid "Or, visit the <actionLink>Admin Panel</actionLink>."
 msgstr "Oder besuche die <actionLink>Instanzverwaltung</actionLink>."
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:40
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:52
 #: ../turboui/src/PeopleOrgChartPage/index.tsx:39
 #: assets/js/pages/PeopleOrgChartPage/page.tsx:16
 msgid "Org Chart"
@@ -15712,7 +15730,7 @@ msgid "PROJECTS"
 msgstr "PROJEKTE"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:70
+#: ../turboui/src/CompanyImportPage/index.tsx:73
 msgid "Package"
 msgstr "Datenpaket"
 
@@ -16247,7 +16265,7 @@ msgid "Posted as the first comment on this update."
 msgstr "Wird als erster Kommentar zu diesem erfassten Wert veröffentlicht."
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:351
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:350
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:405
 msgid "Posted by %{author} on <date/>"
 msgstr "Veröffentlicht von %{author} am <date/>"
@@ -16327,7 +16345,7 @@ msgid "Previous Notifications"
 msgstr "Frühere Benachrichtigungen"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:349
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:348
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:403
 msgid "Previous check-in"
 msgstr "Vorheriger Check-in"
@@ -16515,7 +16533,7 @@ msgid "Progress"
 msgstr "Fortschritt"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:333
+#: ../turboui/src/CompanyImportPage/index.tsx:336
 msgid "Progress: %{progress}%"
 msgstr "Fortschritt: %{progress} %"
 
@@ -16774,7 +16792,7 @@ msgstr "Jetzt veröffentlichen"
 
 #.frontend
 #: ../turboui/src/OngoingDraftActions/index.tsx:89
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:474
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:473
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:163
 #: assets/js/pages/DiscussionEditPage/index.tsx:88
 msgid "Publish now"
@@ -16844,7 +16862,7 @@ msgstr "Abfragebeispiel (GET)"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:232
-#: ../turboui/src/CompanyImportPage/index.tsx:412
+#: ../turboui/src/CompanyImportPage/index.tsx:415
 msgid "Queued"
 msgstr "In der Warteschlange"
 
@@ -17511,7 +17529,7 @@ msgstr "Angeforderter Tarif"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:173
-#: ../turboui/src/CompanyImportPage/index.tsx:310
+#: ../turboui/src/CompanyImportPage/index.tsx:313
 msgid "Requested:"
 msgstr "Angefordert:"
 
@@ -17840,7 +17858,7 @@ msgstr "Das tatsächliche Startdatum wurde auf seinen vorherigen Wert zurückges
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/Review.tsx:18
-#: ../turboui/src/CompanyNavigation/index.tsx:117
+#: ../turboui/src/CompanyNavigation/index.tsx:119
 #: ../turboui/src/ReviewPage/index.tsx:83
 #: ../turboui/src/ReviewPage/index.tsx:132
 msgid "Review"
@@ -18009,7 +18027,7 @@ msgstr "Zeile gelöscht"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:182
-#: ../turboui/src/CompanyImportPage/index.tsx:319
+#: ../turboui/src/CompanyImportPage/index.tsx:322
 msgid "Rows: %{count}"
 msgstr "Zeilen: %{count}"
 
@@ -18077,6 +18095,8 @@ msgid "Sa"
 msgstr "Sa"
 
 #.frontend
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:74
+#: ../turboui/src/CompanyNavigation/index.tsx:147
 #: ee/assets/js/layouts/SaasAdminLayout.tsx:37
 msgid "Saas Admin Panel"
 msgstr "Instanzverwaltung"
@@ -18116,8 +18136,8 @@ msgstr "Speichern"
 #: ../turboui/src/CommentSection/CommentItem.tsx:397
 #: ../turboui/src/DocumentEditPage/index.tsx:83
 #: ../turboui/src/ProfileEditPage/index.tsx:142
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:447
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:457
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:446
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:456
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:133
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:146
 #: assets/js/pages/DiscussionEditPage/index.tsx:68
@@ -18139,8 +18159,8 @@ msgstr "Anmerkung speichern"
 
 #.frontend
 #: ../turboui/src/NewDocumentPage/index.tsx:137
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:429
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:475
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:428
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:474
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:120
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:164
 #: assets/js/pages/DiscussionEditPage/index.tsx:89
@@ -18171,7 +18191,7 @@ msgstr "Mitwirkende Person speichern"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:215
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:467
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:466
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:156
 msgid "Save draft"
 msgstr "Entwurf speichern"
@@ -18222,8 +18242,8 @@ msgid "Schedule"
 msgstr "Veröffentlichung planen"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:421
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:456
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:420
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:455
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:112
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:145
 msgid "Schedule Check-in"
@@ -18994,7 +19014,7 @@ msgid "Show on space page"
 msgstr "Auf der Arbeitsbereichsseite anzeigen"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:309
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:308
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Show previous check-in"
 msgstr "Vorherigen Check-in anzeigen"
@@ -19495,7 +19515,7 @@ msgid "Start fresh with a new company account"
 msgstr "Mit einem neuen Unternehmenskonto beginnen"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:86
+#: ../turboui/src/CompanyImportPage/index.tsx:89
 msgid "Start import"
 msgstr "Import starten"
 
@@ -19614,7 +19634,7 @@ msgid "Status name"
 msgstr "Statusname"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:332
+#: ../turboui/src/CompanyImportPage/index.tsx:335
 msgid "Status: %{status}"
 msgstr "Status: %{status}"
 
@@ -19645,7 +19665,7 @@ msgstr "Schritt 3 von 3 · Neue E-Mail-Adresse bestätigen"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:184
-#: ../turboui/src/CompanyImportPage/index.tsx:321
+#: ../turboui/src/CompanyImportPage/index.tsx:324
 msgid "Step: %{step}"
 msgstr "Schritt: %{step}"
 
@@ -19711,14 +19731,14 @@ msgid "Subject"
 msgstr "Betreff"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:400
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:416
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:399
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:415
 #: assets/js/pages/SetupPage/page.tsx:208
 msgid "Submit"
 msgstr "Absenden"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:447
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:446
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:133
 msgid "Submit check-in"
 msgstr "Check-in veröffentlichen"
@@ -19808,8 +19828,8 @@ msgid "Suspended accounts can't be converted to outside collaborator"
 msgstr "Gesperrte Konten können nicht in externe Personen umgewandelt werden"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:137
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:68
+#: ../turboui/src/CompanyNavigation/index.tsx:142
 msgid "Switch Company"
 msgstr "Unternehmen wechseln"
 
@@ -19844,7 +19864,7 @@ msgstr "Tabelleneinstellungen"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:183
-#: ../turboui/src/CompanyImportPage/index.tsx:320
+#: ../turboui/src/CompanyImportPage/index.tsx:323
 msgid "Tables: %{count}"
 msgstr "Tabellen: %{count}"
 
@@ -22099,7 +22119,7 @@ msgstr "Einheit ist erforderlich"
 
 #.elixir
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:353
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:352
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:458
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:407
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:21
@@ -22433,7 +22453,7 @@ msgid "Upload a square image for best results."
 msgstr "Lade für das beste Ergebnis ein quadratisches Bild hoch."
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:343
+#: ../turboui/src/CompanyImportPage/index.tsx:346
 #: assets/js/pages/CompanyImportPage/index.tsx:56
 msgid "Upload failed"
 msgstr "Upload fehlgeschlagen"
@@ -22449,23 +22469,23 @@ msgid "Upload photo"
 msgstr "Foto hochladen"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:64
+#: ../turboui/src/CompanyImportPage/index.tsx:67
 msgid "Upload the exported ZIP package, then start importing the company into this Operately instance."
 msgstr "Lade das exportierte ZIP-Datenpaket hoch und starte dann den Import des Unternehmens in diese Operately-Instanz."
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:342
-#: ../turboui/src/CompanyImportPage/index.tsx:349
+#: ../turboui/src/CompanyImportPage/index.tsx:345
+#: ../turboui/src/CompanyImportPage/index.tsx:352
 msgid "Uploaded"
 msgstr "Hochgeladen"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:348
+#: ../turboui/src/CompanyImportPage/index.tsx:351
 msgid "Uploading"
 msgstr "Wird hochgeladen"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:340
+#: ../turboui/src/CompanyImportPage/index.tsx:343
 msgid "Uploading %{name}..."
 msgstr "%{name} wird hochgeladen …"
 
@@ -22482,7 +22502,7 @@ msgstr[0] "Datei wird hochgeladen"
 msgstr[1] "Dateien werden hochgeladen"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:340
+#: ../turboui/src/CompanyImportPage/index.tsx:343
 msgid "Uploading file..."
 msgstr "Datei wird hochgeladen …"
 
@@ -22508,7 +22528,7 @@ msgid "Uploading..."
 msgstr "Wird hochgeladen …"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:94
+#: ../turboui/src/CompanyImportPage/index.tsx:97
 msgid "Uploads are unavailable for this account right now."
 msgstr "Uploads sind für dieses Konto derzeit nicht verfügbar."
 
@@ -22609,7 +22629,7 @@ msgid "Valid Statuses"
 msgstr "Gültige Statusoptionen"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:418
+#: ../turboui/src/CompanyImportPage/index.tsx:421
 msgid "Validating Package"
 msgstr "Datenpaket wird überprüft"
 
@@ -22935,7 +22955,7 @@ msgid "View only"
 msgstr "Nur ansehen"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:362
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:361
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:278
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:418
 msgid "View original"
@@ -23008,12 +23028,12 @@ msgid "Visit the link below to reset your password."
 msgstr "Öffne den Link unten, um dein Passwort zurückzusetzen."
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:351
+#: ../turboui/src/CompanyImportPage/index.tsx:354
 msgid "Waiting"
 msgstr "Wartet"
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:344
+#: ../turboui/src/CompanyImportPage/index.tsx:347
 msgid "Waiting for file selection"
 msgstr "Wartet auf Dateiauswahl"
 
@@ -23448,8 +23468,8 @@ msgid "Write here..."
 msgstr "Schreibe hier …"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:265
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:325
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:264
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:324
 msgid "Write your check-in here..."
 msgstr "Schreibe hier deinen Check-in …"
 
@@ -23543,7 +23563,7 @@ msgid "You can edit the due date, status, and target values for up to 3 days aft
 msgstr "Du kannst das Fälligkeitsdatum, den Status und die Werte der Messgrößen bis zu 3 Tage nach Veröffentlichung deines Check-ins bearbeiten. Danach sind sie gesperrt, damit der Verlauf klar bleibt und Entscheidungen nachvollziehbar sind. Du möchtest etwas ändern? Hinterlasse einen Kommentar oder erstelle einen neuen Check-in."
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:215
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:214
 msgid "You can edit the status for up to 3 days after submitting your check-in. After that, it's locked in to keep the history clear and decisions accountable. Need to make a change? Leave a comment or create a new check-in."
 msgstr "Du kannst den Status bis zu 3 Tage nach Veröffentlichung deines Check-ins bearbeiten. Danach ist er gesperrt, damit der Verlauf klar bleibt und Entscheidungen nachvollziehbar sind. Du möchtest etwas ändern? Hinterlasse einen Kommentar oder erstelle einen neuen Check-in."
 
@@ -24181,7 +24201,7 @@ msgstr "darf nicht leer sein"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:223
-#: ../turboui/src/CompanyImportPage/index.tsx:403
+#: ../turboui/src/CompanyImportPage/index.tsx:406
 msgid "cancelled"
 msgstr "abgebrochen"
 
@@ -24331,7 +24351,7 @@ msgstr "hat kommentiert: %{title}"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:217
-#: ../turboui/src/CompanyImportPage/index.tsx:397
+#: ../turboui/src/CompanyImportPage/index.tsx:400
 msgid "completed"
 msgstr "abgeschlossen"
 
@@ -24602,7 +24622,7 @@ msgstr "z. B. https://example.com"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:219
-#: ../turboui/src/CompanyImportPage/index.tsx:399
+#: ../turboui/src/CompanyImportPage/index.tsx:402
 msgid "failed"
 msgstr "fehlgeschlagen"
 
@@ -24736,7 +24756,7 @@ msgstr "hat das Projekt pausiert"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:225
-#: ../turboui/src/CompanyImportPage/index.tsx:405
+#: ../turboui/src/CompanyImportPage/index.tsx:408
 msgid "pending"
 msgstr "ausstehend"
 
@@ -24821,7 +24841,7 @@ msgstr "Reviewer"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:221
-#: ../turboui/src/CompanyImportPage/index.tsx:401
+#: ../turboui/src/CompanyImportPage/index.tsx:404
 msgid "running"
 msgstr "läuft"
 
@@ -26148,15 +26168,15 @@ msgid "Title"
 msgstr "Titel"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:109
-#: ../turboui/src/CompanyNavigation/index.tsx:209
+#: ../turboui/src/CompanyNavigation/index.tsx:111
+#: ../turboui/src/CompanyNavigation/index.tsx:222
 msgctxt "navigation"
 msgid "Company"
 msgstr "Unternehmen"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:121
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:45
+#: ../turboui/src/CompanyNavigation/index.tsx:123
 #: assets/js/pages/PeoplePage/page.tsx:14
 msgctxt "navigation"
 msgid "People"

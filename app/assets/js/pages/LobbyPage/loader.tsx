@@ -2,17 +2,27 @@ import { assertPresent } from "@/utils/assertions";
 import Api from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
+import { Paths } from "@/routes/paths";
 import { useMemo } from "react";
+import { redirect } from "react-router";
 
 export async function loader() {
   const accountInput = {};
   const companiesInput = { includeMemberCount: true };
-  await Promise.all([Api.people.getAccountQuery(accountInput), Api.companies.listQuery(companiesInput)]);
+  const [, { companies }] = await Promise.all([
+    Api.people.getAccountQuery(accountInput),
+    Api.companies.listQuery(companiesInput),
+  ]);
+
+  const [company] = companies;
+  if (companies.length === 1 && company) {
+    return redirect(Paths.companyHomePath(company.id));
+  }
 
   return { accountInput, companiesInput };
 }
 
-type LoaderResult = Awaited<ReturnType<typeof loader>>;
+type LoaderResult = Exclude<Awaited<ReturnType<typeof loader>>, Response>;
 
 export function useLoadedData() {
   const { accountInput, companiesInput } = Pages.useLoadedData<LoaderResult>();

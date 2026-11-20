@@ -51,7 +51,7 @@ function Page() {
   return (
     <Pages.Page title={translationText(t("New Company"))}>
       <Paper.Root size="small" className="mt-24">
-        <Paper.NavigateBack to={Paths.lobbyPath()} title={t("Back to the Lobby")} />
+        <Paper.NavigateBack to={Paths.lobbyPath()} title={t("Back to company selection")} />
         <Paper.Body>
           <PageTitle />
 

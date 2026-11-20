@@ -33,7 +33,7 @@ defmodule Operately.Features.CompanyAdmin.CompanySettingsTest do
     |> Steps.when_i_open_the_company_admin_page()
     |> Steps.click_delete_company()
     |> Steps.confirm_delete_company()
-    |> Steps.assert_redirected_to_lobby()
+    |> Steps.assert_redirected_to_remaining_company()
     |> Steps.assert_company_is_deleted()
     |> Steps.assert_other_company_is_intact()
   end

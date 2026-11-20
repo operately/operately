@@ -31,10 +31,11 @@ test.each(["en", "pt-BR", "missing"])("error states, destinations, and fallback:
   );
 
   expect(screen.getByText(portuguese ? "Página não encontrada" : "Page Not Found")).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: portuguese ? "Voltar para o Lobby" : "Go back to Lobby" })).toHaveAttribute(
-    "href",
-    "/",
-  );
+  expect(
+    screen.getByRole("link", {
+      name: portuguese ? "Voltar à seleção de empresa" : "Go back to company selection",
+    }),
+  ).toHaveAttribute("href", "/");
 
   view.rerender(
     <MemoryRouter>

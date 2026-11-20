@@ -46,6 +46,7 @@ function routes(): RouteObject[] {
 }
 
 it.each([
+  "/",
   "/company-import",
   "/setup",
   "/billing/pick-company",

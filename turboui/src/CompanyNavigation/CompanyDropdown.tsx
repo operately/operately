@@ -1,19 +1,31 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { IconBinaryTree2, IconBuildingEstate, IconCircleKey, IconSwitch, IconUserCircle } from "../icons";
+import {
+  IconBinaryTree2,
+  IconBuildingEstate,
+  IconCircleKey,
+  IconPlus,
+  IconShieldLock,
+  IconSwitch,
+  IconUserCircle,
+} from "../icons";
 import { CompanyNavigationLinks } from "./types";
 import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
 import { truncateCompanyName } from "./truncateCompanyName";
 
 export function CompanyDropdown({
   companyName,
+  companyCount,
   links,
   canViewCompanyDirectory,
+  isSiteAdmin,
 }: {
   companyName: string;
+  companyCount?: number;
   links: CompanyNavigationLinks;
   canViewCompanyDirectory: boolean;
+  isSiteAdmin: boolean;
 }) {
   const { t } = useTranslation();
   const displayName = truncateCompanyName(companyName);
@@ -51,10 +63,17 @@ export function CompanyDropdown({
         testId="company-dropdown-company-admin"
       />
       <DropdownLinkItem
-        path={links.lobby}
-        icon={IconSwitch}
-        title={t("Switch Company")}
+        path={companyCount === 1 ? links.newCompany : links.lobby}
+        icon={companyCount === 1 ? IconPlus : IconSwitch}
+        title={companyCount === 1 ? t("Create Company") : t("Switch Company")}
         testId="company-dropdown-switch"
+      />
+      <DropdownLinkItem
+        path={links.adminPanel}
+        icon={IconShieldLock}
+        title={t("Saas Admin Panel")}
+        testId="company-dropdown-admin-panel"
+        hidden={!isSiteAdmin}
       />
     </DropdownMenu>
   );
