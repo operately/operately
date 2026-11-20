@@ -82,6 +82,79 @@ function submissionError(message: string) {
   return { response: { data: { message } } };
 }
 
+test("server email rejection appears at the email field and correction keeps signup details", async () => {
+  const serverMessage = "Gib eine E-Mail-Adresse mit höchstens 255 Zeichen ein.";
+  const activation = jest
+    .spyOn(Api.default, "createEmailActivationCode")
+    .mockRejectedValueOnce({ response: { data: { message: serverMessage, details: { field: "email" } } } })
+    .mockResolvedValueOnce({});
+
+  await fillDetails();
+  await submit();
+
+  expect(activation).toHaveBeenCalledWith({ email: details.email });
+  expect(container.querySelector("#email-error")?.textContent).toBe(serverMessage);
+  expect(input("email").getAttribute("aria-invalid")).toBe("true");
+  expect(input("email").getAttribute("aria-describedby")).toBe("email-error");
+  expect(container.querySelectorAll("[role=alert]")).toHaveLength(1);
+  expect(container.querySelector("input[name=code]")).toBeNull();
+  for (const [field, value] of Object.entries(details)) expect(input(field).value).toBe(value);
+
+  await edit("email", "alex.updated@example.com");
+  expect(container.querySelector("#email-error")).toBeNull();
+  expect(input("email").hasAttribute("aria-invalid")).toBe(false);
+  expect(input("email").hasAttribute("aria-describedby")).toBe(false);
+  for (const [field, value] of Object.entries(details)) {
+    expect(input(field).value).toBe(field === "email" ? "alex.updated@example.com" : value);
+  }
+
+  await submit();
+  expect(activation).toHaveBeenCalledTimes(2);
+  expect(activation).toHaveBeenLastCalledWith({ email: "alex.updated@example.com" });
+  expect(input("code").value).toBe("");
+});
+
+test("network failure uses the general translated fallback", async () => {
+  const activation = jest
+    .spyOn(Api.default, "createEmailActivationCode")
+    .mockRejectedValue(new Error("Network failure"));
+  await fillDetails();
+  await submit();
+
+  expect(activation).toHaveBeenCalledWith({ email: details.email });
+  expect(container.querySelector("[role=alert]")?.textContent).toBe(
+    "There was an unexpected error. Please try again later.",
+  );
+  expect(container.querySelector("#email-error")).toBeNull();
+  expect(container.querySelector("input[name=code]")).toBeNull();
+});
+
+test("email metadata without a usable message uses the general fallback", async () => {
+  const activation = jest
+    .spyOn(Api.default, "createEmailActivationCode")
+    .mockRejectedValue({ response: { data: { message: { text: "invalid" }, details: { field: "email" } } } });
+  await fillDetails();
+  await submit();
+
+  expect(activation).toHaveBeenCalledWith({ email: details.email });
+  expect(container.querySelector("[role=alert]")?.textContent).toBe(
+    "There was an unexpected error. Please try again later.",
+  );
+  expect(container.querySelector("#email-error")).toBeNull();
+});
+
+test("unrelated validation metadata keeps the general submission error", async () => {
+  const activation = jest
+    .spyOn(Api.default, "createEmailActivationCode")
+    .mockRejectedValue({ response: { data: { message: "Signup is unavailable", details: { field: "name" } } } });
+  await fillDetails();
+  await submit();
+
+  expect(activation).toHaveBeenCalledWith({ email: details.email });
+  expect(container.querySelector("[role=alert]")?.textContent).toBe("Signup is unavailable");
+  expect(container.querySelector("#email-error")).toBeNull();
+});
+
 test("malformed email shows an inline error only after submission and proceeds after correction", async () => {
   const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
   expect(container.querySelector("#email-error")).toBeNull();

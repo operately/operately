@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCode do
         {:error, :bad_request, gettext("Please wait before requesting another code.")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:error, :bad_request, invalid_email_message(changeset)}
+        {:error, :bad_request, invalid_email_message(changeset), %{field: "email"}}
 
       {:error, :email_delivery_not_configured} ->
         {:error, :bad_request, email_delivery_not_configured_message()}
