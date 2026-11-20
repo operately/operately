@@ -28,6 +28,10 @@ export function useGetMe(input: api.PeopleGetMeInput) {
   return useQuery(Api.people.getMeQueryOptions(input));
 }
 
+export function useGetAccount() {
+  return useQuery(Api.people.getAccountQueryOptions({}));
+}
+
 export type SearchScope =
   | { type: "company"; id?: undefined }
   | { type: "project"; id: string }

@@ -24,6 +24,7 @@ export interface CompanyNavigationLinks {
   notifications: string;
   account: string;
   companyAdmin: string;
+  adminPanel: string;
   lobby: string;
   newCompany: string;
   newGoal: string;
@@ -41,6 +42,7 @@ export interface CompanyNavigationLinks {
 export interface CompanyNavigationProps {
   companyName: string;
   companyCount?: number;
+  isSiteAdmin: boolean;
   me: CompanyNavigationPerson;
   links: CompanyNavigationLinks;
   canViewCompanyDirectory: boolean;

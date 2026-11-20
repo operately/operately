@@ -5289,7 +5289,7 @@ msgstr "Mode d’accès du nouveau jeton"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/User.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:130
+#: ../turboui/src/CompanyNavigation/index.tsx:131
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:311
 msgid "Account"
 msgstr "Compte"
@@ -8147,8 +8147,8 @@ msgid "Company"
 msgstr "Entreprise"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:52
-#: ../turboui/src/CompanyNavigation/index.tsx:134
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:62
+#: ../turboui/src/CompanyNavigation/index.tsx:135
 msgid "Company Admin"
 msgstr "Administration de l’entreprise"
 
@@ -8879,7 +8879,7 @@ msgid "Create API token"
 msgstr "Créer un jeton API"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:59
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:68
 #: ../turboui/src/CompanyNavigation/index.tsx:142
 #: ../turboui/src/LobbyPage/index.tsx:117
 #: assets/js/pages/NewCompanyPage/index.tsx:85
@@ -12272,8 +12272,8 @@ msgstr "Ce lien semble incorrect. Vérifiez-le ou demandez un nouveau lien à la
 #: ../turboui/src/AccountSecurityPage/index.tsx:21
 #: ../turboui/src/AccountSettingsPage/index.tsx:45
 #: ../turboui/src/CompanyAdminPage/index.tsx:53
-#: ../turboui/src/CompanyNavigation/index.tsx:106
-#: ../turboui/src/CompanyNavigation/index.tsx:212
+#: ../turboui/src/CompanyNavigation/index.tsx:107
+#: ../turboui/src/CompanyNavigation/index.tsx:218
 #: ../turboui/src/HomePage/index.tsx:20
 #: ../turboui/src/ProfileEditPage/index.tsx:81
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
@@ -13465,7 +13465,7 @@ msgstr "Chargement…"
 #~ msgstr "Choisir une entreprise"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:147
+#: ../turboui/src/CompanyNavigation/index.tsx:152
 msgid "Log Out"
 msgstr "Se déconnecter"
 
@@ -14114,8 +14114,8 @@ msgid "My upcoming work"
 msgstr "Mon travail à venir"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:114
-#: ../turboui/src/CompanyNavigation/index.tsx:220
+#: ../turboui/src/CompanyNavigation/index.tsx:115
+#: ../turboui/src/CompanyNavigation/index.tsx:226
 msgid "My work"
 msgstr "Mon travail"
 
@@ -14205,7 +14205,7 @@ msgid "Navbar update badge"
 msgstr "Indicateur de nouvelle version dans la barre de navigation"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:91
+#: ../turboui/src/CompanyNavigation/index.tsx:92
 msgid "Navigation menu"
 msgstr "Menu de navigation"
 
@@ -15196,7 +15196,7 @@ msgstr "Paramètres des notifications"
 #: ../turboui/src/AccountPage/index.tsx:61
 #: ../turboui/src/CompanyNavigation/Bell.tsx:26
 #: ../turboui/src/CompanyNavigation/User.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:126
+#: ../turboui/src/CompanyNavigation/index.tsx:127
 #: ../turboui/src/SidebarSection/index.tsx:34
 #: assets/js/pages/NotificationsPage/index.tsx:38
 #: assets/js/pages/NotificationsPage/index.tsx:41
@@ -15608,7 +15608,7 @@ msgid "Or, visit the <actionLink>Admin Panel</actionLink>."
 msgstr "Ou consultez <actionLink>l’administration de l’instance</actionLink>."
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:42
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:52
 #: ../turboui/src/PeopleOrgChartPage/index.tsx:39
 #: assets/js/pages/PeopleOrgChartPage/page.tsx:16
 msgid "Org Chart"
@@ -17857,7 +17857,7 @@ msgstr "La date de démarrage précédente a été rétablie."
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/Review.tsx:18
-#: ../turboui/src/CompanyNavigation/index.tsx:118
+#: ../turboui/src/CompanyNavigation/index.tsx:119
 #: ../turboui/src/ReviewPage/index.tsx:83
 #: ../turboui/src/ReviewPage/index.tsx:132
 msgid "Review"
@@ -18094,6 +18094,8 @@ msgid "Sa"
 msgstr "Sa"
 
 #.frontend
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:74
+#: ../turboui/src/CompanyNavigation/index.tsx:147
 #: ee/assets/js/layouts/SaasAdminLayout.tsx:37
 msgid "Saas Admin Panel"
 msgstr "Administration de l’instance"
@@ -19820,7 +19822,7 @@ msgid "Suspended accounts can't be converted to outside collaborator"
 msgstr "Les comptes suspendus ne peuvent pas être convertis en collaborateurs externes"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:59
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:68
 #: ../turboui/src/CompanyNavigation/index.tsx:142
 msgid "Switch Company"
 msgstr "Changer d’entreprise"
@@ -26154,15 +26156,15 @@ msgid "Title"
 msgstr "Titre"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:110
-#: ../turboui/src/CompanyNavigation/index.tsx:216
+#: ../turboui/src/CompanyNavigation/index.tsx:111
+#: ../turboui/src/CompanyNavigation/index.tsx:222
 msgctxt "navigation"
 msgid "Company"
 msgstr "Entreprise"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:35
-#: ../turboui/src/CompanyNavigation/index.tsx:122
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:45
+#: ../turboui/src/CompanyNavigation/index.tsx:123
 #: assets/js/pages/PeoplePage/page.tsx:14
 msgctxt "navigation"
 msgid "People"

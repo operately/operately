@@ -26,6 +26,7 @@ jest.mock("@/models/assignments", () => ({
 }));
 jest.mock("@/models/notifications", () => ({ useUnreadCount: () => 0 }));
 jest.mock("@/models/companies", () => ({ useCompanies: () => ({ data: { companies: [{ id: "company-1" }] } }) }));
+jest.mock("@/models/people", () => ({ useGetAccount: () => ({ data: { account: { siteAdmin: true } } }) }));
 jest.mock("@/models/productReleases/useProductRelease", () => ({
   useProductRelease: () => ({ productRelease: null, canAnnounce: false }),
 }));
@@ -49,7 +50,8 @@ it("wires the existing company navigation logout control to shared teardown and 
     expect(jest.mocked(CompanyNavigation).mock.calls[0]?.[0].onLogOut).toBe(logOutAndRedirect);
     expect(jest.mocked(CompanyNavigation).mock.calls[0]?.[0]).toMatchObject({
       companyCount: 1,
-      links: { newCompany: "/new" },
+      isSiteAdmin: true,
+      links: { adminPanel: "/admin", newCompany: "/new" },
     });
   } finally {
     act(() => root.unmount());

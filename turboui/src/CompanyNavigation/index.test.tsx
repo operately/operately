@@ -104,6 +104,7 @@ describe("CompanyNavigation", () => {
   it.each([
     { companyCount: 1, label: "Create Company", href: "/new" },
     { companyCount: 2, label: "Switch Company", href: "/lobby" },
+    { companyCount: undefined, label: "Switch Company", href: "/lobby" },
   ])("uses the company menu to $label when companyCount is $companyCount", async ({ companyCount, label, href }) => {
     const user = userEvent.setup();
     renderNav({ companyCount });
@@ -111,6 +112,41 @@ describe("CompanyNavigation", () => {
     await user.click(getByTestId("company-dropdown"));
 
     expect(screen.getByRole("link", { name: label })).toHaveAttribute("href", href);
+  });
+
+  it("shows the instance admin link to site administrators", async () => {
+    const user = userEvent.setup();
+    renderNav({ isSiteAdmin: true });
+
+    await user.click(getByTestId("company-dropdown"));
+
+    expect(screen.getByRole("link", { name: "Saas Admin Panel" })).toHaveAttribute("href", "/admin");
+  });
+
+  it("hides the instance admin link from other users", async () => {
+    const user = userEvent.setup();
+    renderNav({ isSiteAdmin: false });
+
+    await user.click(getByTestId("company-dropdown"));
+
+    expect(screen.queryByRole("link", { name: "Saas Admin Panel" })).not.toBeInTheDocument();
+  });
+
+  it("keeps company and instance administration available on mobile while the company count loads", async () => {
+    const originalWidth = window.innerWidth;
+    Object.defineProperty(window, "innerWidth", { configurable: true, value: 500 });
+    const user = userEvent.setup();
+    const view = renderNav({ companyCount: undefined, isSiteAdmin: true });
+
+    try {
+      await user.click(screen.getByRole("button", { name: "Navigation menu" }));
+
+      expect(screen.getByRole("link", { name: "Switch Company" })).toHaveAttribute("href", "/lobby");
+      expect(screen.getByRole("link", { name: "Saas Admin Panel" })).toHaveAttribute("href", "/admin");
+    } finally {
+      view.unmount();
+      Object.defineProperty(window, "innerWidth", { configurable: true, value: originalWidth });
+    }
   });
 
   it("does not show the update badge when it is disabled", () => {
