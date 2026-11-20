@@ -204,13 +204,7 @@ function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; s
                   placeholder={translationText(t("name@company.com"))}
                   required
                   okSign={validation.email}
-                  onChange={(event) => {
-                    const email = event.target.value;
-                    form.actions.removeErrors(["email"]);
-                    if (email !== "" && !validateEmail(email)) {
-                      form.actions.addErrors({ email: t("Enter a valid email address.") });
-                    }
-                  }}
+                  onChange={() => form.actions.removeErrors(["email"])}
                 />
 
                 <Forms.TextInput

@@ -4997,7 +4997,7 @@ msgid "<author>%{name}</author> on <date/>"
 msgstr "<author>%{name}</author> le <date/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:271
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:265
 msgid "<bold>What happens next?</bold> Operately will send you a code to verify your email address."
 msgstr "<bold>Et ensuite ?</bold> Operately vous enverra un code pour vérifier votre adresse e-mail."
 
@@ -6575,8 +6575,8 @@ msgstr "Au moins 1 lettre majuscule"
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:79
 #: assets/js/pages/SetupPage/page.tsx:152
 #: assets/js/pages/SetupPage/page.tsx:164
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:228
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:240
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:222
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:234
 msgid "At least 12 characters"
 msgstr "Au moins 12 caractères"
 
@@ -7507,7 +7507,7 @@ msgid "Check your current inbox"
 msgstr "Consultez votre boîte de réception actuelle"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:299
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:293
 msgid "Check your email for a code"
 msgstr "Consultez vos e-mails pour obtenir le code"
 
@@ -8431,7 +8431,7 @@ msgstr "Confirmer le nouveau mot de passe"
 
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:82
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:238
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:232
 msgid "Confirm Password"
 msgstr "Confirmer le mot de passe"
 
@@ -8561,8 +8561,8 @@ msgstr "Continuer"
 
 #.frontend
 #: ../turboui/src/Forms/VerificationCodeInput.stories.tsx:15
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:252
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:321
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:246
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:315
 msgid "Continue ->"
 msgstr "Continuer →"
 
@@ -10652,7 +10652,6 @@ msgstr "Saisissez une adresse e-mail valide"
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:24
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:84
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:81
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:211
 #: lib/operately_web/api/mutations/create_email_activation_code.ex:53
 msgid "Enter a valid email address."
 msgstr "Saisissez une adresse e-mail valide."
@@ -10726,7 +10725,7 @@ msgid "Enter your current password"
 msgstr "Saisissez votre mot de passe actuel"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:219
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:213
 msgid "Enter your full name"
 msgstr "Saisissez votre nom complet"
 
@@ -11910,7 +11909,7 @@ msgstr "Accès complet"
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:52
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:218
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:212
 msgid "Full Name"
 msgstr "Nom complet"
 
@@ -15781,7 +15780,7 @@ msgstr "Objectif parent"
 #: assets/js/pages/LoginPage/index.tsx:134
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:226
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:220
 msgid "Password"
 msgstr "Mot de passe"
 
@@ -16147,7 +16146,7 @@ msgstr "Saisissez vos informations pour vous connecter"
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:114
 #: assets/js/pages/SetupPage/page.tsx:208
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:251
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:245
 msgid "Please fill in all fields"
 msgstr "Remplissez tous les champs"
 
@@ -19058,7 +19057,7 @@ msgstr "Se déconnecter"
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:23
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:185
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:293
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:287
 msgid "Sign Up"
 msgstr "S’inscrire"
 
@@ -23172,7 +23171,7 @@ msgid "We've emailed %{name} a link to finish setting up their account. You can 
 msgstr "Nous avons envoyé à %{name} un lien par e-mail pour terminer la configuration de son compte. Vous pouvez aussi le partager ci-dessous."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:341
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:335
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
 msgstr "Nous avons envoyé un code à six caractères à <email>%{email}</email>. Il expire dans 5 minutes ; saisissez-le rapidement."
 

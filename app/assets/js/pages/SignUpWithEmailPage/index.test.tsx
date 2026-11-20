@@ -82,7 +82,7 @@ function submissionError(message: string) {
   return { response: { data: { message } } };
 }
 
-test("malformed email shows an inline error, blocks submission, and proceeds after correction", async () => {
+test("malformed email shows an inline error only after submission and proceeds after correction", async () => {
   const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
   expect(container.querySelector("#email-error")).toBeNull();
   expect(input("email").hasAttribute("aria-invalid")).toBe(false);
@@ -95,6 +95,10 @@ test("malformed email shows an inline error, blocks submission, and proceeds aft
   expect(activation).not.toHaveBeenCalled();
 
   await edit("email", "alex@");
+  expect(container.querySelector("#email-error")).toBeNull();
+  expect(input("email").hasAttribute("aria-invalid")).toBe(false);
+
+  await submit();
   expect(container.querySelector("#email-error")?.textContent).toBeTruthy();
   expect(input("email").getAttribute("aria-invalid")).toBe("true");
   expect(input("email").getAttribute("aria-describedby")).toBe("email-error");
@@ -119,6 +123,8 @@ test("form submission validates malformed email and correction preserves unrelat
   const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
   await fillDetails();
   await edit("email", "alex@");
+  expect(container.querySelector("#email-error")).toBeNull();
+  expect(input("email").hasAttribute("aria-invalid")).toBe(false);
   const form = container.querySelector("form");
   if (!form) throw new Error("Missing signup form");
   await act(async () => {
