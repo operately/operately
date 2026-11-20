@@ -10,7 +10,7 @@ defmodule Operately.Operations.AccountSigningUpTest do
 
   @email "newuser@example.com"
   @full_name "New User"
-  @password "password1234"
+  @password "Password1234"
 
   setup do
     previous = Application.get_env(:operately, :allow_signup_with_email)
@@ -109,7 +109,6 @@ defmodule Operately.Operations.AccountSigningUpTest do
     test "succeeds but returns structured join error details when the company is full" do
       ctx = Factory.setup(%{}) |> Factory.add_company_member(:creator)
       company = enable_billing(ctx.company)
-      fill_company_to_member_limit(company)
 
       {:ok, invite_link} =
         Operately.InviteLinks.create_invite_link(%{
@@ -117,7 +116,9 @@ defmodule Operately.Operations.AccountSigningUpTest do
           author_id: ctx.creator.id
         })
 
+      assert {:ok, @email} = AccountSigningUp.preflight(%{email: @email, full_name: @full_name, password: @password, invite_token: invite_link.token})
       {:ok, activation} = EmailActivationCode.create(@email)
+      fill_company_to_member_limit(company)
 
       assert {:ok, _account, invite_context} =
                AccountSigningUp.run(@full_name, @email, @password, activation.code, invite_link.token)
@@ -146,7 +147,7 @@ defmodule Operately.Operations.AccountSigningUpTest do
 
       {:ok, activation2} = EmailActivationCode.create(@email)
 
-      assert {:error, :email_taken} =
+      assert {:error, %Ecto.Changeset{}} =
                AccountSigningUp.run(@full_name, @email, @password, activation2.code)
     end
 
@@ -173,6 +174,99 @@ defmodule Operately.Operations.AccountSigningUpTest do
       assert {:error, :invalid} =
                AccountSigningUp.run(@full_name, @email, @password, activation.code)
     end
+  end
+
+  test "failed validation preserves a code for corrected details" do
+    {:ok, activation} = EmailActivationCode.create(@email)
+    assert {:error, %Ecto.Changeset{}} = AccountSigningUp.run("", @email, @password, activation.code)
+    assert Repo.get(EmailActivationCode, activation.id)
+    refute People.get_account_by_email(@email)
+    assert {:ok, account, _} = AccountSigningUp.run("  Corrected Name  ", "  NEWUSER@EXAMPLE.COM  ", @password, activation.code)
+    assert account.full_name == "Corrected Name"
+    assert account.email == @email
+    refute Repo.get(EmailActivationCode, activation.id)
+  end
+
+  test "signup availability is checked again after delivery" do
+    {:ok, activation} = EmailActivationCode.create(@email)
+    Application.put_env(:operately, :allow_signup_with_email, false)
+    assert {:error, :signup_not_allowed} = AccountSigningUp.run(@full_name, @email, @password, activation.code)
+    assert Repo.get(EmailActivationCode, activation.id)
+  end
+
+  test "a revoked invitation after preflight preserves account creation but prevents membership" do
+    ctx = Factory.setup(%{})
+    {:ok, invite} = Operately.InviteLinks.create_invite_link(%{company_id: ctx.company.id, author_id: ctx.creator.id})
+    attrs = %{full_name: @full_name, email: @email, password: @password, invite_token: invite.token}
+    assert {:ok, @email} = AccountSigningUp.preflight(attrs)
+    {:ok, activation} = EmailActivationCode.create(@email)
+    {:ok, _} = Operately.InviteLinks.revoke_invite_link(invite)
+    assert {:ok, account, %{person: nil, error: error}} = AccountSigningUp.run(@full_name, @email, @password, activation.code, invite.token)
+    assert error
+    assert Repo.get(Operately.People.Account, account.id)
+    refute Repo.get(EmailActivationCode, activation.id)
+    refute People.get_person(account, ctx.company)
+  end
+
+  test "a database uniqueness failure after validation rolls back consumption and permits retry" do
+    {:ok, activation} = EmailActivationCode.create(@email)
+    # Emulate a uniqueness conflict at insertion, after the availability query.
+    Repo.query!("""
+    CREATE FUNCTION reject_signup_email() RETURNS trigger AS $$
+    BEGIN
+      RAISE unique_violation USING CONSTRAINT = 'accounts_email_index';
+    END;
+    $$ LANGUAGE plpgsql
+    """)
+
+    Repo.query!("CREATE TRIGGER reject_signup_email BEFORE INSERT ON accounts FOR EACH ROW EXECUTE FUNCTION reject_signup_email()")
+    jobs_before = Repo.aggregate(Oban.Job, :count)
+    assert {:error, %Ecto.Changeset{} = changeset} = AccountSigningUp.run(@full_name, @email, @password, activation.code)
+    assert changeset.errors[:email]
+    assert Repo.get(EmailActivationCode, activation.id)
+    refute People.get_account_by_email(@email)
+    assert Repo.aggregate(Oban.Job, :count) == jobs_before
+    Repo.query!("DROP TRIGGER reject_signup_email ON accounts")
+    Repo.query!("DROP FUNCTION reject_signup_email()")
+    assert {:ok, _, _} = AccountSigningUp.run(@full_name, @email, @password, activation.code)
+  end
+
+  test "an onboarding job failure rolls back the account and code consumption" do
+    {:ok, activation} = EmailActivationCode.create(@email)
+
+    Repo.query!("""
+    CREATE FUNCTION reject_signup_job() RETURNS trigger AS $$
+    BEGIN
+      IF NEW.worker = 'OperatelyEE.AccountOnboardingJob' THEN
+        RAISE check_violation USING CONSTRAINT = 'priority_range';
+      END IF;
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql
+    """)
+
+    Repo.query!("CREATE TRIGGER reject_signup_job BEFORE INSERT ON oban_jobs FOR EACH ROW EXECUTE FUNCTION reject_signup_job()")
+    jobs_before = Repo.aggregate(Oban.Job, :count)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:error, :account_creation_failed} = AccountSigningUp.run(@full_name, @email, @password, activation.code)
+    end)
+
+    assert Repo.get(EmailActivationCode, activation.id)
+    refute People.get_account_by_email(@email)
+    assert Repo.aggregate(Oban.Job, :count) == jobs_before
+    Repo.query!("DROP TRIGGER reject_signup_job ON oban_jobs")
+    Repo.query!("DROP FUNCTION reject_signup_job()")
+    assert {:ok, _, _} = AccountSigningUp.run(@full_name, @email, @password, activation.code)
+  end
+
+  test "preflight prevents delivery eligibility when a company is full" do
+    ctx = Factory.setup(%{})
+    company = enable_billing(ctx.company)
+    fill_company_to_member_limit(company)
+    {:ok, invite} = Operately.InviteLinks.create_invite_link(%{company_id: company.id, author_id: ctx.creator.id})
+    assert {:error, {:invitation, %Operately.Billing.EnforceLimits.LimitError{}}} = AccountSigningUp.preflight(%{email: @email, full_name: @full_name, password: @password, invite_token: invite.token})
+    assert Operately.InviteLinks.get_invite_link!(invite.id).use_count == 0
   end
 
   defp enable_billing(company) do

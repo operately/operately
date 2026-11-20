@@ -75,4 +75,10 @@ defmodule Operately.People.EmailActivationCodeTest do
   end
   defp restore_env(key, nil), do: System.delete_env(key)
   defp restore_env(key, value), do: System.put_env(key, value)
+
+  test "signup delivery stores the normalized address" do
+    assert {:ok, activation} = Operately.People.EmailActivationCode.create_for_signup("  Signup@Example.com  ", %{})
+    assert activation.email == "signup@example.com"
+    assert {:error, :rate_limited} = Operately.People.EmailActivationCode.create_for_signup("SIGNUP@EXAMPLE.COM", %{})
+  end
 end

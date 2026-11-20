@@ -154,14 +154,13 @@ defmodule Operately.Features.InviteLinksTest do
       |> Steps.assert_email_delivery_not_configured_error()
     end
 
-    feature "signs up via email and is redirected to the blocked page when the company is full", ctx do
+    feature "rejects email signup before code delivery when the company is full", ctx do
       ctx
       |> Steps.fill_company_to_member_limit()
       |> Steps.given_that_an_invite_link_exists()
       |> Steps.visit_sign_up_page_with_invite_token()
-      |> Steps.sign_up_with_email()
-      |> Steps.assert_on_company_full_page()
-      |> Steps.assert_account_was_created()
+      |> Steps.attempt_sign_up_with_email()
+      |> Steps.assert_signup_blocked_before_code_delivery()
       |> Steps.assert_you_are_not_member_of_the_company()
     end
   end

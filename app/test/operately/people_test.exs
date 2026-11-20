@@ -342,9 +342,9 @@ defmodule Operately.PeopleTest do
     end
 
     test "validates maximum values for email and password for security" do
-      too_long = String.duplicate("db", 100)
+      too_long = String.duplicate("db", 128)
       {:error, changeset} = People.register_account(%{email: too_long, password: too_long})
-      assert "should be at most 160 character(s)" in errors_on(changeset).email
+      assert "should be at most 255 character(s)" in errors_on(changeset).email
       assert "should be at most 72 character(s)" in errors_on(changeset).password
     end
 
@@ -371,7 +371,7 @@ defmodule Operately.PeopleTest do
   describe "change_account_registration/2" do
     test "returns a changeset" do
       assert %Ecto.Changeset{} = changeset = People.change_account_registration(%Account{})
-      assert changeset.required == [:full_name, :password, :email]
+      assert Enum.sort(changeset.required) == [:email, :full_name, :password]
     end
 
     test "allows fields to be set" do
@@ -416,12 +416,12 @@ defmodule Operately.PeopleTest do
     end
 
     test "validates maximum value for email for security", %{account: account} do
-      too_long = String.duplicate("db", 100)
+      too_long = String.duplicate("db", 128)
 
       {:error, changeset} =
         People.apply_account_email(account, valid_account_password(), %{email: too_long})
 
-      assert "should be at most 160 character(s)" in errors_on(changeset).email
+      assert "should be at most 255 character(s)" in errors_on(changeset).email
     end
 
     test "validates email uniqueness", %{account: account} do
