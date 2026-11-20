@@ -64,7 +64,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
 
     assert 0 == notifications_count(action: action)
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
     notifications = fetch_notifications(activity.id, action: action)
 
     assert 3 == notifications_count(action: action)
@@ -92,7 +92,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
 
     assert 0 == notifications_count(action: action)
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
     notifications = fetch_notifications(activity.id, action: action)
 
     assert 2 == notifications_count(action: action)
@@ -177,7 +177,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
     assert activity.content["space_id"] == ctx.space.id
     assert activity.content["project_id"] == ctx.project.id
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     notifications = fetch_notifications(activity.id, action: action)
 
@@ -220,7 +220,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
     assert activity.content["project_id"] == nil
     assert activity.content["goal_id"] == ctx.goal.id
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     notifications = fetch_notifications(activity.id, action: action)
 

@@ -68,7 +68,7 @@ defmodule Operately.Operations.KpiEntryLoggingTest do
       from(a in Activity, where: a.action == "kpi_entry_logged" and a.content["entry_id"] == ^entry.id)
       |> Repo.one()
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)
 

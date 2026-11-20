@@ -60,15 +60,18 @@ defmodule Operately.People.EmailChange.ConfirmTest do
     {:ok, request} = request_new_email(ctx.account, "new@example.com")
     code = delivered_code()
 
+    # Oban checks the testing mode of both the tasks and their caller.
     results =
-      1..2
-      |> Task.async_stream(
-        fn _ ->
-          Oban.Testing.with_testing_mode(:manual, fn -> Confirm.run(ctx.account, request.id, code) end)
-        end,
-        max_concurrency: 2
-      )
-      |> Enum.map(fn {:ok, result} -> result end)
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        1..2
+        |> Task.async_stream(
+          fn _ ->
+            Oban.Testing.with_testing_mode(:manual, fn -> Confirm.run(ctx.account, request.id, code) end)
+          end,
+          max_concurrency: 2
+        )
+        |> Enum.map(fn {:ok, result} -> result end)
+      end)
 
     assert Enum.count(results, &(&1 == :ok)) == 1
     assert Enum.count(results, &(&1 == {:error, :request_invalid})) == 1
@@ -94,11 +97,13 @@ defmodule Operately.People.EmailChange.ConfirmTest do
     second_code = delivered_code()
 
     results =
-      [{ctx.account, first, first_code}, {ctx.other, second, second_code}]
-      |> Task.async_stream(fn {account, request, code} ->
-        Oban.Testing.with_testing_mode(:manual, fn -> Confirm.run(account, request.id, code) end)
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        [{ctx.account, first, first_code}, {ctx.other, second, second_code}]
+        |> Task.async_stream(fn {account, request, code} ->
+          Oban.Testing.with_testing_mode(:manual, fn -> Confirm.run(account, request.id, code) end)
+        end)
+        |> Enum.map(fn {:ok, result} -> result end)
       end)
-      |> Enum.map(fn {:ok, result} -> result end)
 
     assert Enum.count(results, &(&1 == :ok)) == 1
     assert Enum.count(results, &(&1 == {:error, :email_taken})) == 1

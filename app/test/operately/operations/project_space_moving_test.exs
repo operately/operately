@@ -105,7 +105,7 @@ defmodule Operately.Operations.ProjectSpaceMovingTest do
 
     assert notifications_count() == 0
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert fetch_notifications(activity.id)
     assert notifications_count() == 2

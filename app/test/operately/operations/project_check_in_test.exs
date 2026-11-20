@@ -51,7 +51,7 @@ defmodule Operately.Operations.ProjectCheckInTest do
 
     assert 0 == notifications_count(action: "project_check_in_submitted")
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 1 == notifications_count(action: "project_check_in_submitted")
 
@@ -76,7 +76,7 @@ defmodule Operately.Operations.ProjectCheckInTest do
 
     assert 0 == notifications_count(action: "project_check_in_submitted")
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 5 == notifications_count(action: "project_check_in_submitted")
 
@@ -103,7 +103,7 @@ defmodule Operately.Operations.ProjectCheckInTest do
 
     assert 0 == notifications_count(action: "project_check_in_submitted")
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 5 == notifications_count(action: "project_check_in_submitted")
 
@@ -128,7 +128,7 @@ defmodule Operately.Operations.ProjectCheckInTest do
     end)
 
     activity = get_activity(check_in)
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert 0 == notifications_count(action: "project_check_in_submitted")
   end

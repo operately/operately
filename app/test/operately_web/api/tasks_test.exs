@@ -412,7 +412,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert 0 == notifications_count(action: action)
 
       Oban.Testing.with_testing_mode(:manual, fn ->
-        perform_job(activity.id)
+        dispatch_activity_notifications(activity.id)
       end)
 
       notifications = fetch_notifications(activity.id, action: action)
@@ -1922,7 +1922,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert 0 == notifications_count(action: "task_assignee_updating")
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: "task_assignee_updating")
 
       assert 1 == notifications_count(action: "task_assignee_updating")
@@ -1948,7 +1948,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert 0 == notifications_count(action: "task_assignee_updating")
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: "task_assignee_updating")
 
       assert 2 == notifications_count(action: "task_assignee_updating")
@@ -1981,7 +1981,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert 0 == notifications_count(action: "task_assignee_updating")
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: "task_assignee_updating")
 
       assert 1 == notifications_count(action: "task_assignee_updating")
@@ -2650,7 +2650,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 1 == notifications_count(action: action)
@@ -2685,7 +2685,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 1 == notifications_count(action: action)
@@ -2716,7 +2716,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 2 == notifications_count(action: action)
@@ -2747,7 +2747,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       action = "task_description_change"
       activity = get_activity(ctx.task.id, action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 1 == notifications_count(action: action)
@@ -2767,7 +2767,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       activity = get_activity(ctx.task.id, action, except: first_activity_id)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: action) == 1
       assert fetch_notifications(activity.id, action: action) == []
@@ -2799,7 +2799,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       action = "task_description_change"
       activity = get_activity(ctx.task.id, action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: action) == 0
       assert fetch_notifications(activity.id, action: action) == []
@@ -2820,7 +2820,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       activity = get_activity(ctx.task.id, action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert notifications_count(action: action) == 1

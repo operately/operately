@@ -73,7 +73,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       # 3 contribs + reviewer + creator
@@ -175,7 +175,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       # 3 members + reviewer
@@ -214,7 +214,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       # champion + reviewer
@@ -296,7 +296,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 3 == notifications_count(action: action)
@@ -326,7 +326,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 2 == notifications_count(action: action)
@@ -407,7 +407,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert notifications_count(action: action) == 4
@@ -441,7 +441,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert notifications_count(action: action) == 2
@@ -521,7 +521,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: @action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: @action) == 3
 
@@ -554,7 +554,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: @action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: @action) == 1
 
@@ -631,7 +631,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: @action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: @action) == 3
 
@@ -654,7 +654,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: @action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: @action) == 1
 
@@ -719,7 +719,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: @action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: @action) == 3
 
@@ -742,7 +742,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: @action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: @action) == 1
 
@@ -817,7 +817,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: @action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: @action) == 2
 
@@ -892,7 +892,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: @action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: @action) == 2
 
@@ -968,7 +968,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: @action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       notified_ids = activity.id |> fetch_notifications(action: @action) |> Enum.map(& &1.person_id)
 

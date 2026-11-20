@@ -72,7 +72,7 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
     activity = get_activity(document, @action)
 
     assert notifications_count(action: @action) == 0
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
     assert notifications_count(action: @action) == 0
   end
 
@@ -90,7 +90,7 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
 
     assert notifications_count(action: @action) == 0
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
     notifications = fetch_notifications(activity.id, action: @action)
 
     assert notifications_count(action: @action) == 1
@@ -108,7 +108,7 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
 
     activity = get_activity(document, @action, except: first_activity_id)
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert notifications_count(action: @action) == 1
     assert fetch_notifications(activity.id, action: @action) == []
