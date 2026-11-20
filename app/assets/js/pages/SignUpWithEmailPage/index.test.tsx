@@ -1,5 +1,7 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
 import React, { act } from "react";
+import { TextEncoder } from "util";
+global.TextEncoder = TextEncoder;
 import { createRoot, Root } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router";
@@ -92,7 +94,12 @@ test("server email rejection appears at the email field and correction keeps sig
   await fillDetails();
   await submit();
 
-  expect(activation).toHaveBeenCalledWith({ email: details.email });
+  expect(activation).toHaveBeenCalledWith({
+    email: details.email,
+    fullName: details.name,
+    password: details.password,
+    inviteToken: "invitation",
+  });
   expect(container.querySelector("#email-error")?.textContent).toBe(serverMessage);
   expect(input("email").getAttribute("aria-invalid")).toBe("true");
   expect(input("email").getAttribute("aria-describedby")).toBe("email-error");
@@ -110,7 +117,12 @@ test("server email rejection appears at the email field and correction keeps sig
 
   await submit();
   expect(activation).toHaveBeenCalledTimes(2);
-  expect(activation).toHaveBeenLastCalledWith({ email: "alex.updated@example.com" });
+  expect(activation).toHaveBeenLastCalledWith({
+    email: "alex.updated@example.com",
+    fullName: details.name,
+    password: details.password,
+    inviteToken: "invitation",
+  });
   expect(input("code").value).toBe("");
 });
 
@@ -121,7 +133,12 @@ test("network failure uses the general translated fallback", async () => {
   await fillDetails();
   await submit();
 
-  expect(activation).toHaveBeenCalledWith({ email: details.email });
+  expect(activation).toHaveBeenCalledWith({
+    email: details.email,
+    fullName: details.name,
+    password: details.password,
+    inviteToken: "invitation",
+  });
   expect(container.querySelector("[role=alert]")?.textContent).toBe(
     "There was an unexpected error. Please try again later.",
   );
@@ -136,7 +153,12 @@ test("email metadata without a usable message uses the general fallback", async 
   await fillDetails();
   await submit();
 
-  expect(activation).toHaveBeenCalledWith({ email: details.email });
+  expect(activation).toHaveBeenCalledWith({
+    email: details.email,
+    fullName: details.name,
+    password: details.password,
+    inviteToken: "invitation",
+  });
   expect(container.querySelector("[role=alert]")?.textContent).toBe(
     "There was an unexpected error. Please try again later.",
   );
@@ -150,7 +172,12 @@ test("unrelated validation metadata keeps the general submission error", async (
   await fillDetails();
   await submit();
 
-  expect(activation).toHaveBeenCalledWith({ email: details.email });
+  expect(activation).toHaveBeenCalledWith({
+    email: details.email,
+    fullName: details.name,
+    password: details.password,
+    inviteToken: "invitation",
+  });
   expect(container.querySelector("[role=alert]")?.textContent).toBe("Signup is unavailable");
   expect(container.querySelector("#email-error")).toBeNull();
 });
@@ -188,7 +215,12 @@ test("malformed email shows an inline error only after submission and proceeds a
 
   await submit();
   expect(activation).toHaveBeenCalledTimes(1);
-  expect(activation).toHaveBeenCalledWith({ email: details.email });
+  expect(activation).toHaveBeenCalledWith({
+    email: details.email,
+    fullName: details.name,
+    password: details.password,
+    inviteToken: "invitation",
+  });
   expect(input("code").value).toBe("");
 });
 
@@ -220,7 +252,12 @@ test("verification alone requires a complete code and submits normalized email p
   const account = jest.spyOn(Api.default, "createAccount").mockRejectedValue(submissionError("Server rejected code"));
   await fillDetails();
   await submit();
-  expect(activation).toHaveBeenCalledWith({ email: details.email });
+  expect(activation).toHaveBeenCalledWith({
+    email: details.email,
+    fullName: details.name,
+    password: details.password,
+    inviteToken: "invitation",
+  });
 
   await submit();
   expect(account).not.toHaveBeenCalled();
@@ -287,7 +324,12 @@ test.each([
     expect(container.querySelector("[role=alert]")).toBeNull();
     expect(input("code").value).toBe("");
     expect(request).toHaveBeenCalledTimes(3);
-    expect(request).toHaveBeenLastCalledWith({ email: field === "email" ? value : details.email });
+    expect(request).toHaveBeenLastCalledWith({
+      email: field === "email" ? value : details.email,
+      fullName: field === "name" ? value : details.name,
+      password: ["password", "confirmPassword"].includes(field) ? value : details.password,
+      inviteToken: "invitation",
+    });
   },
 );
 
@@ -363,7 +405,12 @@ test("resend bypasses code validation, clears stale errors, and retains account,
   expect(container.querySelector("[role=alert]")).toBeNull();
   expect(document.activeElement).toBe(input("code"));
   expect(container.querySelector("[data-test-id=resend-code-status]")?.getAttribute("data-state")).toBe("success");
-  expect(activation).toHaveBeenLastCalledWith({ email: details.email });
+  expect(activation).toHaveBeenLastCalledWith({
+    email: details.email,
+    fullName: details.name,
+    password: details.password,
+    inviteToken: "invitation",
+  });
   expect(account).toHaveBeenCalledTimes(1);
   expect(logIn).not.toHaveBeenCalled();
   expect(window.location.search).toBe("?invite_token=invitation&redirect_to=%2Fwelcome");
@@ -481,4 +528,110 @@ test("resend waits 60 seconds after the initial code and every resend without bl
   await edit("code", "NEW123");
   await submit();
   expect(account).toHaveBeenCalledTimes(1);
+});
+
+async function editDetails() {
+  const button = container.querySelector<HTMLButtonElement>("[data-test-id=edit-signup-details]");
+  if (!button) throw new Error("Missing edit details action");
+  await act(async () => button.click());
+}
+
+test.each(["email", "full_name", "password"])(
+  "final %s failure returns to the relevant field with values preserved",
+  async (field) => {
+    const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
+    const account = jest
+      .spyOn(Api.default, "createAccount")
+      .mockRejectedValueOnce({ response: { data: { message: "Correct this field", details: { field } } } })
+      .mockResolvedValueOnce({});
+    await fillDetails();
+    await submit();
+    await edit("code", "ABC123");
+    await submit();
+    const formField = field === "full_name" ? "name" : field;
+    expect(document.activeElement).toBe(input(formField));
+    expect(container.querySelector(`#${formField}-error`)).not.toBeNull();
+    for (const [name, value] of Object.entries(details)) expect(input(name).value).toBe(value);
+    if (field === "email") {
+      await edit("email", "corrected@example.com");
+    } else if (field === "full_name") {
+      await edit("name", "Corrected Name");
+    } else {
+      await edit("password", "CorrectedPassword123");
+      await edit("confirmPassword", "CorrectedPassword123");
+    }
+    await submit();
+    expect(activation).toHaveBeenCalledTimes(field === "email" ? 2 : 1);
+    expect(input("code").value).toBe(field === "email" ? "" : "ABC123");
+    if (field === "email") await edit("code", "NEW123");
+    await submit();
+    expect(account).toHaveBeenCalledTimes(2);
+    expect(logIn).toHaveBeenCalled();
+  },
+);
+
+test("editing only normalized email casing retains the active code", async () => {
+  const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
+  await fillDetails();
+  await submit();
+  await edit("code", "ABC123");
+  await editDetails();
+  await edit("email", "  ALEX@EXAMPLE.COM  ");
+  await submit();
+  expect(activation).toHaveBeenCalledTimes(1);
+  expect(input("code").value).toBe("ABC123");
+});
+
+test.each(["lowercasepassword1", "UPPERCASEPASSWORD1", "WithoutNumbers", "Aa1" + "é".repeat(35)])(
+  "invalid password blocks initial delivery: %s",
+  async (password) => {
+    const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
+    await fillDetails();
+    await edit("password", password);
+    await edit("confirmPassword", password);
+    await submit();
+    expect(activation).not.toHaveBeenCalled();
+    expect(container.querySelector("#password-error")).not.toBeNull();
+  },
+);
+
+test("invitation failure offers recovery without losing entered details", async () => {
+  const activation = jest
+    .spyOn(Api.default, "createEmailActivationCode")
+    .mockRejectedValueOnce({
+      response: { data: { message: "Invitation unavailable", details: { field: "invite_token" } } },
+    })
+    .mockResolvedValueOnce({});
+  await fillDetails();
+  await submit();
+  const button = container.querySelector<HTMLButtonElement>("[data-test-id=skip-invitation]");
+  if (!button) throw new Error("Missing invitation recovery action");
+  expect(container.querySelector("[data-test-id=invitation-sign-in]")?.getAttribute("href")).toBe(
+    "/log_in?invite_token=invitation",
+  );
+  await act(async () => button.click());
+  for (const [name, value] of Object.entries(details)) expect(input(name).value).toBe(value);
+  await submit();
+  expect(activation).toHaveBeenLastCalledWith({
+    email: details.email,
+    fullName: details.name,
+    password: details.password,
+    inviteToken: null,
+  });
+});
+
+test("server code failures remain on verification and never log the credential-bearing request", async () => {
+  jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
+  jest.spyOn(Api.default, "createAccount").mockRejectedValue({
+    config: { data: { password: details.password } },
+    response: { data: { message: "Code expired", details: { field: "code" } } },
+  });
+  await fillDetails();
+  await submit();
+  await edit("code", "ABC123");
+  await submit();
+  expect(container.querySelector("#code-error")?.textContent).toBe("Code expired");
+  expect(container.querySelector("input[name=email]")).toBeNull();
+  expect(input("code").value).toBe("ABC123");
+  expect(console.error).not.toHaveBeenCalled();
 });
