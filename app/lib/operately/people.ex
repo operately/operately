@@ -72,7 +72,7 @@ defmodule Operately.People do
   end
 
   def get_account_by_email_and_password(email, password) when is_binary(email) and is_binary(password) do
-    account = Repo.get_by(Operately.People.Account, email: email)
+    account = Repo.get_by(Operately.People.Account, email: Account.normalize_email(email))
     if Operately.People.Account.valid_password?(account, password), do: account
   end
 

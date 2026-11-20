@@ -545,7 +545,7 @@ end
         email: "newuser@test.com",
         code: activation.code,
         full_name: "New User",
-        password: "password1234"
+        password: "Password1234"
       }
 
       assert {200, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
@@ -566,7 +566,7 @@ end
         email: ctx.account.email,
         code: activation.code,
         full_name: "Duplicate User",
-        password: "password1234"
+        password: "Password1234"
       }
 
       assert {400, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
@@ -578,7 +578,7 @@ end
         email: "newuser@test.com",
         code: "INVALID",
         full_name: "New User",
-        password: "password1234"
+        password: "Password1234"
       }
 
       assert {400, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
@@ -596,11 +596,21 @@ end
         email: "newuser@test.com",
         code: activation.code,
         full_name: "New User",
-        password: "password1234"
+        password: "Password1234"
       }
 
       assert {400, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
       assert res.message =~ "expired"
+    end
+
+    test "returns password field metadata and preserves the code for correction", ctx do
+      {:ok, activation} = Operately.People.EmailActivationCode.create("correction@test.com")
+      inputs = %{email: activation.email, code: activation.code, full_name: "New User", password: "weakpassword"}
+      assert {400, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
+      assert res.details.field == "password"
+      assert Repo.get(Operately.People.EmailActivationCode, activation.id)
+      assert {200, res} = mutation(ctx.conn, [:cli_auth, :signup], %{inputs | password: "ValidPassword123"})
+      assert res.status == "authenticated"
     end
 
     test "returns forbidden when signup is not allowed", ctx do
@@ -610,7 +620,7 @@ end
         email: "newuser@test.com",
         code: "ABCDEF",
         full_name: "New User",
-        password: "password1234"
+        password: "Password1234"
       }
 
       assert {403, _res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
@@ -645,7 +655,7 @@ end
         email: "founder@test.com",
         code: activation.code,
         full_name: "Founder",
-        password: "password1234"
+        password: "Password1234"
       }
 
       assert {200, signup_res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
@@ -792,7 +802,7 @@ end
                  email: "founder@example.com",
                  code: activation.code,
                  full_name: "Jane Founder",
-                 password: "password1234"
+                 password: "Password1234"
                })
 
       assert signup_res.status == "authenticated"
