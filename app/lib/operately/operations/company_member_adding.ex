@@ -58,6 +58,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
 
   defp insert_person(multi, admin, attrs) do
     attrs = Map.put(attrs, :company_id, admin.company_id)
+    title = attrs[:title]
 
     multi
     |> Multi.run(:company_space, fn _, _ ->
@@ -69,8 +70,8 @@ defmodule Operately.Operations.CompanyMemberAdding do
         account_id: changes[:account].id,
         full_name: attrs.full_name,
         email: attrs.email,
-        title: attrs.title,
-        title_setup_pending: String.trim(attrs.title || "") == "",
+        title: title,
+        title_setup_pending: String.trim(title || "") == "",
       })
     end)
   end

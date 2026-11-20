@@ -21,7 +21,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.People.Update do
       id: Paths.person_id(ctx.creator),
       full_name: "External Member",
       title: "Updated Title",
-      title_setup_pending: false,
       timezone: "Etc/UTC",
       language: "es"
     }
