@@ -11,6 +11,7 @@ defmodule Operately.Features.SignupTest do
     ctx
     |> Steps.visit_signup_page()
     |> Steps.choose_signup_with_email()
+    |> Steps.use_resend_email()
     |> Steps.fill_in_details()
     |> Steps.expire_original_activation_code()
     |> Steps.resend_activation_code()
@@ -23,6 +24,17 @@ defmodule Operately.Features.SignupTest do
     |> Steps.visit_signup_page()
     |> Steps.choose_signup_with_email()
     |> Steps.fill_in_details()
+    |> Steps.fill_in_activation_code_from_email()
+    |> Steps.assert_signup_successful()
+  end
+
+  feature "server-rejected oversized email can be corrected without losing signup details", ctx do
+    ctx
+    |> Steps.visit_signup_page()
+    |> Steps.choose_signup_with_email()
+    |> Steps.submit_oversized_email()
+    |> Steps.assert_oversized_email_rejected_inline()
+    |> Steps.correct_oversized_email()
     |> Steps.fill_in_activation_code_from_email()
     |> Steps.assert_signup_successful()
   end
