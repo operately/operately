@@ -166,7 +166,7 @@ For writing, organizing, and running tests, use the **writing-tests** skill
 
 - DCO required: all commits must be signed off. Agents should always use `git commit -s` or `git commit --signoff` when committing. Example: `git commit -s -m "feat: add goal editor"` (see `docs/commit_sign-off.md`).
 - PR title format enforced: `feat: ...`, `fix: ...`, `chore: ...`, or `docs: ...` (checked by `scripts/pr-name-check`).
-- PRs should include: clear description, screenshots for UI changes, migration notes if DB changes, and linked issues.
+- PRs should include: concise summary of changes in ASD-STE100 Simplified Technical English, screenshots for UI changes, migration notes if DB changes, and linked issues.
 - Screenshots captured for review are temporary artifacts. Attach them to the PR or link to them through an available artifact service; do not commit them to the repository. If no attachment or artifact route is available, explain that limitation in the PR.
 
 ## Security & Configuration Tips
