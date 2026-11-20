@@ -63,7 +63,7 @@ defmodule Operately.Operations.CompanyMemberConvertingToGuestTest do
     assert activity.content["person_id"] == ctx.member.id
     assert notifications_count() == 0
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     [notification] = fetch_notifications(activity.id)
 

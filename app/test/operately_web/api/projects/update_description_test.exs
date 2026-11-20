@@ -165,7 +165,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 1 == notifications_count(action: action)
@@ -196,7 +196,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 2 == notifications_count(action: action)
@@ -228,7 +228,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
       action = "project_description_changed"
       activity = get_activity(ctx.project.id, action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 1 == notifications_count(action: action)
@@ -246,7 +246,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
 
       activity = get_activity(ctx.project.id, action, except: first_activity_id)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: action) == 1
       assert fetch_notifications(activity.id, action: action) == []
@@ -273,7 +273,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
       action = "project_description_changed"
       activity = get_activity(ctx.project.id, action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: action) == 0
       assert fetch_notifications(activity.id, action: action) == []
@@ -292,7 +292,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
 
       activity = get_activity(ctx.project.id, action)
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
       assert notifications_count(action: action) == 1

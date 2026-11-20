@@ -33,7 +33,7 @@ defmodule Operately.Operations.CompanyAdminRemovingTest do
 
     assert notifications_count() == 0
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert fetch_notification(activity.id)
     assert notifications_count() == 1

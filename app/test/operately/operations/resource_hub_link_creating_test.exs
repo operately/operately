@@ -36,7 +36,7 @@ defmodule Operately.Operations.ResourceHubLinkCreatingTest do
 
     assert 0 == notifications_count(action: @action)
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
     notifications = fetch_notifications(activity.id, action: @action)
 
     assert 3 == notifications_count(action: @action)
@@ -56,7 +56,7 @@ defmodule Operately.Operations.ResourceHubLinkCreatingTest do
 
     assert 0 == notifications_count(action: @action)
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
     notifications = fetch_notifications(activity.id, action: @action)
 
     assert 2 == notifications_count(action: @action)

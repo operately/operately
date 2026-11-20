@@ -120,7 +120,7 @@ defmodule Operately.Operations.GroupMembersAddingTest do
 
     assert notifications_count() == 0
 
-    perform_job(activity_id)
+    dispatch_activity_notifications(activity_id)
 
     assert notifications_count() == 6
   end

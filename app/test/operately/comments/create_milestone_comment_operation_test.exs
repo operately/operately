@@ -141,7 +141,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperationTest do
 
       assert notifications_count(action: @action) == 0
 
-      perform_job(activity.id)
+      dispatch_activity_notifications(activity.id)
 
       assert notifications_count(action: @action) == 2
 

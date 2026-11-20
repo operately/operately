@@ -68,7 +68,7 @@ defmodule Operately.Operations.KpiAnnotationAddingTest do
       from(a in Activity, where: a.action == "kpi_annotation_added" and a.content["annotation_id"] == ^annotation.id)
       |> Repo.one()
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)
 

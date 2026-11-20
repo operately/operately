@@ -294,7 +294,7 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert 0 == notifications_count()
     assert resource_hub_activities == []
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     assert fetch_notifications(activity.id)
     assert 2 == notifications_count()
@@ -312,7 +312,7 @@ defmodule Operately.Operations.ProjectCreationTest do
 
     activity = from(a in Activity, where: a.action == "project_created" and a.content["project_id"] == ^project.id) |> Repo.one()
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)
 

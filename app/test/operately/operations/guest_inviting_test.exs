@@ -194,7 +194,7 @@ defmodule Operately.Operations.GuestInvitingTest do
 
     assert notifications_count() == 0
 
-    perform_job(activity.id)
+    dispatch_activity_notifications(activity.id)
 
     [notification] = fetch_notifications(activity.id)
 
