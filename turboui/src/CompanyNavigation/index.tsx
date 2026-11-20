@@ -13,6 +13,8 @@ import {
   IconDoorExit,
   IconHome2,
   IconMenu2,
+  IconPlus,
+  IconShieldLock,
   IconSwitch,
   IconUser,
   IconUserCircle,
@@ -52,7 +54,7 @@ export function CompanyNavigation(props: CompanyNavigation.Props) {
   return <DesktopNavigation {...props} />;
 }
 
-function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Props) {
+function MobileNavigation({ companyName, companyCount, isSiteAdmin, links, onLogOut }: CompanyNavigation.Props) {
   const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
   const headerRef = React.useRef<HTMLDivElement>(null);
@@ -133,9 +135,18 @@ function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Pr
             {t("Company Admin")}
           </MobileSectionLink>
 
-          <MobileSectionLink to={links.lobby} icon={IconSwitch}>
-            {t("Switch Company")}
+          <MobileSectionLink
+            to={companyCount === 1 ? links.newCompany : links.lobby}
+            icon={companyCount === 1 ? IconPlus : IconSwitch}
+          >
+            {companyCount === 1 ? t("Create Company") : t("Switch Company")}
           </MobileSectionLink>
+
+          {isSiteAdmin && (
+            <MobileSectionLink to={links.adminPanel} icon={IconShieldLock}>
+              {t("Saas Admin Panel")}
+            </MobileSectionLink>
+          )}
 
           <MobileSectionAction onClick={onLogOut} icon={IconDoorExit}>
             {t("Log Out")}
@@ -195,8 +206,10 @@ function DesktopNavigation(props: CompanyNavigationProps) {
           <div className="border-l border-surface-outline px-2.5 ml-4">
             <CompanyDropdown
               companyName={companyName}
+              companyCount={props.companyCount}
               links={links}
               canViewCompanyDirectory={props.canViewCompanyDirectory}
+              isSiteAdmin={props.isSiteAdmin}
             />
           </div>
 

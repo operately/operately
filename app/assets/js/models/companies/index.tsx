@@ -1,7 +1,12 @@
 import * as api from "@/api";
+import { useQuery } from "@tanstack/react-query";
 
 export type Company = api.Company;
 export { useLoadCollaboratorResources } from "./useLoadCollaboratorResources";
+
+export function useCompanies() {
+  return useQuery(api.default.companies.listQueryOptions({}));
+}
 
 export { useAddFirstCompany } from "@/api";
 
