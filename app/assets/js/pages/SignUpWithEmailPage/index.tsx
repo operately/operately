@@ -126,14 +126,15 @@ function Page() {
       }
     },
     onError: (error) => {
-      const data = error.response?.data as { error?: string; message?: string } | undefined;
-      const message = data?.message;
+      const data = error?.response?.data as { message?: unknown; details?: { field?: unknown } } | undefined;
+      const message = typeof data?.message === "string" && data.message.trim() ? data.message : null;
 
-      if (message) {
-        setSubmitError(message);
-      } else {
-        setSubmitError(t("There was an unexpected error. Please try again later."));
+      if (pageState === "form" && data?.details?.field === "email" && message) {
+        form.actions.addErrors({ email: message });
+        return;
       }
+
+      setSubmitError(message ?? t("There was an unexpected error. Please try again later."));
     },
   });
 

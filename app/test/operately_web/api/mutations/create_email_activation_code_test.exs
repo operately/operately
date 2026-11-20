@@ -20,6 +20,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
 
       assert {400, result} = mutation(ctx.conn, :create_email_activation_code, %{email: email})
       assert result.message == "Enter an email address with no more than 255 characters."
+      assert result.details.field == "email"
       assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 0
       assert_no_email_sent()
     end
@@ -28,7 +29,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
       email = String.duplicate("a", 244) <> "@example.com"
 
       Gettext.with_locale(OperatelyWeb.Gettext, "de", fn ->
-        assert {:error, :bad_request, "Gib eine E-Mail-Adresse mit höchstens 255 Zeichen ein."} =
+        assert {:error, :bad_request, "Gib eine E-Mail-Adresse mit höchstens 255 Zeichen ein.", %{field: "email"}} =
                  OperatelyWeb.Api.Mutations.CreateEmailActivationCode.call(ctx.conn, %{email: email})
       end)
     end
@@ -74,6 +75,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
       assert {400, result} = mutation(ctx.conn, :create_email_activation_code, inputs)
       assert result.error == "Bad request"
       assert result.message == "Email signup isn't available because email delivery hasn't been configured. Please contact your organization administrator."
+      refute Map.has_key?(result, :details)
 
       # Verify no activation code was created
       code = Repo.get_by(Operately.People.EmailActivationCode, email: "newuser@test.com")
@@ -102,6 +104,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
       assert_email_sent(to: inputs.email)
       assert {400, result} = mutation(ctx.conn, :create_email_activation_code, %{email: " USER@test.com "})
       assert result.message == "Please wait before requesting another code."
+      refute Map.has_key?(result, :details)
       assert_no_email_sent()
 
       codes =
@@ -128,6 +131,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
       test "returns a validation error for #{label} email input", ctx do
         assert {400, result} = mutation(ctx.conn, :create_email_activation_code, unquote(Macro.escape(inputs)))
         assert result.message == "Enter a valid email address."
+        assert result.details.field == "email"
         assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 0
         assert_no_email_sent()
       end
@@ -150,6 +154,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
 
       assert {500, result} = mutation(ctx.conn, :create_email_activation_code, inputs)
       assert result.error == "Internal server error"
+      refute Map.has_key?(result, :details)
 
       # Verify no activation code was created
       code = Repo.get_by(Operately.People.EmailActivationCode, email: "newuser@test.com")
