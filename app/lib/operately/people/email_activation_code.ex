@@ -33,7 +33,7 @@ defmodule Operately.People.EmailActivationCode do
   def consume(email, code), do: EmailActivationCodeConsuming.run(email, code)
 
   def create_for_signup(email, analytics_context) when is_binary(email) do
-    normalized_email = email |> String.trim() |> String.downcase()
+    normalized_email = Operately.People.Account.normalize_email(email)
 
     Repo.transaction(fn ->
       # Serialize requests even when this email has no code to lock yet.
@@ -44,7 +44,7 @@ defmodule Operately.People.EmailActivationCode do
 
       if Repo.exists?(recent_code), do: Repo.rollback(:rate_limited)
 
-      case create(email, analytics_context) do
+      case create(normalized_email, analytics_context) do
         {:ok, code} -> code
         {:error, reason} -> Repo.rollback(reason)
       end

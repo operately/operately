@@ -4,12 +4,17 @@ defmodule Operately.Operations.EmailActivationCodeConsuming do
   alias Operately.People.EmailActivationCode
   alias Operately.Repo
 
+  # Legacy records were delivered before signup normalized surrounding whitespace.
+  @email_whitespace " \t\n\r\f\v\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000"
+
   def run(email, code) when is_binary(email) do
+    email = Operately.People.Account.normalize_email(email)
+
     with {:ok, normalized_code} <- normalize_code(code) do
       Repo.transaction(fn ->
         query =
           from(c in EmailActivationCode,
-            where: c.email == ^email and c.code == ^normalized_code,
+            where: fragment("lower(btrim(?, ?))", c.email, ^@email_whitespace) == ^email and c.code == ^normalized_code,
             lock: "FOR UPDATE"
           )
 
@@ -37,22 +42,17 @@ defmodule Operately.Operations.EmailActivationCodeConsuming do
     end
   end
 
-  defp normalize_code(nil), do: {:error, :invalid_code}
-
-  defp normalize_code(code) do
+  defp normalize_code(code) when is_binary(code) do
     code = String.trim(code)
 
-    cond do
-      String.length(code) == 6 ->
-        {:ok, code}
-
-      String.length(code) == 7 ->
-        {:ok, String.slice(code, 0, 3) <> String.slice(code, 4, 6)}
-
-      true ->
-        {:error, :invalid_code}
+    if Regex.match?(~r/\A[A-Z0-9]{3}-?[A-Z0-9]{3}\z/, code) do
+      {:ok, String.replace(code, "-", "")}
+    else
+      {:error, :invalid_code}
     end
   end
+
+  defp normalize_code(_), do: {:error, :invalid_code}
 
   defp check_validity(activation) do
     if DateTime.compare(activation.expires_at, DateTime.utc_now()) == :gt do
