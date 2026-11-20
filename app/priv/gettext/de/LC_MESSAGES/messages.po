@@ -4798,8 +4798,8 @@ msgstr[0] "1 Jahr"
 msgstr[1] "%{count} Jahre"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:236
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:249
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:235
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:248
 #: assets/js/features/projectCheckIns/StatusSection.tsx:17
 msgid "1. How's the project going?"
 msgstr "1. Wie läuft das Projekt?"
@@ -4830,13 +4830,13 @@ msgid "15 minutes"
 msgstr "15 Minuten"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:300
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:299
 msgid "2. What is the current progress on the project?"
 msgstr "2. Wie ist der aktuelle Fortschritt im Projekt?"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:262
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:299
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:261
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:298
 #: assets/js/features/projectCheckIns/DescriptionSection.tsx:23
 msgid "2. What's new since the last check-in?"
 msgstr "2. Was gibt es seit dem letzten Check-in Neues?"
@@ -4998,7 +4998,7 @@ msgid "<author>%{name}</author> on <date/>"
 msgstr "<author>%{name}</author> am <date/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:197
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:240
 msgid "<bold>What happens next?</bold> Operately will send you a code to verify your email address."
 msgstr "<bold>Was passiert als Nächstes?</bold> Operately sendet dir einen Code zur Bestätigung deiner E-Mail-Adresse."
 
@@ -6576,8 +6576,8 @@ msgstr "Mindestens 1 Großbuchstabe"
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:79
 #: assets/js/pages/SetupPage/page.tsx:152
 #: assets/js/pages/SetupPage/page.tsx:164
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:154
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:166
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:197
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:209
 msgid "At least 12 characters"
 msgstr "Mindestens 12 Zeichen"
 
@@ -7263,13 +7263,14 @@ msgstr "Aufgabe kann nicht in einen unbekannten Status verschoben werden"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:105
+#: ../turboui/src/SignupCodeResend/index.tsx:20
 msgid "Can’t find your code? Check your spam folder or request another."
 msgstr "Du findest deinen Code nicht? Schau im Spamordner nach oder fordere einen neuen an."
 
-#.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:244
-msgid "Can’t find your code? Check your spam folder."
-msgstr "Du findest deinen Code nicht? Schau im Spamordner nach."
+#~ #.frontend
+#~ #: assets/js/pages/SignUpWithEmailPage/index.tsx:244
+#~ msgid "Can’t find your code? Check your spam folder."
+#~ msgstr "Du findest deinen Code nicht? Schau im Spamordner nach."
 
 #.frontend
 #: ../turboui/src/ReviewPage/index.tsx:136
@@ -7501,7 +7502,7 @@ msgid "Check your current inbox"
 msgstr "Prüfe dein bisheriges E-Mail-Postfach"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:221
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:268
 msgid "Check your email for a code"
 msgstr "Prüfe dein E-Mail-Postfach auf einen Code"
 
@@ -8423,7 +8424,7 @@ msgstr "Neues Passwort bestätigen"
 
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:82
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:164
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:207
 msgid "Confirm Password"
 msgstr "Passwort bestätigen"
 
@@ -8553,8 +8554,8 @@ msgstr "Weiter"
 
 #.frontend
 #: ../turboui/src/Forms/VerificationCodeInput.stories.tsx:15
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:178
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:241
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:221
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:290
 msgid "Continue ->"
 msgstr "Weiter →"
 
@@ -10447,13 +10448,13 @@ msgid "Editing Retrospective"
 msgstr "Rückblick bearbeiten"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:214
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:213
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:183
 msgid "Editing locked after 3 days"
 msgstr "Bearbeitung nach 3 Tagen gesperrt"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:195
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:194
 msgid "Editing the Check-In from <date/>"
 msgstr "Check-in vom <date/> bearbeiten"
 
@@ -10713,7 +10714,7 @@ msgid "Enter your current password"
 msgstr "Gib dein aktuelles Passwort ein"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:145
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:188
 msgid "Enter your full name"
 msgstr "Gib deinen vollständigen Namen ein"
 
@@ -11706,7 +11707,7 @@ msgid "Files not uploaded"
 msgstr "Dateien nicht hochgeladen"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:165
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:164
 #: ../turboui/src/TemplateDiscussionForm/index.tsx:66
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:78
 #: assets/js/pages/GoalDiscussionEditPage/index.tsx:56
@@ -11897,7 +11898,7 @@ msgstr "Vollzugriff"
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:52
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:144
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:187
 msgid "Full Name"
 msgstr "Vollständiger Name"
 
@@ -12211,7 +12212,7 @@ msgid "Hide list"
 msgstr "Liste ausblenden"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:309
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:308
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Hide previous check-in"
 msgstr "Vorherigen Check-in ausblenden"
@@ -13201,7 +13202,7 @@ msgid "Let teammates know what you focus on. You can change this later."
 msgstr "Lass dein Team wissen, worauf du dich konzentrierst. Du kannst dies später ändern."
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:187
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:186
 msgid "Let's Check In"
 msgstr "Zeit für einen Check-in"
 
@@ -14314,6 +14315,7 @@ msgstr "Neues Board"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/index.tsx:58
+#: ../turboui/src/SignupCodeResend/index.tsx:34
 msgid "New code sent to %{email}."
 msgstr "Neuer Code an %{email} gesendet."
 
@@ -15574,9 +15576,9 @@ msgid "Or, <discard>Discard this message</discard>"
 msgstr "Oder <discard>diesen Beitrag verwerfen</discard>"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:402
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:434
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:481
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:401
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:433
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:480
 msgid "Or, <resource>Cancel</resource>"
 msgstr "Oder <resource>abbrechen</resource>"
 
@@ -15760,7 +15762,7 @@ msgstr "Übergeordnetes Ziel"
 #: assets/js/pages/LoginPage/index.tsx:134
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:152
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:195
 msgid "Password"
 msgstr "Passwort"
 
@@ -15812,7 +15814,7 @@ msgstr "Passwort erfolgreich geändert"
 #: assets/js/pages/JoinPage/index.tsx:93
 #: assets/js/pages/ResetPasswordPage/index.tsx:34
 #: assets/js/pages/SetupPage/page.tsx:72
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:61
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:64
 msgid "Passwords do not match"
 msgstr "Passwörter stimmen nicht überein"
 
@@ -16126,7 +16128,7 @@ msgstr "Gib deine Daten ein, um dich anzumelden"
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:114
 #: assets/js/pages/SetupPage/page.tsx:208
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:177
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:220
 msgid "Please fill in all fields"
 msgstr "Fülle alle Felder aus"
 
@@ -16247,7 +16249,7 @@ msgid "Posted as the first comment on this update."
 msgstr "Wird als erster Kommentar zu diesem erfassten Wert veröffentlicht."
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:351
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:350
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:405
 msgid "Posted by %{author} on <date/>"
 msgstr "Veröffentlicht von %{author} am <date/>"
@@ -16327,7 +16329,7 @@ msgid "Previous Notifications"
 msgstr "Frühere Benachrichtigungen"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:349
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:348
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:403
 msgid "Previous check-in"
 msgstr "Vorheriger Check-in"
@@ -16774,7 +16776,7 @@ msgstr "Jetzt veröffentlichen"
 
 #.frontend
 #: ../turboui/src/OngoingDraftActions/index.tsx:89
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:474
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:473
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:163
 #: assets/js/pages/DiscussionEditPage/index.tsx:88
 msgid "Publish now"
@@ -17532,6 +17534,7 @@ msgstr "Anweisungen erneut senden"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:113
+#: ../turboui/src/SignupCodeResend/index.tsx:22
 msgid "Resend code"
 msgstr "Code erneut senden"
 
@@ -18116,8 +18119,8 @@ msgstr "Speichern"
 #: ../turboui/src/CommentSection/CommentItem.tsx:397
 #: ../turboui/src/DocumentEditPage/index.tsx:83
 #: ../turboui/src/ProfileEditPage/index.tsx:142
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:447
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:457
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:446
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:456
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:133
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:146
 #: assets/js/pages/DiscussionEditPage/index.tsx:68
@@ -18139,8 +18142,8 @@ msgstr "Anmerkung speichern"
 
 #.frontend
 #: ../turboui/src/NewDocumentPage/index.tsx:137
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:429
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:475
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:428
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:474
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:120
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:164
 #: assets/js/pages/DiscussionEditPage/index.tsx:89
@@ -18171,7 +18174,7 @@ msgstr "Mitwirkende Person speichern"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:215
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:467
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:466
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:156
 msgid "Save draft"
 msgstr "Entwurf speichern"
@@ -18222,8 +18225,8 @@ msgid "Schedule"
 msgstr "Veröffentlichung planen"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:421
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:456
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:420
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:455
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:112
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:145
 msgid "Schedule Check-in"
@@ -18752,6 +18755,8 @@ msgstr "SendGrid-API-Schlüssel"
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:113
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:124
+#: ../turboui/src/SignupCodeResend/index.tsx:22
+#: ../turboui/src/SignupCodeResend/index.tsx:32
 msgid "Sending code…"
 msgstr "Code wird gesendet …"
 
@@ -18994,7 +18999,7 @@ msgid "Show on space page"
 msgstr "Auf der Arbeitsbereichsseite anzeigen"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:309
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:308
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Show previous check-in"
 msgstr "Vorherigen Check-in anzeigen"
@@ -19034,8 +19039,8 @@ msgstr "Abmelden"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:23
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:118
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:215
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:161
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:262
 msgid "Sign Up"
 msgstr "Registrieren"
 
@@ -19066,7 +19071,7 @@ msgstr "Mit Google anmelden"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:51
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:123
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:166
 msgid "Sign up for Operately"
 msgstr "Bei Operately registrieren"
 
@@ -19711,14 +19716,14 @@ msgid "Subject"
 msgstr "Betreff"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:400
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:416
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:399
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:415
 #: assets/js/pages/SetupPage/page.tsx:208
 msgid "Submit"
 msgstr "Absenden"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:447
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:446
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:133
 msgid "Submit check-in"
 msgstr "Check-in veröffentlichen"
@@ -20956,7 +20961,7 @@ msgstr "Beim Aktualisieren deines Passworts ist ein Fehler aufgetreten. Versuche
 
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:95
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:102
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:113
 #: assets/js/pages/SpaceAddPage/index.tsx:50
 msgid "There was an unexpected error. Please try again later."
 msgstr "Ein unerwarteter Fehler ist aufgetreten. Versuche es später erneut."
@@ -22099,7 +22104,7 @@ msgstr "Einheit ist erforderlich"
 
 #.elixir
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:353
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:352
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:458
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:407
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:21
@@ -22589,7 +22594,7 @@ msgstr "Verwende diese Werte beim Aufruf der externen Operately-API."
 #~ msgstr "Verwende diese URL, um eine Verbindung in deinem KI-Client zu erstellen."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:124
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:167
 msgid "Use your work email — keep work and life separate."
 msgstr "Verwende deine geschäftliche E-Mail-Adresse – trenne Arbeit und Privatleben."
 
@@ -22935,7 +22940,7 @@ msgid "View only"
 msgstr "Nur ansehen"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:362
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:361
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:278
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:418
 msgid "View original"
@@ -23108,6 +23113,7 @@ msgid "We couldn’t reach Operately. Check your connection and try again."
 msgstr "Wir konnten Operately nicht erreichen. Prüfe deine Verbindung und versuche es erneut."
 
 #.frontend
+#: ../turboui/src/SignupCodeResend/index.tsx:39
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:94
 msgid "We couldn’t send the code. Please try again."
 msgstr "Wir konnten den Code nicht senden. Versuche es erneut."
@@ -23154,7 +23160,7 @@ msgid "We've emailed %{name} a link to finish setting up their account. You can 
 msgstr "Wir haben %{name} einen Link per E-Mail geschickt, um die Kontoeinrichtung abzuschließen. Du kannst ihn auch unten teilen."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:258
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:310
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
 msgstr "Wir haben dir einen 6-stelligen Code an <email>%{email}</email> gesendet. Der Code läuft in 5 Minuten ab. Gib ihn daher bitte bald ein."
 
@@ -23344,7 +23350,7 @@ msgid "Will be posted on <date/> at <time/>"
 msgstr "Wird am <date/> um <time/> veröffentlicht"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:136
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:179
 msgid "Work Email"
 msgstr "Geschäftliche E-Mail-Adresse"
 
@@ -23448,8 +23454,8 @@ msgid "Write here..."
 msgstr "Schreibe hier …"
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:265
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:325
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:264
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:324
 msgid "Write your check-in here..."
 msgstr "Schreibe hier deinen Check-in …"
 
@@ -23543,7 +23549,7 @@ msgid "You can edit the due date, status, and target values for up to 3 days aft
 msgstr "Du kannst das Fälligkeitsdatum, den Status und die Werte der Messgrößen bis zu 3 Tage nach Veröffentlichung deines Check-ins bearbeiten. Danach sind sie gesperrt, damit der Verlauf klar bleibt und Entscheidungen nachvollziehbar sind. Du möchtest etwas ändern? Hinterlasse einen Kommentar oder erstelle einen neuen Check-in."
 
 #.frontend
-#: ../turboui/src/ProjectCheckInFormPage/index.tsx:215
+#: ../turboui/src/ProjectCheckInFormPage/index.tsx:214
 msgid "You can edit the status for up to 3 days after submitting your check-in. After that, it's locked in to keep the history clear and decisions accountable. Need to make a change? Leave a comment or create a new check-in."
 msgstr "Du kannst den Status bis zu 3 Tage nach Veröffentlichung deines Check-ins bearbeiten. Danach ist er gesperrt, damit der Verlauf klar bleibt und Entscheidungen nachvollziehbar sind. Du möchtest etwas ändern? Hinterlasse einen Kommentar oder erstelle einen neuen Check-in."
 
@@ -24708,7 +24714,7 @@ msgid "name can't be blank"
 msgstr "Name darf nicht leer sein"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:137
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:180
 msgid "name@company.com"
 msgstr "name@company.com"
 
