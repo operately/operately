@@ -95,7 +95,7 @@ defmodule Operately.People.Account do
     changeset
     |> validate_required([:email])
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
-    |> validate_length(:email, max: 255, count: :codepoints)
+    |> validate_length(:email, max: 160)
     |> maybe_validate_unique_email(opts)
   end
 

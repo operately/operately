@@ -118,5 +118,4 @@ defmodule Operately.Operations.AccountSigningUp do
   defp normalize_invite_error(:invite_token_domain_not_allowed), do: gettext("This email domain is not allowed by the invitation.")
   defp normalize_invite_error(:person_creation_failed), do: gettext("Unable to add you to this company.")
   defp normalize_invite_error(:invite_link_update_failed), do: gettext("Something went wrong while using this invite link.")
-  defp normalize_invite_error(_), do: gettext("Something went wrong while using this invite link.")
 end
