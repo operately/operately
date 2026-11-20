@@ -29,7 +29,7 @@ export namespace LobbyPage {
 
 export function LobbyPage(props: LobbyPage.Props) {
   const { t } = useTranslation();
-  useHtmlTitle(translationText(t("Lobby")));
+  useHtmlTitle(translationText(t("Choose a Company")));
 
   return (
     <div data-test-id="lobby-page">
@@ -114,7 +114,7 @@ function AddCompanyCard({ newCompanyPath }: { newCompanyPath: string }) {
 
   return (
     <DivLink to={newCompanyPath} className={className} testId="add-company-card">
-      <div className="font-bold sm:text-lg">{t("+ Create organization")}</div>
+      <div className="font-bold sm:text-lg">{t("Create Company")}</div>
       <div className="text-xs sm:text-sm font-medium">{t("Start fresh with a new company account")}</div>
       <div className="absolute bottom-2 right-2">
         <IconSparkles size={24} className="text-white-1" strokeWidth={1.5} />

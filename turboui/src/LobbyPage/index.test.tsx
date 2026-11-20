@@ -28,10 +28,11 @@ function getByTestId(testId: string): HTMLElement {
 }
 
 describe("LobbyPage", () => {
-  it("renders the create-organization card", () => {
+  it("renders the create-company card", () => {
     renderPage();
 
-    expect(getByTestId("add-company-card")).toBeInTheDocument();
+    expect(getByTestId("add-company-card")).toHaveTextContent("Create Company");
+    expect(document.title).toBe("Choose a Company · Operately");
   });
 
   it("hides the admin link when adminPath is missing", () => {
@@ -82,8 +83,8 @@ it.each([
 });
 
 it.each([
-  ["Welcome to Operately, {{name}}!", "+ Create organization"],
-  ["Translated welcome, {{name}}!", "Translated create organization"],
+  ["Welcome to Operately, {{name}}!", "Create Company"],
+  ["Translated welcome, {{name}}!", "Translated create company"],
 ])("uses catalog copy for lobby chrome: %s", async (welcome, create) => {
   const i18n = createInstance();
   await i18n.init({
@@ -92,7 +93,7 @@ it.each([
       en: {
         translation: {
           "Welcome to Operately, {{name}}!": welcome,
-          "+ Create organization": create,
+          "Create Company": create,
         },
       },
     },
@@ -121,9 +122,10 @@ it("uses Portuguese catalog copy when present, including plurals", async () => {
       "1 member_other": "{{count}} membros",
       "1 member_many": "{{count}} membros",
       "1 member_zero": "{{count}} membros",
-      "+ Create organization": "+ Criar empresa",
+      "Create Company": "Criar empresa",
       "Start fresh with a new company account": "Comece do zero com uma nova conta de empresa",
-      "Or, visit the <actionLink>Admin Panel</actionLink>.": "Ou acesse o <actionLink>Painel de administração</actionLink>.",
+      "Or, visit the <actionLink>Admin Panel</actionLink>.":
+        "Ou acesse o <actionLink>Painel de administração</actionLink>.",
     },
     true,
     true,
@@ -145,7 +147,7 @@ it("uses Portuguese catalog copy when present, including plurals", async () => {
     expect(screen.getByText("Boas-vindas ao Operately, Ada!")).toBeInTheDocument();
     expect(screen.getByText("Vamos começar")).toBeInTheDocument();
     expect(screen.getByText("3 membros")).toBeInTheDocument();
-    expect(getByTestId("add-company-card")).toHaveTextContent("+ Criar empresa");
+    expect(getByTestId("add-company-card")).toHaveTextContent("Criar empresa");
     expect(getByTestId("add-company-card")).toHaveTextContent("Comece do zero com uma nova conta de empresa");
     expect(screen.getByRole("link", { name: "Painel de administração" })).toHaveAttribute("href", "/admin");
   } finally {

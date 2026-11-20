@@ -13,6 +13,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import * as Billing from "@/models/billing";
+import * as Companies from "@/models/companies";
 import { useAssignmentsCount, useReviewRefreshSignal } from "@/models/assignments";
 import * as Notifications from "@/models/notifications";
 import { Paths, usePaths } from "@/routes/paths";
@@ -62,6 +63,7 @@ function Navigation({
   productRelease: ReturnType<typeof useProductRelease>["productRelease"];
 }) {
   const { company, canAddGoal, canAddProject } = useCompanyLoaderData();
+  const { data: companiesData } = Companies.useCompanies();
   const me = useMe()!;
   const paths = usePaths();
   const navigate = useNavigate();
@@ -73,6 +75,7 @@ function Navigation({
 
   const props: CompanyNavigation.Props = {
     companyName: company.name,
+    companyCount: companiesData?.companies.length,
     me: {
       id: me.id,
       fullName: me.fullName,
@@ -90,6 +93,7 @@ function Navigation({
       account: paths.accountPath(),
       companyAdmin: paths.companyAdminPath(),
       lobby: Paths.lobbyPath(),
+      newCompany: Paths.newCompanyPath(),
       newGoal: paths.newGoalPath(),
       newProject: paths.newProjectPath(),
       newSpace: paths.newSpacePath(),

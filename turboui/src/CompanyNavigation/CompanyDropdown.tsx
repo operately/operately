@@ -1,17 +1,19 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { IconBinaryTree2, IconBuildingEstate, IconCircleKey, IconSwitch, IconUserCircle } from "../icons";
+import { IconBinaryTree2, IconBuildingEstate, IconCircleKey, IconPlus, IconSwitch, IconUserCircle } from "../icons";
 import { CompanyNavigationLinks } from "./types";
 import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
 import { truncateCompanyName } from "./truncateCompanyName";
 
 export function CompanyDropdown({
   companyName,
+  companyCount,
   links,
   canViewCompanyDirectory,
 }: {
   companyName: string;
+  companyCount?: number;
   links: CompanyNavigationLinks;
   canViewCompanyDirectory: boolean;
 }) {
@@ -50,12 +52,14 @@ export function CompanyDropdown({
         title={t("Company Admin")}
         testId="company-dropdown-company-admin"
       />
-      <DropdownLinkItem
-        path={links.lobby}
-        icon={IconSwitch}
-        title={t("Switch Company")}
-        testId="company-dropdown-switch"
-      />
+      {companyCount !== undefined && (
+        <DropdownLinkItem
+          path={companyCount > 1 ? links.lobby : links.newCompany}
+          icon={companyCount > 1 ? IconSwitch : IconPlus}
+          title={companyCount > 1 ? t("Switch Company") : t("Create Company")}
+          testId="company-dropdown-switch"
+        />
+      )}
     </DropdownMenu>
   );
 }

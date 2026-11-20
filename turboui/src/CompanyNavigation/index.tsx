@@ -13,6 +13,7 @@ import {
   IconDoorExit,
   IconHome2,
   IconMenu2,
+  IconPlus,
   IconSwitch,
   IconUser,
   IconUserCircle,
@@ -52,7 +53,7 @@ export function CompanyNavigation(props: CompanyNavigation.Props) {
   return <DesktopNavigation {...props} />;
 }
 
-function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Props) {
+function MobileNavigation({ companyName, companyCount, links, onLogOut }: CompanyNavigation.Props) {
   const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
   const headerRef = React.useRef<HTMLDivElement>(null);
@@ -133,9 +134,14 @@ function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Pr
             {t("Company Admin")}
           </MobileSectionLink>
 
-          <MobileSectionLink to={links.lobby} icon={IconSwitch}>
-            {t("Switch Company")}
-          </MobileSectionLink>
+          {companyCount !== undefined && (
+            <MobileSectionLink
+              to={companyCount > 1 ? links.lobby : links.newCompany}
+              icon={companyCount > 1 ? IconSwitch : IconPlus}
+            >
+              {companyCount > 1 ? t("Switch Company") : t("Create Company")}
+            </MobileSectionLink>
+          )}
 
           <MobileSectionAction onClick={onLogOut} icon={IconDoorExit}>
             {t("Log Out")}
@@ -195,6 +201,7 @@ function DesktopNavigation(props: CompanyNavigationProps) {
           <div className="border-l border-surface-outline px-2.5 ml-4">
             <CompanyDropdown
               companyName={companyName}
+              companyCount={props.companyCount}
               links={links}
               canViewCompanyDirectory={props.canViewCompanyDirectory}
             />

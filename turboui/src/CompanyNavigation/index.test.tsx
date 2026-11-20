@@ -101,6 +101,18 @@ describe("CompanyNavigation", () => {
     expect(trigger).toHaveAttribute("title", "Nexus Global Manufacturing Group");
   });
 
+  it.each([
+    { companyCount: 1, label: "Create Company", href: "/new" },
+    { companyCount: 2, label: "Switch Company", href: "/lobby" },
+  ])("uses the company menu to $label when companyCount is $companyCount", async ({ companyCount, label, href }) => {
+    const user = userEvent.setup();
+    renderNav({ companyCount });
+
+    await user.click(getByTestId("company-dropdown"));
+
+    expect(screen.getByRole("link", { name: label })).toHaveAttribute("href", href);
+  });
+
   it("does not show the update badge when it is disabled", () => {
     renderNav({ availableUpdate: { version: "v1.8" } });
 
