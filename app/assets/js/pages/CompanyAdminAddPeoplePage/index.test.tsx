@@ -6,7 +6,7 @@ import i18n, { applyLanguage } from "@/i18n";
 import { queryClient } from "@/api/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook } from "@/__tests__/renderHook";
-import { CompanyAdminAddPeoplePage } from "turboui";
+import { CompanyAdminAddPeoplePage, showErrorToast } from "turboui";
 import pageModule from ".";
 
 jest.mock("axios");
@@ -111,6 +111,36 @@ describe.each([
   ["team_member", "create_member"],
   ["outside_collaborator", "invite_guest"],
 ])("%s invitation", (memberType, endpoint) => {
+  it("shows an inline error for an overlong name and submits after correction", async () => {
+    mockMemberType = memberType;
+    jest.mocked(axios.get).mockResolvedValue({ data: { spaces: [], goals: [], projects: [] } });
+    renderHook(() => null, { initialProps: undefined, wrapper });
+    fillForm();
+    const fullName = "a".repeat(256);
+    act(() => props().onFormChange("fullName", fullName));
+
+    await act(() => props().onSubmit());
+
+    expect(props().formErrors).toEqual({ fullName: "Must be at most 255 characters long" });
+    expect(props().formValues).toEqual({ fullName, email: "person@example.com", title: "Engineer" });
+    expect(props().state.state).toBe("form");
+    expect(axios.post).not.toHaveBeenCalled();
+    expect(showErrorToast).not.toHaveBeenCalled();
+
+    // Count Unicode characters as PostgreSQL does, and ignore surrounding whitespace.
+    const correctedName = "𠮷".repeat(255);
+    act(() => props().onFormChange("fullName", `  ${correctedName}  `));
+    await act(() => props().onSubmit());
+
+    expect(props().formErrors).toEqual({});
+    expect(props().state.state).toBe("added");
+    expect(axios.post).toHaveBeenCalledWith(
+      `/api/v2/companies/${endpoint}`,
+      { full_name: correctedName, email: "person@example.com", title: "Engineer" },
+      expect.anything(),
+    );
+  });
+
   it.each([
     ["untouched", undefined, ""],
     ["whitespace-only", "   ", ""],
@@ -154,8 +184,12 @@ describe.each([
 
 it.each([
   ["fullName", ""],
+  ["fullName", "   "],
+  ["fullName", "Al"],
   ["email", ""],
+  ["email", "   "],
   ["email", "invalid-email"],
+  ["email", "person@example"],
 ] as const)("prevents submission when %s is invalid (%s)", async (field, value) => {
   renderHook(() => null, { initialProps: undefined, wrapper });
   fillForm();
@@ -166,6 +200,35 @@ it.each([
   expect(axios.post).not.toHaveBeenCalled();
   expect(Object.keys(props().formErrors ?? {})).toEqual([field]);
   expect(props().state.state).toBe("form");
+});
+
+it("shows both client errors and invites after correction without losing entries", async () => {
+  mockMemberType = "team_member";
+  renderHook(() => null, { initialProps: undefined, wrapper });
+  act(() => {
+    props().onFormChange("fullName", "   ");
+    props().onFormChange("email", "person@example");
+    props().onFormChange("title", "Engineer");
+  });
+
+  await act(() => props().onSubmit());
+  expect(props().formErrors).toEqual({
+    fullName: "Name is required",
+    email: "Enter a valid email address",
+  });
+  expect(props().formValues).toEqual({ fullName: "   ", email: "person@example", title: "Engineer" });
+  expect(axios.post).not.toHaveBeenCalled();
+
+  act(() => {
+    props().onFormChange("fullName", "Person");
+    props().onFormChange("email", "person@example.com");
+  });
+  await act(() => props().onSubmit());
+
+  expect(props().formErrors).toEqual({});
+  expect(props().isSubmitting).toBe(false);
+  expect(props().state.state).toBe("added");
+  expect(axios.post).toHaveBeenCalledTimes(1);
 });
 
 it("updates navigation when the language changes while mounted", async () => {
@@ -190,21 +253,56 @@ it("updates navigation when the language changes while mounted", async () => {
   expect(props().navigationItems[1]?.label).toBe("Gerenciar membros");
 });
 
-it.each(["team_member", "outside_collaborator"])(
-  "places a localized %s validation error by its field identifier",
-  async (memberType) => {
-    mockMemberType = memberType;
-    const message = "O nome não pode ficar em branco";
-    jest.mocked(axios.post).mockRejectedValue({ response: { data: { message, details: { field: "full_name" } } } });
-    const errorLog = jest.spyOn(console, "error").mockImplementation(() => {});
-    try {
-      renderHook(() => null, { initialProps: undefined, wrapper });
-      fillForm();
-      await act(() => props().onSubmit());
-      expect(props().formErrors?.fullName).toBe(message);
-      expect(props().state.state).toBe("form");
-    } finally {
-      errorLog.mockRestore();
-    }
-  },
-);
+it.each([
+  ["team_member", "full_name", "fullName"],
+  ["outside_collaborator", "email", "email"],
+] as const)("places a localized %s %s validation error beside %s", async (memberType, serverField, formField) => {
+  mockMemberType = memberType;
+  const message = "Mensagem localizada do servidor";
+  jest.mocked(axios.post).mockRejectedValue({ response: { data: { message, details: { field: serverField } } } });
+  const errorLog = jest.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    renderHook(() => null, { initialProps: undefined, wrapper });
+    fillForm();
+    await act(() => props().onSubmit());
+    expect(props().formErrors).toEqual({ [formField]: message });
+    expect(props().formValues).toEqual({ fullName: "Person", email: "person@example.com", title: "Engineer" });
+    expect(props().state.state).toBe("form");
+    expect(props().isSubmitting).toBe(false);
+  } finally {
+    errorLog.mockRestore();
+  }
+});
+
+it("replaces a server field error and invites after correction", async () => {
+  mockMemberType = "team_member";
+  jest.mocked(axios.post).mockRejectedValueOnce({
+    response: { data: { message: "Email is too long", details: { field: "email" } } },
+  });
+  const errorLog = jest.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    renderHook(() => null, { initialProps: undefined, wrapper });
+    fillForm();
+    await act(() => props().onSubmit());
+    expect(props().formErrors).toEqual({ email: "Email is too long" });
+    expect(props().formValues.title).toBe("Engineer");
+
+    act(() => {
+      props().onFormChange("email", "corrected@example.com");
+      props().onFormChange("fullName", "  ");
+    });
+    await act(() => props().onSubmit());
+    expect(props().formErrors).toEqual({ fullName: "Name is required" });
+    expect(axios.post).toHaveBeenCalledTimes(1);
+
+    act(() => props().onFormChange("fullName", "Person"));
+    await act(() => props().onSubmit());
+
+    expect(props().formErrors).toEqual({});
+    expect(props().isSubmitting).toBe(false);
+    expect(props().state.state).toBe("added");
+    expect(axios.post).toHaveBeenCalledTimes(2);
+  } finally {
+    errorLog.mockRestore();
+  }
+});
