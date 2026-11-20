@@ -12,14 +12,15 @@ defmodule Operately.Application do
       Operately.Repo,
       Operately.Mcp.RateLimit,
       Operately.ProductReleases.Cache,
-      OperatelyWeb.Endpoint,
       {Oban, Application.fetch_env!(:operately, Oban)},
       {Finch, name: Operately.Finch},
       {Phoenix.PubSub,
        [
          name: Operately.PubSub,
          adapter: Operately.PubSub.PostgresPubSub
-       ]}
+       ]},
+      # Accept requests only after their dependencies start; stop serving first on shutdown.
+      OperatelyWeb.Endpoint
     ]
 
     :ok = Oban.Telemetry.attach_default_logger()
