@@ -19,11 +19,16 @@ beforeEach(() => {
   jest.clearAllMocks();
   Api.default.setBasePath("/api/v2");
   Api.default.setHeaders({});
-  jest.mocked(axios.get).mockImplementation((_url, config) =>
-    Promise.resolve({
-      data: { version: { versionNumber: config?.params.version_number, title: "Snapshot", content: '{"type":"doc"}' } },
-    }),
-  );
+  jest.mocked(axios.get).mockImplementation((_url, config) => {
+    const params = config?.params;
+    if (!params || typeof params !== "object" || !("version_number" in params)) {
+      throw new Error("Expected version_number in the snapshot request");
+    }
+
+    return Promise.resolve({
+      data: { version: { versionNumber: params.version_number, title: "Snapshot", content: '{"type":"doc"}' } },
+    });
+  });
 });
 
 afterEach(() => queryClient.clear());

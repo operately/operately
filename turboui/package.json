@@ -67,7 +67,7 @@
     "tailwindcss": "^3.4.19",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.3",
-    "vite": "6.4.3",
+    "vite": "6.4.6",
     "wait-on": "^8.0.3",
     "postcss-import": "^15.1.0",
     "@emotion/cache": "^11.14.0",
@@ -87,9 +87,10 @@
     "jest-runtime@30": {
       "glob": "14.0.2"
     },
+    "prosemirror-view": "1.42.3",
     "rollup": "4.62.2",
     "uuid": "11.1.1",
-    "vite": "6.4.3"
+    "vite": "6.4.6"
   },
   "jest-junit": {
     "outputDirectory": "testreports",
