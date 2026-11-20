@@ -111,12 +111,11 @@ export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
         const shouldSchedule =
           createAction === "schedule" || (createAction === "submit" && scheduleFlow.isScheduledLocally);
 
-        await props.onSubmit(form.values, {
+        return props.onSubmit(form.values, {
           mode: "create",
           action: createAction,
           scheduledAt: shouldSchedule ? scheduleFlow.scheduledAtIso : null,
         });
-        return;
       }
 
       const editAction = (action || "save") as ProjectCheckInFormPage.EditAction;
@@ -125,7 +124,7 @@ export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
         editAction === "save-changes" ||
         (editAction === "publish" && scheduleFlow.isScheduledLocally);
 
-      await props.onSubmit(form.values, {
+      return props.onSubmit(form.values, {
         mode: "edit",
         action: editAction,
         scheduledAt: shouldSchedule ? scheduleFlow.scheduledAtIso : null,
