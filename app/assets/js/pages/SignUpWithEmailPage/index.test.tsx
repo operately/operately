@@ -25,6 +25,7 @@ let client: QueryClient;
 beforeEach(async () => {
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
   window.history.replaceState({}, "", "/signup?invite_token=invitation&redirect_to=%2Fwelcome");
+  jest.useFakeTimers({ doNotFake: ["nextTick", "setImmediate", "setTimeout", "clearTimeout"] });
   jest.spyOn(console, "error").mockImplementation(() => {});
   container = document.createElement("div");
   document.body.appendChild(container);
@@ -45,6 +46,7 @@ afterEach(async () => {
   await act(async () => root.unmount());
   container.remove();
   client.clear();
+  jest.useRealTimers();
   jest.restoreAllMocks();
   jest.clearAllMocks();
 });
@@ -185,4 +187,165 @@ test("editing the code clears the account error and retries with retained signup
     password: details.password,
   });
   expect(logIn).toHaveBeenCalledWith(details.email, details.password, { redirectTo: "/welcome" });
+});
+
+function resendButton() {
+  const button = container.querySelector<HTMLButtonElement>("[data-test-id=resend-email-code]");
+  if (!button) throw new Error("Missing resend action");
+  return button;
+}
+
+async function finishCooldown() {
+  await act(async () => jest.advanceTimersByTime(60_000));
+}
+
+async function resend() {
+  await act(async () => resendButton().click());
+}
+
+function deferred<T>() {
+  let resolve: (value: T) => void = () => {
+    throw new Error("Deferred promise is not initialized");
+  };
+  const promise = new Promise<T>((done) => {
+    resolve = done;
+  });
+  return { promise, resolve };
+}
+
+test("resend bypasses code validation, clears stale errors, and retains account, invitation, and redirect details", async () => {
+  const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
+  const account = jest
+    .spyOn(Api.default, "createAccount")
+    .mockRejectedValueOnce(submissionError("Expired code"))
+    .mockResolvedValueOnce({});
+  await fillDetails();
+  await submit();
+  await edit("code", "OLD123");
+  await submit();
+  expect(container.querySelector("[role=alert]")).not.toBeNull();
+  await finishCooldown();
+  await resend();
+  expect(input("code").value).toBe("");
+  expect(container.querySelector("[role=alert]")).toBeNull();
+  expect(document.activeElement).toBe(input("code"));
+  expect(container.querySelector("[data-test-id=resend-code-status]")?.getAttribute("data-state")).toBe("success");
+  expect(activation).toHaveBeenLastCalledWith({ email: details.email });
+  expect(account).toHaveBeenCalledTimes(1);
+  expect(logIn).not.toHaveBeenCalled();
+  expect(window.location.search).toBe("?invite_token=invitation&redirect_to=%2Fwelcome");
+
+  await submit();
+  expect(input("code").getAttribute("aria-invalid")).toBe("true");
+  await edit("code", "ABC");
+  await edit("code", "!");
+  await finishCooldown();
+  await resend();
+  expect(input("code").value).toBe("");
+  expect(input("code").hasAttribute("aria-invalid")).toBe(false);
+  expect(container.querySelector("#code-error")).toBeNull();
+  expect(activation).toHaveBeenCalledTimes(3);
+  await edit("code", "NEW123");
+  await submit();
+  expect(account).toHaveBeenLastCalledWith({
+    inviteToken: "invitation",
+    code: "NEW123",
+    email: details.email,
+    fullName: details.name,
+    password: details.password,
+  });
+  expect(logIn).toHaveBeenCalledWith(details.email, details.password, { redirectTo: "/welcome" });
+});
+
+test("pending resend and account creation exclude duplicate and concurrent requests, including Enter submission", async () => {
+  const sending = deferred<{}>();
+  const creating = deferred<{}>();
+  const activation = jest
+    .spyOn(Api.default, "createEmailActivationCode")
+    .mockResolvedValueOnce({})
+    .mockReturnValueOnce(sending.promise);
+  const account = jest.spyOn(Api.default, "createAccount").mockReturnValueOnce(creating.promise);
+  await fillDetails();
+  await submit();
+  await finishCooldown();
+  // No entered code is required to resend.
+  await resend();
+  expect(resendButton().disabled).toBe(true);
+  expect(container.querySelector<HTMLButtonElement>("[data-test-id=submit]")?.disabled).toBe(true);
+  expect(container.querySelector("[data-test-id=resend-code-status]")?.getAttribute("data-state")).toBe("sending");
+  await resend();
+  await edit("code", "ABC123");
+  await act(async () => {
+    input("code").dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+  });
+  expect(account).not.toHaveBeenCalled();
+  expect(activation).toHaveBeenCalledTimes(2);
+  await act(async () => sending.resolve({}));
+  expect(resendButton().disabled).toBe(true);
+  await finishCooldown();
+  expect(resendButton().disabled).toBe(false);
+
+  await edit("code", "NEW123");
+  await act(async () => container.querySelector<HTMLButtonElement>("[data-test-id=submit]")?.click());
+  await waitFor(() => expect(account).toHaveBeenCalledTimes(1));
+  expect(resendButton().disabled).toBe(true);
+  await resend();
+  expect(activation).toHaveBeenCalledTimes(2);
+  await act(async () => creating.resolve({}));
+});
+
+test("failed resend preserves entered values and permits a successful retry", async () => {
+  const activation = jest
+    .spyOn(Api.default, "createEmailActivationCode")
+    .mockResolvedValueOnce({})
+    .mockRejectedValueOnce(new Error("Offline"))
+    .mockResolvedValueOnce({});
+  const account = jest.spyOn(Api.default, "createAccount").mockResolvedValue({});
+  await fillDetails();
+  await submit();
+  await edit("code", "OLD123");
+  await finishCooldown();
+  await resend();
+  expect(input("code").value).toBe("OLD123");
+  expect(container.querySelector("[data-test-id=resend-code-error][role=alert]")).not.toBeNull();
+  expect(container.querySelector("[data-test-id=resend-code-status]")?.getAttribute("data-state")).toBe("error");
+  expect(resendButton().disabled).toBe(true);
+  await finishCooldown();
+  expect(resendButton().disabled).toBe(false);
+  expect(account).not.toHaveBeenCalled();
+  expect(logIn).not.toHaveBeenCalled();
+  await resend();
+  expect(container.querySelector("[data-test-id=resend-code-error]")).toBeNull();
+  expect(input("code").value).toBe("");
+  expect(activation).toHaveBeenCalledTimes(3);
+  await edit("code", "NEW123");
+  await submit();
+  expect(account).toHaveBeenCalledWith({
+    inviteToken: "invitation",
+    code: "NEW123",
+    email: details.email,
+    fullName: details.name,
+    password: details.password,
+  });
+  expect(logIn).toHaveBeenCalledWith(details.email, details.password, { redirectTo: "/welcome" });
+});
+
+test("resend waits 60 seconds after the initial code and every resend without blocking verification", async () => {
+  const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
+  const account = jest.spyOn(Api.default, "createAccount").mockResolvedValue({});
+  await fillDetails();
+  await submit();
+  expect(resendButton().disabled).toBe(true);
+  await resend();
+  expect(activation).toHaveBeenCalledTimes(1);
+  await act(async () => jest.advanceTimersByTime(59_000));
+  expect(resendButton().disabled).toBe(true);
+  await act(async () => jest.advanceTimersByTime(1000));
+  expect(resendButton().disabled).toBe(false);
+  await resend();
+  expect(activation).toHaveBeenCalledTimes(2);
+  expect(resendButton().disabled).toBe(true);
+  await edit("code", "NEW123");
+  await submit();
+  expect(account).toHaveBeenCalledTimes(1);
 });

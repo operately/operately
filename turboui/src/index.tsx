@@ -317,3 +317,4 @@ export * from "./CuratedTemplates";
 export * from "./SaasAdminAccountActionsMenu";
 
 export { TitleSetupPrompt } from "./TitleSetupPrompt";
+export { SignupCodeResend } from "./SignupCodeResend";

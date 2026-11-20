@@ -7,6 +7,17 @@ defmodule Operately.Features.SignupTest do
 
   setup ctx, do: Factory.setup(ctx)
 
+  feature "resend an expired signup code without restarting signup", ctx do
+    ctx
+    |> Steps.visit_signup_page()
+    |> Steps.choose_signup_with_email()
+    |> Steps.fill_in_details()
+    |> Steps.expire_original_activation_code()
+    |> Steps.resend_activation_code()
+    |> Steps.fill_in_new_activation_code_from_email()
+    |> Steps.assert_signup_successful()
+  end
+
   feature "signup with valid email", ctx do
     ctx
     |> Steps.visit_signup_page()
