@@ -10,6 +10,7 @@ import { includesId, usePaths } from "@/routes/paths";
 import { useNavigate, useSearchParams } from "react-router";
 import { CompanyAdminAddPeoplePage, InviteMemberForm, showErrorToast } from "turboui";
 import i18n, { translationText } from "@/i18n";
+import { validateEmail } from "@/features/auth/validateEmail";
 
 import { loader, useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -179,10 +180,9 @@ function useInviteSubmit(
         return;
       }
 
-      const data = (e as any)?.response?.data;
-      const message = typeof data?.message === "string" ? data.message : null;
-      if (message) {
-        const field = data?.details?.field;
+      const serverError = extractServerError(e);
+      if (serverError) {
+        const { field, message } = serverError;
         const nextErrors: InviteMemberForm.Errors = {};
 
         if (field === "email") nextErrors.email = message;
@@ -223,16 +223,31 @@ function useInviteSubmit(
 }
 function validateInvite(values: InviteMemberForm.Values): InviteMemberForm.Errors {
   const errors: InviteMemberForm.Errors = {};
+  const name = values.fullName.trim();
+  const email = values.email.trim();
 
-  if (values.fullName.length < 1) {
+  if (!name) {
     errors.fullName = translationText(i18n.t("Name is required"));
+  } else if (name.length < 3) {
+    errors.fullName = translationText(i18n.t("Must be at least {{minLength}} characters long", { minLength: 3 }));
   }
 
-  if (values.email.length < 1) {
+  if (!email) {
     errors.email = translationText(i18n.t("Email is required"));
-  } else if (!values.email.includes("@")) {
+  } else if (!validateEmail(email)) {
     errors.email = translationText(i18n.t("Enter a valid email address"));
   }
 
   return errors;
+}
+
+function extractServerError(error: unknown): { message: string; field: unknown } | null {
+  if (!error || typeof error !== "object" || !("response" in error)) return null;
+  const response = error.response;
+  if (!response || typeof response !== "object" || !("data" in response)) return null;
+  const data = response.data;
+  if (!data || typeof data !== "object" || !("message" in data) || typeof data.message !== "string") return null;
+  const details = "details" in data ? data.details : null;
+  const field = details && typeof details === "object" && "field" in details ? details.field : null;
+  return { message: data.message, field };
 }
