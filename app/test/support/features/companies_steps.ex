@@ -25,16 +25,12 @@ defmodule Operately.Support.Features.CompaniesSteps do
     ctx
   end
 
-  step :navigate_to_the_loby, ctx do
-    ctx |> UI.visit("/")
+  step :navigate_to_new_company_page, ctx do
+    ctx |> UI.visit("/new")
   end
 
   step :navigate_to_new_company_page_with_billing_intent, ctx do
     ctx |> UI.visit("/new?plan=team&billing_period=monthly")
-  end
-
-  step :click_on_the_add_company_button, ctx do
-    ctx |> UI.click(testid: "add-company-card")
   end
 
   step :fill_in_company_form_and_submit, ctx do

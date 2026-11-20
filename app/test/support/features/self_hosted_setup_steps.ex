@@ -43,9 +43,9 @@ defmodule Operately.Support.Features.SelfHostedSetupSteps do
     |> UI.assert_text("Add your first project")
   end
 
-  step :assert_setup_page_is_no_longer_accessible, ctx do
+  step :assert_setup_page_redirects_to_first_project_setup, ctx do
     ctx
     |> UI.visit("/setup")
-    |> UI.assert_has(testid: "lobby-page")
+    |> UI.assert_has(testid: "first-project-zero-state")
   end
 end
