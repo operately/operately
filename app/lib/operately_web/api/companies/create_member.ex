@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Companies.CreateMember do
   inputs do
     field :full_name, :string, null: false
     field :email, :string, null: false
-    field :title, :string, null: false
+    field? :title, :string, null: false
   end
 
   outputs do

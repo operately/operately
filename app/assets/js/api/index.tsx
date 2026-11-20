@@ -4919,7 +4919,7 @@ export interface CompaniesCreateAdminsResult {}
 export interface CompaniesCreateMemberInput {
   fullName: string;
   email: string;
-  title: string;
+  title?: string;
 }
 
 export interface CompaniesCreateMemberResult {

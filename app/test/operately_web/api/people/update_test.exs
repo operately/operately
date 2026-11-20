@@ -34,6 +34,7 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
 
     test "when I'm an admin, it updates the profile", ctx do
       promote_me_to_admin(ctx)
+      {:ok, _} = Operately.People.update_person(ctx.company_member, %{title_setup_pending: true})
 
       assert {200, %{person: %{}}} =
                mutation(ctx.conn, [:people, :update], %{
@@ -47,6 +48,7 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
 
       assert person.full_name == "John Doe"
       assert person.title == "Software Developer"
+      refute person.title_setup_pending
       assert person.timezone == "America/New_Jersey"
     end
 
@@ -117,11 +119,21 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
 
       assert {200, _} =
                mutation(ctx.conn, [:people, :update], %{
-                 id: Paths.person_id(ctx.person), title: "Designer", title_setup_pending: false
+                 id: Paths.person_id(ctx.person), title: "Designer"
                })
 
       person = Repo.reload!(ctx.person)
       assert person.title == "Designer"
+      refute person.title_setup_pending
+    end
+
+    test "clearing an existing title keeps setup complete", ctx do
+      {:ok, person} = Operately.People.update_person(ctx.person, %{title: "Designer", title_setup_pending: false})
+
+      assert {200, _} = mutation(ctx.conn, [:people, :update], %{id: Paths.person_id(person), title: ""})
+
+      person = Repo.reload!(person)
+      assert is_nil(person.title)
       refute person.title_setup_pending
     end
 
@@ -193,7 +205,7 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
     end
 
     test "inputs that are not provided are not updated", ctx do
-      person = ctx.person
+      {:ok, person} = Operately.People.update_person(ctx.person, %{title_setup_pending: true})
 
       assert {200, %{person: %{}}} = mutation(ctx.conn, [:people, :update], %{id: Paths.person_id(person), full_name: "John Doe"})
 
@@ -201,6 +213,7 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
 
       assert person.full_name == "John Doe"
       assert person.title == ctx.person.title
+      assert person.title_setup_pending
       assert person.timezone == ctx.person.timezone
     end
 

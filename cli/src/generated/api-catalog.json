@@ -25687,7 +25687,7 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
           "nullable": false,
           "has_default": false
         }

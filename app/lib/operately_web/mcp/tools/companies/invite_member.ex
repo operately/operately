@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Mcp.Tools.Companies.InviteMember do
 
   alias OperatelyWeb.Api.Companies.CreateMember, as: Api
   alias OperatelyWeb.Mcp.CollaborationInputs, as: Inputs
+  alias OperatelyWeb.Mcp.Helpers
 
   @impl true
   def definition do
@@ -17,15 +18,15 @@ defmodule OperatelyWeb.Mcp.Tools.Companies.InviteMember do
       annotations: write_annotations(),
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "companies"},
-      examples: [%{"title" => "Invite member", "arguments" => %{"full_name" => "Alex Morgan", "email" => "alex@example.com", "title" => "Designer"}}],
+      examples: [%{"title" => "Invite member", "arguments" => %{"full_name" => "Alex Morgan", "email" => "alex@example.com"}}],
       input_schema:
         JsonSchema.object(
           %{
             "full_name" => JsonSchema.string("Full name."),
             "email" => JsonSchema.string("Email."),
-            "title" => JsonSchema.string("Title.")
+            "title" => JsonSchema.string("Optional job title. Members can set it after joining.")
           },
-          required: ["full_name", "email", "title"]
+          required: ["full_name", "email"]
         ),
       output_schema:
         JsonSchema.object(
@@ -46,9 +47,8 @@ defmodule OperatelyWeb.Mcp.Tools.Companies.InviteMember do
 
   defp decode_inputs(arguments) do
     with {:ok, full_name} <- Inputs.string(arguments["full_name"]),
-         {:ok, email} <- Inputs.string(arguments["email"]),
-         {:ok, title} <- Inputs.string(arguments["title"]) do
-      {:ok, %{full_name: full_name, email: email, title: title}}
+         {:ok, email} <- Inputs.string(arguments["email"]) do
+      Helpers.put_present(%{full_name: full_name, email: email}, arguments, "title", :title, &Inputs.string/1)
     end
   end
 end

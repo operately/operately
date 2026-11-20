@@ -27,6 +27,7 @@ defmodule OperatelyWeb.Mcp.Tools.People.UpdatePersonTest do
 
   test "maps partial profile changes and preserves omitted preferences" do
     ctx = Factory.setup(%{})
+    {:ok, _} = Operately.People.update_person(ctx.creator, %{title_setup_pending: true})
     conn = ToolConnHelper.conn(ctx)
     args = %{"person_id" => Paths.person_id(ctx.creator), "title" => "Designer", "description" => "About me", "notify_on_mention" => false}
     assert {:ok, %{person: person}} = Tool.call(conn, args)
@@ -38,6 +39,7 @@ defmodule OperatelyWeb.Mcp.Tools.People.UpdatePersonTest do
     refute me.notify_on_mention
     assert me.description == nil
     assert me.title == "Designer"
+    refute me.title_setup_pending
 
     other = Factory.setup(%{})
     assert {:error, :not_found} = Tool.call(ToolConnHelper.conn(other), args)
