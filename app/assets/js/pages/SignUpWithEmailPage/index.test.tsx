@@ -25,6 +25,7 @@ let client: QueryClient;
 beforeEach(async () => {
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
   window.history.replaceState({}, "", "/signup?invite_token=invitation&redirect_to=%2Fwelcome");
+  jest.useFakeTimers({ doNotFake: ["nextTick", "setImmediate", "setTimeout", "clearTimeout"] });
   jest.spyOn(console, "error").mockImplementation(() => {});
   container = document.createElement("div");
   document.body.appendChild(container);
@@ -45,6 +46,7 @@ afterEach(async () => {
   await act(async () => root.unmount());
   container.remove();
   client.clear();
+  jest.useRealTimers();
   jest.restoreAllMocks();
   jest.clearAllMocks();
 });
@@ -193,6 +195,10 @@ function resendButton() {
   return button;
 }
 
+async function finishCooldown() {
+  await act(async () => jest.advanceTimersByTime(60_000));
+}
+
 async function resend() {
   await act(async () => resendButton().click());
 }
@@ -218,6 +224,7 @@ test("resend bypasses code validation, clears stale errors, and retains account,
   await edit("code", "OLD123");
   await submit();
   expect(container.querySelector("[role=alert]")).not.toBeNull();
+  await finishCooldown();
   await resend();
   expect(input("code").value).toBe("");
   expect(container.querySelector("[role=alert]")).toBeNull();
@@ -232,6 +239,7 @@ test("resend bypasses code validation, clears stale errors, and retains account,
   expect(input("code").getAttribute("aria-invalid")).toBe("true");
   await edit("code", "ABC");
   await edit("code", "!");
+  await finishCooldown();
   await resend();
   expect(input("code").value).toBe("");
   expect(input("code").hasAttribute("aria-invalid")).toBe(false);
@@ -259,6 +267,7 @@ test("pending resend and account creation exclude duplicate and concurrent reque
   const account = jest.spyOn(Api.default, "createAccount").mockReturnValueOnce(creating.promise);
   await fillDetails();
   await submit();
+  await finishCooldown();
   // No entered code is required to resend.
   await resend();
   expect(resendButton().disabled).toBe(true);
@@ -272,6 +281,8 @@ test("pending resend and account creation exclude duplicate and concurrent reque
   expect(account).not.toHaveBeenCalled();
   expect(activation).toHaveBeenCalledTimes(2);
   await act(async () => sending.resolve({}));
+  expect(resendButton().disabled).toBe(true);
+  await finishCooldown();
   expect(resendButton().disabled).toBe(false);
 
   await edit("code", "NEW123");
@@ -293,10 +304,13 @@ test("failed resend preserves entered values and permits a successful retry", as
   await fillDetails();
   await submit();
   await edit("code", "OLD123");
+  await finishCooldown();
   await resend();
   expect(input("code").value).toBe("OLD123");
   expect(container.querySelector("[data-test-id=resend-code-error][role=alert]")).not.toBeNull();
   expect(container.querySelector("[data-test-id=resend-code-status]")?.getAttribute("data-state")).toBe("error");
+  expect(resendButton().disabled).toBe(true);
+  await finishCooldown();
   expect(resendButton().disabled).toBe(false);
   expect(account).not.toHaveBeenCalled();
   expect(logIn).not.toHaveBeenCalled();
@@ -314,4 +328,24 @@ test("failed resend preserves entered values and permits a successful retry", as
     password: details.password,
   });
   expect(logIn).toHaveBeenCalledWith(details.email, details.password, { redirectTo: "/welcome" });
+});
+
+test("resend waits 60 seconds after the initial code and every resend without blocking verification", async () => {
+  const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
+  const account = jest.spyOn(Api.default, "createAccount").mockResolvedValue({});
+  await fillDetails();
+  await submit();
+  expect(resendButton().disabled).toBe(true);
+  await resend();
+  expect(activation).toHaveBeenCalledTimes(1);
+  await act(async () => jest.advanceTimersByTime(59_000));
+  expect(resendButton().disabled).toBe(true);
+  await act(async () => jest.advanceTimersByTime(1000));
+  expect(resendButton().disabled).toBe(false);
+  await resend();
+  expect(activation).toHaveBeenCalledTimes(2);
+  expect(resendButton().disabled).toBe(true);
+  await edit("code", "NEW123");
+  await submit();
+  expect(account).toHaveBeenCalledTimes(1);
 });

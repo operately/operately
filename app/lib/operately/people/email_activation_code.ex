@@ -2,6 +2,8 @@ defmodule Operately.People.EmailActivationCode do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  import Ecto.Query
+
   alias Operately.Operations.EmailActivationCodeConsuming
   alias OperatelyEmail.Mailers.BaseMailer
 
@@ -29,6 +31,27 @@ defmodule Operately.People.EmailActivationCode do
   end
 
   def consume(email, code), do: EmailActivationCodeConsuming.run(email, code)
+
+  def create_for_signup(email, analytics_context) when is_binary(email) do
+    normalized_email = email |> String.trim() |> String.downcase()
+
+    Repo.transaction(fn ->
+      # Serialize requests even when this email has no code to lock yet.
+      Repo.query!("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))", ["signup-code:" <> normalized_email])
+      cutoff = DateTime.utc_now() |> DateTime.add(-60, :second)
+
+      recent_code = from c in __MODULE__, where: fragment("lower(btrim(?))", c.email) == ^normalized_email and c.inserted_at > ^cutoff
+
+      if Repo.exists?(recent_code), do: Repo.rollback(:rate_limited)
+
+      case create(email, analytics_context) do
+        {:ok, code} -> code
+        {:error, reason} -> Repo.rollback(reason)
+      end
+    end)
+  end
+
+  def create_for_signup(email, analytics_context), do: create(email, analytics_context)
 
   defp changeset(attrs) do
     changeset(%__MODULE__{}, attrs)

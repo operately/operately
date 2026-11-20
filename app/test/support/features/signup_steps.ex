@@ -37,13 +37,19 @@ defmodule Operately.Support.Features.SignupSteps do
     record = Operately.Repo.get_by!(Operately.People.EmailActivationCode, email: @email, code: String.replace(original_code, "-", ""))
 
     record
-    |> Ecto.Changeset.change(expires_at: DateTime.utc_now() |> DateTime.add(-1, :minute) |> DateTime.truncate(:second))
+    |> Ecto.Changeset.change(
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.add(-360, :second) |> NaiveDateTime.truncate(:second),
+      expires_at: DateTime.utc_now() |> DateTime.add(-1, :minute) |> DateTime.truncate(:second)
+    )
     |> Operately.Repo.update!()
 
     Map.put(ctx, :original_code, original_code)
   end
 
   step :resend_activation_code, ctx do
+    # Advance the browser clock past the cooldown without delaying the feature test.
+    Wallaby.Browser.execute_script(ctx.session, "const now = Date.now.bind(Date); Date.now = () => now() + 60000;")
+
     ctx
     |> UI.click(testid: "resend-email-code")
     |> UI.assert_has(Wallaby.Query.css("[data-test-id=resend-code-status][data-state=success]"))

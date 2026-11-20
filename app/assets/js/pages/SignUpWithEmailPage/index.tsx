@@ -44,6 +44,22 @@ function Page() {
   const requestPending = React.useRef(false);
   const [resendState, setResendState] = React.useState<SignupCodeResend.Props["state"]>("idle");
   const [codeInputVersion, setCodeInputVersion] = React.useState(0);
+  const [retryAt, setRetryAt] = React.useState(0);
+  const [clock, setClock] = React.useState(Date.now);
+  const retrySeconds = Math.max(0, Math.ceil((retryAt - clock) / 1000));
+  const isCoolingDown = retrySeconds > 0;
+
+  React.useEffect(() => {
+    if (!isCoolingDown) return;
+    const interval = window.setInterval(() => setClock(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, [retryAt, isCoolingDown]);
+
+  const startCooldown = () => {
+    const now = Date.now();
+    setClock(now);
+    setRetryAt(now + 60_000);
+  };
 
   const form = Forms.useForm({
     fields: {
@@ -73,6 +89,7 @@ function Page() {
           setSubmitError(null);
 
           await createEmailActivationCode.mutateAsync({ email: form.values.email });
+          startCooldown();
           setPageState("code-verification");
         } else {
           setSubmitError(null);
@@ -116,8 +133,9 @@ function Page() {
   });
 
   const resendCode = async () => {
-    if (requestPending.current || form.state !== "idle") return;
+    if (requestPending.current || form.state !== "idle" || Date.now() < retryAt) return;
     requestPending.current = true;
+    startCooldown();
     setResendState("sending");
 
     try {
@@ -145,6 +163,7 @@ function Page() {
         resend={{
           email: form.values.email,
           state: resendState,
+          retrySeconds,
           disabled: form.state !== "idle",
           onResend: () => void resendCode(),
         }}

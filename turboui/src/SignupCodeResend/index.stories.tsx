@@ -34,3 +34,13 @@ export const Sending: Story = {
 
 export const Success: Story = { args: { state: "success" } };
 export const Error: Story = { args: { state: "error" } };
+
+export const Cooldown: Story = {
+  args: { retrySeconds: 60 },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("button")).toBeDisabled();
+    await userEvent.click(canvas.getByRole("button"));
+    await expect(args.onResend).not.toHaveBeenCalled();
+  },
+};

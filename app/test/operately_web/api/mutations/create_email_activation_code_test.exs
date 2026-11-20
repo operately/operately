@@ -95,18 +95,33 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
       assert code1.code != code2.code
     end
 
-    test "allows creating multiple codes for the same email", ctx do
+    test "blocks repeated requests for the same email during the cooldown", ctx do
       inputs = %{email: "user@test.com"}
 
       assert {200, _} = mutation(ctx.conn, :create_email_activation_code, inputs)
+      assert_email_sent(to: inputs.email)
+      assert {400, result} = mutation(ctx.conn, :create_email_activation_code, %{email: " USER@test.com "})
+      assert result.message == "Please wait before requesting another code."
+      assert_no_email_sent()
+
+      codes =
+        Repo.all(
+          from c in Operately.People.EmailActivationCode,
+            where: c.email == "user@test.com"
+        )
+
+      assert length(codes) == 1
+    end
+
+    test "allows another request after the 60-second interval", ctx do
+      inputs = %{email: "user@test.com"}
       assert {200, _} = mutation(ctx.conn, :create_email_activation_code, inputs)
 
-      codes = Repo.all(
-        from c in Operately.People.EmailActivationCode,
-        where: c.email == "user@test.com"
-      )
+      Repo.update_all(Operately.People.EmailActivationCode, set: [inserted_at: DateTime.utc_now() |> DateTime.add(-60, :second) |> DateTime.truncate(:second)])
 
-      assert length(codes) == 2
+      assert {200, _} = mutation(ctx.conn, :create_email_activation_code, inputs)
+      assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 2
+      assert {400, _} = mutation(ctx.conn, :create_email_activation_code, inputs)
     end
 
     for {label, inputs} <- [{"null", %{email: nil}}, {"missing", %{}}, {"malformed", %{email: "invalid"}}] do
