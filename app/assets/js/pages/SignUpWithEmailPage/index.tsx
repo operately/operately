@@ -15,7 +15,7 @@ import { translationText } from "@/i18n";
 import { logIn } from "@/routes/auth";
 import { PageModule } from "@/routes/types";
 import { match } from "ts-pattern";
-import { Forms } from "turboui";
+import { Forms, SignupCodeResend } from "turboui";
 
 export default { name: "SignUpWithEmailPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -41,6 +41,25 @@ function Page() {
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const createEmailActivationCode = Accounts.useCreateEmailActivationCode();
   const createAccount = Accounts.useCreateAccount();
+  const requestPending = React.useRef(false);
+  const [resendState, setResendState] = React.useState<SignupCodeResend.Props["state"]>("idle");
+  const [codeInputVersion, setCodeInputVersion] = React.useState(0);
+  const [retryAt, setRetryAt] = React.useState(0);
+  const [clock, setClock] = React.useState(Date.now);
+  const retrySeconds = Math.max(0, Math.ceil((retryAt - clock) / 1000));
+  const isCoolingDown = retrySeconds > 0;
+
+  React.useEffect(() => {
+    if (!isCoolingDown) return;
+    const interval = window.setInterval(() => setClock(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, [retryAt, isCoolingDown]);
+
+  const startCooldown = () => {
+    const now = Date.now();
+    setClock(now);
+    setRetryAt(now + 60_000);
+  };
 
   const form = Forms.useForm({
     fields: {
@@ -62,34 +81,43 @@ function Page() {
       }
     },
     submit: async () => {
-      if (pageState === "form") {
-        setSubmitError(null);
+      if (requestPending.current) return false;
+      requestPending.current = true;
 
-        await createEmailActivationCode.mutateAsync({ email: form.values.email });
-        setPageState("code-verification");
-      } else {
-        setSubmitError(null);
+      try {
+        if (pageState === "form") {
+          setSubmitError(null);
 
-        const result = await createAccount.mutateAsync({
-          inviteToken: form.values.inviteToken,
-          code: form.values.code,
-          email: form.values.email,
-          fullName: form.values.name,
-          password: form.values.password,
-        });
+          await createEmailActivationCode.mutateAsync({ email: form.values.email });
+          startCooldown();
+          setPageState("code-verification");
+        } else {
+          setSubmitError(null);
 
-        const redirectTo = buildPostSignupRedirect({
-          inviteToken: form.values.inviteToken,
-          companyId: result.company?.id,
-          joinErrorDetails: result.joinErrorDetails,
-          redirectToParam,
-        });
+          const result = await createAccount.mutateAsync({
+            inviteToken: form.values.inviteToken,
+            code: form.values.code,
+            email: form.values.email,
+            fullName: form.values.name,
+            password: form.values.password,
+          });
 
-        if (result.error) {
-          console.warn("createAccount invite join warning", result.error);
+          const redirectTo = buildPostSignupRedirect({
+            inviteToken: form.values.inviteToken,
+            companyId: result.company?.id,
+            joinErrorDetails: result.joinErrorDetails,
+            redirectToParam,
+          });
+
+          if (result.error) {
+            console.warn("createAccount invite join warning", result.error);
+          }
+
+          await logIn(form.values.email, form.values.password, { redirectTo });
         }
-
-        await logIn(form.values.email, form.values.password, { redirectTo });
+        return true;
+      } finally {
+        requestPending.current = false;
       }
     },
     onError: (error) => {
@@ -104,9 +132,43 @@ function Page() {
     },
   });
 
+  const resendCode = async () => {
+    if (requestPending.current || form.state !== "idle" || Date.now() < retryAt) return;
+    requestPending.current = true;
+    startCooldown();
+    setResendState("sending");
+
+    try {
+      await createEmailActivationCode.mutateAsync({ email: form.values.email });
+      form.actions.setValue("code", "");
+      form.actions.clearErrors();
+      setSubmitError(null);
+      setResendState("success");
+      // Remount to focus the input and reset any rejected edit held by its validator.
+      setCodeInputVersion((version) => version + 1);
+    } catch {
+      setResendState("error");
+    } finally {
+      requestPending.current = false;
+    }
+  };
+
   return match(pageState)
     .with("form", () => <Form form={form} submitError={submitError} />)
-    .with("code-verification", () => <CodeVerification form={form} submitError={submitError} />)
+    .with("code-verification", () => (
+      <CodeVerification
+        form={form}
+        submitError={submitError}
+        codeInputVersion={codeInputVersion}
+        resend={{
+          email: form.values.email,
+          state: resendState,
+          retrySeconds,
+          disabled: form.state !== "idle",
+          onResend: () => void resendCode(),
+        }}
+      />
+    ))
     .exhaustive();
 }
 
@@ -205,9 +267,13 @@ function WhatHappensNext() {
 function CodeVerification({
   form,
   submitError,
+  codeInputVersion,
+  resend,
 }: {
   form: ReturnType<typeof Forms.useForm>;
   submitError: string | null;
+  codeInputVersion: number;
+  resend: SignupCodeResend.Props;
 }) {
   const { t } = useTranslation();
 
@@ -231,6 +297,7 @@ function CodeVerification({
                 <div className="w-60">
                   <Forms.FieldGroup>
                     <Forms.VerificationCodeInput
+                      key={codeInputVersion}
                       field="code"
                       autoFocus
                       testId="code"
@@ -238,10 +305,14 @@ function CodeVerification({
                     />
                   </Forms.FieldGroup>
                 </div>
-                <Forms.Submit saveText={translationText(t("Continue ->"))} className="w-60" />
+                <Forms.Submit
+                  saveText={translationText(t("Continue ->"))}
+                  className="w-60"
+                  disabled={resend.state === "sending"}
+                />
               </div>
 
-              <div className="mt-8 text-center text-sm">{t("Can’t find your code? Check your spam folder.")}</div>
+              <SignupCodeResend {...resend} />
             </div>
           </Forms.Form>
         </Paper.Body>

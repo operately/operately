@@ -10,10 +10,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCode do
   def call(conn, inputs) do
     with(
       {:ok, :allowed} <- check_signup_allowed(),
-      {:ok, _} <- Operately.People.EmailActivationCode.create(Map.get(inputs, :email), OperatelyWeb.Analytics.context(conn))
+      {:ok, _} <- Operately.People.EmailActivationCode.create_for_signup(Map.get(inputs, :email), OperatelyWeb.Analytics.context(conn))
     ) do
       {:ok, %{}}
     else
+      {:error, :rate_limited} ->
+        {:error, :bad_request, gettext("Please wait before requesting another code.")}
+
       {:error, %Ecto.Changeset{} = changeset} ->
         {:error, :bad_request, invalid_email_message(changeset)}
 
