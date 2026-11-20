@@ -80,6 +80,60 @@ function submissionError(message: string) {
   return { response: { data: { message } } };
 }
 
+test("malformed email shows an inline error, blocks submission, and proceeds after correction", async () => {
+  const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
+  expect(container.querySelector("#email-error")).toBeNull();
+  expect(input("email").hasAttribute("aria-invalid")).toBe(false);
+
+  await fillDetails();
+  await edit("email", "");
+  expect(container.querySelector("#email-error")).toBeNull();
+  await submit();
+  expect(input("email").getAttribute("aria-invalid")).toBe("true");
+  expect(activation).not.toHaveBeenCalled();
+
+  await edit("email", "alex@");
+  expect(container.querySelector("#email-error")?.textContent).toBeTruthy();
+  expect(input("email").getAttribute("aria-invalid")).toBe("true");
+  expect(input("email").getAttribute("aria-describedby")).toBe("email-error");
+
+  await submit();
+  expect(activation).not.toHaveBeenCalled();
+  expect(container.querySelector("input[name=code]")).toBeNull();
+
+  await edit("email", details.email);
+  expect(container.querySelector("#email-error")).toBeNull();
+  expect(input("email").hasAttribute("aria-invalid")).toBe(false);
+  expect(input("email").hasAttribute("aria-describedby")).toBe(false);
+  for (const [field, value] of Object.entries(details)) expect(input(field).value).toBe(value);
+
+  await submit();
+  expect(activation).toHaveBeenCalledTimes(1);
+  expect(activation).toHaveBeenCalledWith({ email: details.email });
+  expect(input("code").value).toBe("");
+});
+
+test("form submission validates malformed email and correction preserves unrelated field errors", async () => {
+  const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
+  await fillDetails();
+  await edit("email", "alex@");
+  const form = container.querySelector("form");
+  if (!form) throw new Error("Missing signup form");
+  await act(async () => {
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+  });
+  expect(activation).not.toHaveBeenCalled();
+  expect(container.querySelector("input[name=code]")).toBeNull();
+  expect(input("email").getAttribute("aria-invalid")).toBe("true");
+
+  await edit("confirmPassword", "DifferentPassword123");
+  await submit();
+  expect(container.querySelector("#confirmPassword-error")).not.toBeNull();
+  await edit("email", details.email);
+  expect(container.querySelector("#email-error")).toBeNull();
+  expect(container.querySelector("#confirmPassword-error")).not.toBeNull();
+});
+
 test("verification alone requires a complete code and submits normalized email paste to server verification", async () => {
   const activation = jest.spyOn(Api.default, "createEmailActivationCode").mockResolvedValue({});
   const account = jest.spyOn(Api.default, "createAccount").mockRejectedValue(submissionError("Server rejected code"));

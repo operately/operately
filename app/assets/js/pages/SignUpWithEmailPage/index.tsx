@@ -9,6 +9,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { TosAndPrivacyPolicy } from "@/features/auth/AgreeToTosAndPp";
 import { PasswordStrength } from "@/features/auth/PasswordStrength";
+import { validateEmail } from "@/features/auth/validateEmail";
 import { validatePassword } from "@/features/auth/validatePassword";
 
 import { translationText } from "@/i18n";
@@ -57,6 +58,10 @@ function Page() {
       }
     },
     validate: (addError) => {
+      if (pageState === "form" && form.values.email !== "" && !validateEmail(form.values.email)) {
+        addError("email", t("Enter a valid email address."));
+      }
+
       if (form.values.password !== form.values.confirmPassword) {
         addError("confirmPassword", t("Passwords do not match"));
       }
@@ -137,6 +142,13 @@ function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; s
                   placeholder={translationText(t("name@company.com"))}
                   required
                   okSign={validation.email}
+                  onChange={(event) => {
+                    const email = event.target.value;
+                    form.actions.removeErrors(["email"]);
+                    if (email !== "" && !validateEmail(email)) {
+                      form.actions.addErrors({ email: t("Enter a valid email address.") });
+                    }
+                  }}
                 />
 
                 <Forms.TextInput
@@ -273,7 +285,7 @@ interface FormValidation {
 }
 
 function validateForm(form: any): FormValidation {
-  const email = form.values.email.trim() !== "" && form.values.email.match(/.+@.+\..+/);
+  const email = validateEmail(form.values.email);
   const name = form.values.name.trim() !== "";
   const password = validatePassword(form.values.password).isValid;
   const confirmPassword = password && form.values.password === form.values.confirmPassword;
