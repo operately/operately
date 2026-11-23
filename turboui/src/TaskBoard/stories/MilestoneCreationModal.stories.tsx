@@ -109,7 +109,7 @@ export const OpenByDefault: Story = {
 const expandedCatalog = createInstance();
 void expandedCatalog.init({
   ...i18nOptions,
-  initImmediate: false,
+  initAsync: false,
   resources: {
     en: {
       translation: {
