@@ -13,7 +13,7 @@ describe("Rich editor toolbar in a browser", () => {
     ["374px check-in", "pages-projectcheckinformpage--first-check-in", 374],
     ["constrained compact editor", "components-richeditor--compact-headings", 1280],
   ])("keeps all primary controls and overflow actions usable in the %s", async (_name, story, width) => {
-    await openStory(story, width);
+    await openEditorStory(story, width);
     const toolbar = page.locator('[data-test-id="rich-editor-toolbar"]');
     const primary = page.locator('[data-test-id="rich-editor-primary-controls"]');
     const overflow = page.locator('[data-test-id="rich-editor-overflow"]');
@@ -65,7 +65,7 @@ describe("Rich editor toolbar in a browser", () => {
   });
 
   test("keeps the desktop controls on one row with formatting and table insertion available", async () => {
-    await openStory("pages-projectcheckinformpage--first-check-in", 1280);
+    await openEditorStory("pages-projectcheckinformpage--first-check-in", 1280);
     const toolbar = page.locator('[data-test-id="rich-editor-toolbar"]');
     const editor = page.locator('[contenteditable="true"]');
     assert.equal(await page.locator('[data-test-id="rich-editor-overflow"]').count(), 0);
@@ -79,14 +79,65 @@ describe("Rich editor toolbar in a browser", () => {
     await toolbar.locator('[data-test-id="toolbar-button-table"]').click();
     await editor.locator("table").waitFor();
   });
+
+  test("switches toolbar modes when the editor container changes width without losing content", async () => {
+    await openEditorStory("components-richeditor--default", 1280);
+    const toolbar = page.locator('[data-test-id="rich-editor-toolbar"]');
+    const container = toolbar.locator("..");
+    const editor = page.locator('[contenteditable="true"]');
+    const overflow = page.locator('[data-test-id="rich-editor-overflow"]');
+
+    await container.evaluate((element) => (element.style.width = "566px"));
+    await overflow.waitFor();
+    await assertToolbarFits(toolbar, editor);
+
+    await editor.fill("Narrow editor draft");
+    await container.evaluate((element) => (element.style.width = "800px"));
+    await overflow.waitFor({ state: "hidden" });
+    await assertToolbarFits(toolbar, editor);
+    assert.equal(await editor.textContent(), "Narrow editor draft");
+
+    await container.evaluate((element) => (element.style.width = "566px"));
+    await overflow.waitFor();
+    await assertToolbarFits(toolbar, editor);
+    await editor.press("ControlOrMeta+a");
+    await overflow.click();
+    await page.getByRole("dialog").getByRole("button", { name: "Heading 2", exact: true }).click();
+    await editor.locator("h2").filter({ hasText: "Narrow editor draft" }).waitFor();
+  });
+
+  test.each([
+    [768, 1024],
+    [900, 1200],
+    [1373, 1053],
+  ])("keeps task notes within the slide-in sidebar at %s × %s", async (width, height) => {
+    await openStory("pages-taskpage--template-task", width, height);
+    const slideIn = page.locator('[data-test-id="task-slide-in"]');
+    await slideIn.getByRole("button", { name: "Add notes about this task..." }).click();
+    const toolbar = slideIn.locator('[data-test-id="rich-editor-toolbar"]');
+    const editor = slideIn.locator('[contenteditable="true"]');
+    await slideIn.locator('[data-test-id="rich-editor-overflow"]').waitFor();
+    await assertToolbarFits(toolbar, editor);
+
+    const toolbarBounds = await toolbar.boundingBox();
+    const sidebarBounds = await slideIn.locator('[data-test-id="task-sidebar"]').boundingBox();
+    assert.ok(toolbarBounds && sidebarBounds);
+    assert.ok(toolbarBounds.x + toolbarBounds.width <= sidebarBounds.x, "Notes must not overlap sidebar controls");
+    await editor.fill("Task notes draft");
+    assert.equal(await editor.textContent(), "Task notes draft");
+  });
 });
 
-async function openStory(story: string, width: number) {
-  await page.setViewportSize({ width, height: 900 });
+async function openStory(story: string, width: number, height = 900) {
+  await page.setViewportSize({ width, height });
   const url = new URL("iframe.html", process.env.TARGET_URL);
   url.searchParams.set("id", story);
   url.searchParams.set("viewMode", "story");
   await page.goto(url.href);
+}
+
+async function openEditorStory(story: string, width: number) {
+  await openStory(story, width);
   await page.locator('[contenteditable="true"]').waitFor();
 }
 
