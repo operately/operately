@@ -23,25 +23,27 @@ const paths = {
   spaceKpiPath: (spaceId: string, kpiId: string) => `/spaces/${spaceId}/kpis/${kpiId}`,
 } as Paths;
 
+const activityContent = {
+  __typename: "activity_content_kpi_entry_logged",
+  space: { id: "space-1", name: "General" },
+  kpi: { id: "kpi-1", name: "Customer satisfaction", unit: "%" },
+  entry: { id: "entry-1" },
+  value: 42.5,
+  period: "2026-01-01",
+};
+
 const activity = {
   action: "kpi_entry_logged",
   author: { fullName: "Jo Smith" },
-  content: {
-    __typename: "activity_content_kpi_entry_logged",
-    space: { id: "space-1", name: "General" },
-    kpi: { id: "kpi-1", name: "Customer satisfaction", unit: "%" },
-    entry: { id: "entry-1" },
-    value: 42.5,
-    period: "2026-01-01",
-  },
+  content: activityContent,
 } as Activity;
 
-function feedTitle(currentActivity = activity, page = "feed") {
+function feedTitle(currentActivity = activity, page = "company") {
   return renderToStaticMarkup(<ActivityHandler.FeedItemTitle paths={paths} activity={currentActivity} page={page} />);
 }
 
-function feedContent(currentActivity = activity) {
-  return renderToStaticMarkup(<ActivityHandler.FeedItemContent paths={paths} activity={currentActivity} page="feed" />);
+function feedContent(currentActivity = activity, page = "company") {
+  return renderToStaticMarkup(<ActivityHandler.FeedItemContent paths={paths} activity={currentActivity} page={page} />);
 }
 
 function notificationTitle(currentActivity = activity) {
@@ -70,12 +72,29 @@ describe("logged KPI activity presentation", () => {
     expect(ActivityHandler.pagePath(paths, activity)).toBe("/spaces/space-1/kpis/kpi-1");
   });
 
+  it.each(["company", "space"])("links the KPI name to its detail page in the %s feed", (page) => {
+    const content = feedContent(activity, page);
+    expect(content).toContain('<a href="/spaces/space-1/kpis/kpi-1">Customer satisfaction</a>');
+    expect(content).toContain("</a>: 42.5%");
+  });
+
   it("falls back to the space KPI list and retains the value when the KPI is unavailable", () => {
     const missingKpi = { ...activity, content: { ...activity.content, kpi: null, entry: null } } as Activity;
     expect(ActivityHandler.pagePath(paths, missingKpi)).toBe("/spaces/space-1/kpis");
     expect(notificationTitle(missingKpi)).toContain("42.5");
     expect(feedContent(missingKpi)).toContain("42.5");
+    expect(feedContent(missingKpi)).not.toContain("<a ");
     expect(feedTitle(missingKpi)).toContain('href="/spaces/space-1"');
+  });
+
+  it.each([
+    { space: null, kpi: activityContent.kpi },
+    { space: activityContent.space, kpi: { ...activityContent.kpi, id: null } },
+  ])("keeps the KPI name and value unlinked without the required identifiers", ({ space, kpi }) => {
+    const incompleteActivity = { ...activity, content: { ...activity.content, space, kpi } } as Activity;
+    const content = feedContent(incompleteActivity);
+    expect(content).toContain("Customer satisfaction: 42.5%");
+    expect(content).not.toContain("<a ");
   });
 
   it.each(["pt-BR", "de", "ru", "fr", "es"])(
@@ -99,12 +118,19 @@ describe("logged KPI activity presentation", () => {
     const namedActivity = {
       ...activity,
       author: { ...activity.author, fullName: "<b>Jo</b> Smith" },
-      content: { ...activity.content, space: { id: "space-1", name: "<script>General</script>" } },
+      content: {
+        ...activity.content,
+        space: { id: "space-1", name: "<script>General</script>" },
+        kpi: { ...activityContent.kpi, name: "<script>Customer satisfaction</script>" },
+      },
     } as Activity;
     const title = feedTitle(namedActivity);
     expect(title).toContain("&lt;b&gt;Jo&lt;/b&gt;");
     expect(title).toContain("&lt;script&gt;General&lt;/script&gt;");
     expect(title).not.toContain("<script>");
     expect(title).toContain('href="/spaces/space-1"');
+    expect(feedContent(namedActivity)).toContain(
+      '<a href="/spaces/space-1/kpis/kpi-1">&lt;script&gt;Customer satisfaction&lt;/script&gt;</a>',
+    );
   });
 });
