@@ -26,106 +26,126 @@ import { DividerButton } from "./DividerButton";
 import { MarkdownHelp, MarkdownHelpContent, markdownHelpPopoverClassName } from "./MarkdownHelp";
 import { ToolbarButton } from "./ToolbarButton";
 
+// Includes the attachment, undo, and redo controls with room for the editor border.
+const MIN_DESKTOP_TOOLBAR_WIDTH = 740;
+
 export function Toolbar({ compact }: { compact?: boolean } = {}): JSX.Element {
   const size = useWindowSizeBreakpoints();
-
-  if (compact || size == "xs") {
-    return <MobileToolbar />;
-  } else {
-    return <DesktopToolbar />;
-  }
-}
-
-function DesktopToolbar() {
   const editor = useTipTapEditor();
-  const uploadFile = useUploadFile();
-  const border = "border-b";
+  const toolbarRef = React.useRef<HTMLDivElement>(null);
+  const [availableWidth, setAvailableWidth] = React.useState<number>();
+
+  React.useLayoutEffect(() => {
+    const toolbar = toolbarRef.current;
+    if (!toolbar) return;
+
+    const updateWidth = () => setAvailableWidth(toolbar.clientWidth || undefined);
+    updateWidth();
+
+    if (typeof ResizeObserver !== "undefined") {
+      const observer = new ResizeObserver(updateWidth);
+      observer.observe(toolbar);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
+
+  const prefersCompactToolbar = compact || size === "xs";
+  const isCompactToolbar =
+    prefersCompactToolbar || (availableWidth !== undefined && availableWidth < MIN_DESKTOP_TOOLBAR_WIDTH);
+  // Keep the toolbar height stable when a desktop editor switches controls.
+  const compactBorderClassName = prefersCompactToolbar ? "border-y" : "border-b";
 
   return (
-    <div className="sticky bg-surface-base z-10 rounded-t-lg top-0" data-test-id="rich-editor-toolbar">
-      <div className={"flex items-center gap-3 border-stroke-base" + " " + border}>
-        <div className="flex justify-between items-center w-full">
-          <div className="flex items-center">
-            <BoldButton editor={editor} iconSize={20} />
-            <ItalicButton editor={editor} iconSize={20} />
-            <StrikeButton editor={editor} iconSize={20} />
-
-            <Separator />
-
-            <HeadingButtons editor={editor} iconSize={20} />
-
-            <Separator />
-            <ColorPicker editor={editor} iconSize={18} />
-            <Separator />
-
-            <BulletListButton editor={editor} iconSize={20} />
-            <NumberListButton editor={editor} iconSize={20} />
-            <TaskListButton editor={editor} iconSize={20} />
-            <TableButton editor={editor} iconSize={20} />
-            <BlockquoteButton editor={editor} iconSize={20} />
-            <CodeBlockButton editor={editor} iconSize={20} />
-            <DividerButton editor={editor} iconSize={20} />
-
-            <Separator />
-            <LinkButton editor={editor} iconSize={20} />
-            <Separator />
-            <MarkdownHelp />
-          </div>
-
-          <div className="flex items-center gap-1">
-            {uploadFile ? (
-              <>
-                <AttachmentButton editor={editor} iconSize={20} />
-                <Separator />
-              </>
-            ) : null}
-            <UndoButton editor={editor} iconSize={20} />
-            <RedoButton editor={editor} iconSize={20} />
-          </div>
-        </div>
-      </div>
-
+    <div ref={toolbarRef} className="sticky bg-surface-base z-10 rounded-t-lg top-0" data-test-id="rich-editor-toolbar">
+      {isCompactToolbar ? <MobileToolbar borderClassName={compactBorderClassName} /> : <DesktopToolbar />}
       <LinkEditForm editor={editor} />
     </div>
   );
 }
 
-function MobileToolbar() {
-  const border = "border-y";
+function DesktopToolbar() {
   const editor = useTipTapEditor();
   const uploadFile = useUploadFile();
 
   return (
-    <div className="sticky bg-surface-base z-10 rounded-t-lg top-0" data-test-id="rich-editor-toolbar">
-      <div className={"flex items-center gap-3 border-stroke-base" + " " + border}>
-        <div className="flex justify-between items-center w-full min-w-0">
-          <div className="flex flex-1 items-center min-w-0" data-test-id="rich-editor-primary-controls">
-            <BoldButton editor={editor} iconSize={20} />
-            <ItalicButton editor={editor} iconSize={20} />
-            <StrikeButton editor={editor} iconSize={20} />
-            {uploadFile ? <AttachmentButton editor={editor} iconSize={20} /> : null}
-          </div>
+    <div className="flex items-center gap-3 border-stroke-base border-b">
+      <div className="flex justify-between items-center w-full">
+        <div className="flex items-center">
+          <BoldButton editor={editor} iconSize={20} />
+          <ItalicButton editor={editor} iconSize={20} />
+          <StrikeButton editor={editor} iconSize={20} />
 
-          <div className="flex shrink-0 items-center">
-            <MobilePopupTools>
-              <TableButton editor={editor} iconSize={20} tabIndex={0} />
-              <HeadingButtons editor={editor} iconSize={20} />
-              <ColorPicker editor={editor} iconSize={18} />
-              <BulletListButton editor={editor} iconSize={20} />
-              <TaskListButton editor={editor} iconSize={20} />
-              <NumberListButton editor={editor} iconSize={20} />
-              <BlockquoteButton editor={editor} iconSize={20} />
-              <CodeBlockButton editor={editor} iconSize={20} />
-              <DividerButton editor={editor} iconSize={20} />
-              <LinkButton editor={editor} iconSize={20} />
-              <UndoButton editor={editor} iconSize={20} />
-              <RedoButton editor={editor} iconSize={20} />
-            </MobilePopupTools>
-          </div>
+          <Separator />
+
+          <HeadingButtons editor={editor} iconSize={20} />
+
+          <Separator />
+          <ColorPicker editor={editor} iconSize={18} />
+          <Separator />
+
+          <BulletListButton editor={editor} iconSize={20} />
+          <NumberListButton editor={editor} iconSize={20} />
+          <TaskListButton editor={editor} iconSize={20} />
+          <TableButton editor={editor} iconSize={20} />
+          <BlockquoteButton editor={editor} iconSize={20} />
+          <CodeBlockButton editor={editor} iconSize={20} />
+          <DividerButton editor={editor} iconSize={20} />
+
+          <Separator />
+          <LinkButton editor={editor} iconSize={20} />
+          <Separator />
+          <MarkdownHelp />
+        </div>
+
+        <div className="flex items-center gap-1">
+          {uploadFile ? (
+            <>
+              <AttachmentButton editor={editor} iconSize={20} />
+              <Separator />
+            </>
+          ) : null}
+          <UndoButton editor={editor} iconSize={20} />
+          <RedoButton editor={editor} iconSize={20} />
         </div>
       </div>
+    </div>
+  );
+}
 
-      <LinkEditForm editor={editor} />
+function MobileToolbar({ borderClassName }: { borderClassName: "border-y" | "border-b" }) {
+  const editor = useTipTapEditor();
+  const uploadFile = useUploadFile();
+
+  return (
+    <div className={"flex items-center gap-3 border-stroke-base " + borderClassName}>
+      <div className="flex justify-between items-center w-full min-w-0">
+        <div className="flex flex-1 items-center min-w-0" data-test-id="rich-editor-primary-controls">
+          <BoldButton editor={editor} iconSize={20} />
+          <ItalicButton editor={editor} iconSize={20} />
+          <StrikeButton editor={editor} iconSize={20} />
+          {uploadFile ? <AttachmentButton editor={editor} iconSize={20} /> : null}
+        </div>
+
+        <div className="flex shrink-0 items-center">
+          <MobilePopupTools>
+            <TableButton editor={editor} iconSize={20} tabIndex={0} />
+            <HeadingButtons editor={editor} iconSize={20} />
+            <ColorPicker editor={editor} iconSize={18} />
+            <BulletListButton editor={editor} iconSize={20} />
+            <TaskListButton editor={editor} iconSize={20} />
+            <NumberListButton editor={editor} iconSize={20} />
+            <BlockquoteButton editor={editor} iconSize={20} />
+            <CodeBlockButton editor={editor} iconSize={20} />
+            <DividerButton editor={editor} iconSize={20} />
+            <LinkButton editor={editor} iconSize={20} />
+            <UndoButton editor={editor} iconSize={20} />
+            <RedoButton editor={editor} iconSize={20} />
+          </MobilePopupTools>
+        </div>
+      </div>
     </div>
   );
 }
