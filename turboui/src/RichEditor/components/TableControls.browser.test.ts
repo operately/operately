@@ -134,6 +134,8 @@ async function prepareTable(page: Page, story: string) {
 
   const editor = page.locator('[contenteditable="true"]');
   await editor.click();
+  const overflow = page.locator('[data-test-id="rich-editor-overflow"]');
+  if (await overflow.count()) await overflow.click();
   await page.getByRole("button", { name: "Table", exact: true }).click();
   const cell = editor.locator("td, th").first();
   await cell.click();
