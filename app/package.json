@@ -35,7 +35,7 @@
     "tailwindcss": "3.4.17",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.3",
-    "vite": "^6.4.6"
+    "vite": "^8.3.8"
   },
   "overrides": {
     "uuid": "11.1.1"
