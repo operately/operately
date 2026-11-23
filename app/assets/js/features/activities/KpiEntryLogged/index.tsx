@@ -3,9 +3,7 @@ import * as React from "react";
 import type { ActivityContentKpiEntryLogged } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
-import { formatKpiValue as formatValue } from "turboui";
-
-import { Trans } from "turboui";
+import { formatKpiValue as formatValue, Link, Trans } from "turboui";
 import i18n from "@/i18n";
 import { activityAuthorName, spaceLink } from "../feedItemLinks";
 
@@ -51,20 +49,18 @@ const KpiEntryLogged: ActivityHandler = {
     );
   },
 
-  FeedItemContent({ activity }: { activity: Activity }) {
+  FeedItemContent({ activity, paths }: FeedItemProps) {
     const data = content(activity);
     const kpiName = data.kpi?.name;
-    if (kpiName == null)
-      return (
-        <Trans
-          i18nKey="KPI: {{value}}"
-          values={{ value: formatValue(data.value, data.kpi?.unit, i18n.resolvedLanguage) }}
-        />
-      );
+    const spaceId = data.space?.id;
+    const kpiId = data.kpi?.id;
+    const value = formatValue(data.value, data.kpi?.unit, i18n.resolvedLanguage);
+
+    if (!kpiName) return <Trans i18nKey="KPI: {{value}}" values={{ value }} />;
 
     return (
       <>
-        {kpiName}: {formatValue(data.value, data.kpi?.unit, i18n.resolvedLanguage)}
+        {spaceId && kpiId ? <Link to={paths.spaceKpiPath(spaceId, kpiId)}>{kpiName}</Link> : kpiName}: {value}
       </>
     );
   },
