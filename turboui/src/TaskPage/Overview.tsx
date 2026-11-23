@@ -16,6 +16,7 @@ export function Overview(props: TaskPage.ContentState) {
         label={translationText(t("Notes"))}
         placeholder={translationText(t("Describe the task..."))}
         zeroStatePlaceholder={translationText(t("Add notes about this task..."))}
+        emptyTestId="task-notes-empty"
         localDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:description` : undefined}
       />
       <ActivitySection {...props} />
