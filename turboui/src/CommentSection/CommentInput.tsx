@@ -17,6 +17,7 @@ interface CommentInputActiveProps extends CommentInputProps {
   onBlur: () => void;
   onPost: (content: JSONContent) => Promise<boolean | void>;
   restoredContent?: JSONContent;
+  scrollOnOpen: boolean;
 }
 
 interface CommentInputInactiveProps {
@@ -40,6 +41,7 @@ export function CommentInput({
   const { active, activate, deactivate } = useDraftActivatedInput(form.commentDraftKey);
   const composerVersion = React.useRef(0);
   const [restoredContent, setRestoredContent] = useState<JSONContent>();
+  const [scrollOnOpen, setScrollOnOpen] = useState(false);
   const mounted = React.useRef(true);
 
   React.useEffect(() => {
@@ -60,6 +62,7 @@ export function CommentInput({
 
   const closeInput = () => {
     setRestoredContent(undefined);
+    setScrollOnOpen(false);
     deactivate();
   };
 
@@ -104,6 +107,7 @@ export function CommentInput({
         onBlur={closeInput}
         onPost={postComment}
         restoredContent={restoredContent}
+        scrollOnOpen={scrollOnOpen}
         richTextHandlers={richTextHandlers}
         notificationInfo={notificationInfo}
         compact={compact}
@@ -115,7 +119,15 @@ export function CommentInput({
     );
   }
 
-  return <CommentInputInactive currentUser={currentUser} onClick={startComment} />;
+  return (
+    <CommentInputInactive
+      currentUser={currentUser}
+      onClick={() => {
+        setScrollOnOpen(true);
+        startComment();
+      }}
+    />
+  );
 }
 
 function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProps) {
@@ -140,6 +152,7 @@ function CommentInputActive({
   onBlur,
   onPost,
   restoredContent,
+  scrollOnOpen,
   richTextHandlers,
   notificationInfo,
   waitForSuccess,
@@ -147,6 +160,7 @@ function CommentInputActive({
   onCancel,
 }: CommentInputActiveProps) {
   const { t } = useTranslation();
+  const composerRef = React.useRef<HTMLDivElement>(null);
   const [uploading] = useState(false);
   const restoreOnMount = React.useRef(restoredContent);
   const posting = React.useRef(false);
@@ -161,6 +175,13 @@ function CommentInputActive({
     className: `${compact ? "min-h-[100px]" : "min-h-[200px]"} px-4 py-3`,
     localDraft: { key: form.commentDraftKey },
   });
+
+  React.useLayoutEffect(() => {
+    if (scrollOnOpen && editor.editor) {
+      // Autofocus reveals the caret, which can leave the rest of the composer below the viewport.
+      composerRef.current?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+    }
+  }, [scrollOnOpen, editor.editor]);
 
   React.useEffect(() => {
     if (!editor.editor || !restoreOnMount.current) return;
@@ -216,6 +237,7 @@ function CommentInputActive({
 
   return (
     <div
+      ref={composerRef}
       className="py-6 not-first:border-t border-stroke-base flex items-start gap-3"
       data-test-id="new-comment-form"
       aria-busy={pending}
