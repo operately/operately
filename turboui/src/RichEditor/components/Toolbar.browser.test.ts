@@ -113,7 +113,7 @@ describe("Rich editor toolbar in a browser", () => {
   ])("keeps task notes within the slide-in sidebar at %s × %s", async (width, height) => {
     await openStory("pages-taskpage--template-task", width, height);
     const slideIn = page.locator('[data-test-id="task-slide-in"]');
-    await slideIn.getByRole("button", { name: "Add notes about this task..." }).click();
+    await slideIn.locator('[data-test-id="task-notes-empty"]').getByRole("button").click();
     const toolbar = slideIn.locator('[data-test-id="rich-editor-toolbar"]');
     const editor = slideIn.locator('[contenteditable="true"]');
     await slideIn.locator('[data-test-id="rich-editor-overflow"]').waitFor();
