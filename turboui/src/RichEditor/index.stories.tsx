@@ -143,6 +143,44 @@ export const WithContent: Story = {
   },
 };
 
+export const MermaidDiagram: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use the diagram toolbar action, paste a complete ```mermaid block, or type ```mermaid followed by a space.",
+      },
+    },
+  },
+  render: () => {
+    const editor = useEditor({
+      content: {
+        type: "doc",
+        content: [
+          {
+            type: "codeBlock",
+            attrs: { language: "mermaid" },
+            content: [
+              {
+                type: "text",
+                text: "flowchart LR\n  Idea --> Plan\n  Plan --> Launch",
+              },
+            ],
+          },
+        ],
+      },
+      handlers: createMockRichEditorHandlers(),
+    });
+
+    return <Editor editor={editor} />;
+  },
+};
+
+export const DarkMermaidDiagram: Story = {
+  ...MermaidDiagram,
+  globals: { theme: "dark" },
+};
+
 export const Headings: Story = {
   render: () => {
     const editor = useEditor({

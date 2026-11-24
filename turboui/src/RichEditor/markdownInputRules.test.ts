@@ -132,6 +132,14 @@ describe("RichEditor markdown input rules", () => {
     expect(firstChild(code).type).toBe("codeBlock");
   });
 
+  it("creates a Mermaid diagram block from the typed fence shortcut", () => {
+    const editor = makeEditor();
+    type(editor, "```mermaid", " ");
+
+    expect(firstChild(editor)).toMatchObject({ type: "codeBlock", attrs: { language: "mermaid" } });
+    editor.destroy();
+  });
+
   it("converts a markdown link while typing", () => {
     const editor = makeEditor();
     type(editor, "[label](https://example.com", ")");

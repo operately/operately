@@ -3187,7 +3187,7 @@ msgid "%{value} recorded on %{date} will be permanently removed."
 msgstr "La valeur %{value} enregistrée le %{date} sera définitivement supprimée."
 
 #.frontend
-#: ../turboui/src/RichContentDiff/index.tsx:258
+#: ../turboui/src/RichContentDiff/index.tsx:261
 msgid "%{version} content"
 msgstr "Contenu de %{version}"
 
@@ -5517,9 +5517,9 @@ msgid "Add Members"
 msgstr "Ajouter des membres"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:137
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:155
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:235
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:135
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:153
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:233
 msgid "Add Operately"
 msgstr "Ajouter Operately"
 
@@ -5606,7 +5606,7 @@ msgid "Add a project description..."
 msgstr "Ajouter une description du projet…"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:231
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:229
 msgid "Add a remote MCP server with Streamable HTTP and OAuth support."
 msgstr "Ajoutez un serveur MCP distant prenant en charge Streamable HTTP et OAuth."
 
@@ -5843,8 +5843,8 @@ msgid "Add task"
 msgstr "Ajouter une tâche"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:186
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:210
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:184
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:208
 msgid "Add the MCP server"
 msgstr "Ajouter le serveur MCP"
 
@@ -5864,7 +5864,7 @@ msgid "Add the first task to start breaking down the work."
 msgstr "Ajoutez la première tâche pour commencer à décomposer le travail."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:167
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:165
 msgid "Add the server configuration"
 msgstr "Ajouter la configuration du serveur"
 
@@ -5915,7 +5915,7 @@ msgstr "Ajouter ou retirer des personnes…"
 
 #.frontend
 #: ../turboui/src/RichContentDiff/decorations.ts:32
-#: ../turboui/src/RichContentDiff/index.tsx:330
+#: ../turboui/src/RichContentDiff/index.tsx:333
 msgid "Added"
 msgstr "Ajouté"
 
@@ -6062,8 +6062,8 @@ msgid "Admins cannot remove themselves"
 msgstr "Les administrateurs ne peuvent pas se retirer eux-mêmes"
 
 #.frontend
-#: ../turboui/src/RichContentDiff/index.tsx:146
-#: ../turboui/src/RichContentDiff/index.tsx:148
+#: ../turboui/src/RichContentDiff/index.tsx:149
+#: ../turboui/src/RichContentDiff/index.tsx:151
 msgid "After"
 msgstr "Après"
 
@@ -6672,7 +6672,7 @@ msgid "Authorize MCP Client"
 msgstr "Autoriser le client MCP"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:120
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:118
 msgid "Authorize access"
 msgstr "Autoriser l’accès"
 
@@ -6824,8 +6824,8 @@ msgid "Batched notifications"
 msgstr "Notifications groupées"
 
 #.frontend
-#: ../turboui/src/RichContentDiff/index.tsx:145
-#: ../turboui/src/RichContentDiff/index.tsx:147
+#: ../turboui/src/RichContentDiff/index.tsx:148
+#: ../turboui/src/RichContentDiff/index.tsx:150
 msgid "Before"
 msgstr "Avant"
 
@@ -7477,6 +7477,11 @@ msgstr "Publier un point d’avancement"
 #: lib/operately_web/api/goal_checks.ex:213
 msgid "Check not found"
 msgstr "Élément de la liste de contrôle introuvable"
+
+#.frontend
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:90
+msgid "Check the diagram source and try again."
+msgstr "Vérifiez le code source du diagramme et réessayez."
 
 #.frontend
 #: assets/js/pages/ProjectCheckInEditPage/page.tsx:86
@@ -8472,12 +8477,12 @@ msgid "Connect a client"
 msgstr "Connecter un client"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:220
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:218
 msgid "Connect in Claude Code"
 msgstr "Connecter dans Claude Code"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:177
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:175
 msgid "Connect in Cursor"
 msgstr "Connecter dans Cursor"
 
@@ -8679,7 +8684,7 @@ msgid "Copy URL"
 msgstr "Copier l’URL"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:112
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:110
 msgid "Copy a prompt, paste it into %{client}, and run it."
 msgstr "Copiez une requête, collez-la dans %{client}, puis lancez-la."
 
@@ -8689,7 +8694,7 @@ msgid "Copy account ID"
 msgstr "Copier l’identifiant du compte"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:171
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:169
 msgid "Copy configuration"
 msgstr "Copier la configuration"
 
@@ -8712,8 +8717,8 @@ msgid "Copy link"
 msgstr "Copier le lien"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:200
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:222
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:198
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:220
 msgid "Copy login command"
 msgstr "Copier la commande de connexion"
 
@@ -8733,13 +8738,13 @@ msgid "Copy public link"
 msgstr "Copier le lien public"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:117
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:115
 msgid "Copy server URL"
 msgstr "Copier l’URL du serveur"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:190
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:214
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:188
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:212
 msgid "Copy setup command"
 msgstr "Copier la commande de configuration"
 
@@ -9760,12 +9765,17 @@ msgid "Destination type"
 msgstr "Type de destination"
 
 #.frontend
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:100
+msgid "Diagram preview"
+msgstr "Aperçu du diagramme"
+
+#.frontend
 #: assets/js/features/ProjectRetrospective/Form.tsx:92
 msgid "Did this project achieve its intended outcomes?"
 msgstr "Ce projet a-t-il atteint les résultats attendus ?"
 
 #.frontend
-#: ../turboui/src/RichContentDiff/index.tsx:327
+#: ../turboui/src/RichContentDiff/index.tsx:330
 msgid "Diff legend"
 msgstr "Légende des différences"
 
@@ -10386,6 +10396,11 @@ msgstr "Modifier le produit"
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:88
 msgid "Edit retrospective"
 msgstr "Modifier le bilan"
+
+#.frontend
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:76
+msgid "Edit source"
+msgstr "Modifier le code source"
 
 #.frontend
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:111
@@ -12006,7 +12021,7 @@ msgid "Go back to company selection"
 msgstr "Retour au choix de l’entreprise"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:150
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:148
 msgid "Go to Customize → Connectors. Select + Add, then Add custom connector."
 msgstr "Allez dans Personnaliser → Connecteurs. Sélectionnez + Ajouter, puis Ajouter un connecteur personnalisé."
 
@@ -12456,6 +12471,11 @@ msgstr "Informations"
 #: assets/js/features/activities/ResourceHubDocumentInlineThreadResolutionChanged/index.tsx:43
 msgid "Inline comments"
 msgstr "Commentaires dans le texte"
+
+#.frontend
+#: ../turboui/src/RichEditor/components/MermaidButton.tsx:10
+msgid "Insert diagram"
+msgstr "Insérer un diagramme"
 
 #.frontend
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:203
@@ -13717,9 +13737,9 @@ msgstr "Marquer la tâche comme terminée"
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:22
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:23
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:90
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:190
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:191
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:199
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:193
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:194
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:202
 msgid "Markdown shortcuts"
 msgstr "Raccourcis Markdown"
 
@@ -14001,7 +14021,7 @@ msgstr "Chiffre d’affaires mensuel"
 #~ msgstr "Consultez la documentation pour en savoir plus : <actionLink>Guides de configuration</actionLink>"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:169
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:172
 msgid "More formatting options"
 msgstr "Autres options de mise en forme"
 
@@ -14194,12 +14214,12 @@ msgid "Name is required"
 msgstr "Le nom est requis"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:156
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:154
 msgid "Name it Operately and paste this server URL. Continue with the detected OAuth settings and choose Sign in now."
 msgstr "Nommez-le Operately et collez cette URL du serveur. Continuez avec les paramètres OAuth détectés et choisissez Se connecter maintenant."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:138
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:136
 msgid "Name it Operately, paste this server URL, and choose OAuth. Review the prompt, then select Create as a plugin."
 msgstr "Nommez-le Operately, collez cette URL du serveur et choisissez OAuth. Vérifiez le message, puis sélectionnez Créer comme plugin."
 
@@ -14210,7 +14230,7 @@ msgid "Name of the company"
 msgstr "Nom de l’entreprise"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:236
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:234
 msgid "Name the server Operately and paste this URL."
 msgstr "Nommez le serveur Operately et collez cette URL."
 
@@ -14628,7 +14648,7 @@ msgid "No completed work to show."
 msgstr "Aucun travail terminé à afficher."
 
 #.frontend
-#: ../turboui/src/RichContentDiff/index.tsx:171
+#: ../turboui/src/RichContentDiff/index.tsx:174
 msgid "No content changes"
 msgstr "Aucune modification du contenu"
 
@@ -15287,7 +15307,7 @@ msgid "One of the selected versions could not be loaded. Try again or choose ano
 msgstr "L’une des versions sélectionnées n’a pas pu être chargée. Réessayez ou choisissez une autre version dans l’historique."
 
 #.frontend
-#: ../turboui/src/RichContentDiff/index.tsx:160
+#: ../turboui/src/RichContentDiff/index.tsx:163
 msgid "One of the snapshots could not be parsed with the current editor schema."
 msgstr "L’un des instantanés n’a pas pu être interprété avec le schéma actuel de l’éditeur."
 
@@ -15432,27 +15452,27 @@ msgid "Open %{name} preview"
 msgstr "Ouvrir l’aperçu de %{name}"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:133
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:131
 msgid "Open ChatGPT"
 msgstr "Ouvrir ChatGPT"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:131
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:129
 msgid "Open ChatGPT plugins"
 msgstr "Ouvrir les plugins ChatGPT"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:151
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:149
 msgid "Open Claude"
 msgstr "Ouvrir Claude"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:149
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:147
 msgid "Open Claude connectors"
 msgstr "Ouvrir les connecteurs Claude"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:178
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:176
 msgid "Open Cursor’s MCP settings, find Operately, and select Connect to sign in."
 msgstr "Ouvrez les paramètres MCP de Cursor, trouvez Operately et sélectionnez Connecter pour vous connecter."
 
@@ -15518,12 +15538,12 @@ msgid "Open tasks"
 msgstr "Tâches ouvertes"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:230
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:228
 msgid "Open your client’s MCP settings"
 msgstr "Ouvrir les paramètres MCP de votre client"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:168
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:166
 msgid "Open ~/.cursor/mcp.json and add Operately to mcpServers. Keep any servers already listed."
 msgstr "Ouvrez ~/.cursor/mcp.json et ajoutez Operately à mcpServers. Conservez les serveurs déjà répertoriés."
 
@@ -16341,6 +16361,7 @@ msgstr "Appuyez sur Tab pour sélectionner l’option et quitter le menu."
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:73
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:80
 msgid "Preview"
 msgstr "Aperçu"
 
@@ -17356,7 +17377,7 @@ msgstr "Retirer les personnes assignées indisponibles"
 
 #.frontend
 #: ../turboui/src/RichContentDiff/decorations.ts:32
-#: ../turboui/src/RichContentDiff/index.tsx:329
+#: ../turboui/src/RichContentDiff/index.tsx:332
 msgid "Removed"
 msgstr "Retiré"
 
@@ -18073,13 +18094,13 @@ msgid "Run reconciliation"
 msgstr "Lancer la réconciliation"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:187
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:211
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:185
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:209
 msgid "Run this command in your terminal."
 msgstr "Exécutez cette commande dans votre terminal."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:197
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:195
 msgid "Run this command to open the authorization page in your browser."
 msgstr "Exécutez cette commande pour ouvrir la page d’autorisation dans votre navigateur."
 
@@ -18521,7 +18542,7 @@ msgid "Select"
 msgstr "Sélectionner"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:132
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:130
 msgid "Select +, then Add custom MCP server."
 msgstr "Sélectionnez +, puis Ajouter un serveur MCP personnalisé."
 
@@ -19107,12 +19128,12 @@ msgid "Sign in"
 msgstr "Se connecter"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:121
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:119
 msgid "Sign in to Operately, choose your company if prompted, and review the permissions before authorizing."
 msgstr "Connectez-vous à Operately, choisissez votre entreprise si nécessaire et vérifiez les autorisations avant d’autoriser l’accès."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:196
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:194
 msgid "Sign in with Codex"
 msgstr "Se connecter avec Codex"
 
@@ -19468,7 +19489,7 @@ msgid "Start"
 msgstr "Valeur initiale"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:221
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:219
 msgid "Start Claude Code, run /mcp, and select Operately to authenticate."
 msgstr "Lancez Claude Code, exécutez /mcp et sélectionnez Operately pour vous authentifier."
 
@@ -21268,6 +21289,11 @@ msgid "This company will stay on its current paid plan until the end of the curr
 msgstr "Cette entreprise conservera son forfait payant actuel jusqu’à la fin de la période de facturation en cours."
 
 #.frontend
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:89
+msgid "This diagram could not be rendered."
+msgstr "Impossible d’afficher ce diagramme."
+
+#.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:88
 msgid "This email is already registered. Use a different address."
 msgstr "Cette adresse e-mail est déjà enregistrée. Utilisez une autre adresse."
@@ -22017,7 +22043,7 @@ msgid "Unable to add you to this company."
 msgstr "Impossible de vous ajouter à cette entreprise."
 
 #.frontend
-#: ../turboui/src/RichContentDiff/index.tsx:158
+#: ../turboui/src/RichContentDiff/index.tsx:161
 msgid "Unable to compare these versions"
 msgstr "Impossible de comparer ces versions"
 
@@ -22280,7 +22306,7 @@ msgstr "Méthode PKCE non prise en charge"
 #.frontend
 #: ../turboui/src/DocumentVersionComparisonPage/ComparisonPanel.tsx:180
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:104
-#: ../turboui/src/RichContentDiff/index.tsx:307
+#: ../turboui/src/RichContentDiff/index.tsx:310
 msgid "Untitled"
 msgstr "Sans titre"
 
@@ -22615,17 +22641,17 @@ msgid "Use Left and Right to focus selected values. Press Backspace to remove th
 msgstr "Utilisez les flèches gauche et droite pour déplacer le focus entre les valeurs sélectionnées. Appuyez sur Retour arrière pour supprimer la valeur ciblée."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:264
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:262
 msgid "Use Operately to show my overdue tasks and what’s due this week."
 msgstr "Utilise Operately pour afficher mes tâches en retard et celles à terminer cette semaine."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:272
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:270
 msgid "Use Operately to show which goals are off track, who owns them, and why."
 msgstr "Utilise Operately pour afficher les objectifs en difficulté, qui en est responsable et pourquoi."
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:268
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:266
 msgid "Use Operately to summarize last week’s project progress and blockers."
 msgstr "Utilise Operately pour résumer l’avancement des projets et les points bloquants de la semaine passée."
 
@@ -25135,7 +25161,7 @@ msgid "yearly"
 msgstr "annuelle"
 
 #.frontend
-#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:257
+#: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:255
 msgid "your AI client"
 msgstr "votre client IA"
 
