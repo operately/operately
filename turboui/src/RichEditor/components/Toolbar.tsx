@@ -25,9 +25,10 @@ import { ColorPicker } from "./ColorPicker";
 import { DividerButton } from "./DividerButton";
 import { MarkdownHelp, MarkdownHelpContent, markdownHelpPopoverClassName } from "./MarkdownHelp";
 import { ToolbarButton } from "./ToolbarButton";
+import { MermaidButton } from "./MermaidButton";
 
 // Includes the attachment, undo, and redo controls with room for the editor border.
-const MIN_DESKTOP_TOOLBAR_WIDTH = 740;
+const MIN_DESKTOP_TOOLBAR_WIDTH = 776;
 
 export function Toolbar({ compact }: { compact?: boolean } = {}): JSX.Element {
   const size = useWindowSizeBreakpoints();
@@ -92,6 +93,7 @@ function DesktopToolbar() {
           <TableButton editor={editor} iconSize={20} />
           <BlockquoteButton editor={editor} iconSize={20} />
           <CodeBlockButton editor={editor} iconSize={20} />
+          <MermaidButton editor={editor} iconSize={20} />
           <DividerButton editor={editor} iconSize={20} />
 
           <Separator />
@@ -139,6 +141,7 @@ function MobileToolbar({ borderClassName }: { borderClassName: "border-y" | "bor
             <NumberListButton editor={editor} iconSize={20} />
             <BlockquoteButton editor={editor} iconSize={20} />
             <CodeBlockButton editor={editor} iconSize={20} />
+            <MermaidButton editor={editor} iconSize={20} />
             <DividerButton editor={editor} iconSize={20} />
             <LinkButton editor={editor} iconSize={20} />
             <UndoButton editor={editor} iconSize={20} />
