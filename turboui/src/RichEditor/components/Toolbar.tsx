@@ -27,41 +27,14 @@ import { MarkdownHelp, MarkdownHelpContent, markdownHelpPopoverClassName } from 
 import { ToolbarButton } from "./ToolbarButton";
 import { MermaidButton } from "./MermaidButton";
 
-// Includes the attachment, undo, and redo controls with room for the editor border.
-const MIN_DESKTOP_TOOLBAR_WIDTH = 776;
-
 export function Toolbar({ compact }: { compact?: boolean } = {}): JSX.Element {
   const size = useWindowSizeBreakpoints();
   const editor = useTipTapEditor();
-  const toolbarRef = React.useRef<HTMLDivElement>(null);
-  const [availableWidth, setAvailableWidth] = React.useState<number>();
-
-  React.useLayoutEffect(() => {
-    const toolbar = toolbarRef.current;
-    if (!toolbar) return;
-
-    const updateWidth = () => setAvailableWidth(toolbar.clientWidth || undefined);
-    updateWidth();
-
-    if (typeof ResizeObserver !== "undefined") {
-      const observer = new ResizeObserver(updateWidth);
-      observer.observe(toolbar);
-      return () => observer.disconnect();
-    }
-
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
-
-  const prefersCompactToolbar = compact || size === "xs";
-  const isCompactToolbar =
-    prefersCompactToolbar || (availableWidth !== undefined && availableWidth < MIN_DESKTOP_TOOLBAR_WIDTH);
-  // Keep the toolbar height stable when a desktop editor switches controls.
-  const compactBorderClassName = prefersCompactToolbar ? "border-y" : "border-b";
+  const isCompactToolbar = compact || size === "xs";
 
   return (
-    <div ref={toolbarRef} className="sticky bg-surface-base z-10 rounded-t-lg top-0" data-test-id="rich-editor-toolbar">
-      {isCompactToolbar ? <MobileToolbar borderClassName={compactBorderClassName} /> : <DesktopToolbar />}
+    <div className="sticky bg-surface-base z-10 rounded-t-lg top-0" data-test-id="rich-editor-toolbar">
+      {isCompactToolbar ? <MobileToolbar /> : <DesktopToolbar />}
       <LinkEditForm editor={editor} />
     </div>
   );
@@ -72,57 +45,55 @@ function DesktopToolbar() {
   const uploadFile = useUploadFile();
 
   return (
-    <div className="flex items-center gap-3 border-stroke-base border-b">
-      <div className="flex justify-between items-center w-full">
-        <div className="flex items-center">
-          <BoldButton editor={editor} iconSize={20} />
-          <ItalicButton editor={editor} iconSize={20} />
-          <StrikeButton editor={editor} iconSize={20} />
+    <div className="flex flex-wrap items-start border-stroke-base border-b">
+      <div className="flex flex-1 flex-wrap items-center min-w-0">
+        <BoldButton editor={editor} iconSize={20} />
+        <ItalicButton editor={editor} iconSize={20} />
+        <StrikeButton editor={editor} iconSize={20} />
 
-          <Separator />
+        <Separator />
 
-          <HeadingButtons editor={editor} iconSize={20} />
+        <HeadingButtons editor={editor} iconSize={20} />
 
-          <Separator />
-          <ColorPicker editor={editor} iconSize={18} />
-          <Separator />
+        <Separator />
+        <ColorPicker editor={editor} iconSize={18} />
+        <Separator />
 
-          <BulletListButton editor={editor} iconSize={20} />
-          <NumberListButton editor={editor} iconSize={20} />
-          <TaskListButton editor={editor} iconSize={20} />
-          <TableButton editor={editor} iconSize={20} />
-          <BlockquoteButton editor={editor} iconSize={20} />
-          <CodeBlockButton editor={editor} iconSize={20} />
-          <MermaidButton editor={editor} iconSize={20} />
-          <DividerButton editor={editor} iconSize={20} />
+        <BulletListButton editor={editor} iconSize={20} />
+        <NumberListButton editor={editor} iconSize={20} />
+        <TaskListButton editor={editor} iconSize={20} />
+        <TableButton editor={editor} iconSize={20} />
+        <BlockquoteButton editor={editor} iconSize={20} />
+        <CodeBlockButton editor={editor} iconSize={20} />
+        <MermaidButton editor={editor} iconSize={20} />
+        <DividerButton editor={editor} iconSize={20} />
 
-          <Separator />
-          <LinkButton editor={editor} iconSize={20} />
-          <Separator />
-          <MarkdownHelp />
-        </div>
+        <Separator />
+        <LinkButton editor={editor} iconSize={20} />
+        <Separator />
+        <MarkdownHelp />
+      </div>
 
-        <div className="flex items-center gap-1">
-          {uploadFile ? (
-            <>
-              <AttachmentButton editor={editor} iconSize={20} />
-              <Separator />
-            </>
-          ) : null}
-          <UndoButton editor={editor} iconSize={20} />
-          <RedoButton editor={editor} iconSize={20} />
-        </div>
+      <div className="flex items-center gap-1 ml-auto">
+        {uploadFile ? (
+          <>
+            <AttachmentButton editor={editor} iconSize={20} />
+            <Separator />
+          </>
+        ) : null}
+        <UndoButton editor={editor} iconSize={20} />
+        <RedoButton editor={editor} iconSize={20} />
       </div>
     </div>
   );
 }
 
-function MobileToolbar({ borderClassName }: { borderClassName: "border-y" | "border-b" }) {
+function MobileToolbar() {
   const editor = useTipTapEditor();
   const uploadFile = useUploadFile();
 
   return (
-    <div className={"flex items-center gap-3 border-stroke-base " + borderClassName}>
+    <div className="flex items-center gap-3 border-y border-stroke-base">
       <div className="flex justify-between items-center w-full min-w-0">
         <div className="flex flex-1 items-center min-w-0" data-test-id="rich-editor-primary-controls">
           <BoldButton editor={editor} iconSize={20} />
@@ -210,5 +181,5 @@ function MobilePopupTools({ children }: { children: React.ReactNode }): JSX.Elem
 }
 
 function Separator(): React.ReactElement {
-  return <div className="border-l border-stroke-base h-4 mx-2" />;
+  return <div className="border-l border-stroke-base h-4 mx-1" />;
 }
