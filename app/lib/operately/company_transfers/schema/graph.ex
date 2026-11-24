@@ -52,7 +52,7 @@ defmodule Operately.CompanyTransfers.Schema.Graph do
     query = """
     SELECT
       column_name,
-      data_type,
+      CASE WHEN udt_name = '_uuid' THEN 'uuid[]' ELSE data_type END,
       is_nullable,
       column_default
     FROM information_schema.columns
