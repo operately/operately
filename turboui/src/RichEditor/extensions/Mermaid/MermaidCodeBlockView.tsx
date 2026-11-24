@@ -52,14 +52,14 @@ function MermaidView({ node, editor }: Pick<NodeViewProps, "node" | "editor">): 
       .catch(() => {
         if (active) {
           setRenderFailed(true);
-          setMode("source");
+          if (editable) setMode("source");
         }
       });
 
     return () => {
       active = false;
     };
-  }, [colorMode, mode, reactId, source]);
+  }, [colorMode, editable, mode, reactId, source]);
 
   const switchToSource = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -91,6 +91,7 @@ function MermaidView({ node, editor }: Pick<NodeViewProps, "node" | "editor">): 
       {renderFailed ? (
         <div className="mb-2" contentEditable={false}>
           <ErrorCallout
+            testId="mermaid-render-error"
             message={t("This diagram could not be rendered.")}
             description={t("Check the diagram source and try again.")}
           />

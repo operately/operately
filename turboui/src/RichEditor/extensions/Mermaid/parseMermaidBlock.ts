@@ -9,13 +9,16 @@ export function parseMermaidBlock(value: string): string | null {
   if (firstLine === undefined || lastLine === undefined) return null;
 
   const opening = firstLine.match(/^ {0,3}(`{3,}|~{3,})[ \t]*mermaid[ \t]*$/i);
-  const closing = lastLine.match(/^ {0,3}(`{3,}|~{3,})[ \t]*$/);
-
-  if (!opening || !closing) return null;
+  if (!opening) return null;
   const openingFence = opening[1];
-  const closingFence = closing[1];
-  if (!openingFence || !closingFence) return null;
-  if (openingFence[0] !== closingFence[0] || closingFence.length < openingFence.length) return null;
+  if (!openingFence || !isMatchingClosingFence(lastLine, openingFence)) return null;
+  if (lines.slice(1, -1).some((line) => isMatchingClosingFence(line, openingFence))) return null;
 
   return lines.slice(1, -1).join("\n");
+}
+
+function isMatchingClosingFence(line: string, openingFence: string): boolean {
+  const closingFence = line.match(/^ {0,3}(`{3,}|~{3,})[ \t]*$/)?.[1];
+
+  return Boolean(closingFence && closingFence[0] === openingFence[0] && closingFence.length >= openingFence.length);
 }

@@ -76,9 +76,31 @@ it("keeps the source visible when Mermaid cannot render it", async () => {
   jest.mocked(renderMermaidDiagram).mockRejectedValue(new Error("Parse error"));
   const { container } = render(<Harness editable={false} />);
 
-  expect(await screen.findByText("This diagram could not be rendered.")).toBeVisible();
-  expect(screen.getByText("Check the diagram source and try again.")).toBeVisible();
+  await waitFor(() => expect(container.querySelector('[data-test-id="mermaid-render-error"]')).toBeInTheDocument());
   await waitFor(() => expect(container.querySelector(".mermaid-source")).toBeVisible());
+});
+
+it("renders corrected Mermaid content after a read-only render failure", async () => {
+  jest.mocked(renderMermaidDiagram).mockRejectedValueOnce(new Error("Parse error"));
+  const { container, rerender } = render(<Harness editable={false} />);
+
+  await waitFor(() => expect(container.querySelector('[data-test-id="mermaid-render-error"]')).toBeInTheDocument());
+
+  const correctedContent = {
+    type: "doc",
+    content: [
+      {
+        type: "codeBlock",
+        attrs: { language: "mermaid" },
+        content: [{ type: "text", text: "flowchart LR\n  Plan --> Done" }],
+      },
+    ],
+  };
+  rerender(<Harness editable={false} initialContent={correctedContent} />);
+
+  const preview = await screen.findByRole("img", { name: "Diagram preview" });
+  await waitFor(() => expect(preview.querySelector('[data-testid="rendered-mermaid"]')).toBeInTheDocument());
+  expect(renderMermaidDiagram).toHaveBeenLastCalledWith("flowchart LR\n  Plan --> Done", expect.any(String), "light");
 });
 
 it("keeps ordinary code blocks as source code", async () => {
