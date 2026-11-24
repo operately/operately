@@ -15,8 +15,8 @@ type DisplayMode = "preview" | "source";
 export function MermaidCodeBlockView({ node, editor }: NodeViewProps): JSX.Element {
   if (node.attrs.language?.toLowerCase() !== "mermaid") {
     return (
-      <NodeViewWrapper as="pre" data-language={node.attrs.language ?? undefined}>
-        <NodeViewContent<"code"> as="code" />
+      <NodeViewWrapper as="pre" data-language={node.attrs.language ?? undefined} style={{ whiteSpace: "pre" }}>
+        <NodeViewContent<"code"> as="code" style={{ whiteSpace: "inherit" }} />
       </NodeViewWrapper>
     );
   }

@@ -3,7 +3,7 @@ import { renderMermaidDiagram, type MermaidColorMode } from "./renderMermaidDiag
 const mockInitialize = jest.fn();
 const mockRender = jest.fn();
 
-jest.mock("mermaid", () => ({
+jest.mock("mermaid/dist/mermaid.esm.min.mjs", () => ({
   __esModule: true,
   default: {
     initialize: mockInitialize,

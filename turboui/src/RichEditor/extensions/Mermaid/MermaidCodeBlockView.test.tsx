@@ -118,5 +118,7 @@ it("keeps ordinary code blocks as source code", async () => {
 
   const source = await screen.findByText("const ready = true;");
   expect(source.closest("pre")).toHaveAttribute("data-language", "typescript");
+  expect(source.closest("pre")).toHaveStyle({ whiteSpace: "pre" });
+  expect(source.closest("code")).toHaveStyle({ whiteSpace: "inherit" });
   expect(renderMermaidDiagram).not.toHaveBeenCalled();
 });

@@ -1,9 +1,11 @@
-let mermaidPromise: Promise<typeof import("mermaid").default> | undefined;
+type Mermaid = typeof import("mermaid").default;
+
+let mermaidPromise: Promise<Mermaid> | undefined;
 
 export type MermaidColorMode = "dark" | "light";
 
-async function loadMermaid(): Promise<typeof import("mermaid").default> {
-  mermaidPromise ??= import("mermaid").then(({ default: mermaid }) => mermaid);
+async function loadMermaid(): Promise<Mermaid> {
+  mermaidPromise ??= import("mermaid/dist/mermaid.esm.min.mjs").then(({ default: mermaid }) => mermaid);
 
   return mermaidPromise;
 }
