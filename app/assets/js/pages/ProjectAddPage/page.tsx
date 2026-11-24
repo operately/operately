@@ -34,12 +34,13 @@ export function Page() {
 
 function PageTitle() {
   const { t } = useTranslation();
-  const { spaceID, space } = useLoadedData();
+  const { space, spaces } = useLoadedData();
+  const eligibleSpace = findEligibleSpace(spaces, space?.id);
 
-  if (spaceID && space) {
+  if (eligibleSpace) {
     return (
       <h1 className="mb-4 font-bold text-3xl text-center">
-        <Trans i18nKey="Start a new project in {{name}}" values={{ name: space!.name }} />
+        <Trans i18nKey="Start a new project in {{name}}" values={{ name: eligibleSpace.name }} />
       </h1>
     );
   } else {
@@ -64,30 +65,32 @@ function Form() {
   const createFromTemplate = Projects.useCreateProjectFromTemplate();
   const { space, spaces, spaceOptions, goal, goals, templates } = useLoadedData();
   const search = People.usePeopleSearch(People.CompanyWideSearchScope);
+  const initialSpace = findEligibleSpace(spaces, space?.id);
+  const initialParentAccess = findParentAccessLevel(spaces, initialSpace?.id);
   const initialTemplateID = templates.find(
-    (template) => template.id === searchParams.get("templateId") && template.space.id === space?.id,
+    (template) => template.id === searchParams.get("templateId") && compareIds(template.space.id, initialSpace?.id),
   )?.id;
 
   const form = Forms.useForm({
     fields: {
       name: "",
-      space: space?.id,
+      space: initialSpace?.id,
       template: initialTemplateID ?? "",
       startDate: "",
       champion: "",
       reviewer: "",
       goal: goal,
-      access: initialAccessLevels(null, findParentAccessLevel(space, spaces, space?.id)),
+      access: initialParentAccess ? initialAccessLevels(null, initialParentAccess) : undefined,
       showAdvancedAccess: false,
     },
     onChange: ({ field, newValues }) => {
-      const parentAccessLevel = findParentAccessLevel(space, spaces, newValues.space);
+      const parentAccessLevel = findParentAccessLevel(spaces, newValues.space);
 
       if (field === "space") {
-        newValues.access = initialAccessLevels(null, parentAccessLevel);
+        newValues.access = parentAccessLevel ? initialAccessLevels(null, parentAccessLevel) : undefined;
         newValues.template = "";
         newValues.startDate = "";
-      } else {
+      } else if (parentAccessLevel && newValues.access) {
         newValues.access = applyAccessLevelConstraints(newValues.access, parentAccessLevel);
       }
     },
@@ -95,20 +98,35 @@ function Form() {
       if (!form.values.template && compareIds(form.values.champion, form.values.reviewer)) {
         addError("reviewer", i18n.t("Can't be the same as the champion"));
       }
-      if (!form.values.space) {
+      const selectedSpace = findEligibleSpace(spaces, form.values.space);
+      if (!selectedSpace) {
         addError("space", i18n.t("Space is required"));
+      } else if (!getAccessLevels(selectedSpace) || !form.values.access) {
+        addError("form", i18n.t("The project could not be created. Check the form and try again."));
       }
     },
     submit: async () => {
+      const selectedSpace = findEligibleSpace(spaces, form.values.space);
+      if (!selectedSpace) {
+        form.actions.addErrors({ space: i18n.t("Space is required") });
+        return false;
+      }
+
+      const access = form.values.access;
+      if (!getAccessLevels(selectedSpace) || !access) {
+        form.actions.addErrors({ form: i18n.t("The project could not be created. Check the form and try again.") });
+        return false;
+      }
+
       const projectInput = {
         name: form.values.name,
         championId: form.values.champion,
         reviewerId: form.values.reviewer,
-        spaceId: form.values.space!,
+        spaceId: selectedSpace.id,
         goalId: form.values.goal?.id,
-        anonymousAccessLevel: form.values.access.anonymous,
-        companyAccessLevel: form.values.access.companyMembers,
-        spaceAccessLevel: form.values.access.spaceMembers,
+        anonymousAccessLevel: access.anonymous,
+        companyAccessLevel: access.companyMembers,
+        spaceAccessLevel: access.spaceMembers,
       };
       const res = form.values.template
         ? await createFromTemplate.mutateAsync({
@@ -124,6 +142,7 @@ function Form() {
         : await add.mutateAsync(projectInput);
 
       navigate(paths.projectPath(res.project.id!));
+      return true;
     },
     onError: () => {
       form.actions.addErrors({
@@ -131,7 +150,7 @@ function Form() {
       });
     },
   });
-  const selectedSpaceId = form.values.space;
+  const selectedSpaceId = findEligibleSpace(spaces, form.values.space)?.id;
 
   return (
     <Forms.Form form={form}>
@@ -146,7 +165,7 @@ function Form() {
           />
           <Forms.SelectBox label={t("Space")} field="space" options={spaceOptions} required />
           <ProjectTemplateSelection
-            spaceId={form.values.space}
+            spaceId={selectedSpaceId}
             onCreateTemplate={
               selectedSpaceId ? () => navigate(paths.newProjectTemplatePath(selectedSpaceId)) : undefined
             }
@@ -203,15 +222,16 @@ function SelectReviewer({ me, search }: { me: People.Person; search: (query: str
 function PrivacyLevel() {
   useTranslation();
   const [isAdvanced] = Forms.useFieldValue<boolean>("showAdvancedAccess");
+  const [access] = Forms.useFieldValue("access");
 
   return (
     <Paper.DimmedSection>
       <div className="flex items-center justify-between">
         <PrivacyLevelTitle field={"access"} />
-        <PrivacyEdit />
+        <PrivacyEdit hasAccess={Boolean(access)} />
       </div>
 
-      {isAdvanced && <AccessSelectors />}
+      {isAdvanced && Boolean(access) && <AccessSelectors />}
     </Paper.DimmedSection>
   );
 }
@@ -233,10 +253,10 @@ function PrivacyLevelTitle({ field }: { field: string }) {
   );
 }
 
-function PrivacyEdit() {
+function PrivacyEdit({ hasAccess }: { hasAccess: boolean }) {
   const { t } = useTranslation();
   const [isAdvanced, setIsAdvanced] = Forms.useFieldValue<boolean>("showAdvancedAccess");
-  if (isAdvanced) return null;
+  if (isAdvanced || !hasAccess) return null;
 
   return (
     <SecondaryButton size="xs" onClick={() => setIsAdvanced(true)} testId="edit-access-levels">
@@ -245,21 +265,23 @@ function PrivacyEdit() {
   );
 }
 
-function findParentAccessLevel(
-  space: Spaces.Space | undefined,
-  spaces: Spaces.Space[] | undefined,
-  spaceId: string | null | undefined,
-) {
-  if (spaces && spaceId) {
-    return spaces.find((s) => compareIds(s.id, spaceId))!.accessLevels!;
-  } else if (space) {
-    return space.accessLevels!;
-  } else {
-    return {
-      __typename: "access_levels" as const,
-      public: PermissionLevels.NO_ACCESS,
-      company: PermissionLevels.COMMENT_ACCESS,
-      space: PermissionLevels.COMMENT_ACCESS,
-    };
-  }
+function findEligibleSpace(spaces: Spaces.Space[], spaceId: string | null | undefined) {
+  return spaces.find((space) => compareIds(space.id, spaceId));
+}
+
+function getAccessLevels(space: Spaces.Space | undefined) {
+  const access = space?.accessLevels;
+  if (access?.public == null || access.company == null || access.space == null) return undefined;
+  return access;
+}
+
+function findParentAccessLevel(spaces: Spaces.Space[], spaceId: string | null | undefined) {
+  if (spaceId) return getAccessLevels(findEligibleSpace(spaces, spaceId));
+
+  return {
+    __typename: "access_levels" as const,
+    public: PermissionLevels.NO_ACCESS,
+    company: PermissionLevels.COMMENT_ACCESS,
+    space: PermissionLevels.COMMENT_ACCESS,
+  };
 }
