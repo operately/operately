@@ -3053,6 +3053,47 @@ defmodule OperatelyWeb.Api.Types do
     field :access_level, :access_options, null: false
   end
 
+  enum(:work_map_view, values: [:table, :timeline])
+  enum(:work_map_sort, values: [:map_order, :name, :due_date, :status, :progress])
+  enum(:work_map_column, values: [:name, :status, :progress, :due_date, :space, :champion, :reviewer, :next_step])
+  enum(:work_map_filter_field, values: [:work_type, :lifecycle, :name, :goal_status, :project_status, :space, :champion, :due_date, :created_date, :completed_date])
+  enum(:work_map_filter_operator, values: [:is, :is_not, :is_any_of, :contains, :does_not_contain, :before, :after])
+  enum(:work_map_timeline_scale, values: [:weeks, :months, :quarters])
+
+  object :work_map_filter do
+    field :field, :work_map_filter_field, null: false
+    field :operator, :work_map_filter_operator, null: false
+    field :values, list_of(:string), null: false
+  end
+
+  object :work_map_default_view do
+    field? :view, :work_map_view, null: false
+    field? :sort, :work_map_sort, null: false
+    field? :columns, list_of(:work_map_column), null: false
+    field? :show_kpis, :boolean, null: false
+    field? :filters, list_of(:work_map_filter), null: false
+    field? :timeline_scale, :work_map_timeline_scale, null: false
+  end
+
+  enum(:kpi_cadence, values: Ecto.Enum.values(Operately.Kpis.Kpi, :cadence))
+
+  object :work_map_parent_change do
+    field :type, :work_map_item_type, null: false
+    field :item_id, :id, null: false
+    field :parent_id, :id, null: true
+  end
+
+  object :work_map_kpi do
+    field :id, :id, null: false
+    field :name, :string, null: false
+    field :space_id, :id, null: false
+    field :space_name, :string, null: false
+    field :unit, :string, null: false
+    field :cadence, :kpi_cadence, null: false
+    field :value, :float, null: true
+    field :period, :date, null: true
+  end
+
   enum(:work_map_item_type, values: [:project, :goal])
 
   enum(:work_map_item_status,

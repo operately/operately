@@ -4,12 +4,12 @@ defmodule OperatelyEmail.Emails.ProjectGoalConnectionEmail do
 
   alias Operately.Repo
   alias Operately.Projects
-  alias Operately.Goals
+  alias Operately.Goals.Goal
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
     project = Projects.get_project!(activity.content["project_id"])
-    goal = Goals.get_goal!(activity.content["goal_id"])
+    goal = visible_goal(person, activity.content["goal_id"])
     company = Repo.preload(project, :company).company
     link = OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url()
 
@@ -17,14 +17,7 @@ defmodule OperatelyEmail.Emails.ProjectGoalConnectionEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(
-      gettext(
-        "(%{project_name}) %{author} connected the project to the %{goal_name} goal",
-        project_name: project.name,
-        author: Operately.People.Person.short_name(author),
-        goal_name: goal.name
-      )
-    )
+    |> subject(email_subject(project, author, goal))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:goal, goal)
@@ -32,9 +25,9 @@ defmodule OperatelyEmail.Emails.ProjectGoalConnectionEmail do
     |> render("project_goal_connection")
   end
 
-  def buffered_item(_person, activity) do
+  def buffered_item(person, activity) do
     project = Operately.Projects.get_project!(activity.content["project_id"])
-    goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+    goal = visible_goal(person, activity.content["goal_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
 
@@ -42,7 +35,7 @@ defmodule OperatelyEmail.Emails.ProjectGoalConnectionEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: gettext("connected the project to the goal \"%{goal_name}\"", goal_name: goal.name),
+      headline: buffered_headline(project, goal),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
@@ -51,4 +44,26 @@ defmodule OperatelyEmail.Emails.ProjectGoalConnectionEmail do
       coalesce_key: nil
     }
   end
+
+  defp visible_goal(_, nil), do: nil
+
+  defp visible_goal(person, id) do
+    case Goal.get(person, id: id, company_id: person.company_id) do
+      {:ok, goal} -> goal
+      {:error, _} -> nil
+    end
+  end
+
+  defp email_subject(project, _, nil), do: gettext("Updated the parent goal of %{projectName} project", projectName: project.name)
+
+  defp email_subject(project, author, goal) do
+    gettext("(%{project_name}) %{author} connected the project to the %{goal_name} goal",
+      project_name: project.name,
+      author: Operately.People.Person.short_name(author),
+      goal_name: goal.name
+    )
+  end
+
+  defp buffered_headline(project, nil), do: gettext("Updated the parent goal of %{projectName} project", projectName: project.name)
+  defp buffered_headline(_, goal), do: gettext("connected the project to the goal \"%{goal_name}\"", goal_name: goal.name)
 end

@@ -201,6 +201,7 @@ defmodule OperatelyWeb.Api.Goals do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
+      |> Operately.Goals.lock_hierarchy()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.update_parent_goal(inputs.parent_goal_id)

@@ -212,7 +212,8 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "targets",
     "task_assignees",
     "task_boards",
-    "tasks"
+    "tasks",
+    "work_map_settings"
   ]
 
   def excluded?(table_name) when is_binary(table_name) do
