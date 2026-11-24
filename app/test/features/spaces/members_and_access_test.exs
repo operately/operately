@@ -89,6 +89,8 @@ defmodule Operately.Features.Spaces.MembersAndAccessTest do
     |> AccessSteps.assert_compact_member_layout(2)
     |> AccessSteps.submit_members()
     |> Steps.assert_members_added([first, last])
+    |> AccessSteps.assert_saved_member_access({last, Binding.view_access()})
+    |> AccessSteps.assert_person_is_not_a_member(removed)
   end
 
   feature "removing space members", ctx do

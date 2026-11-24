@@ -112,6 +112,21 @@ defmodule Operately.Support.Features.Spaces.MembersAndAccessSteps do
     |> UI.assert_has(testid: "space-access-management-page")
   end
 
+  step :assert_saved_member_access, ctx, {person, access_level} do
+    context = Operately.Access.get_context!(group_id: ctx.marketing.id)
+    binding = Operately.Access.get_binding(context, person_id: person.id)
+
+    assert binding.access_level == access_level
+
+    ctx
+  end
+
+  step :assert_person_is_not_a_member, ctx, person do
+    refute Operately.Groups.is_member?(ctx.marketing, person)
+
+    ctx
+  end
+
   step :assert_no_inherited_access, ctx do
     ctx = expand_other_people(ctx)
 
