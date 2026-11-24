@@ -438,6 +438,12 @@ defmodule OperatelyWeb.Api do
 
       query(:get_theme, OperatelyWeb.Api.Queries.GetTheme)
 
+      namespace(:work_maps) do
+        query(:get_settings, OperatelyWeb.Api.WorkMaps.GetSettings)
+        query(:search_kpis, OperatelyWeb.Api.WorkMaps.SearchKpis)
+        mutation(:save_layout_and_hierarchy, OperatelyWeb.Api.WorkMaps.SaveLayoutAndHierarchy)
+      end
+
       namespace(:email_changes) do
         query :get, OperatelyWeb.Api.EmailChanges.Get
         mutation :request, OperatelyWeb.Api.EmailChanges.Request

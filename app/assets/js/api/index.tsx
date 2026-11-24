@@ -3039,6 +3039,21 @@ export interface UpdateTargetInput {
   index?: number | null;
 }
 
+export interface WorkMapDefaultView {
+  view?: WorkMapView;
+  sort?: WorkMapSort;
+  columns?: WorkMapColumn[];
+  showKpis?: boolean;
+  filters?: WorkMapFilter[];
+  timelineScale?: WorkMapTimelineScale;
+}
+
+export interface WorkMapFilter {
+  field: WorkMapFilterField;
+  operator: WorkMapFilterOperator;
+  values: string[];
+}
+
 export interface WorkMapItem {
   __typename: "work_map_item";
   id: string;
@@ -3075,12 +3090,29 @@ export interface WorkMapItem {
   assignees?: Person[] | null;
 }
 
+export interface WorkMapKpi {
+  id: Id;
+  name: string;
+  spaceId: Id;
+  spaceName: string;
+  unit: string;
+  cadence: KpiCadence;
+  value: number | null;
+  period: string | null;
+}
+
 export interface WorkMapMilestone {
   __typename: "work_map_milestone";
   id: string;
   title: string;
   status: MilestoneStatus;
   timeframe: Timeframe | null;
+}
+
+export interface WorkMapParentChange {
+  type: WorkMapItemType;
+  itemId: Id;
+  parentId: Id | null;
 }
 
 export type ActivityContent =
@@ -3304,6 +3336,8 @@ export type InlineAnchorStatus = "attached" | "unattached";
 
 export type InlineThreadResourceType = "resource_hub_document";
 
+export type KpiCadence = "weekly" | "monthly";
+
 export type Language = "en" | "pt-BR" | "de" | "ru" | "fr" | "es";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
@@ -3398,9 +3432,9 @@ export type RichTextResourceType =
   | "kpi"
   | "project_check_in"
   | "project_retrospective"
-  | "goal_check_in"
   | "project_discussion"
   | "goal_discussion"
+  | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"
@@ -3463,6 +3497,24 @@ export type TaskType = "space" | "project";
 
 export type TimeFormat = "automatic" | "hour_12" | "hour_24";
 
+export type WorkMapColumn =
+  "name" | "status" | "progress" | "due_date" | "space" | "champion" | "reviewer" | "next_step";
+
+export type WorkMapFilterField =
+  | "work_type"
+  | "lifecycle"
+  | "name"
+  | "goal_status"
+  | "project_status"
+  | "space"
+  | "champion"
+  | "due_date"
+  | "created_date"
+  | "completed_date";
+
+export type WorkMapFilterOperator =
+  "is" | "is_not" | "is_any_of" | "contains" | "does_not_contain" | "before" | "after";
+
 export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secret";
 
 export type WorkMapItemState = "active" | "paused" | "closed";
@@ -3471,6 +3523,12 @@ export type WorkMapItemStatus =
   "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
+
+export type WorkMapSort = "map_order" | "name" | "due_date" | "status" | "progress";
+
+export type WorkMapTimelineScale = "weeks" | "months" | "quarters";
+
+export type WorkMapView = "table" | "timeline";
 
 export type AccessOptionsInt = 0 | 10 | 40 | 70 | 100;
 
@@ -4599,6 +4657,26 @@ export interface TasksListTaskStatusesInput {
 export interface TasksListTaskStatusesResult {
   boardId: Id | null;
   taskStatuses: TaskStatus[];
+}
+
+export interface WorkMapsGetSettingsInput {
+  spaceId?: Id;
+}
+
+export interface WorkMapsGetSettingsResult {
+  canEdit: boolean;
+  defaultView: WorkMapDefaultView | null;
+  orderedItemIds: Id[];
+  pinnedKpis: WorkMapKpi[];
+}
+
+export interface WorkMapsSearchKpisInput {
+  spaceId?: Id;
+  query?: string;
+}
+
+export interface WorkMapsSearchKpisResult {
+  kpis: WorkMapKpi[];
 }
 
 export interface AddCompanyOwnersInput {
@@ -7177,6 +7255,18 @@ export interface TasksUpdateStatusResult {
   updatedMilestone: Milestone | null;
 }
 
+export interface WorkMapsSaveLayoutAndHierarchyInput {
+  spaceId?: Id;
+  defaultView?: WorkMapDefaultView | null;
+  orderedItemIds?: Id[];
+  pinnedKpiIds?: Id[];
+  parentChanges?: WorkMapParentChange[];
+}
+
+export interface WorkMapsSaveLayoutAndHierarchyResult {
+  success: boolean;
+}
+
 class ApiNamespaceCompanyTransfers {
   constructor(private client: ApiClient) {}
 
@@ -7372,6 +7462,16 @@ class ApiNamespaceEmailChanges {
 
   async verifyCurrent(input: EmailChangesVerifyCurrentInput): Promise<EmailChangesVerifyCurrentResult> {
     return this.client.post("/email_changes/verify_current", input);
+  }
+}
+
+class ApiNamespaceWorkMaps {
+  constructor(private client: ApiClient) {}
+
+  async saveLayoutAndHierarchy(
+    input: WorkMapsSaveLayoutAndHierarchyInput,
+  ): Promise<WorkMapsSaveLayoutAndHierarchyResult> {
+    return this.client.post("/work_maps/save_layout_and_hierarchy", input);
   }
 }
 
@@ -8392,6 +8492,7 @@ export class ApiClient {
   public apiNamespaceProductReleases: ApiNamespaceProductReleases;
   public apiNamespaceBilling: ApiNamespaceBilling;
   public apiNamespaceEmailChanges: ApiNamespaceEmailChanges;
+  public apiNamespaceWorkMaps: ApiNamespaceWorkMaps;
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceNotifications: ApiNamespaceNotifications;
   public apiNamespaceFiles: ApiNamespaceFiles;
@@ -8422,6 +8523,7 @@ export class ApiClient {
     this.apiNamespaceProductReleases = new ApiNamespaceProductReleases(this);
     this.apiNamespaceBilling = new ApiNamespaceBilling(this);
     this.apiNamespaceEmailChanges = new ApiNamespaceEmailChanges(this);
+    this.apiNamespaceWorkMaps = new ApiNamespaceWorkMaps(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceNotifications = new ApiNamespaceNotifications(this);
     this.apiNamespaceFiles = new ApiNamespaceFiles(this);
@@ -9596,6 +9698,58 @@ export default {
     confirmMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: EmailChangesConfirmInput) => defaultApiClient.apiNamespaceEmailChanges.confirm(input),
+      }),
+  },
+
+  work_maps: {
+    getSettingsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/work_maps/get_settings"),
+    getSettingsQueryKey: (input: WorkMapsGetSettingsInput) =>
+      buildApiQueryKey(defaultApiClient, "/work_maps/get_settings", input),
+    getSettingsQueryOptions: (input: WorkMapsGetSettingsInput) =>
+      buildApiQueryOptions<WorkMapsGetSettingsInput, WorkMapsGetSettingsResult>(
+        defaultApiClient,
+        "/work_maps/get_settings",
+        input,
+      ),
+    getSettingsQuery: (input: WorkMapsGetSettingsInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<WorkMapsGetSettingsInput, WorkMapsGetSettingsResult>(
+          defaultApiClient,
+          "/work_maps/get_settings",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    searchKpisQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/work_maps/search_kpis"),
+    searchKpisQueryKey: (input: WorkMapsSearchKpisInput) =>
+      buildApiQueryKey(defaultApiClient, "/work_maps/search_kpis", input),
+    searchKpisQueryOptions: (input: WorkMapsSearchKpisInput) =>
+      buildApiQueryOptions<WorkMapsSearchKpisInput, WorkMapsSearchKpisResult>(
+        defaultApiClient,
+        "/work_maps/search_kpis",
+        input,
+      ),
+    searchKpisQuery: (input: WorkMapsSearchKpisInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<WorkMapsSearchKpisInput, WorkMapsSearchKpisResult>(
+          defaultApiClient,
+          "/work_maps/search_kpis",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    saveLayoutAndHierarchy: (input: WorkMapsSaveLayoutAndHierarchyInput) =>
+      defaultApiClient.apiNamespaceWorkMaps.saveLayoutAndHierarchy(input),
+    useSaveLayoutAndHierarchy: () =>
+      useMutation<WorkMapsSaveLayoutAndHierarchyInput, WorkMapsSaveLayoutAndHierarchyResult>((input) =>
+        defaultApiClient.apiNamespaceWorkMaps.saveLayoutAndHierarchy(input),
+      ),
+    saveLayoutAndHierarchyMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: WorkMapsSaveLayoutAndHierarchyInput) =>
+          defaultApiClient.apiNamespaceWorkMaps.saveLayoutAndHierarchy(input),
       }),
   },
 

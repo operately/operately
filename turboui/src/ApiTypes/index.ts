@@ -2943,6 +2943,21 @@ export interface UpdateTargetInput {
   index?: number | null;
 }
 
+export interface WorkMapDefaultView {
+  view?: WorkMapView;
+  sort?: WorkMapSort;
+  columns?: WorkMapColumn[];
+  showKpis?: boolean;
+  filters?: WorkMapFilter[];
+  timelineScale?: WorkMapTimelineScale;
+}
+
+export interface WorkMapFilter {
+  field: WorkMapFilterField;
+  operator: WorkMapFilterOperator;
+  values: string[];
+}
+
 export interface WorkMapItem {
   __typename: "work_map_item";
   id: string;
@@ -2979,12 +2994,29 @@ export interface WorkMapItem {
   assignees?: Person[] | null;
 }
 
+export interface WorkMapKpi {
+  id: Id;
+  name: string;
+  spaceId: Id;
+  spaceName: string;
+  unit: string;
+  cadence: KpiCadence;
+  value: number | null;
+  period: string | null;
+}
+
 export interface WorkMapMilestone {
   __typename: "work_map_milestone";
   id: string;
   title: string;
   status: MilestoneStatus;
   timeframe: Timeframe | null;
+}
+
+export interface WorkMapParentChange {
+  type: WorkMapItemType;
+  itemId: Id;
+  parentId: Id | null;
 }
 
 export type ActivityContent =
@@ -3208,6 +3240,8 @@ export type InlineAnchorStatus = "attached" | "unattached";
 
 export type InlineThreadResourceType = "resource_hub_document";
 
+export type KpiCadence = "weekly" | "monthly";
+
 export type Language = "en" | "pt-BR" | "de" | "ru" | "fr" | "es";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
@@ -3302,9 +3336,9 @@ export type RichTextResourceType =
   | "kpi"
   | "project_check_in"
   | "project_retrospective"
-  | "goal_check_in"
   | "project_discussion"
   | "goal_discussion"
+  | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"
@@ -3367,6 +3401,24 @@ export type TaskType = "space" | "project";
 
 export type TimeFormat = "automatic" | "hour_12" | "hour_24";
 
+export type WorkMapColumn =
+  "name" | "status" | "progress" | "due_date" | "space" | "champion" | "reviewer" | "next_step";
+
+export type WorkMapFilterField =
+  | "work_type"
+  | "lifecycle"
+  | "name"
+  | "goal_status"
+  | "project_status"
+  | "space"
+  | "champion"
+  | "due_date"
+  | "created_date"
+  | "completed_date";
+
+export type WorkMapFilterOperator =
+  "is" | "is_not" | "is_any_of" | "contains" | "does_not_contain" | "before" | "after";
+
 export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secret";
 
 export type WorkMapItemState = "active" | "paused" | "closed";
@@ -3375,6 +3427,12 @@ export type WorkMapItemStatus =
   "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
+
+export type WorkMapSort = "map_order" | "name" | "due_date" | "status" | "progress";
+
+export type WorkMapTimelineScale = "weeks" | "months" | "quarters";
+
+export type WorkMapView = "table" | "timeline";
 
 export type AccessOptionsInt = 0 | 10 | 40 | 70 | 100;
 
