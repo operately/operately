@@ -9,6 +9,8 @@ defmodule Operately.CompanyTransfers.Export.RowSerializer do
   defp serialize_value(nil, _type), do: nil
   defp serialize_value(value, _type) when is_boolean(value) or is_integer(value) or is_float(value), do: value
 
+  defp serialize_value(value, "uuid") when is_binary(value) and byte_size(value) == 16, do: Ecto.UUID.load!(value)
+
   defp serialize_value(value, type) when is_binary(value) do
     if type == "bytea" or not String.valid?(value) do
       %{
@@ -66,6 +68,7 @@ defmodule Operately.CompanyTransfers.Export.RowSerializer do
 
   defp serialize_value(value, _type), do: to_string(value)
 
+  defp array_element_type("uuid[]"), do: "uuid"
   defp array_element_type("ARRAY"), do: nil
   defp array_element_type(type), do: type
 end

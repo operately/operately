@@ -5,7 +5,7 @@ defmodule Operately.CompanyTransfers.Import.PackageOrder do
   Export order is based on the full foreign-key graph, but import only needs hard ordering
   for references that must already exist at insert time. Most nullable and self-referencing
   foreign keys are excluded because `RelationalImporter` restores them in a deferred-update pass.
-  Task board owner references must be ordered even though they are individually nullable:
+  Task board and Work Map owner references must be ordered even though they are individually nullable:
   the ownership check constraint requires one owner at insertion.
   """
 
@@ -16,7 +16,7 @@ defmodule Operately.CompanyTransfers.Import.PackageOrder do
   @doc """
   Returns a copy of the package with tables reordered for insert-time foreign-key safety.
 
-  Non-nullable foreign keys and task board owners contribute to the ordering graph.
+  Non-nullable foreign keys and owner references contribute to the ordering graph.
   Other nullable references are deferred, breaking cycles such as `projects.last_check_in_id -> project_check_ins` and
   `project_check_ins.project_id -> projects` on the nullable side, which lets the importer
   insert rows first and then backfill the nullable reference later.
@@ -53,11 +53,12 @@ defmodule Operately.CompanyTransfers.Import.PackageOrder do
   defp include_ordering_dependency?(%SchemaSnapshot{} = schema, selected_tables, table, fk) do
     fk.references_table in selected_tables and
       fk.references_table != table and
-      (board_owner_reference?(table, fk) or not nullable_column?(schema, table, fk.column))
+      (owner_reference?(table, fk) or not nullable_column?(schema, table, fk.column))
   end
 
-  defp board_owner_reference?("task_boards", %{column: column}) when column in ["space_id", "project_id"], do: true
-  defp board_owner_reference?(_table, _fk), do: false
+  defp owner_reference?("task_boards", %{column: column}) when column in ["space_id", "project_id"], do: true
+  defp owner_reference?("work_map_settings", %{column: column}) when column in ["space_id", "company_id"], do: true
+  defp owner_reference?(_table, _fk), do: false
 
   defp nullable_column?(%SchemaSnapshot{} = schema, table, column) do
     schema.columns

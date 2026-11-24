@@ -961,8 +961,11 @@ msgstr "%{author} a fixé l’échéance au <date/> pour le projet <project>%{pr
 msgid "%{author} changed the goal parent of %{goal_name}"
 msgstr "%{author} a changé l’objectif parent de l’objectif %{goal_name}"
 
+#.elixir
 #.frontend
 #: assets/js/features/activities/GoalReparent/index.tsx:38
+#: lib/operately_email/templates/project_goal_connection.html.eex:4
+#: lib/operately_email/templates/project_goal_connection.text.eex:4
 msgid "%{author} changed the parent goal"
 msgstr "%{author} a changé l’objectif parent"
 
@@ -1226,8 +1229,8 @@ msgid "%{author} completed the <milestone>%{milestoneName}</milestone> milestone
 msgstr "%{author} a terminé le jalon <milestone>%{milestoneName}</milestone> dans le projet <project>%{projectName}</project>"
 
 #.elixir
-#: lib/operately_email/templates/project_goal_connection.html.eex:1
-#: lib/operately_email/templates/project_goal_connection.text.eex:1
+#: lib/operately_email/templates/project_goal_connection.html.eex:2
+#: lib/operately_email/templates/project_goal_connection.text.eex:2
 msgid "%{author} connected the %{project_name} project to the %{goal_name} goal"
 msgstr "%{author} a relié le projet %{project_name} à l’objectif %{goal_name}"
 
@@ -3484,7 +3487,7 @@ msgid "(%{project_name}) %{author} completed the %{milestone_name} milestone"
 msgstr "(%{project_name}) %{author} a terminé le jalon %{milestone_name}"
 
 #.elixir
-#: lib/operately_email/emails/project_goal_connection_email.ex:21
+#: lib/operately_email/emails/project_goal_connection_email.ex:60
 msgid "(%{project_name}) %{author} connected the project to the %{goal_name} goal"
 msgstr "(%{project_name}) %{author} a relié le projet à l’objectif %{goal_name}"
 
@@ -12134,7 +12137,7 @@ msgstr "Le nom de l’objectif ne peut pas être vide"
 
 #.elixir
 #: lib/operately_web/api/goal_checks.ex:188
-#: lib/operately_web/api/goals.ex:738
+#: lib/operately_web/api/goals.ex:739
 #: lib/operately_web/api/queries/list_goal_check_ins.ex:26
 msgid "Goal not found"
 msgstr "Objectif introuvable"
@@ -13397,7 +13400,7 @@ msgstr "Lien :"
 #: lib/operately_email/templates/project_contributors_addition.text.eex:3
 #: lib/operately_email/templates/project_created.text.eex:3
 #: lib/operately_email/templates/project_due_date_updating.text.eex:15
-#: lib/operately_email/templates/project_goal_connection.text.eex:3
+#: lib/operately_email/templates/project_goal_connection.text.eex:7
 #: lib/operately_email/templates/project_goal_disconnection.text.eex:3
 #: lib/operately_email/templates/project_milestone_creation.text.eex:6
 #: lib/operately_email/templates/project_pausing.text.eex:3
@@ -13902,8 +13905,8 @@ msgstr "Jalon non supprimé"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:50
-#: lib/operately_web/api/projects.ex:560
-#: lib/operately_web/api/projects.ex:575
+#: lib/operately_web/api/projects.ex:561
+#: lib/operately_web/api/projects.ex:576
 #: lib/operately_web/api/projects/milestones.ex:291
 #: lib/operately_web/api/tasks.ex:670
 msgid "Milestone not found"
@@ -16729,10 +16732,10 @@ msgid "Project name cannot be empty"
 msgstr "Le nom du projet ne peut pas être vide"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:536
-#: lib/operately_web/api/projects.ex:551
-#: lib/operately_web/api/projects.ex:566
-#: lib/operately_web/api/projects.ex:601
+#: lib/operately_web/api/projects.ex:537
+#: lib/operately_web/api/projects.ex:552
+#: lib/operately_web/api/projects.ex:567
+#: lib/operately_web/api/projects.ex:602
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:282
 #: lib/operately_web/api/tasks.ex:622
@@ -19977,7 +19980,7 @@ msgid "Target"
 msgstr "Valeur cible"
 
 #.elixir
-#: lib/operately_web/api/goals.ex:1004
+#: lib/operately_web/api/goals.ex:1005
 msgid "Target not found"
 msgstr "Indicateur introuvable"
 
@@ -20114,7 +20117,7 @@ msgid "Task not deleted"
 msgstr "Tâche non supprimée"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:545
+#: lib/operately_web/api/projects.ex:546
 #: lib/operately_web/api/projects/milestones.ex:303
 #: lib/operately_web/api/tasks.ex:643
 #: lib/operately_web/api/tasks.ex:655
@@ -22535,8 +22538,11 @@ msgstr "A mis à jour la description de la tâche : %{taskName}"
 msgid "Updated the description of: a task"
 msgstr "A mis à jour la description d’une tâche"
 
+#.elixir
 #.frontend
 #: assets/js/features/activities/ProjectGoalConnection/index.tsx:124
+#: lib/operately_email/emails/project_goal_connection_email.ex:57
+#: lib/operately_email/emails/project_goal_connection_email.ex:67
 msgid "Updated the parent goal of %{projectName} project"
 msgstr "A modifié l’objectif parent du projet %{projectName}"
 
@@ -23003,7 +23009,7 @@ msgstr "Voir le profil"
 #: lib/operately_email/templates/project_created.html.eex:14
 #: lib/operately_email/templates/project_description_changed.html.eex:18
 #: lib/operately_email/templates/project_due_date_updating.html.eex:36
-#: lib/operately_email/templates/project_goal_connection.html.eex:6
+#: lib/operately_email/templates/project_goal_connection.html.eex:10
 #: lib/operately_email/templates/project_goal_disconnection.html.eex:6
 #: lib/operately_email/templates/project_pausing.html.eex:12
 #: lib/operately_email/templates/project_resuming.html.eex:12
@@ -24516,7 +24522,7 @@ msgid "concrete actions or deliverables"
 msgstr "des actions concrètes ou des livrables"
 
 #.elixir
-#: lib/operately_email/emails/project_goal_connection_email.ex:45
+#: lib/operately_email/emails/project_goal_connection_email.ex:68
 msgid "connected the project to the goal \"%{goal_name}\""
 msgstr "a relié le projet à l’objectif « %{goal_name} »"
 

@@ -106,6 +106,34 @@ defmodule Operately.CompanyTransfers.ImporterTest do
            }
   end
 
+  test "run/1 preserves company and space Work Maps with imported resource IDs", ctx do
+    alias Operately.{Groups.Group, Kpis.Kpi, ShortUuid, WorkMaps.Settings}
+
+    ctx = ctx |> Factory.add_space(:space) |> Factory.add_project(:project, :space) |> Factory.add_goal(:goal, :space)
+    kpi = Operately.KpisFixtures.kpi_fixture(ctx.creator, %{space_id: ctx.space.id})
+    filters = [
+      %{"field" => "space", "operator" => "is", "values" => [ShortUuid.encode!(ctx.space.id)]},
+      %{"field" => "champion", "operator" => "is", "values" => [ShortUuid.encode!(ctx.creator.id)]},
+      %{"field" => "name", "operator" => "contains", "values" => ["release"]}
+    ]
+    Repo.insert!(%Settings{company_id: ctx.company.id, default_view: %{"view" => "timeline", "filters" => filters}, ordered_item_ids: [ctx.project.id, ctx.goal.id]})
+    Repo.insert!(%Settings{space_id: ctx.space.id, pinned_kpi_ids: [kpi.id]})
+
+    assert {:ok, import_run} = export_and_stage_import(ctx)
+    assert {:ok, imported} = Importer.run(import_run)
+    space = Repo.get_by!(Group, company_id: imported.company_id, name: ctx.space.name)
+    project = Repo.get_by!(Project, company_id: imported.company_id, name: ctx.project.name)
+    goal = Repo.get_by!(Goal, company_id: imported.company_id, name: ctx.goal.name)
+    creator = Repo.get_by!(Person, company_id: imported.company_id, account_id: ctx.creator.account_id)
+    imported_kpi = Repo.get_by!(Kpi, space_id: space.id, name: kpi.name)
+
+    settings = Repo.get_by!(Settings, company_id: imported.company_id)
+    assert settings.ordered_item_ids == [project.id, goal.id]
+    assert settings.default_view["view"] == "timeline"
+    assert Enum.map(settings.default_view["filters"], & &1["values"]) == [[ShortUuid.encode!(space.id)], [ShortUuid.encode!(creator.id)], ["release"]]
+    assert Repo.get_by!(Settings, space_id: space.id).pinned_kpi_ids == [imported_kpi.id]
+  end
+
   test "run/1 preserves board state when a transitional package also contains legacy group fields", ctx do
     alias Operately.Groups.Group
     alias Operately.Tasks.{Task, TaskBoard}

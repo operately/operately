@@ -259,7 +259,8 @@ defmodule OperatelyWeb.Api.Projects do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_project(inputs.project_id, [:goal])
+      |> Operately.Goals.lock_hierarchy()
+      |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.update_parent_goal(inputs.goal_id)
       |> Steps.find_previous_goal()
@@ -998,14 +999,11 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def find_previous_goal(multi) do
-      Ecto.Multi.run(multi, :previous_goal, fn _repo, %{project: project} ->
-        goal = case project do
-          %{goal: nil} -> nil
-          %{goal: %Ecto.Association.NotLoaded{}} -> nil
-          %{goal: goal} -> goal
+      Ecto.Multi.run(multi, :previous_goal, fn _repo, %{me: me, project: project} ->
+        case project.goal_id && Operately.Goals.Goal.get(me, id: project.goal_id, company_id: project.company_id) do
+          {:ok, goal} -> {:ok, goal}
+          _ -> {:ok, nil}
         end
-
-        {:ok, goal}
       end)
     end
 

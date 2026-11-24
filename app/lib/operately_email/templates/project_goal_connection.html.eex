@@ -1,4 +1,8 @@
-<%= title(gettext("%{author} connected the %{project_name} project to the %{goal_name} goal", author: short_name(@author), project_name: @project.name, goal_name: @goal.name)) %>
+<%= if @goal do %>
+  <%= title(gettext("%{author} connected the %{project_name} project to the %{goal_name} goal", author: short_name(@author), project_name: @project.name, goal_name: @goal.name)) %>
+<% else %>
+  <%= title(gettext("%{author} changed the parent goal", author: short_name(@author))) %>
+<% end %>
 
 <%= spacer() %>
 

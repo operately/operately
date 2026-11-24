@@ -33,14 +33,18 @@ defmodule Operately.CompanyTransfers.Import.OrderingStateRewriter do
   """
   def rewrite_row_fields(%{"preferences" => %{"task_ordering" => ids} = preferences} = row, "people", %TranslationPlan{} = plan) when is_list(ids) do
     # Personal ordering stores UUIDs, unlike the encoded IDs in shared board state.
-    translated = Enum.flat_map(ids, fn id ->
-      case TranslationPlan.translate(plan, "tasks", id) do
-        nil -> []
-        translated_id -> [translated_id]
-      end
-    end)
-
+    translated = translate_uuids(ids, ["tasks"], plan)
     {:ok, Map.put(row, "preferences", Map.put(preferences, "task_ordering", translated))}
+  end
+
+  def rewrite_row_fields(row, "work_map_settings", %TranslationPlan{} = plan) do
+    row =
+      row
+      |> Map.update("ordered_item_ids", [], &translate_uuids(&1, ["goals", "projects"], plan))
+      |> Map.update("pinned_kpi_ids", [], &translate_uuids(&1, ["kpis"], plan))
+      |> Map.update("default_view", nil, &rewrite_work_map_filters(&1, plan))
+
+    {:ok, row}
   end
 
   def rewrite_row_fields(row, table, %TranslationPlan{} = plan) when is_map(row) and is_binary(table) do
@@ -49,6 +53,25 @@ defmodule Operately.CompanyTransfers.Import.OrderingStateRewriter do
     end)
     |> then(&{:ok, &1})
   end
+
+  defp translate_uuids(ids, tables, plan) do
+    for id <- ids,
+        is_binary(id),
+        translated = Enum.find_value(tables, &TranslationPlan.translate(plan, &1, id)),
+        do: translated
+  end
+
+  defp rewrite_work_map_filters(%{"filters" => filters} = view, plan) when is_list(filters) do
+    filters = Enum.map(filters, fn
+      %{"field" => "space", "values" => ids} = filter when is_list(ids) -> %{filter | "values" => rewrite_id_list(ids, "groups", plan)}
+      %{"field" => "champion", "values" => ids} = filter when is_list(ids) -> %{filter | "values" => rewrite_id_list(ids, "people", plan)}
+      filter -> filter
+    end)
+
+    %{view | "filters" => filters}
+  end
+
+  defp rewrite_work_map_filters(view, _plan), do: view
 
   defp rewrite_field(row, %{column: column, kind: :id_list, table: table}, %TranslationPlan{} = plan) do
     case Map.get(row, column) do
