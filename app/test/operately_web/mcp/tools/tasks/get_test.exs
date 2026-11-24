@@ -1,69 +1,123 @@
 defmodule OperatelyWeb.Mcp.Tools.Tasks.GetTest do
   use Operately.DataCase, async: true
 
-  import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
-  import Operately.ProjectsFixtures
-  import Operately.TasksFixtures
-
-  alias Plug.Conn
-  alias Operately.People
+  alias Operately.Access.Binding
+  alias Operately.Operations.TaskMoving
+  alias Operately.Repo
+  alias Operately.Support.Factory
+  alias Operately.Support.RichText
+  alias Operately.Tasks.Task
+  alias OperatelyWeb.Api.Serializer
+  alias OperatelyWeb.Mcp.ToolConnHelper
   alias OperatelyWeb.Mcp.Tools.Tasks.Get
   alias OperatelyWeb.Paths
 
-  describe "call/2" do
-    test "returns a serialized task for an accessible resource" do
-      account = account_fixture()
-      company = company_fixture(%{company_name: "MCP Company"}, account)
-      person = People.get_person(account, company)
-      project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: company.company_space_id, name: "Roadmap Project"})
-      milestone = milestone_fixture(%{project_id: project.id, creator_id: person.id, title: "Roadmap Milestone"})
-      task = task_fixture(%{creator_id: person.id, milestone_id: milestone.id, project_id: project.id, name: "Roadmap Task"})
+  test "returns a project task with its comments in chronological order" do
+    first_content = RichText.rich_text("First comment with the full discussion")
+    second_content = RichText.rich_text("Second comment")
 
-      conn = conn_with_assigns(account, company, person)
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_company_member(:commenter)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
+      |> Factory.preload(:task, [:space, project: :group])
+      |> Factory.add_comment(:first_comment, :task, content: first_content)
+      |> Factory.add_reactions(:reaction, :first_comment)
+      |> backdate_comment(:first_comment)
 
-      assert {:ok, %{task: serialized_task}} = Get.call(conn, %{"task_id" => Paths.task_id(task)})
+    ctx = Factory.add_comment(ctx, :second_comment, :task, creator: ctx.commenter, content: second_content)
 
-      assert serialized_task.id == Paths.task_id(task)
-      assert serialized_task.name == task.name
-    end
+    assert {:ok, %{task: task}} = Get.call(ToolConnHelper.conn(ctx), %{"task_id" => Paths.task_id(ctx.task)})
 
-    test "returns not_found for a task outside the authenticated company" do
-      account = account_fixture()
-      company = company_fixture(%{company_name: "MCP Company"}, account)
-      person = People.get_person(account, company)
-
-      other_account = account_fixture()
-      other_company = company_fixture(%{company_name: "Other Company"}, other_account)
-      other_person = People.get_person(other_account, other_company)
-      other_project = project_fixture(%{company_id: other_company.id, creator_id: other_person.id, group_id: other_company.company_space_id, name: "Other Project"})
-      other_milestone = milestone_fixture(%{project_id: other_project.id, creator_id: other_person.id, title: "Other Milestone"})
-      other_task = task_fixture(%{creator_id: other_person.id, milestone_id: other_milestone.id, project_id: other_project.id, name: "Other Task"})
-
-      conn = conn_with_assigns(account, company, person)
-
-      assert {:error, :not_found} = Get.call(conn, %{"task_id" => Paths.task_id(other_task)})
-    end
-
-    test "returns invalid_arguments for malformed identifiers" do
-      account = account_fixture()
-      company = company_fixture(%{company_name: "MCP Company"}, account)
-      person = People.get_person(account, company)
-
-      conn = conn_with_assigns(account, company, person)
-
-      assert {:error, :invalid_arguments} = Get.call(conn, %{"task_id" => "definitely-not-a-valid-operately-id-%%%"})
-    end
+    assert task.id == Paths.task_id(ctx.task)
+    assert task.name == ctx.task.name
+    assert task.type == "project"
+    assert Enum.map(task.comments, & &1.id) == [Paths.comment_id(ctx.first_comment), Paths.comment_id(ctx.second_comment)]
+    assert Enum.map(task.comments, & &1.content) == [Jason.encode!(first_content), Jason.encode!(second_content)]
+    assert Enum.map(task.comments, & &1.author.id) == [Serializer.serialize(ctx.creator).id, Serializer.serialize(ctx.commenter).id]
+    assert Enum.map(task.comments, & &1.inserted_at) == [Serializer.serialize(ctx.first_comment.inserted_at), Serializer.serialize(ctx.second_comment.inserted_at)]
+    assert length(hd(task.comments).reactions) == 1
   end
 
-  defp conn_with_assigns(account, company, person) do
-    %Conn{}
-    |> Map.put(:assigns, %{
-      current_account: account,
-      current_company: company,
-      current_person: person,
-      mcp_scopes: ["mcp:read"],
-      api_auth_mode: :mcp_oauth
-    })
+  test "returns an empty comment list for a space task without comments" do
+    ctx = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.create_space_task(:task, :space)
+
+    assert {:ok, %{task: task}} = Get.call(ToolConnHelper.conn(ctx), %{"task_id" => Paths.task_id(ctx.task)})
+
+    assert task.id == Paths.task_id(ctx.task)
+    assert task.type == "space"
+    assert task.comments == []
+  end
+
+  test "returns comments from before and after a project task moves to a space" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
+      |> Factory.preload(:task, [:space, project: :group])
+      |> Factory.add_comment(:project_comment, :task, content: RichText.rich_text("Before the move"))
+      |> backdate_comment(:project_comment)
+      |> Factory.add_space(:destination)
+      |> Factory.enable_space_tool(:destination, :tasks)
+
+    {:ok, moved} = TaskMoving.run(ctx.creator, ctx.task, :space, ctx.destination)
+    space_task = Task.get!(:system, id: moved.task.id, opts: [preload: [:project, :space]])
+
+    ctx = ctx |> Map.put(:task, space_task) |> Factory.add_comment(:space_comment, :task, content: RichText.rich_text("After the move"))
+
+    assert {:ok, %{task: task}} = Get.call(ToolConnHelper.conn(ctx), %{"task_id" => Paths.task_id(ctx.task)})
+
+    assert task.type == "space"
+    assert Enum.map(task.comments, & &1.id) == [Paths.comment_id(ctx.project_comment), Paths.comment_id(ctx.space_comment)]
+  end
+
+  test "returns not_found for an inaccessible task in the same company" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_company_member(:member)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
+      |> Factory.preload(:task, [:space, project: :group])
+      |> Factory.add_comment(:comment, :task)
+
+    assert {:error, :not_found} = Get.call(ToolConnHelper.conn_as(ctx, :member), %{"task_id" => Paths.task_id(ctx.task)})
+  end
+
+  test "returns not_found for a task outside the authenticated company" do
+    ctx = Factory.setup(%{})
+
+    other =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
+
+    assert {:error, :not_found} = Get.call(ToolConnHelper.conn(ctx), %{"task_id" => Paths.task_id(other.task)})
+  end
+
+  test "returns invalid_arguments for malformed identifiers" do
+    ctx = Factory.setup(%{})
+
+    assert {:error, :invalid_arguments} = Get.call(ToolConnHelper.conn(ctx), %{"task_id" => "definitely-not-a-valid-operately-id-%%%"})
+  end
+
+  defp backdate_comment(ctx, key) do
+    comment = Map.fetch!(ctx, key)
+    earlier = NaiveDateTime.add(comment.inserted_at, -60, :second)
+    comment = comment |> Ecto.Changeset.change(inserted_at: earlier) |> Repo.update!()
+
+    Map.put(ctx, key, comment)
   end
 end

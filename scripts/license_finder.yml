@@ -455,3 +455,19 @@
     :why: Apache-2.0 per Hex metadata and LICENSE file (transitive of hackney 4.x)
     :versions: []
     :when: 2026-07-13 12:45:00.000000000 Z
+- - :approve
+  - lightningcss
+  - :who: SuperPlane Agent
+    :why: MPL-2.0 per https://github.com/parcel-bundler/lightningcss/blob/v1.33.0/LICENSE;
+      unmodified CSS build tooling, not included in the application runtime.
+    :versions:
+    - 1.33.0
+    :when: 2026-11-24 14:18:14.823726285 Z
+- - :approve
+  - lightningcss-linux-x64-musl
+  - :who: SuperPlane Agent
+    :why: MPL-2.0 per https://github.com/parcel-bundler/lightningcss/blob/v1.33.0/LICENSE;
+      unmodified CSS build tooling, not included in the application runtime.
+    :versions:
+    - 1.33.0
+    :when: 2026-11-24 14:18:14.823726285 Z
