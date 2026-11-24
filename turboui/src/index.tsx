@@ -245,6 +245,7 @@ export type {
   InlineCommentsOptions,
 } from "./RichEditor/extensions/InlineComments";
 export type { RichEditorHandlers } from "./RichEditor/useEditor";
+export type { ResourceSuggestion } from "./RichEditor/extensions/MentionResources";
 export type { RichTextHandlers, CommentTaskItemChangeHandler } from "./RichContent/types";
 export type { TaskListInteraction, TaskItemChange } from "./RichEditor/taskLists";
 export { createRichEditorExtensions } from "./RichEditor/createRichEditorExtensions";

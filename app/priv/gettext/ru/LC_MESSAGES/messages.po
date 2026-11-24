@@ -2077,12 +2077,12 @@ msgid "%{author} reassigned %{personName} as a %{role} on the project"
 msgstr "%{author}: участнику %{personName} переназначена роль «%{role}» в проекте"
 
 #.frontend
-#: assets/js/features/activities/KpiEntryLogged/index.tsx:42
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:40
 msgid "%{author} recorded a KPI value"
 msgstr "%{author}: записано значение KPI"
 
 #.frontend
-#: assets/js/features/activities/KpiEntryLogged/index.tsx:46
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:44
 msgid "%{author} recorded a KPI value in the <space>%{spaceName}</space> space"
 msgstr "%{author}: в пространстве <space>%{spaceName}</space> записано значение KPI"
 
@@ -5164,7 +5164,7 @@ msgid "<author>%{name}</author> on <date/>"
 msgstr "<author>%{name}</author>, <date/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:265
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:266
 msgid "<bold>What happens next?</bold> Operately will send you a code to verify your email address."
 msgstr "<bold>Что дальше?</bold> Operately отправит вам код для подтверждения адреса электронной почты."
 
@@ -6744,8 +6744,8 @@ msgstr "Хотя бы 1 заглавная буква"
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:79
 #: assets/js/pages/SetupPage/page.tsx:152
 #: assets/js/pages/SetupPage/page.tsx:164
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:222
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:234
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:223
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:235
 msgid "At least 12 characters"
 msgstr "Не менее 12 символов"
 
@@ -7291,7 +7291,7 @@ msgstr "Куратор и ответственный не могут быть о
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:151
 #: ../turboui/src/Checklist/index.tsx:330
 #: ../turboui/src/Checklist/index.tsx:379
-#: ../turboui/src/CommentSection/CommentInput.tsx:241
+#: ../turboui/src/CommentSection/CommentInput.tsx:263
 #: ../turboui/src/CommentSection/CommentItem.tsx:400
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:37
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:46
@@ -7676,7 +7676,7 @@ msgid "Check your current inbox"
 msgstr "Проверьте свой текущий почтовый ящик"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:293
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:294
 msgid "Check your email for a code"
 msgstr "Проверьте свою электронную почту на наличие кода"
 
@@ -8246,9 +8246,9 @@ msgid "Comment not deleted"
 msgstr "Комментарий не удалён"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:71
-#: ../turboui/src/CommentSection/CommentInput.tsx:88
-#: ../turboui/src/CommentSection/CommentInput.tsx:94
+#: ../turboui/src/CommentSection/CommentInput.tsx:74
+#: ../turboui/src/CommentSection/CommentInput.tsx:91
+#: ../turboui/src/CommentSection/CommentInput.tsx:97
 #: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:91
 #: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:100
 msgid "Comment not posted"
@@ -8284,8 +8284,8 @@ msgstr "Комментарии"
 
 #.frontend
 #: ../turboui/src/MilestonePage/index.tsx:407
-#: ../turboui/src/TaskPage/Overview.tsx:34
-#: ../turboui/src/TaskPage/Overview.tsx:64
+#: ../turboui/src/TaskPage/Overview.tsx:35
+#: ../turboui/src/TaskPage/Overview.tsx:65
 msgid "Comments & Activity"
 msgstr "Комментарии и действия"
 
@@ -8602,7 +8602,7 @@ msgstr "Подтвердить новый пароль"
 
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:82
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:232
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:233
 msgid "Confirm Password"
 msgstr "Подтвердить пароль"
 
@@ -8732,8 +8732,8 @@ msgstr "Продолжить"
 
 #.frontend
 #: ../turboui/src/Forms/VerificationCodeInput.stories.tsx:15
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:246
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:315
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:247
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:316
 msgid "Continue ->"
 msgstr "Продолжить ->"
 
@@ -8968,6 +8968,11 @@ msgstr "Не удалось сохранить порядок задач. Поп
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:73
 msgid "Could not save tool settings"
 msgstr "Не удалось сохранить настройки инструмента"
+
+#.frontend
+#: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:81
+msgid "Could not search work. Try again."
+msgstr "Не удалось найти работу. Попробуйте ещё раз."
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminCompanyPage/FeatureFlagsSection.tsx:43
@@ -10902,7 +10907,7 @@ msgid "Enter your current password"
 msgstr "Введите свой текущий пароль"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:213
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:214
 msgid "Enter your full name"
 msgstr "Введите своё полное имя"
 
@@ -12088,7 +12093,7 @@ msgstr "Полный доступ"
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:52
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:212
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:213
 msgid "Full Name"
 msgstr "Полное имя"
 
@@ -12189,6 +12194,7 @@ msgstr "Перейти на главную"
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:11
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:18
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:165
+#: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:112
 #: ../turboui/src/SearchPage/index.tsx:317
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:96
 #: assets/js/pages/GoalAccessAddPage/index.tsx:38
@@ -12404,7 +12410,7 @@ msgid "Hide completed"
 msgstr "Скрыть завершённые"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:272
+#: ../turboui/src/CommentSection/CommentInput.tsx:294
 msgid "Hide list"
 msgstr "Скрыть список"
 
@@ -13880,9 +13886,9 @@ msgstr "Отметить задачу как выполненную"
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:22
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:23
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:90
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:170
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:171
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:179
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:190
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:191
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:199
 msgid "Markdown shortcuts"
 msgstr "Сочетания символов Markdown"
 
@@ -14164,7 +14170,7 @@ msgstr "Ежемесячный доход"
 #~ msgstr "Подробнее в документации: <actionLink>Руководства по настройке</actionLink>"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:149
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:169
 msgid "More formatting options"
 msgstr "Больше вариантов форматирования"
 
@@ -14932,6 +14938,11 @@ msgstr "Совпадений нет. Попробуйте другие ключ�
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:275
 msgid "No matching templates."
 msgstr "Никаких подходящих шаблонов."
+
+#.frontend
+#: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:83
+msgid "No matching work."
+msgstr "Подходящая работа не найдена."
 
 #.elixir
 #: lib/operately/md/space.ex:52
@@ -15963,7 +15974,7 @@ msgstr "Родительская цель"
 #: assets/js/pages/LoginPage/index.tsx:134
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:220
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:221
 msgid "Password"
 msgstr "Пароль"
 
@@ -16329,7 +16340,7 @@ msgstr "Пожалуйста, введите свои данные, чтобы �
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:114
 #: assets/js/pages/SetupPage/page.tsx:208
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:245
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:246
 msgid "Please fill in all fields"
 msgstr "Пожалуйста, заполните все поля"
 
@@ -16356,7 +16367,7 @@ msgid "Please try again"
 msgstr "Пожалуйста, попробуйте ещё раз."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:88
+#: ../turboui/src/CommentSection/CommentInput.tsx:91
 #: ../turboui/src/CommentSection/CommentItem.tsx:226
 #: ../turboui/src/InlineComments/Thread.tsx:57
 #: ../turboui/src/Reactions/index.tsx:59
@@ -16392,7 +16403,7 @@ msgid "Please wait…"
 msgstr "Пожалуйста, подождите..."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:237
+#: ../turboui/src/CommentSection/CommentInput.tsx:259
 #: assets/js/pages/DiscussionNewPage/index.tsx:56
 msgid "Post"
 msgstr "Опубликовать"
@@ -16738,6 +16749,7 @@ msgstr "Всё идёт по плану. Препятствий нет."
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:12
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:18
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:166
+#: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:112
 #: ../turboui/src/SearchPage/index.tsx:315
 #: ../turboui/src/TaskPage/MoveModal.tsx:113
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
@@ -17325,12 +17337,12 @@ msgid "Record update"
 msgstr "Записать значение"
 
 #.frontend
-#: assets/js/features/activities/KpiEntryLogged/index.tsx:90
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:86
 msgid "Recorded %{value} for %{kpiName}"
 msgstr "Записано значение %{value} для %{kpiName}"
 
 #.frontend
-#: assets/js/features/activities/KpiEntryLogged/index.tsx:89
+#: assets/js/features/activities/KpiEntryLogged/index.tsx:85
 msgid "Recorded KPI value: %{value}"
 msgstr "Записано значение KPI: %{value}"
 
@@ -18601,6 +18613,7 @@ msgid "Search projects..."
 msgstr "Поиск проектов..."
 
 #.frontend
+#: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:91
 #: ../turboui/src/SearchPage/index.tsx:145
 msgid "Search results"
 msgstr "Результаты поиска"
@@ -18627,6 +18640,11 @@ msgstr "Поиск заголовков и контента..."
 #: ../turboui/src/PersonField/index.tsx:535
 msgid "Search..."
 msgstr "Поиск..."
+
+#.frontend
+#: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:79
+msgid "Searching work…"
+msgstr "Поиск работы…"
 
 #.frontend
 #: ../turboui/src/GlobalSearch/SearchOverlay.tsx:212
@@ -19252,8 +19270,8 @@ msgstr "Выйти"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:23
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:185
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:287
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:186
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:288
 msgid "Sign Up"
 msgstr "Зарегистрироваться"
 
@@ -19284,7 +19302,7 @@ msgstr "Войти через Google"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:51
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:190
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:191
 msgid "Sign up for Operately"
 msgstr "Зарегистрироваться в Operately"
 
@@ -20113,6 +20131,7 @@ msgstr "Показатели"
 
 #.elixir
 #.frontend
+#: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:112
 #: ../turboui/src/SearchPage/index.tsx:321
 #: lib/operately/md/task.ex:66
 msgid "Task"
@@ -21188,7 +21207,7 @@ msgstr "Не удалось обновить пароль. Повторите п
 
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:95
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:135
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:137
 #: assets/js/pages/SpaceAddPage/index.tsx:50
 msgid "There was an unexpected error. Please try again later."
 msgstr "Произошла непредвиденная ошибка. Повторите попытку позже."
@@ -21325,12 +21344,12 @@ msgstr "Срок действия кода истёк. Запросите нов
 #~ msgstr "Эта ветка комментариев больше недоступна."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:315
+#: ../turboui/src/CommentSection/CommentInput.tsx:337
 msgid "This comment will notify %{first} and %{second}"
 msgstr "Уведомление об этом комментарии получат %{first} и %{second}"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:327
+#: ../turboui/src/CommentSection/CommentInput.tsx:349
 msgid "This comment will notify %{first}, %{second}, and 1 other."
 msgid_plural "This comment will notify %{first}, %{second}, and %{count} others."
 msgstr[0] "Уведомление об этом комментарии получат %{first}, %{second} и ещё %{count} человек."
@@ -21339,7 +21358,7 @@ msgstr[2] "Уведомление об этом комментарии полу�
 msgstr[3] "Уведомление об этом комментарии получат %{first}, %{second} и ещё %{count} человека."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:306
+#: ../turboui/src/CommentSection/CommentInput.tsx:328
 msgid "This comment will notify %{name}"
 msgstr "Уведомление об этом комментарии получит %{name}"
 
@@ -21915,7 +21934,7 @@ msgid "Timeline"
 msgstr "Временная шкала"
 
 #.frontend
-#: ../turboui/src/TaskPage/Overview.tsx:65
+#: ../turboui/src/TaskPage/Overview.tsx:66
 msgid "Timeline data not available"
 msgstr "Данные графика недоступны"
 
@@ -21925,17 +21944,17 @@ msgid "Timezone"
 msgstr "Часовой пояс"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:298
+#: ../turboui/src/CommentSection/CommentInput.tsx:320
 msgid "Tip: @-mention someone to notify them about this milestone."
 msgstr "Совет: используйте @-упоминание, чтобы уведомить человека об этой вехе."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:297
+#: ../turboui/src/CommentSection/CommentInput.tsx:319
 msgid "Tip: @-mention someone to notify them about this task."
 msgstr "Совет: используйте @-упоминание, чтобы уведомить человека об этой задаче."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:280
+#: ../turboui/src/CommentSection/CommentInput.tsx:302
 msgid "Tip: Subscribe if you want notifications too."
 msgstr "Совет: Подпишитесь, если вы хотите получать уведомления."
 
@@ -22166,6 +22185,11 @@ msgstr "Включите или выключите эксперименталь�
 #: lib/operately/md/task.ex:18
 msgid "Type"
 msgstr "Тип"
+
+#.frontend
+#: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:77
+msgid "Type at least two characters to search for work."
+msgstr "Введите не менее двух символов для поиска работы."
 
 #.frontend
 #: ../turboui/src/LinkEditPage/index.tsx:53
@@ -22752,7 +22776,7 @@ msgid "Uploading files will be blocked once the storage limit is reached."
 msgstr "После достижения лимита хранилища загрузка файлов будет заблокирована."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:237
+#: ../turboui/src/CommentSection/CommentInput.tsx:259
 #: ../turboui/src/Forms/Submit.tsx:26
 msgid "Uploading..."
 msgstr "Загрузка..."
@@ -22839,7 +22863,7 @@ msgstr "Используйте эти значения при вызове вн�
 #~ msgstr "Используйте этот URL, чтобы настроить подключение в вашем клиенте ИИ."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:191
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:192
 msgid "Use your work email — keep work and life separate."
 msgstr "Используйте рабочую электронную почту — держите работу и жизнь отдельно."
 
@@ -23135,7 +23159,7 @@ msgid "View access"
 msgstr "Только просмотр"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:272
+#: ../turboui/src/CommentSection/CommentInput.tsx:294
 msgid "View all"
 msgstr "Смотреть все"
 
@@ -23405,7 +23429,7 @@ msgid "We've emailed %{name} a link to finish setting up their account. You can 
 msgstr "Мы отправили %{name} ссылку по электронной почте для завершения настройки учётной записи. Вы также можете поделиться ею ниже."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:335
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:336
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
 msgstr "Мы отправили код из 6 символов на <email>%{email}</email>. Код действителен 5 минут — введите его до истечения этого срока."
 
@@ -23595,7 +23619,7 @@ msgid "Will be posted on <date/> at <time/>"
 msgstr "Будет опубликовано <date/> в <time/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:203
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:204
 msgid "Work Email"
 msgstr "Рабочая почта"
 
@@ -23660,8 +23684,8 @@ msgid "Workflow not updated"
 msgstr "Рабочий процесс не обновлён"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:130
-#: ../turboui/src/CommentSection/CommentInput.tsx:158
+#: ../turboui/src/CommentSection/CommentInput.tsx:142
+#: ../turboui/src/CommentSection/CommentInput.tsx:172
 msgid "Write a comment here..."
 msgstr "Напишите комментарий здесь..."
 
@@ -24171,8 +24195,8 @@ msgid "Your current email stays active until you confirm this code."
 msgstr "Ваш текущий адрес электронной почты останется действующим, пока вы не подтвердите этот код."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:71
-#: ../turboui/src/CommentSection/CommentInput.tsx:94
+#: ../turboui/src/CommentSection/CommentInput.tsx:74
+#: ../turboui/src/CommentSection/CommentInput.tsx:97
 #: ../turboui/src/CommentSection/CommentItem.tsx:374
 #: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:91
 #: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:100
@@ -24968,7 +24992,7 @@ msgid "name can't be blank"
 msgstr "Имя не может быть пустым"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:204
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:205
 msgid "name@company.com"
 msgstr "name@company.com"
 

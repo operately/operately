@@ -315,6 +315,38 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.sleep(300)
   end
 
+  step :edit_task_description_referencing_project, ctx do
+    ctx
+    |> UI.click_text("Add notes about this task...")
+    |> UI.fill_rich_text("Depends on #Destination Pro")
+    |> UI.assert_has(testid: UI.testid(["mention-resource", "project", Paths.project_id(ctx.destination_project)]))
+    |> UI.click(testid: UI.testid(["mention-resource", "project", Paths.project_id(ctx.destination_project)]))
+    |> UI.click_button("Save")
+    |> UI.assert_has(testid: "edit-description")
+  end
+
+  step :assert_project_reference_persisted, ctx do
+    saved = Repo.reload!(ctx.task).description
+    [paragraph | _] = saved["content"]
+    url = Paths.project_path(ctx.company, ctx.destination_project)
+    assert Enum.any?(paragraph["content"], fn node ->
+      node["text"] == url and Enum.any?(node["marks"] || [], &(&1["type"] == "link" && &1["attrs"]["href"] == url))
+    end)
+    refute Jason.encode!(saved) =~ "operatelyResourceLink"
+    refute Jason.encode!(saved) =~ "\"type\":\"mention\""
+    ctx
+  end
+
+  step :assert_project_reference_visible, ctx do
+    UI.assert_has(ctx, Wallaby.Query.css("a[href='#{Paths.project_path(ctx.company, ctx.destination_project)}']", text: ctx.destination_project.name))
+  end
+
+  step :follow_project_reference, ctx do
+    ctx
+    |> UI.click(css: "a[href='#{Paths.project_path(ctx.company, ctx.destination_project)}']")
+    |> UI.assert_has(testid: "project-page")
+  end
+
   step :edit_task_assignee, ctx, name do
     ctx
     |> UI.find(UI.query(testid: "task-sidebar"), fn el ->

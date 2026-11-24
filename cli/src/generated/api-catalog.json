@@ -421,9 +421,9 @@
         "kpi",
         "project_check_in",
         "project_retrospective",
+        "goal_check_in",
         "project_discussion",
         "goal_discussion",
-        "goal_check_in",
         "space_discussion",
         "comment",
         "person",
@@ -26938,6 +26938,17 @@
             "kind": "named"
           },
           "optional": false,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "include_completed",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
           "nullable": false,
           "has_default": false
         }
