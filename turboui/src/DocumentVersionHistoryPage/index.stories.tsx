@@ -107,7 +107,7 @@ export const MobileStacked: Story = {
 };
 
 const expandedCatalog = createInstance();
-void expandedCatalog.init({ ...i18nOptions, initImmediate: false });
+void expandedCatalog.init({ ...i18nOptions, initAsync: false });
 expandedCatalog.addResourceBundle(
   "en",
   "translation",
