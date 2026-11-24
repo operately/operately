@@ -3394,12 +3394,12 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
+  | "kpi"
   | "project_check_in"
   | "project_retrospective"
+  | "goal_check_in"
   | "project_discussion"
   | "goal_discussion"
-  | "kpi"
-  | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"
@@ -3611,6 +3611,7 @@ export interface CompaniesListActivitiesResult {
 
 export interface CompaniesQuickSearchInput {
   query: string;
+  includeCompleted?: boolean;
 }
 
 export interface CompaniesQuickSearchResult {

@@ -50,6 +50,60 @@ export const Default: Story = {
   },
 };
 
+export const ResourceReferences: Story = {
+  parameters: {
+    docs: {
+      description: { story: "Type # followed by at least two characters to search for goals, projects, and tasks." },
+    },
+  },
+  render: () => {
+    const handlers = React.useMemo(() => {
+      const handlers = createMockRichEditorHandlers();
+      handlers.resourceSearch = async (query) =>
+        [
+          { id: "goal", title: "Launch goal", type: "goal" as const, context: "Planning", url: "/acme/goals/goal" },
+          {
+            id: "project",
+            title: "Website launch",
+            type: "project" as const,
+            context: "Marketing",
+            url: "/acme/projects/project",
+          },
+          {
+            id: "task",
+            title: "Publish announcement",
+            type: "task" as const,
+            context: "Website launch",
+            url: "/acme/tasks/task",
+          },
+        ].filter((item) => item.title.toLowerCase().includes(query.toLowerCase()));
+      handlers.resolveResourceLinks = async (urls) => urls.map((url) => ({ url, title: "Website launch" }));
+      return handlers;
+    }, []);
+    const editor = useEditor({ content: "<p>Depends on </p>", handlers });
+    return <Editor editor={editor} />;
+  },
+};
+
+export const ResourceReferencesLongList: Story = {
+  render: () => {
+    const handlers = React.useMemo(() => {
+      const handlers = createMockRichEditorHandlers();
+      handlers.resourceSearch = async () =>
+        Array.from({ length: 15 }, (_, index) => ({
+          id: `task-${index}`,
+          title: `Work item ${index + 1}`,
+          type: "task" as const,
+          context: "Website launch",
+          url: `/acme/tasks/task-${index}`,
+        }));
+      return handlers;
+    }, []);
+    const editor = useEditor({ handlers });
+    return <Editor editor={editor} />;
+  },
+};
+
 export const MarkdownShortcuts: Story = {
   render: () => {
     const editor = useEditor({ handlers: createMockRichEditorHandlers() });
