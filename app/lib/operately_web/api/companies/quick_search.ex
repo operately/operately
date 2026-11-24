@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Companies.QuickSearch do
 
   inputs do
     field :query, :string, null: false
+    field? :include_completed, :boolean, default: false
   end
 
   outputs do
@@ -33,7 +34,7 @@ defmodule OperatelyWeb.Api.Companies.QuickSearch do
     results =
       conn
       |> me()
-      |> QuickSearch.search(inputs.query)
+      |> QuickSearch.search(inputs.query, include_completed: Map.get(inputs, :include_completed, false) == true)
       |> serialize(company(conn))
 
     {:ok, results}

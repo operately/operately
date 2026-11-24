@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.QuickSearch do
   end
 
   @impl true
-  def inputs(_ctx), do: %{query: "Searchable"}
+  def inputs(_ctx), do: %{query: "Searchable", include_completed: true}
 
   @impl true
   def assert(response, _ctx) do

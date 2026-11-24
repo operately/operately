@@ -29,9 +29,9 @@ defmodule Operately.Search.QuickSearch do
     files: [],
     links: []
   }
-  def search(%Person{} = person, query) do
+  def search(%Person{} = person, query, opts \\ []) do
     case prepare_query(query) do
-      {:ok, search_term} -> run_searches(person, search_term)
+      {:ok, search_term} -> run_searches(person, search_term, Keyword.get(opts, :include_completed) == true)
       :error -> @empty_results
     end
   end
@@ -45,14 +45,14 @@ defmodule Operately.Search.QuickSearch do
     end
   end
 
-  defp run_searches(person, search_term) do
+  defp run_searches(person, search_term, include_completed) do
     [spaces, projects, goals, milestones, tasks, people, discussions, resource_hub_items] =
       [
         fn -> search_spaces(person, search_term) end,
-        fn -> search_projects(person, search_term) end,
-        fn -> search_goals(person, search_term) end,
+        fn -> search_projects(person, search_term, include_completed) end,
+        fn -> search_goals(person, search_term, include_completed) end,
         fn -> search_milestones(person, search_term) end,
-        fn -> search_tasks(person, search_term) end,
+        fn -> search_tasks(person, search_term, include_completed) end,
         fn -> search_people(person, search_term) end,
         fn -> search_discussions(person, search_term) end,
         fn -> ResourceHubItems.search(person, search_term) end
@@ -86,11 +86,12 @@ defmodule Operately.Search.QuickSearch do
     |> Repo.all()
   end
 
-  defp search_projects(person, search_term) do
+  defp search_projects(person, search_term, include_completed) do
     ranked_projects =
       from(project in Project, as: :project)
       |> Project.scope_company(person.company_id)
-      |> where([project], project.status != "closed")
+      |> where([project], is_nil(project.deleted_at))
+      |> maybe_exclude_completed_projects(include_completed)
       |> filter_by_view_access(person.id)
       |> rank_matches(:project, :name, search_term)
 
@@ -104,11 +105,12 @@ defmodule Operately.Search.QuickSearch do
     |> Repo.all()
   end
 
-  defp search_goals(person, search_term) do
+  defp search_goals(person, search_term, include_completed) do
     ranked_goals =
       from(goal in Goal, as: :goal)
       |> Goal.scope_company(person.company_id)
-      |> where([goal], is_nil(goal.closed_at))
+      |> where([goal], is_nil(goal.deleted_at))
+      |> maybe_exclude_completed_goals(include_completed)
       |> filter_by_view_access(person.id)
       |> rank_matches(:goal, :name, search_term)
 
@@ -145,19 +147,12 @@ defmodule Operately.Search.QuickSearch do
     |> Repo.all()
   end
 
-  defp search_tasks(person, search_term) do
+  defp search_tasks(person, search_term, include_completed) do
     alias Operately.Tasks.Task
 
     project_tasks =
-      from(task in Task,
-        as: :task,
-        join: milestone in assoc(task, :milestone),
-        join: project in assoc(milestone, :project),
-        as: :project,
-        where: project.company_id == ^person.company_id,
-        where: project.status != "closed",
-        where: fragment("NOT (?->>'closed')::boolean", task.task_status)
-      )
+      project_task_candidates(person, include_completed)
+      |> maybe_exclude_completed_project_tasks(include_completed)
       |> filter_by_view_access(person.id, named_binding: :project)
       |> rank_matches(:task, :name, search_term)
       |> limit(@limit)
@@ -168,8 +163,9 @@ defmodule Operately.Search.QuickSearch do
         join: space in assoc(task, :space),
         as: :space,
         where: space.company_id == ^person.company_id,
-        where: fragment("NOT (?->>'closed')::boolean", task.task_status)
+        where: is_nil(space.deleted_at)
       )
+      |> maybe_exclude_completed_tasks(include_completed)
       |> filter_by_view_access(person.id, named_binding: :space)
       |> rank_matches(:task, :name, search_term)
       |> limit(@limit)
@@ -189,6 +185,45 @@ defmodule Operately.Search.QuickSearch do
     )
     |> Repo.all()
     |> Enum.sort_by(fn task -> Enum.find_index(top_results, &(&1.id == task.id)) end)
+  end
+
+  defp project_task_candidates(person, include_completed) do
+    alias Operately.Tasks.Task
+
+    query =
+      if include_completed do
+        # The reference picker also needs project tasks without a milestone.
+        from(task in Task, as: :task, join: project in assoc(task, :project), as: :project)
+      else
+        from(task in Task,
+          as: :task,
+          join: milestone in assoc(task, :milestone),
+          join: project in assoc(milestone, :project),
+          as: :project
+        )
+      end
+
+    where(query, [project: project], project.company_id == ^person.company_id and is_nil(project.deleted_at))
+  end
+
+  defp maybe_exclude_completed_projects(query, true), do: query
+  defp maybe_exclude_completed_projects(query, false), do: where(query, [project], project.status != "closed")
+
+  defp maybe_exclude_completed_goals(query, true), do: query
+  defp maybe_exclude_completed_goals(query, false), do: where(query, [goal], is_nil(goal.closed_at))
+
+  defp maybe_exclude_completed_project_tasks(query, true), do: query
+
+  defp maybe_exclude_completed_project_tasks(query, false) do
+    query
+    |> where([project: project], project.status != "closed")
+    |> maybe_exclude_completed_tasks(false)
+  end
+
+  defp maybe_exclude_completed_tasks(query, true), do: query
+
+  defp maybe_exclude_completed_tasks(query, false) do
+    where(query, [task: task], fragment("NOT (?->>'closed')::boolean", task.task_status))
   end
 
   defp search_people(person, search_term) do
