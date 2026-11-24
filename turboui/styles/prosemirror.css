@@ -121,6 +121,11 @@
   background: none;
   font-size: 0.8rem;
 }
+.ProseMirror .mermaid-preview svg {
+  display: inline-block;
+  height: auto;
+  max-width: 100%;
+}
 .ProseMirror img {
   max-width: 100%;
   height: auto;
