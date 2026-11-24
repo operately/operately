@@ -22,8 +22,16 @@ defmodule Operately.People.Account do
   end
 
   def create(full_name, email, password, analytics_context \\ %{}) do
+    create_with_changeset(registration_changeset(%{full_name: full_name, email: email, password: password}), analytics_context)
+  end
+
+  def create_signup(changeset, analytics_context) do
+    create_with_changeset(maybe_hash_password(changeset, []), analytics_context)
+  end
+
+  defp create_with_changeset(changeset, analytics_context) do
     Ecto.Multi.new()
-    |> Ecto.Multi.insert(:account, registration_changeset(%{full_name: full_name, email: email, password: password}))
+    |> Ecto.Multi.insert(:account, changeset)
     |> Operately.Analytics.enqueue_step(:analytics_signup, fn %{account: account} -> Operately.Analytics.register_account(account, analytics_context) end)
     |> Oban.insert(:send_onboarding_email, fn %{account: account} -> OperatelyEE.AccountOnboardingJob.new(%{account_id: account.id}) end)
     |> Repo.transaction()
@@ -43,8 +51,44 @@ defmodule Operately.People.Account do
     account
     |> cast(attrs, [:email, :password, :full_name])
     |> validate_email(opts)
-    |> validate_password(opts)
     |> validate_required([:full_name])
+    |> validate_password(opts)
+  end
+
+  # Email signup is intentionally stricter than generated/internal credentials.
+  # This changeset performs no hashing, writes, or job creation.
+  def signup_changeset(attrs) do
+    %__MODULE__{}
+    |> cast(attrs, [:email, :full_name, :password])
+    |> update_change(:email, &normalize_email/1)
+    |> update_change(:full_name, &trim_name/1)
+    |> validate_signup_email()
+    |> maybe_validate_unique_email(repo_opts: [with_deleted: true])
+    |> validate_required([:full_name, :password])
+    |> validate_length(:full_name, max: 255, count: :codepoints)
+    |> validate_length(:password, max: 72, count: :bytes)
+    |> validate_change(:password, fn :password, password ->
+      units = byte_size(:unicode.characters_to_binary(password, :utf8, {:utf16, :big})) / 2
+
+      if units >= 12 and Regex.match?(~r/[A-Z]/, password) and Regex.match?(~r/[a-z]/, password) and Regex.match?(~r/[0-9]/, password) do
+        []
+      else
+        [password: {"does not meet signup requirements", [validation: :signup_password]}]
+      end
+    end)
+  end
+
+  def normalize_email(email) when is_binary(email), do: email |> String.trim() |> String.downcase()
+  def normalize_email(email), do: email
+
+  defp trim_name(name) when is_binary(name), do: String.trim(name)
+  defp trim_name(name), do: name
+
+  defp validate_signup_email(changeset) do
+    changeset
+    |> validate_required([:email])
+    |> validate_format(:email, ~r/\A[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+\z/u)
+    |> validate_length(:email, max: 255, count: :codepoints)
   end
 
   defp validate_email(changeset, opts) do
@@ -59,6 +103,7 @@ defmodule Operately.People.Account do
     changeset
     |> validate_required([:password])
     |> validate_length(:password, min: 12, max: 72)
+    |> validate_length(:password, max: 72, count: :bytes)
     |> maybe_hash_password(opts)
   end
 
@@ -68,8 +113,6 @@ defmodule Operately.People.Account do
 
     if hash_password? && password && changeset.valid? do
       changeset
-      # If using Bcrypt, then further validate it is at most 72 bytes long
-      |> validate_length(:password, max: 72, count: :bytes)
       # Hashing could be done with `Ecto.Changeset.prepare_changes/2`, but that
       # would keep the database transaction open longer and hurt performance.
       |> put_change(:hashed_password, Bcrypt.hash_pwd_salt(password))
@@ -82,7 +125,7 @@ defmodule Operately.People.Account do
   defp maybe_validate_unique_email(changeset, opts) do
     if Keyword.get(opts, :validate_email, true) do
       changeset
-      |> unsafe_validate_unique(:email, Operately.Repo)
+      |> unsafe_validate_unique(:email, Operately.Repo, repo_opts: Keyword.get(opts, :repo_opts, []))
       |> unique_constraint(:email)
     else
       changeset

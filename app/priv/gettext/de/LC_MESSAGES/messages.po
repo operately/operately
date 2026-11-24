@@ -4998,7 +4998,7 @@ msgid "<author>%{name}</author> on <date/>"
 msgstr "<author>%{name}</author> am <date/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:266
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:381
 msgid "<bold>What happens next?</bold> Operately will send you a code to verify your email address."
 msgstr "<bold>Was passiert als Nächstes?</bold> Operately sendet dir einen Code zur Bestätigung deiner E-Mail-Adresse."
 
@@ -5383,8 +5383,7 @@ msgstr "Aktionen für %{name}"
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:130
-#: lib/operately_web/api/cli_auth.ex:546
-#: lib/operately_web/api/mutations/create_account.ex:44
+#: lib/operately_web/api/signup/errors.ex:19
 msgid "Activation code has expired"
 msgstr "Der Aktivierungscode ist abgelaufen"
 
@@ -6576,8 +6575,8 @@ msgstr "Mindestens 1 Großbuchstabe"
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:79
 #: assets/js/pages/SetupPage/page.tsx:152
 #: assets/js/pages/SetupPage/page.tsx:164
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:223
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:235
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:338
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:350
 msgid "At least 12 characters"
 msgstr "Mindestens 12 Zeichen"
 
@@ -7513,7 +7512,7 @@ msgid "Check your current inbox"
 msgstr "Prüfe dein bisheriges E-Mail-Postfach"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:294
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:411
 msgid "Check your email for a code"
 msgstr "Prüfe dein E-Mail-Postfach auf einen Code"
 
@@ -8437,7 +8436,7 @@ msgstr "Neues Passwort bestätigen"
 
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:82
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:233
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:348
 msgid "Confirm Password"
 msgstr "Passwort bestätigen"
 
@@ -8567,8 +8566,8 @@ msgstr "Weiter"
 
 #.frontend
 #: ../turboui/src/Forms/VerificationCodeInput.stories.tsx:15
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:247
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:316
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:362
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:433
 msgid "Continue ->"
 msgstr "Weiter →"
 
@@ -8581,6 +8580,11 @@ msgstr "Weiter bearbeiten"
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:90
 msgid "Continue to checkout"
 msgstr "Weiter zur Zahlung"
+
+#.frontend
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:311
+msgid "Continue without this invitation"
+msgstr "Ohne diese Einladung fortfahren"
 
 #.frontend
 #: assets/js/pages/SpaceDiscussionsPage/page.tsx:88
@@ -10399,6 +10403,11 @@ msgid "Edit retrospective"
 msgstr "Rückblick bearbeiten"
 
 #.frontend
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:445
+msgid "Edit signup details"
+msgstr "Registrierungsdaten bearbeiten"
+
+#.frontend
 #: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:76
 msgid "Edit source"
 msgstr "Quelltext bearbeiten"
@@ -10532,12 +10541,12 @@ msgid "Email changed"
 msgstr "E-Mail-Adresse geändert"
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:840
+#: lib/operately_web/api/cli_auth.ex:817
 msgid "Email code login isn't available because email delivery hasn't been configured. Please contact your organization administrator."
 msgstr "Die Anmeldung per E-Mail-Code ist nicht verfügbar, weil der E-Mail-Versand nicht eingerichtet ist. Wende dich an die Administration deines Unternehmens."
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:814
+#: lib/operately_web/api/cli_auth.ex:791
 msgid "Email code login isn't available for first-time invites. Set a password or use Google OAuth instead."
 msgstr "Die Anmeldung per E-Mail-Code ist für erstmalige Einladungen nicht verfügbar. Lege stattdessen ein Passwort fest oder verwende Google OAuth."
 
@@ -10553,8 +10562,8 @@ msgid "Email has already been taken"
 msgstr "Diese E-Mail-Adresse wird bereits verwendet"
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:537
-#: lib/operately_web/api/mutations/create_account.ex:35
+#: lib/operately_web/api/signup/errors.ex:16
+#: lib/operately_web/api/signup/errors.ex:36
 msgid "Email is already registered"
 msgstr "Diese E-Mail-Adresse ist bereits registriert"
 
@@ -10606,7 +10615,12 @@ msgid "Email should be at most 0 character(s)"
 msgstr "Die E-Mail-Adresse darf höchstens 0 Zeichen lang sein"
 
 #.elixir
-#: lib/operately_web/api/mutations/create_email_activation_code.ex:40
+#: lib/operately_web/api/signup/errors.ex:20
+msgid "Email signup is not available."
+msgstr "Die Registrierung per E-Mail ist nicht verfügbar."
+
+#.elixir
+#: lib/operately_web/api/signup/create_email_activation_code.ex:32
 msgid "Email signup isn't available because email delivery hasn't been configured. Please contact your organization administrator."
 msgstr "Die Registrierung per E-Mail ist nicht verfügbar, weil der E-Mail-Versand nicht eingerichtet ist. Wende dich an die Administration deines Unternehmens."
 
@@ -10677,8 +10691,8 @@ msgstr "Gib eine gültige E-Mail-Adresse ein"
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:24
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:84
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:81
-#: lib/operately_web/api/mutations/create_email_activation_code.ex:53
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:142
+#: lib/operately_web/api/signup/errors.ex:42
 msgid "Enter a valid email address."
 msgstr "Gib eine gültige E-Mail-Adresse ein."
 
@@ -10689,7 +10703,9 @@ msgid "Enter a value"
 msgstr "Wert eingeben"
 
 #.elixir
-#: lib/operately_web/api/mutations/create_email_activation_code.ex:51
+#.frontend
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:141
+#: lib/operately_web/api/signup/errors.ex:39
 msgid "Enter an email address with no more than 255 characters."
 msgstr "Gib eine E-Mail-Adresse mit höchstens 255 Zeichen ein."
 
@@ -10751,9 +10767,16 @@ msgid "Enter your current password"
 msgstr "Gib dein aktuelles Passwort ein"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:214
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:329
 msgid "Enter your full name"
 msgstr "Gib deinen vollständigen Namen ein"
+
+#.elixir
+#.frontend
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:146
+#: lib/operately_web/api/signup/errors.ex:46
+msgid "Enter your full name using no more than 255 characters."
+msgstr "Gib deinen vollständigen Namen mit höchstens 255 Zeichen ein."
 
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:75
@@ -11242,10 +11265,10 @@ msgstr "Tarif konnte nicht geändert werden"
 msgid "Failed to copy comment link to clipboard"
 msgstr "Kommentarlink konnte nicht in die Zwischenablage kopiert werden"
 
-#.elixir
-#: lib/operately_web/api/cli_auth.ex:550
-msgid "Failed to create account"
-msgstr "Konto konnte nicht erstellt werden"
+#~ #.elixir
+#~ #: lib/operately_web/api/cli_auth.ex:550
+#~ msgid "Failed to create account"
+#~ msgstr "Konto konnte nicht erstellt werden"
 
 #.frontend
 #: assets/js/pages/ProjectPage/index.tsx:793
@@ -11935,7 +11958,7 @@ msgstr "Vollzugriff"
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:52
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:213
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:328
 msgid "Full Name"
 msgstr "Vollständiger Name"
 
@@ -12547,10 +12570,8 @@ msgstr "Ungültiger Berechtigungsumfang"
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:124
 #: lib/operately_web/api/cli_auth.ex:127
-#: lib/operately_web/api/cli_auth.ex:540
-#: lib/operately_web/api/cli_auth.ex:543
-#: lib/operately_web/api/mutations/create_account.ex:38
-#: lib/operately_web/api/mutations/create_account.ex:41
+#: lib/operately_web/api/signup/errors.ex:17
+#: lib/operately_web/api/signup/errors.ex:18
 msgid "Invalid activation code"
 msgstr "Ungültiger Aktivierungscode"
 
@@ -12608,10 +12629,11 @@ msgid "Invalid integer: %{value}"
 msgstr "Ungültige ganze Zahl: %{value}"
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:738
-#: lib/operately_web/api/cli_auth.ex:811
-#: lib/operately_web/api/cli_auth.ex:821
-#: lib/operately_web/api/cli_auth.ex:908
+#: lib/operately/operations/account_signing_up.ex:115
+#: lib/operately_web/api/cli_auth.ex:715
+#: lib/operately_web/api/cli_auth.ex:788
+#: lib/operately_web/api/cli_auth.ex:798
+#: lib/operately_web/api/cli_auth.ex:885
 #: lib/operately_web/api/invitations.ex:171
 msgid "Invalid invite link"
 msgstr "Ungültiger Einladungslink"
@@ -14540,7 +14562,7 @@ msgid "No Space"
 msgstr "Kein Arbeitsbereich"
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:836
+#: lib/operately_web/api/cli_auth.ex:813
 msgid "No account exists for this email. Use `operately auth signup` or `operately auth join` instead."
 msgstr "Für diese E-Mail-Adresse gibt es kein Konto. Verwende stattdessen `operately auth signup` oder `operately auth join`."
 
@@ -15824,7 +15846,7 @@ msgstr "Übergeordnetes Ziel"
 #: assets/js/pages/LoginPage/index.tsx:134
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:221
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:336
 msgid "Password"
 msgstr "Passwort"
 
@@ -15876,7 +15898,7 @@ msgstr "Passwort erfolgreich geändert"
 #: assets/js/pages/JoinPage/index.tsx:93
 #: assets/js/pages/ResetPasswordPage/index.tsx:34
 #: assets/js/pages/SetupPage/page.tsx:72
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:85
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:159
 msgid "Passwords do not match"
 msgstr "Passwörter stimmen nicht überein"
 
@@ -16190,7 +16212,7 @@ msgstr "Gib deine Daten ein, um dich anzumelden"
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:114
 #: assets/js/pages/SetupPage/page.tsx:208
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:246
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:361
 msgid "Please fill in all fields"
 msgstr "Fülle alle Felder aus"
 
@@ -16243,7 +16265,7 @@ msgstr "Versuche es erneut."
 #.elixir
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:90
-#: lib/operately_web/api/mutations/create_email_activation_code.ex:18
+#: lib/operately_web/api/signup/create_email_activation_code.ex:21
 msgid "Please wait before requesting another code."
 msgstr "Warte, bevor du einen weiteren Code anforderst."
 
@@ -19118,8 +19140,8 @@ msgstr "Abmelden"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:23
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:186
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:288
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:285
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:405
 msgid "Sign Up"
 msgstr "Registrieren"
 
@@ -19130,6 +19152,7 @@ msgstr "Registrieren und %{companyName} beitreten"
 
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:174
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:307
 msgid "Sign in"
 msgstr "Anmelden"
 
@@ -19150,7 +19173,7 @@ msgstr "Mit Google anmelden"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:51
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:191
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:290
 msgid "Sign up for Operately"
 msgstr "Bei Operately registrieren"
 
@@ -19295,8 +19318,10 @@ msgid "Something went wrong while joining. Please try again."
 msgstr "Beim Beitreten ist etwas schiefgelaufen. Versuche es erneut."
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:753
-#: lib/operately_web/api/cli_auth.ex:913
+#: lib/operately/operations/account_signing_up.ex:120
+#: lib/operately/operations/account_signing_up.ex:121
+#: lib/operately_web/api/cli_auth.ex:730
+#: lib/operately_web/api/cli_auth.ex:890
 #: lib/operately_web/api/invitations.ex:186
 msgid "Something went wrong while using this invite link."
 msgstr "Bei der Verwendung dieses Einladungslinks ist etwas schiefgelaufen."
@@ -21044,10 +21069,12 @@ msgstr "In %{companyName} gibt es keine deaktivierten Teammitglieder. Um aussche
 msgid "There was an error updating your password. Please try again."
 msgstr "Beim Aktualisieren deines Passworts ist ein Fehler aufgetreten. Versuche es erneut."
 
+#.elixir
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:95
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:137
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:105
 #: assets/js/pages/SpaceAddPage/index.tsx:50
+#: lib/operately_web/api/signup/errors.ex:56
 msgid "There was an unexpected error. Please try again later."
 msgstr "Ein unerwarteter Fehler ist aufgetreten. Versuche es später erneut."
 
@@ -21294,6 +21321,12 @@ msgstr "Dieses Unternehmen behält seinen aktuellen kostenpflichtigen Tarif bis 
 msgid "This company will stay on its current paid plan until the end of the current billing period."
 msgstr "Dieses Unternehmen behält seinen aktuellen kostenpflichtigen Tarif bis zum Ende des laufenden Abrechnungszeitraums."
 
+#.elixir
+#: lib/operately/operations/account_signing_up.ex:118
+#: lib/operately_web/api/signup/errors.ex:25
+msgid "This email domain is not allowed by the invitation."
+msgstr "Diese E-Mail-Domain ist für die Einladung nicht zugelassen."
+
 #.frontend
 #: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:89
 msgid "This diagram could not be rendered."
@@ -21399,22 +21432,34 @@ msgid "This goal was closed on an unknown date."
 msgstr "Dieses Ziel wurde an einem unbekannten Datum abgeschlossen."
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:741
-#: lib/operately_web/api/cli_auth.ex:747
-#: lib/operately_web/api/cli_auth.ex:898
-#: lib/operately_web/api/cli_auth.ex:901
-#: lib/operately_web/api/cli_auth.ex:902
-#: lib/operately_web/api/cli_auth.ex:909
-#: lib/operately_web/api/cli_auth.ex:911
+#: lib/operately_web/api/signup/errors.ex:22
+msgid "This invitation is for an existing account. Open your invitation link to sign in."
+msgstr "Diese Einladung ist für ein bestehendes Konto. Öffne deinen Einladungslink, um dich anzumelden."
+
+#.elixir
+#: lib/operately_web/api/signup/errors.ex:28
+msgid "This invitation is no longer valid. Ask your company administrator for a new link."
+msgstr "Diese Einladung ist nicht mehr gültig. Bitte den Administrator deines Unternehmens um einen neuen Link."
+
+#.elixir
+#: lib/operately/operations/account_signing_up.ex:116
+#: lib/operately/operations/account_signing_up.ex:117
+#: lib/operately_web/api/cli_auth.ex:718
+#: lib/operately_web/api/cli_auth.ex:724
+#: lib/operately_web/api/cli_auth.ex:875
+#: lib/operately_web/api/cli_auth.ex:878
+#: lib/operately_web/api/cli_auth.ex:879
+#: lib/operately_web/api/cli_auth.ex:886
+#: lib/operately_web/api/cli_auth.ex:888
 #: lib/operately_web/api/invitations.ex:174
 #: lib/operately_web/api/invitations.ex:180
 msgid "This invite link is no longer valid"
 msgstr "Dieser Einladungslink ist nicht mehr gültig"
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:744
-#: lib/operately_web/api/cli_auth.ex:899
-#: lib/operately_web/api/cli_auth.ex:910
+#: lib/operately_web/api/cli_auth.ex:721
+#: lib/operately_web/api/cli_auth.ex:876
+#: lib/operately_web/api/cli_auth.ex:887
 #: lib/operately_web/api/invitations.ex:177
 msgid "This invite link is restricted to specific email domains"
 msgstr "Dieser Einladungslink ist auf bestimmte E-Mail-Domains beschränkt"
@@ -22048,8 +22093,9 @@ msgid "Unable to add team member"
 msgstr "Teammitglied konnte nicht hinzugefügt werden"
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:750
-#: lib/operately_web/api/cli_auth.ex:912
+#: lib/operately/operations/account_signing_up.ex:119
+#: lib/operately_web/api/cli_auth.ex:727
+#: lib/operately_web/api/cli_auth.ex:889
 #: lib/operately_web/api/invitations.ex:183
 msgid "Unable to add you to this company."
 msgstr "Du konntest diesem Unternehmen nicht hinzugefügt werden."
@@ -22687,6 +22733,20 @@ msgstr "Verwende die Pfeiltasten nach oben und unten, um Optionen anzusteuern. D
 msgid "Use a different email"
 msgstr "Andere E-Mail-Adresse verwenden"
 
+#.elixir
+#.frontend
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:153
+#: lib/operately_web/api/signup/errors.ex:50
+msgid "Use a password with no more than 72 UTF-8 bytes. Some characters use more than one byte."
+msgstr "Verwende ein Passwort mit höchstens 72 UTF-8-Bytes. Einige Zeichen benötigen mehr als ein Byte."
+
+#.elixir
+#.frontend
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:152
+#: lib/operately_web/api/signup/errors.ex:52
+msgid "Use at least 12 characters, including an uppercase letter, a lowercase letter, and a number."
+msgstr "Verwende mindestens 12 Zeichen, darunter einen Großbuchstaben, einen Kleinbuchstaben und eine Zahl."
+
 #.frontend
 #: ../turboui/src/StatusCustomization/StatusAppearancePicker.tsx:27
 msgid "Use for backlog or paused work"
@@ -22709,7 +22769,7 @@ msgstr "Verwende diese Werte beim Aufruf der externen Operately-API."
 #~ msgstr "Verwende diese URL, um eine Verbindung in deinem KI-Client zu erstellen."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:192
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:291
 msgid "Use your work email — keep work and life separate."
 msgstr "Verwende deine geschäftliche E-Mail-Adresse – trenne Arbeit und Privatleben."
 
@@ -23275,7 +23335,7 @@ msgid "We've emailed %{name} a link to finish setting up their account. You can 
 msgstr "Wir haben %{name} einen Link per E-Mail geschickt, um die Kontoeinrichtung abzuschließen. Du kannst ihn auch unten teilen."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:336
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:460
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
 msgstr "Wir haben dir einen 6-stelligen Code an <email>%{email}</email> gesendet. Der Code läuft in 5 Minuten ab. Gib ihn daher bitte bald ein."
 
@@ -23465,7 +23525,7 @@ msgid "Will be posted on <date/> at <time/>"
 msgstr "Wird am <date/> um <time/> veröffentlicht"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:204
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:319
 msgid "Work Email"
 msgstr "Geschäftliche E-Mail-Adresse"
 
@@ -24830,7 +24890,7 @@ msgid "name can't be blank"
 msgstr "Name darf nicht leer sein"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:205
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:320
 msgid "name@company.com"
 msgstr "name@company.com"
 

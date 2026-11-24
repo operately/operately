@@ -22,7 +22,7 @@ defmodule Operately.Support.CliE2E.SignupSteps do
   step :given_a_new_email_signup_candidate, ctx, attrs do
     full_name = Keyword.fetch!(attrs, :full_name)
     email = Keyword.fetch!(attrs, :email)
-    password = Keyword.get(attrs, :password, "new password 123")
+    password = Keyword.get(attrs, :password, "New password 123")
 
     ctx
     |> Map.put(:expected_name, full_name)

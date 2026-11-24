@@ -44,6 +44,20 @@ defmodule Operately.Support.Features.SignupSteps do
     |> UI.click(testid: "submit")
   end
 
+  step :register_email_elsewhere, ctx do
+    UI.assert_has(ctx, testid: "code")
+    {:ok, _} = Operately.People.Account.create("Existing User", signup_email(ctx), "ExistingPassword123")
+    ctx
+  end
+
+  step :assert_final_email_error, ctx do
+    ctx
+    |> UI.assert_has(Wallaby.Query.css("input[name=email][aria-invalid=true]"))
+    |> UI.assert_has(testid: "name", value: "Michael")
+    |> UI.assert_has(testid: "password", value: "123456789ABCder")
+    |> UI.refute_has(Wallaby.Query.css("input[name=code]"))
+  end
+
   step :fill_in_activation_code_from_email, ctx do
     emails = Emails.wait_for_email_for(signup_email(ctx), attempts: 10)
     subject = hd(emails).subject

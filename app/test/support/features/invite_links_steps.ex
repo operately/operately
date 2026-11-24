@@ -394,8 +394,16 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     ctx
   end
 
-  step :assert_account_was_created, ctx do
-    assert Operately.People.get_account_by_email(ctx.new_member_email)
+  step :assert_signup_blocked_before_code_delivery, ctx do
+    ctx =
+      ctx
+      |> UI.assert_has(Wallaby.Query.css("[role=alert]", minimum: 1))
+      |> UI.assert_has(testid: "skip-invitation")
+      |> UI.refute_has(testid: "code")
+
+    refute Operately.People.get_account_by_email(ctx.new_member_email)
+    refute Operately.Repo.get_by(Operately.People.EmailActivationCode, email: ctx.new_member_email)
+    assert Operately.InviteLinks.get_invite_link!(ctx.invite_link.id).use_count == 0
     ctx
   end
 

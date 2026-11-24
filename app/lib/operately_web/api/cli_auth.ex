@@ -502,14 +502,11 @@ defmodule OperatelyWeb.Api.CliAuth do
   end
 
   defmodule Signup do
-    use Gettext, backend: OperatelyWeb.Gettext
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
     alias Operately.Operations.AccountSigningUp
     alias Operately.People.CliAuthSession
-
-    require Logger
 
     inputs do
       field :email, :string
@@ -530,28 +527,8 @@ defmodule OperatelyWeb.Api.CliAuth do
            {:ok, _session, raw_token} <- CliAuthSession.create_authenticated_session(account, :password, :signup) do
         build_response(account, raw_token)
       else
-        {:error, :signup_not_allowed} ->
-          {:error, :forbidden}
-
-        {:error, :email_taken} ->
-          {:error, :bad_request, gettext("Email is already registered")}
-
-        {:error, :invalid_code} ->
-          {:error, :bad_request, gettext("Invalid activation code")}
-
-        {:error, :not_found} ->
-          {:error, :bad_request, gettext("Invalid activation code")}
-
-        {:error, :invalid} ->
-          {:error, :bad_request, gettext("Activation code has expired")}
-
-        {:error, %Ecto.Changeset{} = changeset} ->
-          Logger.error("Failed to create account: #{inspect(changeset)}")
-          {:error, :internal_server_error, gettext("Failed to create account")}
-
-        {:error, error} ->
-          Logger.error("Failed to sign up: #{inspect(error)}")
-          {:error, :internal_server_error}
+        {:error, reason} ->
+          OperatelyWeb.Api.Signup.Errors.response(reason)
       end
     end
 

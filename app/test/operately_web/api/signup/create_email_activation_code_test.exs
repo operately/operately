@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
+defmodule OperatelyWeb.Api.Signup.CreateEmailActivationCodeTest do
   import Ecto.Query, only: [from: 2]
   use OperatelyWeb.TurboCase
   import Swoosh.TestAssertions
@@ -13,6 +13,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
 
     ctx |> Factory.setup()
   end
+
+  @details %{full_name: "New User", password: "ValidPassword123"}
 
   describe "create_email_activation_code" do
     test "rejects the oversized signup email without persisting or sending a code", ctx do
@@ -30,14 +32,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
 
       Gettext.with_locale(OperatelyWeb.Gettext, "de", fn ->
         assert {:error, :bad_request, "Gib eine E-Mail-Adresse mit höchstens 255 Zeichen ein.", %{field: "email"}} =
-                 OperatelyWeb.Api.Mutations.CreateEmailActivationCode.call(ctx.conn, %{email: email})
+                 OperatelyWeb.Api.Signup.CreateEmailActivationCode.call(ctx.conn, %{email: email})
       end)
     end
 
     test "creates activation code and sends email when email delivery is configured", ctx do
       inputs = %{email: "newuser@test.com"}
 
-      assert {200, result} = mutation(ctx.conn, :create_email_activation_code, inputs)
+      assert {200, result} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, inputs))
       assert result == %{}
 
       # Verify activation code was created in database
@@ -72,7 +74,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
 
       inputs = %{email: "newuser@test.com"}
 
-      assert {400, result} = mutation(ctx.conn, :create_email_activation_code, inputs)
+      assert {400, result} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, inputs))
       assert result.error == "Bad request"
       assert result.message == "Email signup isn't available because email delivery hasn't been configured. Please contact your organization administrator."
       refute Map.has_key?(result, :details)
@@ -86,8 +88,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
       inputs1 = %{email: "user1@test.com"}
       inputs2 = %{email: "user2@test.com"}
 
-      assert {200, _} = mutation(ctx.conn, :create_email_activation_code, inputs1)
-      assert {200, _} = mutation(ctx.conn, :create_email_activation_code, inputs2)
+      assert {200, _} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, inputs1))
+      assert {200, _} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, inputs2))
 
       code1 = Repo.get_by(Operately.People.EmailActivationCode, email: "user1@test.com")
       code2 = Repo.get_by(Operately.People.EmailActivationCode, email: "user2@test.com")
@@ -100,9 +102,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
     test "blocks repeated requests for the same email during the cooldown", ctx do
       inputs = %{email: "user@test.com"}
 
-      assert {200, _} = mutation(ctx.conn, :create_email_activation_code, inputs)
+      assert {200, _} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, inputs))
       assert_email_sent(to: inputs.email)
-      assert {400, result} = mutation(ctx.conn, :create_email_activation_code, %{email: " USER@test.com "})
+      assert {400, result} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, %{email: " USER@test.com "}))
       assert result.message == "Please wait before requesting another code."
       refute Map.has_key?(result, :details)
       assert_no_email_sent()
@@ -118,13 +120,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
 
     test "allows another request after the 60-second interval", ctx do
       inputs = %{email: "user@test.com"}
-      assert {200, _} = mutation(ctx.conn, :create_email_activation_code, inputs)
+      assert {200, _} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, inputs))
 
       Repo.update_all(Operately.People.EmailActivationCode, set: [inserted_at: DateTime.utc_now() |> DateTime.add(-60, :second) |> DateTime.truncate(:second)])
 
-      assert {200, _} = mutation(ctx.conn, :create_email_activation_code, inputs)
+      assert {200, _} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, inputs))
       assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 2
-      assert {400, _} = mutation(ctx.conn, :create_email_activation_code, inputs)
+      assert {400, _} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, inputs))
     end
 
     for {label, inputs} <- [{"null", %{email: nil}}, {"missing", %{}}, {"malformed", %{email: "invalid"}}] do
@@ -141,19 +143,88 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
       # No login, just a plain connection
       inputs = %{email: "anonymous@test.com"}
 
-      assert {200, result} = mutation(ctx.conn, :create_email_activation_code, inputs)
+      assert {200, result} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, inputs))
       assert result == %{}
     end
   end
 
+  test "rejects duplicate email before code delivery", ctx do
+    assert {400, result} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, %{email: "  " <> String.upcase(ctx.creator.email) <> "  "}))
+    assert result.details.field == "email"
+    assert result.message == "Email is already registered"
+    assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 0
+    assert_no_email_sent()
+  end
+
+  for {field, value} <- [{:full_name, nil}, {:full_name, " "}, {:password, nil}, {:password, "weakpassword"}] do
+    test "rejects #{field}=#{inspect(value)} before code delivery", ctx do
+      inputs = Map.merge(@details, %{email: "valid@example.com"}) |> Map.put(unquote(field), unquote(value))
+      assert {400, result} = mutation(ctx.conn, :create_email_activation_code, inputs)
+      assert result.details.field == unquote(to_string(field))
+      assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 0
+      assert_no_email_sent()
+    end
+  end
+
+  test "email-only requests cannot bypass validation", ctx do
+    assert {400, result} = mutation(ctx.conn, :create_email_activation_code, %{email: "valid@example.com"})
+    assert result.details.field == "full_name"
+    assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 0
+    assert_no_email_sent()
+  end
+
+  test "normalizes delivery and accepts an email longer than the old 160-character limit", ctx do
+    email = String.duplicate("a", 243) <> "@example.com"
+    assert {200, _} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, %{email: "  " <> String.upcase(email) <> "  "}))
+    assert Repo.get_by(Operately.People.EmailActivationCode, email: email)
+    assert_email_sent(to: email)
+  end
+
+  test "invalid and inactive invitations send no code or create membership", ctx do
+    {:ok, invite} = Operately.InviteLinks.create_invite_link(%{company_id: ctx.company.id, author_id: ctx.creator.id, is_active: false})
+    people_before = Repo.aggregate(Operately.People.Person, :count)
+
+    for token <- ["missing", invite.token] do
+      assert {400, result} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, %{email: "valid@example.com", invite_token: token}))
+      assert result.details.field == "invite_token"
+    end
+
+    assert Repo.aggregate(Operately.People.Person, :count) == people_before
+    assert Operately.InviteLinks.get_invite_link!(invite.id).use_count == 0
+    assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 0
+    assert_no_email_sent()
+  end
+
+  test "domain restrictions and personal invitations are checked before delivery", ctx do
+    {:ok, restricted} = Operately.InviteLinks.create_invite_link(%{company_id: ctx.company.id, author_id: ctx.creator.id, allowed_domains: ["company.com"]})
+    {:ok, personal} = Operately.InviteLinks.create_personal_invite_link(%{company_id: ctx.company.id, author_id: ctx.creator.id, person_id: ctx.creator.id})
+
+    for {token, details} <- [{restricted.token, %{field: "email", reason: "invite_link_domain_not_allowed"}}, {personal.token, %{field: "invite_token"}}] do
+      assert {400, result} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, %{email: "valid@example.com", invite_token: token}))
+      assert result.details == details
+    end
+
+    assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 0
+    assert_no_email_sent()
+  end
+
+  test "directs an existing personal invite recipient to sign in", ctx do
+    {:ok, invite} = Operately.InviteLinks.create_personal_invite_link(%{company_id: ctx.company.id, author_id: ctx.creator.id, person_id: ctx.creator.id})
+    inputs = Map.merge(@details, %{email: ctx.creator.email, invite_token: invite.token})
+    assert {400, result} = mutation(ctx.conn, :create_email_activation_code, inputs)
+    assert result.details.field == "invite_token"
+    assert Repo.aggregate(Operately.People.EmailActivationCode, :count) == 0
+    assert_no_email_sent()
+  end
+
   describe "security" do
-    test "returns internal server error when signup is not allowed", ctx do
+    test "returns forbidden when signup is not allowed", ctx do
       Application.put_env(:operately, :allow_signup_with_email, false)
 
       inputs = %{email: "newuser@test.com"}
 
-      assert {500, result} = mutation(ctx.conn, :create_email_activation_code, inputs)
-      assert result.error == "Internal server error"
+      assert {403, result} = mutation(ctx.conn, :create_email_activation_code, Map.merge(@details, inputs))
+      assert result.error == "Forbidden"
       refute Map.has_key?(result, :details)
 
       # Verify no activation code was created
