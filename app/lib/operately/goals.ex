@@ -153,6 +153,18 @@ defmodule Operately.Goals do
   end
 
   @doc """
+  Locks the company row until the transaction ends, so parent changes run one at a time
+  and cycle checks see a stable hierarchy.
+  """
+  def lock_hierarchy(%Ecto.Multi{} = multi) do
+    Ecto.Multi.run(multi, :hierarchy_lock, fn _, %{me: me} -> {:ok, lock_hierarchy(me.company_id)} end)
+  end
+
+  def lock_hierarchy(company_id) do
+    Repo.one!(from c in Operately.Companies.Company, where: c.id == ^company_id, select: c.id, lock: "FOR NO KEY UPDATE")
+  end
+
+  @doc """
   Allows removing the parent, but rejects a goal itself or any descendant as its parent to prevent cycles.
   """
   def validate_parent_goal(_goal, nil), do: {:ok, nil}
