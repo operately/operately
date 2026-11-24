@@ -85,6 +85,25 @@ export const ResourceReferences: Story = {
   },
 };
 
+export const ResourceReferencesLongList: Story = {
+  render: () => {
+    const handlers = React.useMemo(() => {
+      const handlers = createMockRichEditorHandlers();
+      handlers.resourceSearch = async () =>
+        Array.from({ length: 15 }, (_, index) => ({
+          id: `task-${index}`,
+          title: `Work item ${index + 1}`,
+          type: "task" as const,
+          context: "Website launch",
+          url: `/acme/tasks/task-${index}`,
+        }));
+      return handlers;
+    }, []);
+    const editor = useEditor({ handlers });
+    return <Editor editor={editor} />;
+  },
+};
+
 export const MarkdownShortcuts: Story = {
   render: () => {
     const editor = useEditor({ handlers: createMockRichEditorHandlers() });

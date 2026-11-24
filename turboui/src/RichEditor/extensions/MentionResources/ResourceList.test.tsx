@@ -1,4 +1,6 @@
 import React from "react";
+import { Editor } from "@tiptap/core";
+import StarterKit from "@tiptap/starter-kit";
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { ResourceList } from "./ResourceList";
 import type { ResourceSuggestion } from ".";
@@ -18,6 +20,7 @@ it("ignores stale results when the query changes and selects the current result"
   const command = jest.fn();
   const ref = React.createRef<{ onKeyDown: (props: { event: KeyboardEvent }) => boolean }>();
   const { rerender } = render(<ResourceList ref={ref} query="old" search={search} command={command} />);
+  await waitFor(() => expect(search).toHaveBeenCalledWith("old"));
   rerender(<ResourceList ref={ref} query="new" search={search} command={command} />);
   await waitFor(() => expect(document.querySelector('[data-test-id="mention-resource-goal-goal"]')).not.toBeNull());
   await act(async () => finishOld([project]));
@@ -67,4 +70,63 @@ it("moves through results with arrow keys before Enter", async () => {
   act(() => ref.current?.onKeyDown({ event: new KeyboardEvent("keydown", { key: "ArrowDown" }) }));
   act(() => ref.current?.onKeyDown({ event: new KeyboardEvent("keydown", { key: "Enter" }) }));
   expect(command).toHaveBeenCalledWith(goal);
+});
+
+it("debounces typing and cancels pending searches when the query changes or the picker closes", async () => {
+  jest.useFakeTimers();
+  try {
+    const search = jest.fn().mockResolvedValue([]);
+    const command = jest.fn();
+    const { rerender, unmount } = render(<ResourceList query="wo" search={search} command={command} />);
+    await act(async () => jest.advanceTimersByTime(200));
+    expect(search).not.toHaveBeenCalled();
+    rerender(<ResourceList query="work" search={search} command={command} />);
+    await act(async () => jest.advanceTimersByTime(299));
+    expect(search).not.toHaveBeenCalled();
+    await act(async () => jest.advanceTimersByTime(1));
+    expect(search.mock.calls).toEqual([["work"]]);
+    rerender(<ResourceList query="working" search={search} command={command} />);
+    unmount();
+    await act(async () => jest.advanceTimersByTime(300));
+    expect(search).toHaveBeenCalledTimes(1);
+  } finally {
+    jest.useRealTimers();
+  }
+});
+
+it("connects the editor to the highlighted result, scrolls it into view, and clears connections on close", async () => {
+  const editor = new Editor({ extensions: [StarterKit] });
+  const scrollIntoView = jest.fn();
+  const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+  HTMLElement.prototype.scrollIntoView = scrollIntoView;
+  const ref = React.createRef<{ onKeyDown: (props: { event: KeyboardEvent }) => boolean }>();
+  const search = jest.fn().mockResolvedValue([project, goal]);
+  try {
+    const { getByRole, unmount, rerender } = render(
+      <ResourceList ref={ref} editor={editor} query="work" search={search} command={jest.fn()} />,
+    );
+    await waitFor(() => expect(getByRole("listbox")).toBeTruthy());
+    const list = getByRole("listbox");
+    const first = getByRole("option", { selected: true });
+    expect(editor.view.dom.getAttribute("role")).toBe("textbox");
+    expect(editor.view.dom.getAttribute("aria-controls")).toBe(list.id);
+    expect(first.id).toBeTruthy();
+    expect(editor.view.dom.getAttribute("aria-activedescendant")).toBe(first.id);
+    scrollIntoView.mockClear();
+    act(() => ref.current?.onKeyDown({ event: new KeyboardEvent("keydown", { key: "ArrowDown" }) }));
+    const second = getByRole("option", { selected: true });
+    expect(second.id).not.toBe(first.id);
+    expect(editor.view.dom.getAttribute("aria-activedescendant")).toBe(second.id);
+    expect(scrollIntoView).toHaveBeenLastCalledWith({ block: "nearest" });
+    expect(scrollIntoView.mock.instances.slice(-1)[0]).toBe(second);
+    rerender(<ResourceList ref={ref} editor={editor} query="w" search={search} command={jest.fn()} />);
+    expect(editor.view.dom.hasAttribute("aria-activedescendant")).toBe(false);
+    unmount();
+    expect(editor.view.dom.hasAttribute("aria-controls")).toBe(false);
+    expect(editor.view.dom.hasAttribute("aria-haspopup")).toBe(false);
+    expect(editor.view.dom.getAttribute("role")).toBe("textbox");
+  } finally {
+    editor.destroy();
+    HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+  }
 });

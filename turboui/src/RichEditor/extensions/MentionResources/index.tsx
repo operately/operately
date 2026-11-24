@@ -1,5 +1,5 @@
 import { Extension } from "@tiptap/core";
-import { flip, shift } from "@floating-ui/dom";
+import { flip, shift, size } from "@floating-ui/dom";
 import { PluginKey } from "@tiptap/pm/state";
 import { exitSuggestion, Suggestion } from "@tiptap/suggestion";
 import { MentionPopup } from "../MentionPeople/MentionPopup";
@@ -66,11 +66,25 @@ export const MentionResources = Extension.create<{ search: ResourceSearchFn; con
             { search },
           ),
         container,
+        flip: false,
         floatingUi: {
           strategy: "fixed",
-          ...(container ? { middleware: [flip({ boundary: container }), shift({ boundary: container })] } : {}),
+          middleware: [
+            flip({ boundary: container, padding: 8 }),
+            shift({ boundary: container, padding: 8 }),
+            size({
+              boundary: container,
+              padding: 8,
+              apply: ({ availableHeight, elements }) => {
+                elements.floating.style.setProperty(
+                  "--resource-picker-available-height",
+                  `${Math.max(0, availableHeight)}px`,
+                );
+              },
+            }),
+          ],
         },
-        ...(container ? { dismissOnOutsideClick: false, flip: false } : {}),
+        ...(container ? { dismissOnOutsideClick: false } : {}),
       }),
     ];
   },
