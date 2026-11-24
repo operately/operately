@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateAccount do
+defmodule OperatelyWeb.Api.Signup.CreateAccount do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
         {:ok, build_response(invite_context)}
 
       {:error, reason} ->
-        OperatelyWeb.Api.SignupErrors.response(reason)
+        OperatelyWeb.Api.Signup.Errors.response(reason)
     end
   end
 

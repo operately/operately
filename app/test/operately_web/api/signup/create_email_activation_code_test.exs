@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
+defmodule OperatelyWeb.Api.Signup.CreateEmailActivationCodeTest do
   import Ecto.Query, only: [from: 2]
   use OperatelyWeb.TurboCase
   import Swoosh.TestAssertions
@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCodeTest do
 
       Gettext.with_locale(OperatelyWeb.Gettext, "de", fn ->
         assert {:error, :bad_request, "Gib eine E-Mail-Adresse mit höchstens 255 Zeichen ein.", %{field: "email"}} =
-                 OperatelyWeb.Api.Mutations.CreateEmailActivationCode.call(ctx.conn, %{email: email})
+                 OperatelyWeb.Api.Signup.CreateEmailActivationCode.call(ctx.conn, %{email: email})
       end)
     end
 

@@ -432,8 +432,8 @@ defmodule OperatelyWeb.Api do
       mutation(:request_password_reset, OperatelyWeb.Api.Mutations.RequestPasswordReset)
       mutation(:reset_password, OperatelyWeb.Api.Mutations.ResetPassword)
       mutation(:change_password, OperatelyWeb.Api.Mutations.ChangePassword)
-      mutation(:create_account, OperatelyWeb.Api.Mutations.CreateAccount)
-      mutation(:create_email_activation_code, OperatelyWeb.Api.Mutations.CreateEmailActivationCode)
+      mutation(:create_account, OperatelyWeb.Api.Signup.CreateAccount)
+      mutation(:create_email_activation_code, OperatelyWeb.Api.Signup.CreateEmailActivationCode)
       mutation(:join_company, OperatelyWeb.Api.Mutations.JoinCompany)
 
       query(:get_theme, OperatelyWeb.Api.Queries.GetTheme)

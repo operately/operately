@@ -528,7 +528,7 @@ defmodule OperatelyWeb.Api.CliAuth do
         build_response(account, raw_token)
       else
         {:error, reason} ->
-          OperatelyWeb.Api.SignupErrors.response(reason)
+          OperatelyWeb.Api.Signup.Errors.response(reason)
       end
     end
 

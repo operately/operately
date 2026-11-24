@@ -5382,7 +5382,7 @@ msgstr "Actions pour %{name}"
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:130
-#: lib/operately_web/api/signup_errors.ex:19
+#: lib/operately_web/api/signup/errors.ex:19
 msgid "Activation code has expired"
 msgstr "Le code d’activation a expiré"
 
@@ -10561,8 +10561,8 @@ msgid "Email has already been taken"
 msgstr "Cette adresse e-mail est déjà utilisée"
 
 #.elixir
-#: lib/operately_web/api/signup_errors.ex:16
-#: lib/operately_web/api/signup_errors.ex:32
+#: lib/operately_web/api/signup/errors.ex:16
+#: lib/operately_web/api/signup/errors.ex:36
 msgid "Email is already registered"
 msgstr "Cette adresse e-mail est déjà enregistrée"
 
@@ -10614,12 +10614,12 @@ msgid "Email should be at most 0 character(s)"
 msgstr "L’adresse e-mail doit comporter au maximum 0 caractère"
 
 #.elixir
-#: lib/operately_web/api/signup_errors.ex:20
+#: lib/operately_web/api/signup/errors.ex:20
 msgid "Email signup is not available."
 msgstr "L’inscription par e-mail n’est pas disponible."
 
 #.elixir
-#: lib/operately_web/api/mutations/create_email_activation_code.ex:32
+#: lib/operately_web/api/signup/create_email_activation_code.ex:32
 msgid "Email signup isn't available because email delivery hasn't been configured. Please contact your organization administrator."
 msgstr "L’inscription par e-mail est indisponible car l’envoi d’e-mails n’a pas été configuré. Contactez l’administrateur de votre entreprise."
 
@@ -10691,7 +10691,7 @@ msgstr "Saisissez une adresse e-mail valide"
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:24
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:84
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:142
-#: lib/operately_web/api/signup_errors.ex:38
+#: lib/operately_web/api/signup/errors.ex:42
 msgid "Enter a valid email address."
 msgstr "Saisissez une adresse e-mail valide."
 
@@ -10704,7 +10704,7 @@ msgstr "Saisissez une valeur"
 #.elixir
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:141
-#: lib/operately_web/api/signup_errors.ex:35
+#: lib/operately_web/api/signup/errors.ex:39
 msgid "Enter an email address with no more than 255 characters."
 msgstr "Saisissez une adresse e-mail de 255 caractères maximum."
 
@@ -10773,7 +10773,7 @@ msgstr "Saisissez votre nom complet"
 #.elixir
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:146
-#: lib/operately_web/api/signup_errors.ex:42
+#: lib/operately_web/api/signup/errors.ex:46
 msgid "Enter your full name using no more than 255 characters."
 msgstr "Saisissez votre nom complet en utilisant au maximum 255 caractères."
 
@@ -12569,8 +12569,8 @@ msgstr "Périmètre d’autorisation invalide"
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:124
 #: lib/operately_web/api/cli_auth.ex:127
-#: lib/operately_web/api/signup_errors.ex:17
-#: lib/operately_web/api/signup_errors.ex:18
+#: lib/operately_web/api/signup/errors.ex:17
+#: lib/operately_web/api/signup/errors.ex:18
 msgid "Invalid activation code"
 msgstr "Code d’activation invalide"
 
@@ -16264,7 +16264,7 @@ msgstr "Réessayez."
 #.elixir
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:90
-#: lib/operately_web/api/mutations/create_email_activation_code.ex:21
+#: lib/operately_web/api/signup/create_email_activation_code.ex:21
 msgid "Please wait before requesting another code."
 msgstr "Patientez avant de demander un autre code."
 
@@ -21068,7 +21068,7 @@ msgstr "Une erreur s’est produite lors de la mise à jour de votre mot de pass
 #: assets/js/pages/SetupPage/page.tsx:95
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:105
 #: assets/js/pages/SpaceAddPage/index.tsx:50
-#: lib/operately_web/api/signup_errors.ex:52
+#: lib/operately_web/api/signup/errors.ex:56
 msgid "There was an unexpected error. Please try again later."
 msgstr "Une erreur inattendue s’est produite. Réessayez plus tard."
 
@@ -21317,7 +21317,7 @@ msgstr "Cette entreprise conservera son forfait payant actuel jusqu’à la fin 
 
 #.elixir
 #: lib/operately/operations/account_signing_up.ex:118
-#: lib/operately_web/api/signup_errors.ex:23
+#: lib/operately_web/api/signup/errors.ex:25
 msgid "This email domain is not allowed by the invitation."
 msgstr "Ce domaine d’e-mail n’est pas autorisé par l’invitation."
 
@@ -21426,12 +21426,12 @@ msgid "This goal was closed on an unknown date."
 msgstr "Cet objectif a été clôturé à une date inconnue."
 
 #.elixir
-#: lib/operately_web/api/signup_errors.ex:22
+#: lib/operately_web/api/signup/errors.ex:22
 msgid "This invitation is for an existing account. Open your invitation link to sign in."
 msgstr "Cette invitation est destinée à un compte existant. Ouvrez votre lien d’invitation pour vous connecter."
 
 #.elixir
-#: lib/operately_web/api/signup_errors.ex:24
+#: lib/operately_web/api/signup/errors.ex:28
 msgid "This invitation is no longer valid. Ask your company administrator for a new link."
 msgstr "Cette invitation n’est plus valide. Demandez un nouveau lien à l’administrateur de votre entreprise."
 
@@ -22724,14 +22724,14 @@ msgstr "Utiliser une autre adresse e-mail"
 #.elixir
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:153
-#: lib/operately_web/api/signup_errors.ex:46
+#: lib/operately_web/api/signup/errors.ex:50
 msgid "Use a password with no more than 72 UTF-8 bytes. Some characters use more than one byte."
 msgstr "Utilisez un mot de passe de 72 octets UTF-8 maximum. Certains caractères utilisent plusieurs octets."
 
 #.elixir
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:152
-#: lib/operately_web/api/signup_errors.ex:48
+#: lib/operately_web/api/signup/errors.ex:52
 msgid "Use at least 12 characters, including an uppercase letter, a lowercase letter, and a number."
 msgstr "Utilisez au moins 12 caractères, dont une majuscule, une minuscule et un chiffre."
 

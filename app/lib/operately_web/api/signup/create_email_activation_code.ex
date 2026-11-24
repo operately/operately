@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCode do
+defmodule OperatelyWeb.Api.Signup.CreateEmailActivationCode do
   use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCode do
         {:error, :bad_request, email_delivery_not_configured_message()}
 
       {:error, reason} ->
-        OperatelyWeb.Api.SignupErrors.response(reason)
+        OperatelyWeb.Api.Signup.Errors.response(reason)
     end
   end
 

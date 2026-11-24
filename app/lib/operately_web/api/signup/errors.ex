@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.SignupErrors do
+defmodule OperatelyWeb.Api.Signup.Errors do
   use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.Billing.EnforceLimits
   alias Operately.Billing.EnforceLimits.LimitError

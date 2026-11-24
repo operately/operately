@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
+defmodule OperatelyWeb.Api.Signup.CreateAccountTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Billing
