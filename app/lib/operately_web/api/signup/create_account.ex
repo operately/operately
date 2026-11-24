@@ -1,12 +1,9 @@
-defmodule OperatelyWeb.Api.Mutations.CreateAccount do
-  use Gettext, backend: OperatelyWeb.Gettext
+defmodule OperatelyWeb.Api.Signup.CreateAccount do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Operations.AccountSigningUp
   alias OperatelyWeb.Api.Serializer
-
-  require Logger
 
   inputs do
     field? :invite_token, :string, null: true
@@ -24,28 +21,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
   end
 
   def call(conn, inputs) do
-    case AccountSigningUp.run(inputs.full_name, inputs.email, inputs.password, inputs[:code], inputs[:invite_token], OperatelyWeb.Analytics.context(conn)) do
+    case AccountSigningUp.run(inputs[:full_name], inputs[:email], inputs[:password], inputs[:code], inputs[:invite_token], OperatelyWeb.Analytics.context(conn)) do
       {:ok, _account, invite_context} ->
         {:ok, build_response(invite_context)}
 
-      {:error, :signup_not_allowed} ->
-        {:error, :forbidden}
-
-      {:error, :email_taken} ->
-        {:error, :bad_request, gettext("Email is already registered")}
-
-      {:error, :invalid_code} ->
-        {:error, :bad_request, gettext("Invalid activation code")}
-
-      {:error, :not_found} ->
-        {:error, :bad_request, gettext("Invalid activation code")}
-
-      {:error, :invalid} ->
-        {:error, :bad_request, gettext("Activation code has expired")}
-
-      {:error, error} ->
-        Logger.error("Failed to create account. error: #{inspect(error)}")
-        {:error, :internal_server_error}
+      {:error, reason} ->
+        OperatelyWeb.Api.Signup.Errors.response(reason)
     end
   end
 

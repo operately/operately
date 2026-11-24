@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
+defmodule OperatelyWeb.Api.Signup.CreateAccountTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Billing
@@ -15,6 +15,27 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
     end)
 
     ctx |> Factory.setup()
+  end
+
+  test "field failures retain a valid code for corrected submission", ctx do
+    {:ok, activation} = Operately.People.EmailActivationCode.create("correction@example.com")
+    inputs = %{email: activation.email, code: activation.code, full_name: "", password: "ValidPassword123"}
+    assert {400, result} = mutation(ctx.conn, :create_account, inputs)
+    assert result.details.field == "full_name"
+    assert Repo.get(Operately.People.EmailActivationCode, activation.id)
+    assert {200, _} = mutation(ctx.conn, :create_account, %{inputs | full_name: "Corrected Name"})
+    refute Repo.get(Operately.People.EmailActivationCode, activation.id)
+  end
+
+  test "creates an account at the normalized email storage boundary", ctx do
+    email = String.duplicate("a", 243) <> "@example.com"
+    {:ok, activation} = Operately.People.EmailActivationCode.create(email)
+    inputs = %{email: "  " <> String.upcase(email) <> "  ", code: activation.code, full_name: "  New User  ", password: "ValidPassword123"}
+    assert {200, _} = mutation(ctx.conn, :create_account, inputs)
+    account = People.get_account_by_email(email)
+    assert account.email == email
+    assert account.full_name == "New User"
+    assert People.get_account_by_email_and_password(inputs.email, inputs.password).id == account.id
   end
 
   describe "create_account with invite_token" do
@@ -34,7 +55,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
         invite_token: invite_link.token,
         code: activation.code,
         email: "newuser@test.com",
-        password: "password1234",
+        password: "Password1234",
         full_name: "New User"
       }
 
@@ -65,7 +86,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
         invite_token: "invalid-token-123",
         code: activation.code,
         email: "newuser2@test.com",
-        password: "password1234",
+        password: "Password1234",
         full_name: "New User 2"
       }
 
@@ -99,7 +120,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
         invite_token: invite_link.token,
         code: activation.code,
         email: "newuser3@test.com",
-        password: "password1234",
+        password: "Password1234",
         full_name: "New User 3"
       }
 
@@ -123,7 +144,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
       inputs = %{
         code: activation.code,
         email: "newuser4@test.com",
-        password: "password1234",
+        password: "Password1234",
         full_name: "New User 4"
       }
 
@@ -149,7 +170,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
                mutation(ctx.conn, [:create_account], %{
                  code: activation.code,
                  email: "expired@test.com",
-                 password: "password1234",
+                 password: "Password1234",
                  full_name: "Expired Code User"
                })
 
@@ -161,7 +182,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
                mutation(ctx.conn, [:create_account], %{
                  code: "ZZZZZZ",
                  email: "unknown-code@test.com",
-                 password: "password1234",
+                 password: "Password1234",
                  full_name: "Unknown Code User"
                })
 
@@ -173,7 +194,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
                mutation(ctx.conn, [:create_account], %{
                  code: "AB",
                  email: "malformed-code@test.com",
-                 password: "password1234",
+                 password: "Password1234",
                  full_name: "Malformed Code User"
                })
 
@@ -184,7 +205,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
       assert {400, result} =
                mutation(ctx.conn, [:create_account], %{
                  email: "missing-code@test.com",
-                 password: "password1234",
+                 password: "Password1234",
                  full_name: "Missing Code User"
                })
 
@@ -198,7 +219,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
                mutation(ctx.conn, [:create_account], %{
                  code: activation.code,
                  email: "taken@test.com",
-                 password: "password1234",
+                 password: "Password1234",
                  full_name: "Taken Email User"
                })
 
@@ -208,7 +229,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
                mutation(ctx.conn, [:create_account], %{
                  code: activation2.code,
                  email: "taken@test.com",
-                 password: "password1234",
+                 password: "Password1234",
                  full_name: "Taken Email User"
                })
 
@@ -222,7 +243,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
                mutation(ctx.conn, [:create_account], %{
                  code: "ABCDEF",
                  email: "disabled@test.com",
-                 password: "password1234",
+                 password: "Password1234",
                  full_name: "Disabled Signup User"
                })
     end
