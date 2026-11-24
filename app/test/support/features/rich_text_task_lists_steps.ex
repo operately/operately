@@ -28,7 +28,7 @@ defmodule Operately.Support.Features.RichTextTaskListsSteps do
   end
 
   step :create_task_list_from_toolbar, ctx do
-    ctx = ctx |> UI.click(testid: "rich-editor-overflow") |> UI.click(testid: "toolbar-button-task-list") |> UI.assert_has(css: checkbox("Task item"))
+    ctx = ctx |> UI.click(testid: "toolbar-button-task-list") |> UI.assert_has(css: checkbox("Task item"))
     Wallaby.Browser.send_keys(ctx.session, ["Created from toolbar", :enter, "Second item"])
 
     ctx

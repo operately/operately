@@ -471,3 +471,19 @@
     :versions:
     - 1.33.0
     :when: 2026-11-24 14:18:14.823726285 Z
+- - :approve
+  - elkjs
+  - :who: Luca Mancini
+    :why: EPL-2.0 per https://github.com/kieler/elkjs/blob/0.12.1/LICENSE.md;
+      unmodified transitive runtime dependency of Mermaid.
+    :versions:
+    - 0.12.1
+    :when: 2026-11-24 17:38:32.016451117 Z
+- - :approve
+  - robust-predicates
+  - :who: Luca Mancini
+    :why: Public-domain software under the Unlicense per https://github.com/mourner/robust-predicates/blob/v3.0.3/LICENSE;
+      unmodified transitive runtime dependency of Mermaid.
+    :versions:
+    - 3.0.3
+    :when: 2026-11-24 17:38:32.016451117 Z
