@@ -3061,6 +3061,7 @@ export interface WorkMapItem {
   reviewerPath: string | null;
   nextStep: string;
   isNew: boolean;
+  insertedAt?: string;
   completedOn: string | null;
   timeframe: Timeframe | null;
   assignedAt: string | null;
