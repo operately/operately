@@ -1,8 +1,8 @@
 defmodule OperatelyWeb.Mcp.Tools.Tasks.Get do
   use OperatelyWeb.Mcp.Tool
 
-  alias OperatelyWeb.Api.Helpers
   alias OperatelyWeb.Api.Tasks.Get, as: TaskGet
+  alias OperatelyWeb.Mcp.Helpers
 
   @impl true
   def definition do
@@ -37,15 +37,14 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.Get do
 
   @impl true
   def call(conn, %{"task_id" => task_id}) do
-    with {:ok, task_id} <- decode_task_id(task_id) do
-      TaskGet.call(conn, %{id: task_id})
+    with {:ok, task_id} <- Helpers.decode_id(task_id),
+         {:ok, %{task: task}} <- TaskGet.call(conn, %{id: task_id}) do
+      comments = Helpers.load_comments(conn, task_id, comment_type(task.type))
+
+      {:ok, %{task: Map.put(task, :comments, comments)}}
     end
   end
 
-  defp decode_task_id(task_id) do
-    case Helpers.decode_id(task_id) do
-      {:ok, decoded_task_id} -> {:ok, decoded_task_id}
-      {:error, _reason} -> {:error, :invalid_arguments}
-    end
-  end
+  defp comment_type("project"), do: :project_task
+  defp comment_type("space"), do: :space_task
 end
