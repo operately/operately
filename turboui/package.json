@@ -53,7 +53,7 @@
     "ts-pattern": "^5.0.8",
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.1.2",
-    "esbuild": "0.25.2",
+    "esbuild": "0.28.2",
     "http-server": "^14.1.1",
     "jest": "^29.6.1",
     "jest-environment-jsdom": "^29.7.0",
@@ -67,7 +67,7 @@
     "tailwindcss": "^3.4.19",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.3",
-    "vite": "6.4.6",
+    "vite": "8.3.8",
     "wait-on": "^8.0.3",
     "postcss-import": "^15.1.0",
     "@emotion/cache": "^11.14.0",
@@ -90,7 +90,7 @@
     "prosemirror-view": "1.42.3",
     "rollup": "4.62.2",
     "uuid": "11.1.1",
-    "vite": "6.4.6"
+    "vite": "8.3.8"
   },
   "jest-junit": {
     "outputDirectory": "testreports",
