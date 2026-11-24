@@ -51,7 +51,6 @@ defmodule Operately.Support.Features.RichTextTablesSteps do
   step :insert_table, ctx do
     ctx
     |> UI.fill_rich_text("")
-    |> UI.click(testid: "rich-editor-overflow")
     |> UI.click(testid: "toolbar-button-table")
     |> UI.assert_has(Wallaby.Query.css("[contenteditable=true] tr", count: 3))
     |> UI.send_keys(["Created from toolbar"])

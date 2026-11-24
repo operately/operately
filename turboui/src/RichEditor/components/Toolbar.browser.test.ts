@@ -81,7 +81,7 @@ describe("Rich editor toolbar in a browser", () => {
     await editor.locator("table").waitFor();
   });
 
-  test("switches toolbar modes when the editor container changes width without losing content", async () => {
+  test("keeps formatting controls visible when the editor container narrows", async () => {
     await openEditorStory("components-richeditor--default", 1280);
     const toolbar = page.locator('[data-test-id="rich-editor-toolbar"]');
     const container = toolbar.locator("..");
@@ -89,21 +89,20 @@ describe("Rich editor toolbar in a browser", () => {
     const overflow = page.locator('[data-test-id="rich-editor-overflow"]');
 
     await container.evaluate((element) => (element.style.width = "566px"));
-    await overflow.waitFor();
     await assertToolbarFits(toolbar, editor);
+    assert.equal(await overflow.count(), 0);
+    assert.equal(await toolbar.locator('[data-test-id="toolbar-button-heading-2"]').count(), 1);
+    assert.equal(await toolbar.locator('[data-test-id="toolbar-button-table"]').count(), 1);
 
     await editor.fill("Narrow editor draft");
     await container.evaluate((element) => (element.style.width = "800px"));
-    await overflow.waitFor({ state: "hidden" });
     await assertToolbarFits(toolbar, editor);
     assert.equal(await editor.textContent(), "Narrow editor draft");
 
     await container.evaluate((element) => (element.style.width = "566px"));
-    await overflow.waitFor();
     await assertToolbarFits(toolbar, editor);
     await editor.press("ControlOrMeta+a");
-    await overflow.click();
-    await page.getByRole("dialog").getByRole("button", { name: "Heading 2", exact: true }).click();
+    await toolbar.getByRole("button", { name: "Heading 2", exact: true }).click();
     await editor.locator("h2").filter({ hasText: "Narrow editor draft" }).waitFor();
   });
 
@@ -117,8 +116,9 @@ describe("Rich editor toolbar in a browser", () => {
     await slideIn.locator('[data-test-id="task-notes-empty"]').getByRole("button").click();
     const toolbar = slideIn.locator('[data-test-id="rich-editor-toolbar"]');
     const editor = slideIn.locator('[contenteditable="true"]');
-    await slideIn.locator('[data-test-id="rich-editor-overflow"]').waitFor();
     await assertToolbarFits(toolbar, editor);
+    assert.equal(await slideIn.locator('[data-test-id="rich-editor-overflow"]').count(), 0);
+    assert.equal(await toolbar.locator('[data-test-id="toolbar-button-table"]').count(), 1);
 
     const toolbarBounds = await toolbar.boundingBox();
     const sidebarBounds = await slideIn.locator('[data-test-id="task-sidebar"]').boundingBox();
