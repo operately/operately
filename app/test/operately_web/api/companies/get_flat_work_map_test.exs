@@ -303,6 +303,7 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMapTest do
       open_task = Enum.find(task_items, fn item -> item.id == Paths.task_id(ctx.open_task) end)
       assert open_task
       assert open_task.parent_id == ctx.project.id
+      assert open_task.inserted_at == OperatelyWeb.Api.Serializer.serialize(ctx.open_task.inserted_at)
 
       assignee = Operately.Repo.get_by!(Operately.Tasks.Assignee, task_id: ctx.open_task.id, person_id: ctx.assignee.id)
       assert open_task.assigned_at == OperatelyWeb.Api.Serializer.serialize(assignee.inserted_at)

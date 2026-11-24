@@ -349,7 +349,9 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMapTest do
       child_item = Enum.find(parent_item.children, &(&1.id == Paths.goal_id(ctx.child_goal)))
 
       # Verify that the child goal has the project as a child
-      assert Enum.find(child_item.children, &(&1.id == Paths.project_id(ctx.child_project)))
+      project_item = Enum.find(child_item.children, &(&1.id == Paths.project_id(ctx.child_project)))
+      assert child_item.inserted_at == OperatelyWeb.Api.Serializer.serialize(ctx.child_goal.inserted_at)
+      assert project_item.inserted_at == OperatelyWeb.Api.Serializer.serialize(ctx.child_project.inserted_at)
     end
 
     test "returns correct item_path for all item types", ctx do

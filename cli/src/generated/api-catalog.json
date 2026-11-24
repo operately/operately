@@ -4216,6 +4216,17 @@
           },
           {
             "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "completed_on",
             "type": {
               "name": "date",

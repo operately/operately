@@ -3105,6 +3105,7 @@ defmodule OperatelyWeb.Api.Types do
     field :reviewer_path, :string, null: true
     field :next_step, :string, null: false
     field :is_new, :boolean, null: false
+    field? :inserted_at, :datetime, null: false
     field :completed_on, :date, null: true
     field :timeframe, :timeframe, null: true
     field :assigned_at, :datetime, null: true
