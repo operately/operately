@@ -133,7 +133,7 @@ export const ResourceList = forwardRef<{ onKeyDown: (props: { event: KeyboardEve
         aria-label={currentStatus === "ready" && currentItems.length > 0 ? t("Search results") : undefined}
       >
         {message && (
-          <div className="px-2 py-2 text-sm text-content-subtle" role="status">
+          <div className="px-2 py-2 text-sm text-content-dimmed" role="status">
             {message}
           </div>
         )}
@@ -145,13 +145,13 @@ export const ResourceList = forwardRef<{ onKeyDown: (props: { event: KeyboardEve
               type="button"
               role="option"
               aria-selected={index === selectedIndex}
-              className={`shrink-0 px-2 py-1.5 text-left hover:bg-brand-1 ${index === selectedIndex ? "bg-brand-1" : ""}`}
+              className={`shrink-0 px-2 py-1.5 text-left hover:bg-surface-highlight ${index === selectedIndex ? "bg-surface-highlight" : ""}`}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => command(item)}
               data-test-id={createTestId("mention-resource", item.type, item.id)}
             >
               <span className="block text-sm text-content-accent">{item.title}</span>
-              <span className="block text-xs text-content-subtle">
+              <span className="block text-xs text-content-dimmed">
                 {item.type === "goal" ? t("Goal") : item.type === "project" ? t("Project") : t("Task")}
                 {item.context ? ` · ${item.context}` : ""}
               </span>
