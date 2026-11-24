@@ -2,6 +2,7 @@ import type { EditorView } from "@tiptap/pm/view";
 import { ReactRenderer } from "@tiptap/react";
 
 import { MentionList } from "./MentionList";
+import type { ComponentType } from "react";
 
 type MentionPopupProps = Record<string, any>;
 
@@ -21,14 +22,18 @@ export class MentionPopup {
 
   cleanupOutsideClick: (() => void) | null = null;
 
-  constructor(private dismiss?: (view: EditorView) => void) {
+  constructor(
+    private dismiss?: (view: EditorView) => void,
+    private List: ComponentType<any> = MentionList,
+    private extraProps: Record<string, unknown> = {},
+  ) {
     this.component = null;
     this.unmount = null;
   }
 
   onStart(props: MentionPopupProps) {
-    this.component = new ReactRenderer(MentionList, {
-      props,
+    this.component = new ReactRenderer(this.List, {
+      props: { ...props, ...this.extraProps },
       editor: props.editor,
     });
 
@@ -55,7 +60,7 @@ export class MentionPopup {
   onUpdate(props: MentionPopupProps) {
     if (!this.component) return;
 
-    this.component.updateProps(props);
+    this.component.updateProps({ ...props, ...this.extraProps });
   }
 
   onKeyDown(props: MentionPopupProps) {

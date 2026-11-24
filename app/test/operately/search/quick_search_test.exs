@@ -119,6 +119,63 @@ defmodule Operately.Search.QuickSearchTest do
     assert QuickSearch.search(ctx.creator, "Unavailable").discussions == []
   end
 
+  test "completed work is opt-in for goals, projects, and both task kinds", ctx do
+    ctx =
+      ctx
+      |> Factory.create_space_task(:space_task, :space, name: "Searchable Space Task")
+      |> Factory.add_project_task(:unplanned_task, nil, project_id: ctx.project.id, name: "Searchable Unplanned Task")
+      |> Factory.add_project(:closed_project, :space, name: "Searchable Closed Project")
+      |> Factory.add_project_milestone(:closed_milestone, :closed_project, title: "Searchable Closed Milestone")
+      |> Factory.add_project_task(:closed_project_task, :closed_milestone, name: "Searchable Closed Project Task")
+
+    for task <- [ctx.task, ctx.space_task] do
+      {:ok, _} = Operately.Tasks.update_task(task, %{task_status: completed_status()})
+    end
+
+    ctx = ctx |> Factory.close_project(:closed_project) |> Factory.close_goal(:goal)
+
+    defaults = QuickSearch.search(ctx.creator, "Searchable")
+    assert Enum.map(defaults.projects, & &1.id) == [ctx.project.id]
+    assert defaults.goals == []
+    assert defaults.tasks == []
+    refute Enum.any?(defaults.milestones, &(&1.id == ctx.closed_milestone.id))
+    assert QuickSearch.search(ctx.creator, "Searchable", include_completed: false) == defaults
+
+    completed = QuickSearch.search(ctx.creator, "Searchable", include_completed: true)
+    assert Enum.map(completed.projects, & &1.id) |> Enum.sort() == Enum.sort([ctx.project.id, ctx.closed_project.id])
+    assert Enum.map(completed.goals, & &1.id) == [ctx.goal.id]
+    assert Enum.map(completed.tasks, & &1.id) |> Enum.sort() == Enum.sort([ctx.task.id, ctx.space_task.id, ctx.closed_project_task.id, ctx.unplanned_task.id])
+    refute Enum.any?(completed.milestones, &(&1.id == ctx.closed_milestone.id))
+    assert completed.spaces == defaults.spaces
+    assert Enum.map(completed.people, & &1.id) == Enum.map(defaults.people, & &1.id)
+    assert completed.discussions == defaults.discussions
+    assert completed.documents == defaults.documents
+  end
+
+  test "completed search still excludes private, deleted, and other-company work", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:viewer)
+      |> Factory.add_space(:private_space, name: "Private Searchable Space", company_permissions: Binding.no_access())
+      |> Factory.add_project(:private_project, :private_space, name: "Private Searchable Project", company_access_level: Binding.no_access())
+      |> Factory.add_goal(:private_goal, :private_space, name: "Private Searchable Goal", company_access: Binding.no_access())
+      |> Factory.create_space_task(:private_task, :private_space, name: "Private Searchable Task")
+
+    other =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space, name: "Other Searchable Space")
+      |> Factory.add_project(:project, :space, name: "Other Searchable Project")
+
+    Repo.soft_delete!(ctx.project)
+    Repo.soft_delete!(ctx.goal)
+    results = QuickSearch.search(ctx.viewer, "Searchable", include_completed: true)
+    assert results.projects == []
+    assert results.goals == []
+    assert results.tasks == []
+    refute Enum.any?(results.projects, &(&1.id == other.project.id))
+  end
+
   test "caps every canonical group at five results", ctx do
     ctx =
       Enum.reduce(1..6, ctx, fn index, acc ->
@@ -184,5 +241,9 @@ defmodule Operately.Search.QuickSearchTest do
       |> Repo.update!()
 
     %{ctx | resource_file: file, resource_link: link}
+  end
+
+  defp completed_status do
+    %{id: Ecto.UUID.generate(), label: "Done", color: :green, index: 2, value: "done", closed: true}
   end
 end

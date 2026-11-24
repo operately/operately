@@ -56,6 +56,33 @@ defmodule OperatelyWeb.Api.Companies.QuickSearchTest do
              ~w(discussions documents files folders goals links milestones people projects spaces tasks)a
   end
 
+  test "includes completed work only when requested", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project(:project, :space, name: "Completed Project")
+      |> Factory.add_goal(:goal, :space, name: "Completed Goal")
+      |> Factory.add_project_milestone(:milestone, :project, title: "Completed Milestone")
+      |> Factory.add_project_task(:project_task, :milestone, name: "Completed Project Task")
+      |> Factory.create_space_task(:completed_space_task, :space, name: "Completed Space Task")
+
+    {:ok, _} = Operately.Tasks.update_task(ctx.completed_space_task, %{task_status: completed_status()})
+    ctx = ctx |> Factory.close_project(:project) |> Factory.close_goal(:goal) |> Factory.log_in_person(:creator)
+
+    assert {200, defaults} = query(ctx.conn, [:companies, :quick_search], query: "Completed")
+    assert defaults.projects == []
+    assert defaults.goals == []
+    assert defaults.tasks == []
+
+    assert {200, false_results} = query(ctx.conn, [:companies, :quick_search], query: "Completed", include_completed: false)
+    assert false_results == defaults
+
+    assert {200, completed} = query(ctx.conn, [:companies, :quick_search], query: "Completed", include_completed: true)
+    assert Enum.map(completed.projects, & &1.id) == [Paths.project_id(ctx.project)]
+    assert Enum.map(completed.goals, & &1.id) == [Paths.goal_id(ctx.goal)]
+    assert Enum.map(completed.tasks, & &1.id) |> Enum.sort() == Enum.sort([Paths.task_id(ctx.project_task), Paths.task_id(ctx.completed_space_task)])
+    assert completed.milestones == []
+  end
+
   test "returns the complete empty response for short and invalid queries", ctx do
     ctx = Factory.log_in_person(ctx, :creator)
 
@@ -182,5 +209,9 @@ defmodule OperatelyWeb.Api.Companies.QuickSearchTest do
         refute Map.has_key?(Jason.decode!(conn.resp_body), "code")
       end)
     end
+  end
+
+  defp completed_status do
+    %{id: Ecto.UUID.generate(), label: "Done", color: :green, index: 2, value: "done", closed: true}
   end
 end

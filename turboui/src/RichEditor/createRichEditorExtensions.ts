@@ -14,6 +14,7 @@ import Highlight from "./extensions/Highlight";
 import { LinkExtension } from "./extensions/Link";
 import { AutoLinkSuppression } from "./extensions/Link/AutoLinkSuppression";
 import { mentionExtensions } from "./mentionExtensions";
+import { MentionResources } from "./extensions/MentionResources";
 import type { RichEditorHandlers } from "./useEditor";
 
 export type CreateRichEditorExtensionsOptions = {
@@ -44,7 +45,7 @@ const starterKitExtension = StarterKit.configure({
  * and version diffs. Does not create React state or an editor instance.
  */
 export function createRichEditorExtensions(
-  handlers: Pick<RichEditorHandlers, "peopleSearch" | "uploadFile">,
+  handlers: Pick<RichEditorHandlers, "peopleSearch" | "resourceSearch" | "uploadFile">,
   options: CreateRichEditorExtensionsOptions = {},
 ): Extensions {
   const editable = options.editable ?? true;
@@ -69,6 +70,11 @@ export function createRichEditorExtensions(
   }
 
   extensions.push(...mentionExtensions(handlers, editable, options.portalContainer), Highlight, FakeTextSelection);
+  if (editable && handlers.resourceSearch) {
+    extensions.push(
+      MentionResources.configure({ search: handlers.resourceSearch, container: options.portalContainer }),
+    );
+  }
 
   if (options.inlineComments) extensions.push(InlineComments.configure(options.inlineComments));
 
