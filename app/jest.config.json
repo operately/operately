@@ -20,6 +20,7 @@
     ]
   ],
   "moduleNameMapper": {
+    "^.+\\?url$": "<rootDir>/assets/js/__tests__/mocks/asset-url.js",
     "^react$": "<rootDir>/node_modules/react",
     "^react-i18next$": "<rootDir>/node_modules/react-i18next",
     "^i18next$": "<rootDir>/node_modules/i18next",

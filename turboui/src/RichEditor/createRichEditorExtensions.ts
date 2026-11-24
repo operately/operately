@@ -16,6 +16,7 @@ import { AutoLinkSuppression } from "./extensions/Link/AutoLinkSuppression";
 import { mentionExtensions } from "./mentionExtensions";
 import { MentionResources } from "./extensions/MentionResources";
 import type { RichEditorHandlers } from "./useEditor";
+import { MermaidCodeBlock } from "./extensions/Mermaid";
 
 export type CreateRichEditorExtensionsOptions = {
   inlineComments?: InlineCommentsOptions;
@@ -23,10 +24,12 @@ export type CreateRichEditorExtensionsOptions = {
   placeholder?: PlaceholderOptions["placeholder"];
   thumbnailBlobs?: boolean;
   portalContainer?: HTMLElement;
+  renderMermaid?: boolean;
 };
 
 const starterKitExtension = StarterKit.configure({
   link: false,
+  codeBlock: false,
   // Provide our own Heading with shortcuts matching the toolbar.
   heading: false,
   bulletList: {
@@ -52,6 +55,7 @@ export function createRichEditorExtensions(
 
   const extensions: Extensions = [
     starterKitExtension,
+    MermaidCodeBlock.configure({ renderMermaid: options.renderMermaid ?? true, enableMermaidPaste: editable }),
     ...tableExtensions,
     TaskList.configure({ HTMLAttributes: { class: "!list-none !pl-0" } }),
     TaskItemExtension,
