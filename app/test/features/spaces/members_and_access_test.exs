@@ -63,6 +63,36 @@ defmodule Operately.Features.Spaces.MembersAndAccessTest do
     |> Steps.assert_members_added_email_sent(members)
   end
 
+  feature "adding members on a mobile screen keeps the form compact", ctx do
+    first = person_fixture_with_account(%{full_name: "Alexandra Catherine Montgomery Richardson", company_id: ctx.company.id})
+    removed = person_fixture_with_account(%{full_name: "Boby Brown", company_id: ctx.company.id})
+    last = person_fixture_with_account(%{full_name: "Cathy Clarkson", company_id: ctx.company.id})
+
+    ctx
+    |> Steps.given_a_space_exists()
+    |> AccessSteps.open_mobile_add_members_form()
+    |> AccessSteps.assert_compact_member_layout(1)
+    |> AccessSteps.select_member({0, first})
+    |> AccessSteps.add_another_member()
+    |> AccessSteps.select_member({1, removed})
+    |> AccessSteps.add_another_member()
+    |> AccessSteps.select_member({2, last})
+    |> AccessSteps.select_member_access({2, "View Access"})
+    |> AccessSteps.assert_compact_member_layout(3)
+    |> AccessSteps.set_viewport({440, 850})
+    |> AccessSteps.use_dark_theme()
+    |> AccessSteps.assert_compact_member_layout(3)
+    |> AccessSteps.set_viewport({1280, 1300})
+    |> AccessSteps.use_light_theme()
+    |> AccessSteps.assert_compact_member_layout(3)
+    |> AccessSteps.remove_additional_member(1)
+    |> AccessSteps.assert_compact_member_layout(2)
+    |> AccessSteps.submit_members()
+    |> Steps.assert_members_added([first, last])
+    |> AccessSteps.assert_saved_member_access({last, Binding.view_access()})
+    |> AccessSteps.assert_person_is_not_a_member(removed)
+  end
+
   feature "removing space members", ctx do
     [space, member] =
       Steps.given_space_with_member_exists(ctx, %{
