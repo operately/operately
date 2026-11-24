@@ -44,7 +44,8 @@ describe("Rich editor toolbar in a browser", () => {
     await overflow.click();
     const popup = page.getByRole("dialog");
     await popup.waitFor();
-    assert.equal(await popup.locator("button").count(), 15, "All overflow actions and Markdown help remain available");
+    assert.equal(await popup.locator("button").count(), 16, "All overflow actions and Markdown help remain available");
+    assert.equal(await popup.getByRole("button", { name: "Insert diagram", exact: true }).count(), 1);
     const popupBounds = await popup.boundingBox();
     assert.ok(popupBounds);
     await assertControlsFit(popup.locator("button"), popupBounds);
