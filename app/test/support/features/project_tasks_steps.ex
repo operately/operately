@@ -322,6 +322,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.assert_has(testid: UI.testid(["mention-resource", "project", Paths.project_id(ctx.destination_project)]))
     |> UI.click(testid: UI.testid(["mention-resource", "project", Paths.project_id(ctx.destination_project)]))
     |> UI.click_button("Save")
+    |> UI.assert_has(testid: "edit-description")
   end
 
   step :assert_project_reference_persisted, ctx do
