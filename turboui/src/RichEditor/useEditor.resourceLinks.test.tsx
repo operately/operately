@@ -1,4 +1,6 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, renderHook, waitFor } from "@testing-library/react";
+import { EditorContent } from "@tiptap/react";
+import React from "react";
 import { useEditor } from "./useEditor";
 
 const href = `${window.location.origin}/acme-0abc/projects/website-xyz`;
@@ -26,6 +28,65 @@ const content = {
   ],
 };
 const handlers = { mentionedPersonLookup: async () => null, resolveResourceLinks: null };
+
+beforeAll(() => {
+  Range.prototype.getClientRects = () => document.createElement("div").getClientRects();
+  Range.prototype.getBoundingClientRect = () => document.createElement("div").getBoundingClientRect();
+});
+
+it.each([
+  ["goal", "/acme/goals/launch"],
+  ["project", "/acme/projects/launch"],
+  ["task", "/acme/tasks/launch"],
+  ["task", "/acme/spaces/team/boards/work?taskId=launch"],
+] as const)("inserts a %s reference as an ordinary link and leaves typing outside it", async (type, url) => {
+  const resourceSearch = jest.fn().mockResolvedValue([{ id: "launch", title: "Launch", type, url }]);
+  const resolveResourceLinks = jest.fn().mockResolvedValue([{ url, title: "Launch" }]);
+  const { result } = renderHook(() => useEditor({ handlers: { ...handlers, resourceSearch, resolveResourceLinks } }));
+  await waitFor(() => expect(result.current.editor).not.toBeNull());
+  render(<EditorContent editor={result.current.editor} />);
+  act(() => result.current.editor.commands.insertContent("Depends on #lau"));
+  await waitFor(() => expect(resourceSearch).toHaveBeenCalledWith("lau"));
+  await waitFor(() =>
+    expect(document.querySelector('[data-test-id="mention-resource-' + type + '-launch"]')).not.toBeNull(),
+  );
+  act(() => fireEvent.keyDown(result.current.editor.view.dom, { key: "Enter" }));
+  await waitFor(() => expect(result.current.editor.state.doc.textContent).toContain("Launch"));
+  act(() => result.current.editor.commands.insertContent("next"));
+  const saved = result.current.getJson();
+  expect(saved.content[0].content).toEqual([
+    { type: "text", text: "Depends on " },
+    expect.objectContaining({
+      type: "text",
+      text: url,
+      marks: [expect.objectContaining({ type: "link", attrs: expect.objectContaining({ href: url }) })],
+    }),
+    { type: "text", text: " next" },
+  ]);
+  expect(JSON.stringify(saved)).not.toContain("operatelyResourceLink");
+  expect(JSON.stringify(saved)).not.toContain('"type":"mention"');
+});
+
+it("selects a resource with the pointer and dismisses without insertion", async () => {
+  const resourceSearch = jest
+    .fn()
+    .mockResolvedValue([{ id: "p", title: "Project", type: "project", url: "/acme/projects/p" }]);
+  const { result } = renderHook(() => useEditor({ handlers: { ...handlers, resourceSearch } }));
+  await waitFor(() => expect(result.current.editor).not.toBeNull());
+  render(<EditorContent editor={result.current.editor} />);
+  act(() => result.current.editor.commands.insertContent("#pro"));
+  const option = await waitFor(() => {
+    const element = document.querySelector('[data-test-id="mention-resource-project-p"]');
+    expect(element).not.toBeNull();
+    return element;
+  });
+  if (!option) throw new Error("Resource option missing");
+  fireEvent.click(option);
+  expect(result.current.getJson().content[0].content[0].marks[0].type).toBe("link");
+  act(() => result.current.editor.commands.insertContent(" #pro"));
+  fireEvent.keyDown(result.current.editor.view.dom, { key: "Escape" });
+  expect(result.current.getJson().content[0].content.at(-1).text).toContain("#pro");
+});
 
 it("renders backend titles without requesting resources", async () => {
   const { result } = renderHook(() => useEditor({ content, editable: false, handlers }));

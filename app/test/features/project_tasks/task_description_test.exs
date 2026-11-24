@@ -39,6 +39,19 @@ defmodule Operately.Features.ProjectTasks.TaskDescriptionTest do
   end
 
   @tag login_as: :contributor
+  feature "reference another project's title in a task description", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.given_destination_project_exists()
+    |> Steps.visit_task_page()
+    |> Steps.edit_task_description_referencing_project()
+    |> Steps.assert_project_reference_persisted()
+    |> Steps.reload_task_page()
+    |> Steps.assert_project_reference_visible()
+    |> Steps.follow_project_reference()
+  end
+
+  @tag login_as: :contributor
   feature "task shows description indicator when description is added", ctx do
     ctx
     |> Steps.assert_contributor_has_edit_access()

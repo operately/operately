@@ -1,16 +1,17 @@
 import { Editor } from "@tiptap/core";
 
 import { createRichEditorExtensions } from "./createRichEditorExtensions";
+import type { ResourceSearchFn } from "./extensions/MentionResources";
 
 const handlers = {
   mentionedPersonLookup: async () => null,
   uploadFile: async () => ({ id: "1", url: "u" }),
 } as any;
 
-function makeEditor(): Editor {
+function makeEditor(resourceSearch?: ResourceSearchFn): Editor {
   return new Editor({
     element: document.createElement("div"),
-    extensions: createRichEditorExtensions(handlers, { editable: true }),
+    extensions: createRichEditorExtensions({ ...handlers, resourceSearch }, { editable: true }),
     // Mirror useEditor: preserve Highlight on paste; Link handles clipboard parsing.
     enablePasteRules: ["highlight"],
   });
@@ -45,6 +46,12 @@ function firstText(editor: Editor): any {
 }
 
 describe("RichEditor markdown input rules", () => {
+  it("keeps the hash heading shortcut when resource suggestions are enabled", () => {
+    const editor = makeEditor(async () => []);
+    type(editor, "#", " ");
+    expect(firstChild(editor)).toMatchObject({ type: "heading", attrs: { level: 1 } });
+    editor.destroy();
+  });
   it("converts inline marks while typing", () => {
     const bold = makeEditor();
     type(bold, "**bold*", "*");

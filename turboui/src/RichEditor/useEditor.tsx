@@ -7,6 +7,7 @@ import { isUploadInProgress } from "./Blob";
 import { createRichEditorExtensions } from "./createRichEditorExtensions";
 import { clearLocalDraft, isRichTextEmpty, LocalDraftOptions, readLocalDraft, writeLocalDraft } from "./localDrafts";
 import { SearchFn } from "./extensions/MentionPeople";
+import { ResourceSearchFn } from "./extensions/MentionResources";
 import { restoreRichTextSource } from "../RichContent/restoreSource";
 import { createResourceLinkPlugin, type ResolveResourceLinks } from "./extensions/Link/resourceLinks";
 import {
@@ -42,6 +43,7 @@ export interface RichEditorHandlers {
   resolveResourceLinks: ResolveResourceLinks | null;
   mentionedPersonLookup: MentionedPersonLookupFn;
   peopleSearch?: SearchFn;
+  resourceSearch?: ResourceSearchFn;
   uploadFile?: UploadFileFn;
 }
 
@@ -121,6 +123,7 @@ export function useEditor(props: UseEditorProps): EditorState {
     [
       props.handlers.uploadFile,
       props.handlers.peopleSearch,
+      props.handlers.resourceSearch,
       props.editable,
       placeholder,
       props.thumbnailBlobs,
