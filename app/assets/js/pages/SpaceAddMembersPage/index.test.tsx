@@ -47,6 +47,7 @@ jest.mock("turboui", () => ({
   IconPlus: () => null,
   IconX: () => null,
   Link: ({ children }) => <a>{children}</a>,
+  SpaceMemberFields: ({ labels }) => <button aria-label={labels.addAnother} />,
 }));
 
 const english = { ...i18n.getResourceBundle("en", "translation") };
