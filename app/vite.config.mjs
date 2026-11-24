@@ -6,6 +6,7 @@ import { defineConfig, splitVendorChunkPlugin } from "vite";
 import { moduleAnalyzerPlugin, resumeStdinPlugin } from "./assets/custom-vite-plugins.mjs";
 
 const isProd = process.env.NODE_ENV === "production";
+const isDev = process.env.NODE_ENV === "development";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const devHost = process.env.OPERATELY_DEV_HOST;
 const portOffset = Number.parseInt(process.env.PORT_OFFSET || "4000", 10);
@@ -56,7 +57,7 @@ export default defineConfig({
     outDir: "priv/static",
     emptyOutDir: true,
     minify: isProd,
-    sourcemap: !isProd || "inline",
+    sourcemap: isProd ? "inline" : isDev,
     target: "es2020",
     manifest: true,
     rollupOptions: {

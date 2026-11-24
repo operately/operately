@@ -9,7 +9,7 @@
     "sourceMap": false,
     "sourceRoot": ""
   },
-  "files": ["src/index.tsx", "src/global.d.ts", "src/types/react-datepicker.d.ts", "src/types/vite-assets.d.ts"],
+  "files": ["src/index.tsx", "src/global.d.ts", "src/types/react-datepicker.d.ts"],
   "include": [],
   "exclude": ["node_modules", "dist"]
 }
