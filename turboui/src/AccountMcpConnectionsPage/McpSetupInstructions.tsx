@@ -11,11 +11,17 @@ import { ViewToggle } from "../ViewToggle";
 
 type Client = "chatgpt" | "claude" | "cursor" | "codex" | "claude-code" | "other";
 
+interface StarterPrompt {
+  text: string;
+  testId: string;
+}
+
 interface SetupStep {
   id: string;
   title: string;
   description: string;
   snippet?: { text: string; copyLabel: string; testId: string };
+  prompts?: StarterPrompt[];
   link?: { url: string; label: string };
 }
 
@@ -62,6 +68,7 @@ export function McpSetupInstructions({ mcpServerUrl }: { mcpServerUrl: string })
                 </SetupLink>
               )}
               {step.snippet && <CopyableSnippet {...step.snippet} />}
+              {step.prompts && <PromptList prompts={step.prompts} />}
             </div>
           </li>
         ))}
@@ -80,6 +87,31 @@ export function McpSetupInstructions({ mcpServerUrl }: { mcpServerUrl: string })
 }
 
 function setupSteps(client: Client, serverUrl: string, t: TFunction): SetupStep[] {
+  return [
+    ...clientSetupSteps(client, serverUrl, t),
+    {
+      id: "first-prompt",
+      title: t("Run your first prompt"),
+      description: firstPromptDescription(client, t),
+      prompts: starterPrompts(t),
+    },
+  ];
+}
+
+function firstPromptDescription(client: Client, t: TFunction): string {
+  switch (client) {
+    case "chatgpt":
+      return t(
+        "Install the plugin, start a new chat, type @, and select Operately. Then copy and run one of these prompts.",
+      );
+    case "claude":
+      return t("Start a new chat, open + → Connectors, and enable Operately. Then copy and run one of these prompts.");
+    default:
+      return t("Copy a prompt, paste it into {{client}}, and run it.", { client: clientLabel(client, t) });
+  }
+}
+
+function clientSetupSteps(client: Client, serverUrl: string, t: TFunction): SetupStep[] {
   const serverSnippet = { text: serverUrl, copyLabel: t("Copy server URL"), testId: "mcp-server-url" };
   const authorize: SetupStep = {
     id: "authorize",
@@ -107,11 +139,6 @@ function setupSteps(client: Client, serverUrl: string, t: TFunction): SetupStep[
           snippet: serverSnippet,
         },
         authorize,
-        {
-          id: "use",
-          title: t("Use it in a chat"),
-          description: t("Install the plugin, then type @ in a new chat and select Operately."),
-        },
       ];
     case "claude":
       return [
@@ -130,11 +157,6 @@ function setupSteps(client: Client, serverUrl: string, t: TFunction): SetupStep[
           snippet: serverSnippet,
         },
         authorize,
-        {
-          id: "use",
-          title: t("Use it in a chat"),
-          description: t("In a new chat, open + → Connectors and enable Operately."),
-        },
       ];
     case "cursor":
       return [
@@ -217,6 +239,40 @@ function setupSteps(client: Client, serverUrl: string, t: TFunction): SetupStep[
   }
 }
 
+function clientLabel(client: Client, t: TFunction): string {
+  switch (client) {
+    case "chatgpt":
+      return "ChatGPT";
+    case "claude":
+      return "Claude";
+    case "cursor":
+      return "Cursor";
+    case "codex":
+      return "Codex CLI";
+    case "claude-code":
+      return "Claude Code";
+    case "other":
+      return t("your AI client");
+  }
+}
+
+function starterPrompts(t: TFunction): StarterPrompt[] {
+  return [
+    {
+      text: t("Use Operately to show my overdue tasks and what’s due this week."),
+      testId: "mcp-prompt-overdue-tasks",
+    },
+    {
+      text: t("Use Operately to summarize last week’s project progress and blockers."),
+      testId: "mcp-prompt-project-progress",
+    },
+    {
+      text: t("Use Operately to show which goals are off track, who owns them, and why."),
+      testId: "mcp-prompt-off-track-goals",
+    },
+  ];
+}
+
 function CopyableSnippet({ text, copyLabel, testId }: NonNullable<SetupStep["snippet"]>) {
   return (
     <div className="mt-3 flex items-start gap-3 rounded-md border border-stroke-base bg-surface-dimmed px-3 py-2.5">
@@ -231,6 +287,25 @@ function CopyableSnippet({ text, copyLabel, testId }: NonNullable<SetupStep["sni
         className="shrink-0"
         testId={`copy-${testId}`}
       />
+    </div>
+  );
+}
+
+function PromptList({ prompts }: { prompts: StarterPrompt[] }) {
+  return (
+    <div className="mt-3 space-y-2">
+      {prompts.map((prompt) => (
+        <CopyToClipboard
+          key={prompt.testId}
+          text={prompt.text}
+          label={prompt.text}
+          ariaLabel={prompt.text}
+          size={16}
+          showIcon
+          className="block min-h-10 w-fit max-w-full whitespace-normal !px-3 !py-2.5 !text-left font-normal leading-5"
+          testId={prompt.testId}
+        />
+      ))}
     </div>
   );
 }
