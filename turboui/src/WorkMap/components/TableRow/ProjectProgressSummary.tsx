@@ -24,7 +24,7 @@ export function ProjectProgressSummary({ milestones, taskCompletion }: ProjectPr
       data-testid="project-progress-summary-content"
     >
       <div className="text-xs font-semibold text-content-dimmed uppercase tracking-wide">{t("Task completion")}</div>
-      <div className="flex items-center gap-1.5 text-xs text-content-subtle mb-2" data-testid="task-completion-summary">
+      <div className="flex items-center gap-1.5 text-xs text-content-accent mb-2" data-testid="task-completion-summary">
         {taskCompletion ? (
           <>
             <PieChart size={12} slices={[{ percentage: taskCompletion.percentage, color: "var(--color-green-500)" }]} />
@@ -43,7 +43,7 @@ export function ProjectProgressSummary({ milestones, taskCompletion }: ProjectPr
       <div className="flex items-center gap-2 mb-0.5">
         <div className="text-xs font-semibold text-content-dimmed uppercase tracking-wide">{t("Milestones")}</div>
         {totalCount > 0 && (
-          <div className="flex items-center gap-1.5 text-xs text-content-subtle">
+          <div className="flex items-center gap-1.5 text-xs text-content-accent">
             <PieChart size={12} slices={[{ percentage: completionPercentage, color: "var(--color-green-500)" }]} />
             <span>
               {t("{{completed}}/{{total}} completed ({{percentage}}%)", {
