@@ -135,7 +135,10 @@ export function RichContentDiff(props: RichContentDiffProps) {
     ensureDiffStyles();
   }, []);
 
-  const baseExtensions = React.useMemo(() => createRichEditorExtensions({}, { editable: false }), []);
+  const baseExtensions = React.useMemo(
+    () => createRichEditorExtensions({}, { editable: false, renderMermaid: false }),
+    [],
+  );
   const schema = React.useMemo(() => getSchema(baseExtensions), [baseExtensions]);
   const comparison = React.useMemo(
     () => prepareComparison(schema, props.before, props.after),

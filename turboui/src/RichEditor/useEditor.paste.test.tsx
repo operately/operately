@@ -103,6 +103,28 @@ it("keeps pasted Markdown literal while linking a neighboring plain URL", async 
   ]);
 });
 
+it("converts a pasted Mermaid fence into a diagram code block", async () => {
+  const { editor, result } = await setup();
+  const fence = "```";
+
+  fireEvent.paste(editor.view.dom, {
+    clipboardData: {
+      getData: (type: string) => (type === "text/plain" ? `${fence}mermaid\nflowchart TD\n  A --> B\n${fence}` : ""),
+      items: [],
+      files: [],
+    },
+  });
+
+  expect(result.current.getJson().content).toEqual([
+    {
+      type: "codeBlock",
+      attrs: { language: "mermaid" },
+      content: [{ type: "text", text: "flowchart TD\n  A --> B" }],
+    },
+    { type: "paragraph" },
+  ]);
+});
+
 it.each(["codeBlock", "code"])("does not link URLs pasted into %s", async (type) => {
   const { editor, result } = await setup();
 

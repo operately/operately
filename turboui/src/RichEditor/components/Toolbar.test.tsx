@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { Editor, useEditor } from "..";
@@ -42,4 +42,17 @@ it("keeps table insertion and Markdown help reachable in the compact toolbar pop
 
   await user.keyboard("{Enter}");
   expect(screen.getByRole("button", { name: "Close" })).toBeVisible();
+});
+
+it("inserts an editable Mermaid diagram block", async () => {
+  const user = userEvent.setup();
+  const { container } = render(<Harness />);
+
+  await user.click(screen.getByRole("button", { name: "Insert diagram" }));
+
+  await waitFor(() => {
+    const editor = container.querySelector('[contenteditable="true"]');
+    expect(editor).toHaveTextContent("");
+    expect(container.querySelector('[data-language="mermaid"]')).toBeInTheDocument();
+  });
 });
