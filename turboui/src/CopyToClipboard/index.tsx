@@ -16,6 +16,7 @@ interface CopyToClipboardProps {
   testId?: string;
   ariaLabel?: string;
   label?: string;
+  showIcon?: boolean;
 }
 
 export function CopyToClipboard({
@@ -27,6 +28,7 @@ export function CopyToClipboard({
   testId,
   ariaLabel,
   label,
+  showIcon = false,
 }: CopyToClipboardProps) {
   const { t } = useTranslation();
   const resolvedAriaLabel = ariaLabel ?? translationText(t("Copy to clipboard"));
@@ -44,7 +46,15 @@ export function CopyToClipboard({
 
   if (label) {
     return (
-      <SecondaryButton size="xxs" onClick={handleClick} testId={testId} ariaLabel={ariaLabel} className={className}>
+      <SecondaryButton
+        size="xxs"
+        onClick={handleClick}
+        testId={testId}
+        ariaLabel={ariaLabel}
+        className={className}
+        icon={showIcon ? (copied ? IconCheck : IconCopy) : undefined}
+        iconSize={size}
+      >
         {copied ? t("Copied") : label}
       </SecondaryButton>
     );

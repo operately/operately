@@ -101,6 +101,7 @@ export const ClientSetup: Story = {
       await userEvent.click(button);
       await expect(button).toHaveAttribute("aria-pressed", "true");
       await expect(canvasElement.querySelector('[data-test-id="mcp-authorize-step"]')).toBeVisible();
+      await expect(canvas.getByRole("heading", { name: "Run your first prompt" })).toBeVisible();
     }
   },
 };
