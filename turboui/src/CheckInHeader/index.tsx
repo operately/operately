@@ -27,8 +27,9 @@ export function CheckInTitle({ state, timestamp, formattedTimePreferences }: Che
   const { t } = useTranslation();
   const postingTime = parseCheckInTimestamp(timestamp);
 
+  // Paper options sit outside the title flow, 10px from the edge. Equal gutters keep the title centered beside them.
   return (
-    <h1 className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-xl sm:text-3xl font-extrabold text-center">
+    <h1 className="flex w-full flex-wrap items-center justify-center gap-2 px-10 lg:px-0 text-content-accent text-xl sm:text-3xl font-extrabold text-center">
       <span>
         <Trans
           i18nKey="Check-In for <date/>"
