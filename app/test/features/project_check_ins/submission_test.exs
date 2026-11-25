@@ -70,7 +70,7 @@ defmodule Operately.Features.ProjectCheckIns.SubmissionTest do
     ctx
     |> Steps.submit_check_in(values)
     |> Steps.visit_check_ins_tab()
-    |> UI.assert_text("Check-In for #{month} #{day}", testid: "check-in-title")
+    |> UI.assert_text("Check-in for #{month} #{day}", testid: "check-in-title")
   end
 
   feature "edit a submitted check-in", ctx do

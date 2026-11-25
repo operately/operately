@@ -64,15 +64,37 @@ describe("CommentSection", () => {
             onCommentTaskItemChange: null,
           }}
           formattedTimePreferences={defaultFormattedTimePreferences}
-          ackLabel="Check-In"
         />
       </MemoryRouter>,
     );
 
     expect(queryByTestId("comment-comment-1")).toBeInTheDocument();
     expect(screen.getByText("Jane Doe")).toBeInTheDocument();
-    expect(screen.getByText(/acknowledged this Check-In/)).toBeInTheDocument();
+    expect(screen.getByText(/acknowledged this check-in/)).toBeInTheDocument();
     expect(queryByTestId("add-comment")).toBeInTheDocument();
+  });
+
+  it("preserves a custom acknowledgement label", () => {
+    render(
+      <MemoryRouter>
+        <CommentSection
+          items={items}
+          currentUser={currentUser}
+          canComment={false}
+          onAddComment={jest.fn()}
+          onEditComment={jest.fn()}
+          richTextHandlers={{
+            resolveResourceLinks: null,
+            mentionedPersonLookup: async () => null,
+            taskList: { canEdit: false },
+            onCommentTaskItemChange: null,
+          }}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+          ackLabel="retrospective"
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/acknowledged this retrospective/)).toBeInTheDocument();
   });
 
   it("hides the composer when commenting is disabled", () => {

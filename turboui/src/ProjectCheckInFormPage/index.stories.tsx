@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useState } from "react";
 
+import i18n from "../i18n";
+
 import { ProjectCheckInFormPage } from "./index";
 import { SubscribersSelector } from "../Subscriptions";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
@@ -52,7 +54,7 @@ function CreateFormStory({
   return (
     <ProjectCheckInFormPage
       mode="create"
-      pageTitle={["Check-In", "Apollo"]}
+      pageTitle={["Check-in", "Apollo"]}
       navigation={navigation}
       cancelLink="/projects/project-1?tab=check-ins"
       richTextHandlers={richTextHandlers}
@@ -102,7 +104,7 @@ export const EditFull: Story = {
   render: () => (
     <ProjectCheckInFormPage
       mode="edit"
-      pageTitle={["Edit Project Check-In", "Apollo"]}
+      pageTitle={[i18n.t("Edit project check-in"), "Apollo"]}
       navigation={navigation}
       cancelLink="/projects/project-1/check-ins/check-in-1"
       richTextHandlers={richTextHandlers}
@@ -134,7 +136,7 @@ export const EditLockedStatus: Story = {
   render: () => (
     <ProjectCheckInFormPage
       mode="edit"
-      pageTitle={["Edit Project Check-In", "Apollo"]}
+      pageTitle={[i18n.t("Edit project check-in"), "Apollo"]}
       navigation={navigation}
       cancelLink="/projects/project-1/check-ins/check-in-1"
       richTextHandlers={richTextHandlers}
@@ -170,7 +172,7 @@ export const EditDraft: Story = {
     return (
       <ProjectCheckInFormPage
         mode="edit"
-        pageTitle={["Edit Project Check-In", "Apollo"]}
+        pageTitle={[i18n.t("Edit project check-in"), "Apollo"]}
         navigation={navigation}
         cancelLink="/projects/project-1/check-ins/check-in-1"
         richTextHandlers={richTextHandlers}
@@ -206,7 +208,7 @@ export const EditScheduledDraft: Story = {
     return (
       <ProjectCheckInFormPage
         mode="edit"
-        pageTitle={["Edit Project Check-In", "Apollo"]}
+        pageTitle={[i18n.t("Edit project check-in"), "Apollo"]}
         navigation={navigation}
         cancelLink="/projects/project-1/check-ins/check-in-1"
         richTextHandlers={richTextHandlers}

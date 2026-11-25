@@ -45,7 +45,7 @@ const ProjectCheckInSubmitted: ActivityHandler = {
     if (page === "project") {
       return (
         <Trans
-          i18nKey="{{author}} submitted a <checkIn>Check-In</checkIn>"
+          i18nKey="{{author}} submitted a <checkIn>check-in</checkIn>"
           values={{ author: activityAuthorName(activity) }}
           components={{ checkIn }}
         />
@@ -53,7 +53,7 @@ const ProjectCheckInSubmitted: ActivityHandler = {
     } else {
       return (
         <Trans
-          i18nKey="{{author}} submitted a <checkIn>Check-In</checkIn> in the <project>{{projectName}}</project> project"
+          i18nKey="{{author}} submitted a <checkIn>check-in</checkIn> in the <project>{{projectName}}</project> project"
           values={{ author: activityAuthorName(activity), projectName: project.name }}
           components={{ checkIn, project: projectLink(paths, project) }}
         />

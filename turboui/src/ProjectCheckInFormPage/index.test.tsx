@@ -40,7 +40,7 @@ function renderCreateForm(overrides: Partial<ProjectCheckInFormPage.CreateProps>
     <MemoryRouter>
       <ProjectCheckInFormPage
         mode="create"
-        pageTitle={["Check-In", "Apollo"]}
+        pageTitle={["Check-in", "Apollo"]}
         navigation={[]}
         cancelLink="/projects/project-1"
         richTextHandlers={richTextHandlers}
@@ -63,6 +63,32 @@ function renderCreateForm(overrides: Partial<ProjectCheckInFormPage.CreateProps>
 }
 
 describe("ProjectCheckInFormPage", () => {
+  test("uses a verb in the create heading", () => {
+    renderCreateForm();
+    expect(screen.getByText("Let's check in")).toBeInTheDocument();
+  });
+
+  test("uses a lowercase noun in the edit heading", () => {
+    const richTextHandlers = createMockRichEditorHandlers();
+    render(
+      <MemoryRouter>
+        <ProjectCheckInFormPage
+          mode="edit"
+          pageTitle={["Edit project check-in", "Apollo"]}
+          navigation={[]}
+          cancelLink="/projects/project-1"
+          richTextHandlers={richTextHandlers}
+          mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+          checkIn={previousCheckIn.checkIn}
+          allowFullEdit
+          onSubmit={jest.fn().mockResolvedValue(true)}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/^Editing the check-in from/)).toBeInTheDocument();
+  });
+
   test.each([
     ["null", { previousCheckIn: null }],
     ["omitted", {}],

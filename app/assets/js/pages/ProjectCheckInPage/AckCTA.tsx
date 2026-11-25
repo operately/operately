@@ -42,7 +42,7 @@ export function AckCTA() {
   return (
     <div className="flex flex-row items-center justify-center mt-4 mb-4">
       <PrimaryButton size="lg" testId="acknowledge-check-in" onClick={ackHandler}>
-        {t("Acknowledge this Check-In")}
+        {t("Acknowledge this check-in")}
       </PrimaryButton>
     </div>
   );
