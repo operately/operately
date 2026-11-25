@@ -31,7 +31,7 @@ export function CheckInTitle({ state, timestamp, formattedTimePreferences }: Che
     <h1 className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-xl sm:text-3xl font-extrabold text-center">
       <span>
         <Trans
-          i18nKey="Check-In for <date/>"
+          i18nKey="Check-in for <date/>"
           components={{ date: <FormattedTime {...formattedTimePreferences} time={postingTime} format="long-date" /> }}
         />
       </span>

@@ -15,7 +15,7 @@ export function CheckIns(props: ProjectPage.State) {
     <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
       <div className="flex items-center gap-2 justify-between">
         <div>
-          <h2 className="font-bold text-lg">{t("Check-Ins")}</h2>
+          <h2 className="font-bold text-lg">{t("Check-ins")}</h2>
           <div className="flex items-center gap-2 text-sm">
             {t("Champions post weekly updates to document progress and share insights.")}
           </div>

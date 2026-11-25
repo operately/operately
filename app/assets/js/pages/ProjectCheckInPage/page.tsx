@@ -55,7 +55,7 @@ export function Page() {
   );
 
   return (
-    <Pages.Page title={[t("Check-In"), checkIn.project.name]} testId="project-check-in-page">
+    <Pages.Page title={[t("Check-in"), checkIn.project.name]} testId="project-check-in-page">
       <Paper.Root>
         <Navigation />
 
@@ -150,7 +150,7 @@ function Navigation() {
 
   if (checkIn.project) {
     items.push({ to: paths.projectPath(checkIn.project.id), label: checkIn.project.name });
-    items.push({ to: paths.projectCheckInsPath(checkIn.project.id), label: t("Check-Ins") });
+    items.push({ to: paths.projectCheckInsPath(checkIn.project.id), label: t("Check-ins") });
   }
 
   return <Paper.Navigation items={items} />;

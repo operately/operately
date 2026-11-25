@@ -236,7 +236,7 @@ export function GoalPage(props: GoalPage.Props) {
     { id: "overview", label: t("Overview"), icon: <IconClipboardText size={14} /> },
     {
       id: "check-ins",
-      label: t("Check-Ins"),
+      label: t("Check-ins"),
       icon: <IconMessage size={14} />,
       count: props.childrenCount.checkInsCount,
     },

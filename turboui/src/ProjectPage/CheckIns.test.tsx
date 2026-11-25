@@ -40,7 +40,7 @@ it("keeps the heading and permitted posting action visible while loading", () =>
       <CheckIns {...props} checkInsLoading />
     </MemoryRouter>,
   );
-  expect(screen.getByRole("heading", { name: "Check-Ins" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Check-ins" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Post check-in" })).toBeInTheDocument();
   expect(screen.getByRole("status")).toBeInTheDocument();
 });

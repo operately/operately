@@ -22,7 +22,7 @@ export function CommentSection({
   commentDraftKey,
   editCommentDraftKey,
   commentNotificationInfo,
-  ackLabel = i18n.t("Check-In"),
+  ackLabel = i18n.t("check-in"),
   onCommentVisible,
   canManageComments = false,
 }: CommentSectionProps) {
