@@ -11,6 +11,7 @@ import { asRichText } from "../utils/storybook/richContent";
 import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 import type { ResourceHubNodesListContextValue } from "../ResourceHub/contexts/NodesListContext";
 import type { ResourceHubDocument } from "../ResourceHub/types";
+import { richTextTypographyContent } from "../demos/richTextTypography";
 
 const meta = {
   title: "Pages/DocumentPage",
@@ -168,6 +169,24 @@ export const Default: Story = {
         documentName: "Interview Guide",
         onConfirm: async () => console.log("delete"),
       }}
+    />
+  ),
+};
+
+export const Typography: Story = {
+  args: {} as DocumentPage.Props,
+  render: () => (
+    <DocumentPage
+      taskList={{ canEdit: false }}
+      {...basePublished}
+      title="Launch plan"
+      content={JSON.stringify(richTextTypographyContent)}
+      hideDraftActions
+      hideReactions
+      hideComments
+      hideSubscriptions
+      hideCopyModal
+      hideDeleteModal
     />
   ),
 };

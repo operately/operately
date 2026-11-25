@@ -29,19 +29,39 @@
 }
 
 .ProseMirror h1 {
-  @apply text-2xl;
+  font-size: 28px;
+  line-height: 36px;
 }
 
 .ProseMirror h2 {
-  @apply text-xl;
+  font-size: 22px;
+  line-height: 30px;
 }
 
 .ProseMirror h3 {
-  @apply text-lg;
+  font-size: 20px;
+  line-height: 28px;
 }
 
 .ProseMirror h4 {
-  @apply text-base;
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.ProseMirror > h1:not(:first-child) {
+  margin-top: 32px;
+}
+
+.ProseMirror > h2:not(:first-child) {
+  margin-top: 28px;
+}
+
+.ProseMirror > h3:not(:first-child) {
+  margin-top: 22px;
+}
+
+.ProseMirror > h4:not(:first-child) {
+  margin-top: 18px;
 }
 
 .ProseMirror hr {
@@ -76,6 +96,11 @@
   margin: 0.5em 0;
 }
 
+.ProseMirror > ul,
+.ProseMirror > ol {
+  margin: 0.75em 0;
+}
+
 .ProseMirror li {
   margin: 0.2em 0;
   line-height: 1.5;
@@ -91,7 +116,12 @@
 .ProseMirror h1,
 .ProseMirror h2,
 .ProseMirror h3,
-.ProseMirror h4,
+.ProseMirror h4 {
+  margin-bottom: 8px;
+  padding-bottom: 0;
+  font-weight: 700;
+}
+
 .ProseMirror h5,
 .ProseMirror h6 {
   margin-bottom: 12px;
@@ -121,6 +151,15 @@
   background: none;
   font-size: 0.8rem;
 }
+
+.ProseMirror > .node-codeBlock {
+  margin: 0.75em 0;
+}
+
+.ProseMirror > .node-codeBlock pre {
+  margin: 0;
+}
+
 .ProseMirror .mermaid-preview svg {
   display: inline-block;
   height: auto;
@@ -156,6 +195,8 @@
 .ProseMirror blockquote {
   margin-left: 0;
   margin-right: 0;
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
   padding-left: 1rem;
   border-left: 3px solid var(--color-content-accent);
 }

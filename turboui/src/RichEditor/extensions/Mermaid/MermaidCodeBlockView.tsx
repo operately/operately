@@ -73,7 +73,7 @@ function MermaidView({ node, editor }: Pick<NodeViewProps, "node" | "editor">): 
   };
 
   return (
-    <NodeViewWrapper className="mermaid-code-block my-3" data-language="mermaid">
+    <NodeViewWrapper className="mermaid-code-block" data-language="mermaid">
       {editable && source.trim() !== "" ? (
         <div className="mb-2 flex justify-end" contentEditable={false}>
           {mode === "preview" && !renderFailed ? (
