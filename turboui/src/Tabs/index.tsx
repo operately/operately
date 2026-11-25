@@ -69,11 +69,11 @@ export function Tabs({
 }) {
   return (
     <div
-      className={classNames("pl-1 mt-2 overflow-x-auto sm:pl-4", {
+      className={classNames("min-w-0 pl-1 mt-2 sm:pl-4", {
         "border-stroke-base border-b shadow-b-xs": showBorder,
       })}
     >
-      <nav className="flex gap-2 px-1 whitespace-nowrap sm:gap-4 sm:px-0">
+      <nav className="flex min-w-0 flex-wrap gap-x-2 gap-y-1 px-1 sm:gap-x-4 sm:pl-0">
         {tabs.tabs.map((tab) => (
           <TabItem key={tab.id} tab={tab} activeTab={tabs.active} urlPath={tabs.urlPath} onChange={onChange} />
         ))}
@@ -97,7 +97,7 @@ function TabItem({
   const testId = `tab-${(tab.testId ?? tab.label).toLowerCase()}`;
 
   const labelClass = classNames(
-    "flex items-center gap-1 px-1 py-1.5 text-sm relative -mb-px font-medium sm:px-1.5 sm:-mx-1.5",
+    "relative -mb-px flex w-max max-w-full min-w-0 items-center gap-1 px-1 py-1.5 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1 sm:-mx-1.5 sm:px-1.5",
     {
       "text-white rounded-t": activeTab === tab.id,
       "text-content-dimmed hover:text-content-base": activeTab !== tab.id,
@@ -108,13 +108,13 @@ function TabItem({
   const content = (
     <>
       <span className="hidden flex-shrink-0 sm:inline-flex">{tab.icon}</span>
-      <span className="leading-none whitespace-nowrap sm:ml-1">{tab.label}</span>
+      <span className="min-w-0 break-words leading-none sm:ml-1 sm:min-w-fit">{tab.label}</span>
       <TabCountBadge count={tab.count} />
     </>
   );
 
   return (
-    <div className="relative pb-1.5">
+    <div className="relative w-max max-w-full flex-none pb-1.5">
       {onChange ? (
         <button
           type="button"
