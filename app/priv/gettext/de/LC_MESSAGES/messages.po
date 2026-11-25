@@ -14780,6 +14780,11 @@ msgid "No activity yet"
 msgstr "Noch keine Aktivitäten"
 
 #.frontend
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:42
+msgid "No additional people to show."
+msgstr "Keine weiteren Personen in dieser Liste."
+
+#.frontend
 #: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:203
 msgid "No archived tasks."
 msgstr "Keine archivierten Aufgaben."
@@ -15063,10 +15068,10 @@ msgstr "Keine neuen Updates."
 msgid "No one"
 msgstr "Niemand"
 
-#.frontend
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:43
-msgid "No one else has access beyond people already assigned to this project."
-msgstr "Nur Personen, die diesem Projekt bereits zugewiesen sind, haben Zugriff."
+#~ #.frontend
+#~ #: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:43
+#~ msgid "No one else has access beyond people already assigned to this project."
+#~ msgstr "Nur Personen, die diesem Projekt bereits zugewiesen sind, haben Zugriff."
 
 #.frontend
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:202
@@ -15906,7 +15911,7 @@ msgstr "Sonstige"
 
 #.frontend
 #: ../turboui/src/OtherPeopleWithAccess/Modal.tsx:25
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:69
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:67
 #: assets/js/pages/GoalAccessManagementPage/OtherPeople.tsx:32
 #: assets/js/pages/SpaceAccessManagementPage/OtherPeople.tsx:33
 msgid "Other People with Access"
@@ -16252,7 +16257,7 @@ msgid "People who have access to the goal based on their company or space member
 msgstr "Personen, die aufgrund ihrer Unternehmens- oder Arbeitsbereichsmitgliedschaft Zugriff auf das Ziel haben, aber nicht direkt zugewiesen sind."
 
 #.frontend
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:71
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:69
 msgid "People who have access to the project based on their company or space membership but are not directly assigned to the project."
 msgstr "Personen, die aufgrund ihrer Unternehmens- oder Arbeitsbereichsmitgliedschaft Zugriff auf das Projekt haben, aber dem Projekt nicht direkt zugewiesen sind."
 

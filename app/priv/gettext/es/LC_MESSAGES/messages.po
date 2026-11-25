@@ -14779,6 +14779,11 @@ msgid "No activity yet"
 msgstr "Aún no hay actividad"
 
 #.frontend
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:42
+msgid "No additional people to show."
+msgstr "No hay personas adicionales para mostrar."
+
+#.frontend
 #: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:203
 msgid "No archived tasks."
 msgstr "No hay tareas archivadas."
@@ -15062,10 +15067,10 @@ msgstr "Sin nuevas actualizaciones."
 msgid "No one"
 msgstr "Nadie"
 
-#.frontend
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:43
-msgid "No one else has access beyond people already assigned to this project."
-msgstr "Nadie más tiene acceso más allá de las personas ya asignadas a este proyecto."
+#~ #.frontend
+#~ #: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:43
+#~ msgid "No one else has access beyond people already assigned to this project."
+#~ msgstr "Nadie más tiene acceso más allá de las personas ya asignadas a este proyecto."
 
 #.frontend
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:202
@@ -15905,7 +15910,7 @@ msgstr "Otro"
 
 #.frontend
 #: ../turboui/src/OtherPeopleWithAccess/Modal.tsx:25
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:69
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:67
 #: assets/js/pages/GoalAccessManagementPage/OtherPeople.tsx:32
 #: assets/js/pages/SpaceAccessManagementPage/OtherPeople.tsx:33
 msgid "Other People with Access"
@@ -16251,7 +16256,7 @@ msgid "People who have access to the goal based on their company or space member
 msgstr "Personas que tienen acceso al objetivo por pertenecer a la empresa o al espacio, pero no están asignadas directamente."
 
 #.frontend
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:71
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:69
 msgid "People who have access to the project based on their company or space membership but are not directly assigned to the project."
 msgstr "Personas que tienen acceso al proyecto según su membresía de empresa o espacio pero que no están asignadas directamente al proyecto."
 

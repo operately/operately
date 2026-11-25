@@ -39,9 +39,7 @@ export function OtherPeopleWithAccess({
     return (
       <div>
         <Header showTitle={showTitle} />
-        <p className="text-sm text-content-dimmed">
-          {t("No one else has access beyond people already assigned to this project.")}
-        </p>
+        <p className="text-sm text-content-dimmed">{t("No additional people to show.")}</p>
       </div>
     );
   }

@@ -128,6 +128,24 @@ describe("OverviewSidebar privacy", () => {
     expect(privacyField).toHaveTextContent("Only assigned people have access");
   });
 
+  it("shows company edit access alongside an empty additional people list", () => {
+    const { container, getByText } = render(<SidebarHarness accessLevels={{ company: "edit", space: "edit" }} />);
+
+    expect(container.querySelector('[data-test-id="project-privacy-field"]')).toHaveTextContent(
+      "Everyone in the company can edit",
+    );
+
+    const link = container.querySelector('[data-test-id="other-people-with-access-link"]') as HTMLElement;
+    fireEvent.click(link);
+
+    expect(getByText("No additional people to show.")).toBeInTheDocument();
+    expect(
+      getByText(
+        "People who have access to the project based on their company or space membership but are not directly assigned to the project.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("loads other people with access only when the link is clicked", () => {
     const onRequestLoad = jest.fn();
 

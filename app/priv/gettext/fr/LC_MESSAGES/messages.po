@@ -14779,6 +14779,11 @@ msgid "No activity yet"
 msgstr "Aucune activité pour le moment"
 
 #.frontend
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:42
+msgid "No additional people to show."
+msgstr "Aucune autre personne à afficher."
+
+#.frontend
 #: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:203
 msgid "No archived tasks."
 msgstr "Aucune tâche archivée."
@@ -15062,10 +15067,10 @@ msgstr "Aucune nouvelle mise à jour."
 msgid "No one"
 msgstr "Personne"
 
-#.frontend
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:43
-msgid "No one else has access beyond people already assigned to this project."
-msgstr "Seules les personnes déjà assignées à ce projet y ont accès."
+#~ #.frontend
+#~ #: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:43
+#~ msgid "No one else has access beyond people already assigned to this project."
+#~ msgstr "Seules les personnes déjà assignées à ce projet y ont accès."
 
 #.frontend
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:202
@@ -15905,7 +15910,7 @@ msgstr "Autre"
 
 #.frontend
 #: ../turboui/src/OtherPeopleWithAccess/Modal.tsx:25
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:69
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:67
 #: assets/js/pages/GoalAccessManagementPage/OtherPeople.tsx:32
 #: assets/js/pages/SpaceAccessManagementPage/OtherPeople.tsx:33
 msgid "Other People with Access"
@@ -16251,7 +16256,7 @@ msgid "People who have access to the goal based on their company or space member
 msgstr "Personnes ayant accès à l’objectif grâce à leur appartenance à l’entreprise ou à l’espace, sans y être directement assignées."
 
 #.frontend
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:71
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:69
 msgid "People who have access to the project based on their company or space membership but are not directly assigned to the project."
 msgstr "Personnes ayant accès au projet grâce à leur appartenance à l’entreprise ou à l’espace, sans y être directement assignées."
 
