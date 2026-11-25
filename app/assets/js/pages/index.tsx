@@ -124,6 +124,7 @@ import SpacePage from "./SpacePage";
 import SpaceToolsConfigurationPage from "./SpaceToolsConfigurationPage";
 import SpaceWorkMapPage from "./SpaceWorkMapPage";
 import TaskPage from "./TaskPage";
+import WorkMapV2Page from "./WorkMapV2Page";
 
 //
 // We are explocily exporting the pages here to avoid false positives
@@ -251,4 +252,5 @@ export default {
   SpaceToolsConfigurationPage,
   SpaceWorkMapPage,
   TaskPage,
+  WorkMapV2Page,
 };

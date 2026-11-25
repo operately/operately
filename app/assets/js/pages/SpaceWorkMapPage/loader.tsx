@@ -1,4 +1,7 @@
 import Api, { type ProjectTemplate, type Space, type WorkMapItem } from "@/api";
+import { loadSpaceWorkMap } from "@/models/workMap/loadHierarchy";
+import { redirectIfFeatureEnabled } from "@/routes/redirectUtils";
+import { pilotWorkMapPath } from "@/pages/WorkMapV2Page/routing";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import { useQuery } from "@tanstack/react-query";
@@ -21,13 +24,16 @@ export interface ReadyData {
 
 type LoadedData = { status: "pending" } | ReadyData;
 
-export async function loader({ params }) {
-  const workMapInput = { spaceId: params.id };
-  const spaceInput = { id: params.id, includeAccessLevels: true, includePermissions: true };
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
+  await redirectIfFeatureEnabled(request, { feature: "work_map_v2", path: pilotWorkMapPath(request) });
+  return preload({ params });
+}
+
+export async function preload({ params }: { params: { id: string } }) {
   const templatesInput = { archiveStatus: "active" as const };
   const editableSpacesInput = { query: "", accessLevel: "edit_access" as const };
 
-  await Promise.all([Api.companies.getWorkMapQuery(workMapInput), Api.spaces.getQuery(spaceInput)]);
+  const { workMapInput, spaceInput } = await loadSpaceWorkMap(params.id);
 
   return { workMapInput, spaceInput, templatesInput, editableSpacesInput };
 }

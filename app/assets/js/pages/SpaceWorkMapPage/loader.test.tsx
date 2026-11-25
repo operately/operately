@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
 import Api, { type Space } from "@/api";
 import { queryClient } from "@/api/queryClient";
-import { loader, useLoadedData, type ReadyData } from "./loader";
+import { preload, useLoadedData, type ReadyData } from "./loader";
 import { Page } from "./page";
 
 jest.mock("axios");
@@ -131,7 +131,7 @@ describe("SpaceWorkMapPage loading", () => {
     jest.mocked(axios.get).mockImplementation(async (url) => ({
       data: url.endsWith("/spaces/get") ? { space } : { workMap: [] },
     }));
-    await loader({ params: { id: space.id } });
+    await preload({ params: { id: space.id } });
     const key =
       missing === "map" ? Api.companies.getWorkMapQueryKey({ spaceId: space.id }) : Api.spaces.getQueryKey(spaceInput);
     queryClient.removeQueries({ queryKey: key, exact: true });
@@ -165,7 +165,7 @@ describe("SpaceWorkMapPage loading", () => {
     jest.mocked(axios.get).mockImplementation(async (url) => ({
       data: url.endsWith("/spaces/get") ? { space } : { workMap: [] },
     }));
-    await loader({ params: { id: space.id } });
+    await preload({ params: { id: space.id } });
     queryClient.removeQueries({ queryKey: Api.spaces.getQueryKey(spaceInput), exact: true });
     const recovery = deferred();
     jest.mocked(axios.get).mockReturnValue(recovery.promise);
@@ -223,7 +223,7 @@ describe("SpaceWorkMapPage loading", () => {
       const spaceRequest = deferred();
       jest.mocked(axios.get).mockReturnValueOnce(mapRequest.promise).mockReturnValueOnce(spaceRequest.promise);
       let completed = false;
-      const pending = loader({ params: { id: space.id } }).then((inputs) => {
+      const pending = preload({ params: { id: space.id } }).then((inputs) => {
         completed = true;
         return inputs;
       });

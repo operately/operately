@@ -5,6 +5,8 @@ type Loader = ({ params, request }: { params: any; request: any }) => Promise<an
 export interface PageModule {
   Page: React.ComponentType;
   loader: Loader;
+  /** Data-only loader for pages that can redirect during navigation. */
+  preload?: Loader;
   name: string;
   shouldRevalidate?: ShouldRevalidateFunction;
   /** Navigation-only preparation; never run during speculative data loading. */
