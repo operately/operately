@@ -9,6 +9,55 @@ describe("Rich editor toolbar in a browser", () => {
     await page.addInitScript(() => window.localStorage.clear());
   });
 
+  test("continues typing in a new paragraph after uploading an image with the paperclip", async () => {
+    await openEditorStory("components-richeditor--default", 1280);
+    const editor = page.locator('[contenteditable="true"]');
+    await editor.click();
+
+    const [fileChooser] = await Promise.all([
+      page.waitForEvent("filechooser"),
+      page.getByRole("button", { name: "Add an Image or File" }).click(),
+    ]);
+    await fileChooser.setFiles({
+      name: "diagram.png",
+      mimeType: "image/png",
+      buffer: Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jS0cAAAAASUVORK5CYII=",
+        "base64",
+      ),
+    });
+
+    await editor.and(page.locator(":focus")).waitFor({ timeout: 3000 });
+    await page.keyboard.type("After the image");
+    const paragraphs = editor.locator(":scope > p");
+    assert.equal(await paragraphs.count(), 2);
+    assert.equal(await paragraphs.first().getByRole("img", { name: "diagram.png" }).count(), 1);
+    assert.equal(await paragraphs.last().textContent(), "After the image");
+  });
+
+  test("continues after all selected files and preserves text after the insertion point", async () => {
+    await openEditorStory("components-richeditor--default", 1280);
+    const editor = page.locator('[contenteditable="true"]');
+    await editor.click();
+    await page.keyboard.type("Beforeafter");
+    for (let i = 0; i < "after".length; i++) await page.keyboard.press("ArrowLeft");
+
+    const [fileChooser] = await Promise.all([
+      page.waitForEvent("filechooser"),
+      page.getByRole("button", { name: "Add an Image or File" }).click(),
+    ]);
+    await fileChooser.setFiles(
+      ["first.txt", "second.txt"].map((name) => ({ name, mimeType: "text/plain", buffer: Buffer.from(name) })),
+    );
+
+    await editor.and(page.locator(":focus")).waitFor({ timeout: 3000 });
+    await page.keyboard.type("Typed ");
+    const paragraphs = editor.locator(":scope > p");
+    assert.equal(await paragraphs.count(), 2);
+    assert.match((await paragraphs.first().textContent()) ?? "", /^Before.*first\.txt.*second\.txt/);
+    assert.equal(await paragraphs.last().textContent(), "Typed after");
+  });
+
   test.each([
     ["374px check-in", "pages-projectcheckinformpage--first-check-in", 374],
     ["constrained compact editor", "components-richeditor--compact-headings", 1280],

@@ -22,16 +22,18 @@ export function AttachmentButton({ editor, iconSize }): JSX.Element | null {
 
   const addBlob = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!uploadFile) return;
-      if (!e.target.files) return;
-      if (e.target.files.length === 0) return;
+      const { files } = e.currentTarget;
+      if (!uploadFile || !files) return;
 
-      AddBlobsEditorCommand({
-        files: e.target.files,
+      const inserted = AddBlobsEditorCommand({
+        files,
         pos: editor.state.selection.from,
         view: editor.view,
-        uploadFile: uploadFile,
+        uploadFile,
+        continueInParagraph: true,
       });
+
+      if (inserted) editor.commands.focus();
     },
     [editor, uploadFile],
   );
