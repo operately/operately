@@ -137,6 +137,19 @@ defmodule Operately.Support.Features.WorkMapSteps do
     UI.visit(ctx, Paths.work_map_path(ctx.company))
   end
 
+  step :save_timeline_as_default, ctx do
+    ctx
+    |> UI.click(testid: "work-map-timeline")
+    |> UI.assert_has(testid: "work-map-reset-view")
+    |> UI.click(testid: "work-map-display")
+    |> UI.click(testid: "work-map-save-default")
+    |> UI.refute_has(testid: "work-map-reset-view")
+  end
+
+  step :assert_timeline_selected, ctx do
+    UI.assert_has(ctx, Wallaby.Query.css("[data-test-id='work-map-timeline'][aria-pressed='true']"))
+  end
+
   step :visit_space_work_map, ctx, space_name do
     UI.visit(ctx, Paths.space_work_map_path(ctx.company, ctx[space_name]))
   end

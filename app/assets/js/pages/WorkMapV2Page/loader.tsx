@@ -1,5 +1,10 @@
-import Api, { type Space, type WorkMapItem } from "@/api";
-import { useLoadedQuery } from "@/api/queryClient";
+import Api, {
+  type Space,
+  type WorkMapItem,
+  type WorkMapsGetSettingsResult,
+  type WorkMapsGetSettingsInput,
+} from "@/api";
+import { queryClient, useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import { loadCompanyWorkMap, loadSpaceWorkMap } from "@/models/workMap/loadHierarchy";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
@@ -9,6 +14,8 @@ import { legacyWorkMapPath } from "./routing";
 interface LoadedData {
   workMap: WorkMapItem[];
   space: Space | undefined;
+  settings: WorkMapsGetSettingsResult;
+  settingsInput: WorkMapsGetSettingsInput;
 }
 
 export async function loader({ params, request }: { params: { id?: string }; request: Request }) {
@@ -17,25 +24,32 @@ export async function loader({ params, request }: { params: { id?: string }; req
 }
 
 export async function preload({ params }: { params: { id?: string } }) {
-  return params.id ? loadSpaceWorkMap(params.id) : loadCompanyWorkMap();
+  const settingsInput = params.id ? { spaceId: params.id } : {};
+  const [inputs] = await Promise.all([
+    params.id ? loadSpaceWorkMap(params.id) : loadCompanyWorkMap(),
+    queryClient.fetchQuery(Api.work_maps.getSettingsQueryOptions(settingsInput)),
+  ]);
+  return { ...inputs, settingsInput };
 }
 
 type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
 export function useLoadedData(): LoadedData | null {
-  const { workMapInput, spaceInput } = Pages.useLoadedData<LoaderResult>();
+  const { workMapInput, spaceInput, settingsInput } = Pages.useLoadedData<LoaderResult>();
   const workMapQuery = useLoadedQuery(Api.companies.getWorkMapQueryOptions(workMapInput));
+  const settingsQuery = useLoadedQuery(Api.work_maps.getSettingsQueryOptions(settingsInput));
   const spaceQuery = useLoadedQuery({
     ...Api.spaces.getQueryOptions(spaceInput ?? { id: "" }),
     enabled: spaceInput !== null,
   });
 
-  if (workMapQuery.isPending || (spaceInput && spaceQuery.isPending)) return null;
+  if (settingsQuery.isPending || workMapQuery.isPending || (spaceInput && spaceQuery.isPending)) return null;
 
   const workMapData = workMapQuery.data;
   const spaceData = spaceQuery.data;
   assertPresent(workMapData, "Work Map data is unavailable");
   if (spaceInput) assertPresent(spaceData?.space, `Work Map space is unavailable for space "${spaceInput.id}"`);
 
-  return { workMap: workMapData.workMap, space: spaceData?.space };
+  assertPresent(settingsQuery.data, "Work Map settings unavailable");
+  return { settingsInput, settings: settingsQuery.data, workMap: workMapData.workMap, space: spaceData?.space };
 }
