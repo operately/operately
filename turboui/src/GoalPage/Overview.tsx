@@ -10,6 +10,7 @@ import { RelatedWork } from "./RelatedWork";
 import { Sidebar } from "./Sidebar";
 import { Targets } from "./Targets";
 import { PageDescription } from "../PageDescription";
+import { mobileActionClassName } from "./mobileActionClassName";
 
 export function Overview(props: GoalPage.State) {
   return (
@@ -29,6 +30,7 @@ function MainContent(props: GoalPage.State) {
       <Warnings {...props} />
       <PageDescription
         {...props}
+        actionButtonClassName={mobileActionClassName}
         canEdit={props.permissions.canEdit}
         label={t("Goal description")}
         placeholder={t("Describe the goal...")}

@@ -13,7 +13,12 @@ export function UpdateButton({ state, target }: { state: State; target: TargetSt
 
   return (
     <div className="mt-px">
-      <SecondaryButton size="xxs" onClick={onClick} testId={createTestId("update-target", target.name)}>
+      <SecondaryButton
+        size="xxs"
+        onClick={onClick}
+        testId={createTestId("update-target", target.name)}
+        className={state.actionButtonClassName}
+      >
         {t("Update")}
       </SecondaryButton>
     </div>

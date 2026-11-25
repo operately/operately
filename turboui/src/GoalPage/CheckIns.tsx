@@ -4,6 +4,7 @@ import { GoalPage } from ".";
 import { ContentListState } from "../ContentListState";
 import { PrimaryButton } from "../Button";
 import { CheckInCard } from "../CheckInCard";
+import { mobileActionClassName } from "./mobileActionClassName";
 
 export function CheckIns(props: GoalPage.State) {
   const { t } = useTranslation();
@@ -11,7 +12,7 @@ export function CheckIns(props: GoalPage.State) {
 
   return (
     <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
-      <div className="flex items-center gap-2 justify-between">
+      <div className="flex flex-wrap items-center gap-2 justify-between">
         <div>
           <h2 className="font-bold text-lg">{t("Check-ins")}</h2>
           <div className="flex items-center gap-2 text-sm">
@@ -20,7 +21,12 @@ export function CheckIns(props: GoalPage.State) {
         </div>
 
         {showCheckInButton && (
-          <PrimaryButton linkTo={props.newCheckInLink} size="xs" testId="check-in-button">
+          <PrimaryButton
+            linkTo={props.newCheckInLink}
+            size="xs"
+            testId="check-in-button"
+            className={mobileActionClassName}
+          >
             {t("Post check-in")}
           </PrimaryButton>
         )}

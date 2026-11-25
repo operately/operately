@@ -22,6 +22,7 @@ interface Props {
   testId?: string;
   emptyTestId?: string;
   localDraftKey?: string;
+  actionButtonClassName?: string;
 }
 
 export function PageDescription({
@@ -35,6 +36,7 @@ export function PageDescription({
   testId,
   emptyTestId,
   localDraftKey,
+  actionButtonClassName,
 }: Props) {
   useTranslation();
   const descriptionIsEmpty = isContentEmpty(description);
@@ -61,7 +63,12 @@ export function PageDescription({
 
   return (
     <div data-test-id={testId}>
-      <SectionHeader title={label} startEdit={startEdit} showButtons={canEdit && mode !== "edit"} />
+      <SectionHeader
+        title={label}
+        startEdit={startEdit}
+        showButtons={canEdit && mode !== "edit"}
+        actionButtonClassName={actionButtonClassName}
+      />
 
       {mode === "view" && (
         <ViewMode
@@ -78,6 +85,7 @@ export function PageDescription({
           setMode={setMode}
           placeholder={placeholder}
           localDraftKey={localDraftKey}
+          actionButtonClassName={actionButtonClassName}
         />
       )}
     </div>
@@ -88,15 +96,16 @@ interface SectionHeaderProps {
   title: string;
   startEdit: () => void;
   showButtons?: boolean;
+  actionButtonClassName?: string;
 }
 
-function SectionHeader({ title, startEdit, showButtons }: SectionHeaderProps) {
+function SectionHeader({ title, startEdit, showButtons, actionButtonClassName }: SectionHeaderProps) {
   const { t } = useTranslation();
   return (
     <div className="flex items-center gap-2">
       <h2 className="font-bold">{title}</h2>
       {showButtons && (
-        <SecondaryButton size="xxs" onClick={startEdit} testId="edit-description">
+        <SecondaryButton size="xxs" onClick={startEdit} testId="edit-description" className={actionButtonClassName}>
           {t("Edit")}
         </SecondaryButton>
       )}
@@ -147,6 +156,7 @@ interface EditModeProps {
   setMode: React.Dispatch<React.SetStateAction<"view" | "edit" | "zero">>;
   placeholder: string;
   localDraftKey?: string;
+  actionButtonClassName?: string;
 }
 
 function EditMode({
@@ -156,6 +166,7 @@ function EditMode({
   setMode,
   placeholder,
   localDraftKey,
+  actionButtonClassName,
 }: EditModeProps) {
   const { t } = useTranslation();
   const editor = useEditor({
@@ -190,11 +201,11 @@ function EditMode({
   return (
     <div className="mt-2">
       <Editor editor={editor} />
-      <div className="flex gap-2 mt-2">
-        <PrimaryButton size="xs" onClick={save}>
+      <div className={actionButtonClassName ? "flex flex-wrap gap-2 mt-2" : "flex gap-2 mt-2"}>
+        <PrimaryButton size="xs" onClick={save} testId="save-description" className={actionButtonClassName}>
           {t("Save")}
         </PrimaryButton>
-        <SecondaryButton size="xs" onClick={cancel}>
+        <SecondaryButton size="xs" onClick={cancel} testId="cancel-description" className={actionButtonClassName}>
           {t("Cancel")}
         </SecondaryButton>
       </div>

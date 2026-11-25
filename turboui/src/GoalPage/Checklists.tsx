@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { GoalPage } from ".";
 import { Checklist } from "../Checklist";
+import { mobileActionClassName } from "./mobileActionClassName";
 
 const noOpAsync = async () => ({ success: false, id: "" });
 const noOpAsyncBoolean = async () => false;
@@ -9,6 +10,7 @@ const noOpAsyncBoolean = async () => false;
 export function Checklists(props: GoalPage.State) {
   return (
     <Checklist
+      actionButtonClassName={mobileActionClassName}
       items={props.checklistItems}
       canEdit={props.permissions.canEdit}
       addItem={props.addChecklistItem || noOpAsync}
