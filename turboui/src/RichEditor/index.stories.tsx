@@ -191,6 +191,36 @@ export const DarkMermaidDiagram: Story = {
   globals: { theme: "dark" },
 };
 
+export const NestedMermaidDiagrams: Story = {
+  render: () => {
+    const diagramContent = [
+      { type: "paragraph", content: [{ type: "text", text: "Before the diagram." }] },
+      {
+        type: "codeBlock",
+        attrs: { language: "mermaid" },
+        content: [{ type: "text", text: "flowchart LR\n  Draft --> Review" }],
+      },
+      { type: "paragraph", content: [{ type: "text", text: "After the diagram." }] },
+    ];
+    const editor = useEditor({
+      content: {
+        type: "doc",
+        content: [
+          { type: "bulletList", content: [{ type: "listItem", content: diagramContent }] },
+          { type: "blockquote", content: diagramContent },
+          {
+            type: "table",
+            content: [{ type: "tableRow", content: [{ type: "tableCell", content: diagramContent }] }],
+          },
+        ],
+      },
+      handlers: createMockRichEditorHandlers(),
+    });
+
+    return <Editor editor={editor} />;
+  },
+};
+
 export const Headings: Story = {
   render: () => {
     const editor = useEditor({

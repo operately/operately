@@ -160,6 +160,10 @@
   margin: 0;
 }
 
+.ProseMirror :is(li, blockquote, td, th) > .node-codeBlock:has(> .mermaid-code-block) {
+  margin: 0.5em 0;
+}
+
 .ProseMirror .mermaid-preview svg {
   display: inline-block;
   height: auto;

@@ -136,6 +136,17 @@ describe("Rich text typography in a browser", () => {
     await preview.locator("svg").waitFor();
   });
 
+  test.each(["li", "blockquote", "td"])(
+    "keeps compact spacing around Mermaid diagrams inside %s",
+    async (container) => {
+      await page.goto(storyUrl("components-richeditor--nested-mermaid-diagrams"));
+      const code = page.locator(`.ProseMirror ${container} > .node-codeBlock`);
+      await code.locator(".mermaid-preview svg").waitFor();
+      closeTo(await verticalGap(previousBlock(code), code), 8, "gap before nested Mermaid at 16px");
+      closeTo(await verticalGap(code, nextBlock(code)), 8, "gap after nested Mermaid at 16px");
+    },
+  );
+
   test.each([
     ["new", "pages-newdocumentpage--default", true],
     ["edit", "pages-documenteditpage--typography", false],
