@@ -10723,6 +10723,10 @@ msgid "Edit product"
 msgstr "Редактировать продукт"
 
 #.frontend
+#: ../turboui/src/ProjectCheckInFormPage/index.stories.tsx:107
+#: ../turboui/src/ProjectCheckInFormPage/index.stories.tsx:139
+#: ../turboui/src/ProjectCheckInFormPage/index.stories.tsx:175
+#: ../turboui/src/ProjectCheckInFormPage/index.stories.tsx:211
 #: assets/js/pages/ProjectCheckInEditPage/page.tsx:94
 msgid "Edit project check-in"
 msgstr "Редактировать отчёт по проекту"
@@ -23550,6 +23554,8 @@ msgstr "Посмотреть историю оплаты"
 #: lib/operately_email/emails/project_check_in_acknowledged_email.ex:20
 #: lib/operately_email/emails/project_check_in_submitted_email.ex:41
 #: lib/operately_email/templates/goal_check_in_acknowledgement.html.eex:6
+#: lib/operately_web/email_preview/previews/project_check_in_submitted.ex:57
+#: lib/operately_web/email_preview/previews/project_check_in_submitted.ex:83
 msgid "View check-in"
 msgstr "Посмотреть отчёт"
 

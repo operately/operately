@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.EmailPreview.Previews.ProjectCheckInSubmitted do
   @moduledoc "Mock data for the project check-in submitted email preview."
 
+  use Gettext, backend: OperatelyWeb.Gettext
+
   alias OperatelyEmail.Mailers.ActivityMailer, as: Mailer
   alias OperatelyWeb.EmailPreview.Preview
   alias Operately.RichContent.Builder, as: RC
@@ -52,7 +54,7 @@ defmodule OperatelyWeb.EmailPreview.Previews.ProjectCheckInSubmitted do
       person: teammate,
       check_in: check_in,
       overview: overview,
-      cta_text: "View Check-in",
+      cta_text: gettext("View check-in"),
       cta_url: @base_cta_url
     })
   end
@@ -78,7 +80,7 @@ defmodule OperatelyWeb.EmailPreview.Previews.ProjectCheckInSubmitted do
       person: teammate,
       check_in: check_in,
       overview: overview,
-      cta_text: "View Check-in",
+      cta_text: gettext("View check-in"),
       cta_url: @base_cta_url
     })
   end
