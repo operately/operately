@@ -6,6 +6,7 @@ import { ContentListState } from "../ContentListState";
 import { PrimaryButton } from "../Button";
 import { InfoCallout } from "../Callouts";
 import { DiscussionCard } from "../DiscussionCard";
+import { mobileActionClassName } from "./mobileActionClassName";
 
 export function Discussions(props: GoalPage.State) {
   const { t } = useTranslation();
@@ -23,13 +24,18 @@ export function Discussions(props: GoalPage.State) {
 
   return (
     <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
-      <div className="flex items-center gap-2 justify-between">
+      <div className="flex flex-wrap items-center gap-2 justify-between">
         <div>
           <h2 className="font-bold text-xl">{t("Discussions")}</h2>
         </div>
 
         {showNewDiscussionButton && (
-          <PrimaryButton linkTo={props.newDiscussionLink} size="xs" testId="start-discussion">
+          <PrimaryButton
+            linkTo={props.newDiscussionLink}
+            size="xs"
+            testId="start-discussion"
+            className={mobileActionClassName}
+          >
             {t("Start discussion")}
           </PrimaryButton>
         )}

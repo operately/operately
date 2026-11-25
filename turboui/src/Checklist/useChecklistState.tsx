@@ -9,6 +9,7 @@ export interface State {
   items: ChecklistItemState[];
   togglable: boolean;
   disabled: boolean;
+  actionButtonClassName?: string;
 
   addActive: boolean;
 
@@ -129,6 +130,7 @@ export function useChecklistState(props: Checklist.InternalProps): State {
   };
 
   return {
+    actionButtonClassName: props.actionButtonClassName,
     items,
     togglable: props.togglable ?? true,
     disabled: props.disabled ?? false,
