@@ -4570,7 +4570,7 @@ msgstr[1] "%{count} Ziele in diesem Jahr abgeschlossen."
 #: ../turboui/src/WorkMapV2/index.tsx:143
 msgid "1 goal without dates"
 msgid_plural "%{count} goals without dates"
-msgstr[0] "%{count} Ziel ohne Termine"
+msgstr[0] "1 Ziel ohne Termine"
 msgstr[1] "%{count} Ziele ohne Termine"
 
 #.frontend
@@ -4811,7 +4811,7 @@ msgstr[1] "%{count} Projekte in diesem Jahr abgeschlossen."
 #: ../turboui/src/WorkMapV2/index.tsx:145
 msgid "1 project without dates"
 msgid_plural "%{count} projects without dates"
-msgstr[0] "%{count} Projekt ohne Termine"
+msgstr[0] "1 Projekt ohne Termine"
 msgstr[1] "%{count} Projekte ohne Termine"
 
 #.frontend
