@@ -86,7 +86,7 @@ export function Organize({
   }
 
   function rowProps(row: VisibleRow): React.HTMLAttributes<HTMLTableRowElement> {
-    if (row.contextOnly || saving || !dragged || dragged === row.item.id) return {};
+    if (saving || !dragged || dragged === row.item.id) return {};
 
     return {
       style:

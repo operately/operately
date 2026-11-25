@@ -45,3 +45,14 @@ it("allows scope editors to reorder view-only siblings without changing their pa
   expect(moved.rows.map((r) => r.item.id)).toEqual(["b", "a"]);
   expect(moved.parentChanges).toEqual([]);
 });
+
+it("lets an editable child leave a cross-space parent by dropping beside that parent", () => {
+  const parent = { ...goal("external", [goal("child")]), contextOnly: true };
+  const draft = { rows: [parent], parentChanges: [] };
+  expect(move(draft, "child", "external", "after", false)).toBe(draft);
+  expect(move(draft, "child", "external", "inside", true)).toBe(draft);
+
+  const moved = move(draft, "child", "external", "after", true);
+  expect(moved.rows.map((row) => row.item.id)).toEqual(["external", "child"]);
+  expect(moved.parentChanges).toEqual([{ type: "goal", itemId: "child", parentId: null }]);
+});

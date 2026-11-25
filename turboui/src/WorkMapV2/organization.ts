@@ -31,7 +31,10 @@ export function moveDestination(
   const source = locate(draft.rows, id);
   if (!source || source.row.contextOnly || targetId === id) return null;
   const target = locate(draft.rows, targetId);
-  if (!target || target.row.contextOnly) return null;
+  if (!target) return null;
+  // A context row at the top level can serve as a drop target for detaching a child.
+  if (target.row.contextOnly && (placement === "inside" || target.parentId !== null || source.parentId === null))
+    return null;
   if (placement === "inside" && target.row.item.type !== "goal") return null;
   const parentId = placement === "inside" ? targetId : target.parentId;
   const changedParent = parentId !== source.parentId;

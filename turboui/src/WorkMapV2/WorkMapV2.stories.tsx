@@ -190,7 +190,7 @@ function StoryPage({ editableReviewers, ...props }: WorkMapV2PageProps & { edita
             parentChanges: [],
           };
           for (const change of changes) {
-            const target = change.parentId ?? draft.rows.find((row) => !row.contextOnly)?.item.id;
+            const target = change.parentId ?? draft.rows[0]?.item.id;
             if (target) draft = move(draft, change.itemId, target, change.parentId ? "inside" : "after", true);
           }
           setItems(draft.rows.map(toItem));
