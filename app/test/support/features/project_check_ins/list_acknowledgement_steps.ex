@@ -52,7 +52,7 @@ defmodule Operately.Support.Features.ProjectCheckIns.ListAcknowledgementSteps do
   end
 
   step :return_to_check_ins, ctx do
-    UI.click(ctx, testid: UI.testid(["nav-item", "Check-Ins"]))
+    UI.click(ctx, testid: UI.testid(["nav-item", "Check-ins"]))
   end
 
   step :assert_acknowledged_check_in, ctx do

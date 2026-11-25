@@ -56,7 +56,7 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type, formattedTim
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <div className="font-semibold leading-none" data-test-id="check-in-title">
               <Trans
-                i18nKey="Check-In for <date/>"
+                i18nKey="Check-in for <date/>"
                 components={{
                   date: (
                     <FormattedTime

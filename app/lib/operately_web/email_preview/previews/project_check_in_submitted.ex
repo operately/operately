@@ -52,7 +52,7 @@ defmodule OperatelyWeb.EmailPreview.Previews.ProjectCheckInSubmitted do
       person: teammate,
       check_in: check_in,
       overview: overview,
-      cta_text: "View Check-In",
+      cta_text: "View Check-in",
       cta_url: @base_cta_url
     })
   end
@@ -78,7 +78,7 @@ defmodule OperatelyWeb.EmailPreview.Previews.ProjectCheckInSubmitted do
       person: teammate,
       check_in: check_in,
       overview: overview,
-      cta_text: "View Check-In",
+      cta_text: "View Check-in",
       cta_url: @base_cta_url
     })
   end

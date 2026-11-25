@@ -28,7 +28,7 @@ describe("CheckInTitle", () => {
       />,
     );
 
-    const title = screen.getByRole("heading", { name: "Check-In for July 13th, 2025 Draft" });
+    const title = screen.getByRole("heading", { name: "Check-in for July 13th, 2025 Draft" });
 
     expect(title.tagName).toBe("H1");
     expect(title).toHaveClass("text-xl", "sm:text-3xl");
@@ -43,7 +43,7 @@ describe("CheckInTitle", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { name: "Check-In for July 13th, 2025 Scheduled" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Check-in for July 13th, 2025 Scheduled" })).toBeInTheDocument();
     expect(screen.getByText("Scheduled")).toBeInTheDocument();
   });
 
@@ -67,7 +67,7 @@ describe("CheckInTitle", () => {
       </>,
     );
 
-    expect(screen.getByRole("heading", { name: "Check-In for July 14th, 2025" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Check-in for July 14th, 2025" })).toBeInTheDocument();
     expect(screen.getByText("Posted July 14th, 2025 at 11:44")).toHaveClass("sr-only");
   });
 });
@@ -257,7 +257,7 @@ describe("catalog rendering", () => {
       "pt-BR",
       "translation",
       {
-        "Check-In for <date/>": "Atualização de <date/>",
+        "Check-in for <date/>": "Atualização de <date/>",
         "<label>Acknowledged by</label> <person>{{name}}</person>":
           "<label>Leitura confirmada por</label> <person>{{name}}</person>",
       },

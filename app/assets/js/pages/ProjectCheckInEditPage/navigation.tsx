@@ -16,7 +16,7 @@ export function buildProjectCheckInEditNavigation(checkIn: ProjectCheckIn, paths
   const project = checkIn.project;
   assertPresent(project, "Check-in project must be defined");
   items.push({ to: paths.projectPath(project.id!), label: project.name });
-  items.push({ to: paths.projectCheckInsPath(project.id!), label: i18n.t("Check-Ins") });
+  items.push({ to: paths.projectCheckInsPath(project.id!), label: i18n.t("Check-ins") });
 
   return items;
 }

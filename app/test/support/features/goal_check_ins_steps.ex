@@ -541,17 +541,17 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
     |> FeedSteps.assert_feed_item_exists(%{
       author: author,
-      title: "commented on a Check-In"
+      title: "commented on a check-in"
     })
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_feed_item_exists(%{
       author: author,
-      title: "commented on a Check-In in the #{ctx.goal.name} goal"
+      title: "commented on a check-in in the #{ctx.goal.name} goal"
     })
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_feed_item_exists(%{
       author: author,
-      title: "commented on a Check-In in the #{ctx.goal.name} goal"
+      title: "commented on a check-in in the #{ctx.goal.name} goal"
     })
   end
 

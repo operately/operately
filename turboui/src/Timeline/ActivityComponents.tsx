@@ -177,7 +177,7 @@ export function AcknowledgmentActivity({ person, ackAt, formattedTimePreferences
       <div className="flex items-center justify-between flex-1">
         <div className="flex items-center gap-2 font-bold flex-1">
           <Trans
-            i18nKey="<author/> <text>acknowledged this Check-In</text><icon/>"
+            i18nKey="<author/> <text>acknowledged this check-in</text><icon/>"
             components={{
               author: (
                 <AvatarWithName

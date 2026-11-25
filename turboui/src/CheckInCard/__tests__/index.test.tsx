@@ -35,7 +35,7 @@ describe("CheckInCard", () => {
   it("renders a check-in without an author placeholder", () => {
     renderCard();
 
-    expect(screen.getByText(/Check-In for/)).toBeInTheDocument();
+    expect(screen.getByText(/Check-in for/)).toBeInTheDocument();
     expect(screen.queryByTitle("?")).not.toBeInTheDocument();
   });
 

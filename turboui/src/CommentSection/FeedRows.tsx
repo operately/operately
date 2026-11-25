@@ -78,7 +78,7 @@ export function MilestoneReopenedFeedRow({
 export function AcknowledgmentFeedRow({
   person,
   ackAt,
-  label = i18n.t("Check-In"),
+  label = i18n.t("check-in"),
   formattedTimePreferences,
 }: {
   person: Person;

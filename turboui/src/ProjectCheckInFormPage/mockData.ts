@@ -60,5 +60,5 @@ export const navigation = [
   { to: "/spaces/space-1", label: "Product" },
   { to: "/spaces/space-1/work-map/projects", label: "Work Map" },
   { to: "/projects/project-1", label: "Apollo" },
-  { to: "/projects/project-1?tab=check-ins", label: "Check-Ins" },
+  { to: "/projects/project-1?tab=check-ins", label: "Check-ins" },
 ];

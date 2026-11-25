@@ -38,7 +38,7 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
       check_in.author_id,
       [project.reviewer, project.champion],
       url,
-      gettext("View Check-In")
+      gettext("View check-in")
     )
   end
 

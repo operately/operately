@@ -72,15 +72,25 @@ msgstr "%{author} <action>comentou</action> em <activity>retomada do projeto</ac
 msgid "%{author} <action>commented</action> on <activity>project resuming</activity> in the <project>%{projectName}</project> project"
 msgstr "%{author} <action>comentou</action> em <activity>retomada do projeto</activity> no projeto <project>%{projectName}</project>"
 
+#~ #.frontend
+#~ #: assets/js/features/activities/ProjectCheckInCommented/index.tsx:54
+#~ msgid "%{author} <action>commented</action> on <checkIn>Check-In</checkIn>"
+#~ msgstr "%{author} <action>comentou</action> em <checkIn>Check-in</checkIn>"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ProjectCheckInCommented/index.tsx:62
+#~ msgid "%{author} <action>commented</action> on <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
+#~ msgstr "%{author} <action>comentou</action> em <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
+
 #.frontend
 #: assets/js/features/activities/ProjectCheckInCommented/index.tsx:54
-msgid "%{author} <action>commented</action> on <checkIn>Check-In</checkIn>"
-msgstr "%{author} <action>comentou</action> em <checkIn>Check-in</checkIn>"
+msgid "%{author} <action>commented</action> on <checkIn>check-in</checkIn>"
+msgstr "%{author} <action>comentou</action> em <checkIn>check-in</checkIn>"
 
 #.frontend
 #: assets/js/features/activities/ProjectCheckInCommented/index.tsx:62
-msgid "%{author} <action>commented</action> on <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
-msgstr "%{author} <action>comentou</action> em <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
+msgid "%{author} <action>commented</action> on <checkIn>check-in</checkIn> in the <project>%{projectName}</project> project"
+msgstr "%{author} <action>comentou</action> em <checkIn>check-in</checkIn> no projeto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/CommentAdded/index.tsx:158
@@ -190,15 +200,25 @@ msgstr "%{author} <action>comentou</action> na tarefa <task>%{taskName}</task> n
 msgid "%{author} <action>commented</action> on <task>%{taskName}</task> in the <space>%{spaceName}</space> space"
 msgstr "%{author} <action>comentou</action> na tarefa <task>%{taskName}</task> no espaço <space>%{spaceName}</space>"
 
+#~ #.frontend
+#~ #: assets/js/features/activities/GoalCheckInCommented/index.tsx:54
+#~ msgid "%{author} <action>commented</action> on a <checkIn>Check-In</checkIn>"
+#~ msgstr "%{author} <action>comentou</action> em um <checkIn>Check-in</checkIn>"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/GoalCheckInCommented/index.tsx:62
+#~ msgid "%{author} <action>commented</action> on a <checkIn>Check-In</checkIn> in the <goal>%{goalName}</goal> goal"
+#~ msgstr "%{author} <action>comentou</action> em um <checkIn>Check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
+
 #.frontend
 #: assets/js/features/activities/GoalCheckInCommented/index.tsx:54
-msgid "%{author} <action>commented</action> on a <checkIn>Check-In</checkIn>"
-msgstr "%{author} <action>comentou</action> em um <checkIn>Check-in</checkIn>"
+msgid "%{author} <action>commented</action> on a <checkIn>check-in</checkIn>"
+msgstr "%{author} <action>comentou</action> em um <checkIn>check-in</checkIn>"
 
 #.frontend
 #: assets/js/features/activities/GoalCheckInCommented/index.tsx:62
-msgid "%{author} <action>commented</action> on a <checkIn>Check-In</checkIn> in the <goal>%{goalName}</goal> goal"
-msgstr "%{author} <action>comentou</action> em um <checkIn>Check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
+msgid "%{author} <action>commented</action> on a <checkIn>check-in</checkIn> in the <goal>%{goalName}</goal> goal"
+msgstr "%{author} <action>comentou</action> em um <checkIn>check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
 #: assets/js/features/activities/KpiEntryCommented/index.tsx:61
@@ -330,25 +350,45 @@ msgstr "%{author} <checkIn>enviou um check-in</checkIn>"
 msgid "%{author} <checkIn>submitted a check-in</checkIn> for <goal>%{goalName}</goal>"
 msgstr "%{author} <checkIn>enviou um check-in</checkIn> do objetivo <goal>%{goalName}</goal>"
 
+#~ #.frontend
+#~ #: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:44
+#~ msgid "%{author} acknowledged a <checkIn>Check-In</checkIn>"
+#~ msgstr "%{author} confirmou a leitura de um <checkIn>Check-in</checkIn>"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:52
+#~ msgid "%{author} acknowledged a <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
+#~ msgstr "%{author} confirmou a leitura de um <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
+
 #.frontend
 #: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:44
-msgid "%{author} acknowledged a <checkIn>Check-In</checkIn>"
-msgstr "%{author} confirmou a leitura de um <checkIn>Check-in</checkIn>"
+msgid "%{author} acknowledged a <checkIn>check-in</checkIn>"
+msgstr "%{author} confirmou a leitura de um <checkIn>check-in</checkIn>"
 
 #.frontend
 #: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:52
-msgid "%{author} acknowledged a <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
-msgstr "%{author} confirmou a leitura de um <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
+msgid "%{author} acknowledged a <checkIn>check-in</checkIn> in the <project>%{projectName}</project> project"
+msgstr "%{author} confirmou a leitura de um <checkIn>check-in</checkIn> no projeto <project>%{projectName}</project>"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:42
+#~ msgid "%{author} acknowledged the <checkIn>Check-In</checkIn>"
+#~ msgstr "%{author} confirmou a leitura do <checkIn>Check-in</checkIn>"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:50
+#~ msgid "%{author} acknowledged the <checkIn>Check-In</checkIn> in the <goal>%{goalName}</goal> goal"
+#~ msgstr "%{author} confirmou a leitura do <checkIn>Check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
 #: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:42
-msgid "%{author} acknowledged the <checkIn>Check-In</checkIn>"
-msgstr "%{author} confirmou a leitura do <checkIn>Check-in</checkIn>"
+msgid "%{author} acknowledged the <checkIn>check-in</checkIn>"
+msgstr "%{author} confirmou a leitura do <checkIn>check-in</checkIn>"
 
 #.frontend
 #: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:50
-msgid "%{author} acknowledged the <checkIn>Check-In</checkIn> in the <goal>%{goalName}</goal> goal"
-msgstr "%{author} confirmou a leitura do <checkIn>Check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
+msgid "%{author} acknowledged the <checkIn>check-in</checkIn> in the <goal>%{goalName}</goal> goal"
+msgstr "%{author} confirmou a leitura do <checkIn>check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
 #: assets/js/features/activities/GoalRetrospectiveAcknowledged/index.tsx:40
@@ -2481,15 +2521,25 @@ msgstr "%{author} definiu a data de conclusão de %{project_name}"
 msgid "%{author} set the due date for %{project_name} to %{new_date}."
 msgstr "%{author} definiu a data de conclusão de %{project_name} para %{new_date}."
 
+#~ #.frontend
+#~ #: assets/js/features/activities/ProjectCheckInSubmitted/index.tsx:47
+#~ msgid "%{author} submitted a <checkIn>Check-In</checkIn>"
+#~ msgstr "%{author} enviou um <checkIn>Check-in</checkIn>"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ProjectCheckInSubmitted/index.tsx:55
+#~ msgid "%{author} submitted a <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
+#~ msgstr "%{author} enviou um <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
+
 #.frontend
 #: assets/js/features/activities/ProjectCheckInSubmitted/index.tsx:47
-msgid "%{author} submitted a <checkIn>Check-In</checkIn>"
-msgstr "%{author} enviou um <checkIn>Check-in</checkIn>"
+msgid "%{author} submitted a <checkIn>check-in</checkIn>"
+msgstr "%{author} enviou um <checkIn>check-in</checkIn>"
 
 #.frontend
 #: assets/js/features/activities/ProjectCheckInSubmitted/index.tsx:55
-msgid "%{author} submitted a <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
-msgstr "%{author} enviou um <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
+msgid "%{author} submitted a <checkIn>check-in</checkIn> in the <project>%{projectName}</project> project"
+msgstr "%{author} enviou um <checkIn>check-in</checkIn> no projeto <project>%{projectName}</project>"
 
 #.elixir
 #: lib/operately_email/templates/goal_check_in.html.eex:1
@@ -4962,9 +5012,14 @@ msgstr "<author/> <icon/><text>concluiu o marco</text>"
 msgid "<author/> <icon/><text>re-opened the milestone</text>"
 msgstr "<author/> <icon/><text>reabriu o marco</text>"
 
+#~ #.frontend
+#~ #: ../turboui/src/Timeline/ActivityComponents.tsx:179
+#~ msgid "<author/> <text>acknowledged this Check-In</text><icon/>"
+#~ msgstr "<author/> <text>confirmou a leitura deste check-in</text><icon/>"
+
 #.frontend
 #: ../turboui/src/Timeline/ActivityComponents.tsx:179
-msgid "<author/> <text>acknowledged this Check-In</text><icon/>"
+msgid "<author/> <text>acknowledged this check-in</text><icon/>"
 msgstr "<author/> <text>confirmou a leitura deste check-in</text><icon/>"
 
 #.frontend
@@ -5089,7 +5144,7 @@ msgid "<author>%{name}</author> on <date/>"
 msgstr "<author>%{name}</author> em <date/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:381
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:386
 msgid "<bold>What happens next?</bold> Operately will send you a code to verify your email address."
 msgstr "<bold>O que acontece a seguir?</bold> Operately enviará um código para verificar seu endereço de e-mail."
 
@@ -5359,8 +5414,9 @@ msgstr "Acesso"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:136
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:89
 #: assets/js/pages/GoalAccessAddPage/index.tsx:114
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:137
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:114
 msgid "Access Level"
 msgstr "Nível de acesso"
 
@@ -5438,10 +5494,16 @@ msgstr "Confirmar leitura"
 msgid "Acknowledge Retrospective"
 msgstr "Confirmar leitura"
 
+#~ #.frontend
+#~ #: assets/js/pages/GoalCheckInPage/AckCTA.tsx:47
+#~ #: assets/js/pages/ProjectCheckInPage/AckCTA.tsx:45
+#~ msgid "Acknowledge this Check-In"
+#~ msgstr "Confirmar leitura"
+
 #.frontend
 #: assets/js/pages/GoalCheckInPage/AckCTA.tsx:47
 #: assets/js/pages/ProjectCheckInPage/AckCTA.tsx:45
-msgid "Acknowledge this Check-In"
+msgid "Acknowledge this check-in"
 msgstr "Confirmar leitura"
 
 #.frontend
@@ -5737,7 +5799,7 @@ msgid "Add administrators"
 msgstr "Adicionar administradores"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/AttachmentButton.tsx:55
+#: ../turboui/src/RichEditor/components/AttachmentButton.tsx:57
 msgid "Add an Image or File"
 msgstr "Adicionar uma imagem ou arquivo"
 
@@ -5750,7 +5812,8 @@ msgid "Add annotation"
 msgstr "Adicionar anotação"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:153
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:90
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:115
 msgid "Add another member"
 msgstr "Adicionar outro membro"
 
@@ -5826,13 +5889,13 @@ msgid "Add measurement"
 msgstr "Adicionar medição"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:76
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:93
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:74
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:91
 msgid "Add members"
 msgstr "Adicionar membros"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:80
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:78
 msgid "Add members to %{name}"
 msgstr "Adicionar membros a %{name}"
 
@@ -6729,8 +6792,8 @@ msgstr "Pelo menos 1 letra maiúscula"
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:79
 #: assets/js/pages/SetupPage/page.tsx:152
 #: assets/js/pages/SetupPage/page.tsx:164
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:338
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:350
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:343
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:355
 msgid "At least 12 characters"
 msgstr "Pelo menos 12 caracteres"
 
@@ -6895,7 +6958,7 @@ msgstr "Voltar para entrar"
 
 #.frontend
 #: assets/js/pages/GoalAccessAddPage/index.tsx:60
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:78
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:76
 msgid "Back to Team & Access"
 msgstr "Voltar para equipe e acesso"
 
@@ -7287,7 +7350,7 @@ msgstr "Não pode ser a mesma pessoa que o champion"
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:114
 #: ../turboui/src/DateField/components/ActionButtons.tsx:23
 #: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:36
-#: ../turboui/src/DocumentEditPage/index.tsx:96
+#: ../turboui/src/DocumentEditPage/index.tsx:97
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:143
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:155
 #: ../turboui/src/Forms/Submit.tsx:24
@@ -7636,11 +7699,11 @@ msgstr "Alterou a linha do tempo do projeto"
 msgid "Check"
 msgstr "Item"
 
-#.frontend
-#: assets/js/features/activities/GoalCheckIn/index.tsx:21
-#: assets/js/features/activities/GoalCheckIn/index.tsx:25
-msgid "Check In"
-msgstr "Check-in"
+#~ #.frontend
+#~ #: assets/js/features/activities/GoalCheckIn/index.tsx:21
+#~ #: assets/js/features/activities/GoalCheckIn/index.tsx:25
+#~ msgid "Check In"
+#~ msgstr "Check-in"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:259
@@ -7654,7 +7717,7 @@ msgid "Check not found"
 msgstr "Item da lista não encontrado"
 
 #.frontend
-#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:90
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:96
 msgid "Check the diagram source and try again."
 msgstr "Verifique o código-fonte do diagrama e tente novamente."
 
@@ -7687,7 +7750,7 @@ msgid "Check your current inbox"
 msgstr "Verifique sua caixa de entrada atual"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:411
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:416
 msgid "Check your email for a code"
 msgstr "Confira o código no seu e-mail"
 
@@ -7696,38 +7759,42 @@ msgstr "Confira o código no seu e-mail"
 msgid "Check your new inbox"
 msgstr "Verifique sua nova caixa de entrada"
 
-#.frontend
-#: ../turboui/src/CommentSection/CommentSection.tsx:25
-#: ../turboui/src/CommentSection/FeedRows.tsx:81
-#: assets/js/features/activities/feedItemLinks.tsx:55
-#: assets/js/features/activities/feedItemLinks.tsx:60
-#: assets/js/features/activities/feedItemLinks.tsx:65
-#: assets/js/features/activities/feedItemLinks.tsx:70
-#: assets/js/pages/ProjectCheckInNewPage/page.tsx:76
-#: assets/js/pages/ProjectCheckInPage/page.tsx:58
-msgid "Check-In"
-msgstr "Check-in"
+#~ #.frontend
+#~ #: ../turboui/src/CommentSection/CommentSection.tsx:25
+#~ #: ../turboui/src/CommentSection/FeedRows.tsx:81
+#~ #: assets/js/features/activities/feedItemLinks.tsx:55
+#~ #: assets/js/features/activities/feedItemLinks.tsx:60
+#~ #: assets/js/features/activities/feedItemLinks.tsx:65
+#~ #: assets/js/features/activities/feedItemLinks.tsx:70
+#~ #: assets/js/pages/ProjectCheckInNewPage/page.tsx:76
+#~ #: assets/js/pages/ProjectCheckInPage/page.tsx:58
+#~ msgid "Check-In"
+#~ msgstr "Check-in"
+
+#~ #.frontend
+#~ #: ../turboui/src/CheckInCard/index.tsx:58
+#~ #: ../turboui/src/CheckInHeader/index.tsx:33
+#~ #: assets/js/pages/GoalCheckInNewPage/index.tsx:45
+#~ msgid "Check-In for <date/>"
+#~ msgstr "Check-in de <date/>"
+
+#~ #.frontend
+#~ #: ../turboui/src/GoalPage/CheckIns.tsx:16
+#~ #: ../turboui/src/GoalPage/index.tsx:239
+#~ #: ../turboui/src/ProjectPage/CheckIns.tsx:18
+#~ #: assets/js/pages/ProjectCheckInEditPage/navigation.tsx:19
+#~ #: assets/js/pages/ProjectCheckInNewPage/page.tsx:101
+#~ #: assets/js/pages/ProjectCheckInPage/page.tsx:153
+#~ msgid "Check-Ins"
+#~ msgstr "Check-ins"
 
 #.frontend
-#: ../turboui/src/CheckInCard/index.tsx:58
-#: ../turboui/src/CheckInHeader/index.tsx:33
-#: assets/js/pages/GoalCheckInNewPage/index.tsx:45
-msgid "Check-In for <date/>"
-msgstr "Check-in de <date/>"
-
-#.frontend
-#: ../turboui/src/GoalPage/CheckIns.tsx:16
-#: ../turboui/src/GoalPage/index.tsx:239
-#: ../turboui/src/ProjectPage/CheckIns.tsx:18
-#: assets/js/pages/ProjectCheckInEditPage/navigation.tsx:19
-#: assets/js/pages/ProjectCheckInNewPage/page.tsx:101
-#: assets/js/pages/ProjectCheckInPage/page.tsx:153
-msgid "Check-Ins"
-msgstr "Check-ins"
-
-#.frontend
+#: assets/js/features/activities/GoalCheckIn/index.tsx:21
+#: assets/js/features/activities/GoalCheckIn/index.tsx:25
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:107
 #: assets/js/pages/GoalCheckInNewPage/index.tsx:25
+#: assets/js/pages/ProjectCheckInNewPage/page.tsx:76
+#: assets/js/pages/ProjectCheckInPage/page.tsx:58
 msgid "Check-in"
 msgstr "Check-in"
 
@@ -7735,6 +7802,13 @@ msgstr "Check-in"
 #: assets/js/pages/ProjectCheckInPage/page.tsx:215
 msgid "Check-in deleted"
 msgstr "Check-in excluído"
+
+#.frontend
+#: ../turboui/src/CheckInCard/index.tsx:58
+#: ../turboui/src/CheckInHeader/index.tsx:33
+#: assets/js/pages/GoalCheckInNewPage/index.tsx:45
+msgid "Check-in for <date/>"
+msgstr "Check-in de <date/>"
 
 #.frontend
 #: assets/js/pages/ProjectCheckInNewPage/page.tsx:68
@@ -7765,9 +7839,15 @@ msgstr "Check-in atrasado"
 
 #.elixir
 #.frontend
+#: ../turboui/src/GoalPage/CheckIns.tsx:16
+#: ../turboui/src/GoalPage/index.tsx:239
+#: ../turboui/src/ProjectPage/CheckIns.tsx:18
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:40
 #: assets/js/pages/GoalCheckInNewPage/navigation.tsx:21
 #: assets/js/pages/GoalCheckInPage/Navigation.tsx:22
+#: assets/js/pages/ProjectCheckInEditPage/navigation.tsx:19
+#: assets/js/pages/ProjectCheckInNewPage/page.tsx:101
+#: assets/js/pages/ProjectCheckInPage/page.tsx:153
 #: lib/operately/md/goal/check_ins.ex:9
 #: lib/operately/md/goal/check_ins.ex:15
 #: lib/operately/md/project.ex:188
@@ -8112,7 +8192,7 @@ msgid "Close Project"
 msgstr "Encerrar projeto"
 
 #.frontend
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:368
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:385
 msgid "Close image preview"
 msgstr "Fechar prévia da imagem"
 
@@ -8244,6 +8324,7 @@ msgstr "Coluna excluída"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:137
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:22
 #: ../turboui/src/PrivacyField/index.tsx:191
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:84
 #: assets/js/components/Badges/AccessLevelBadges.tsx:131
 #: assets/js/features/Permissions/index.tsx:26
 #: assets/js/features/Permissions/index.tsx:48
@@ -8643,7 +8724,7 @@ msgstr "Confirmar nova senha"
 
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:82
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:348
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:353
 msgid "Confirm Password"
 msgstr "Confirmar senha"
 
@@ -8773,8 +8854,8 @@ msgstr "Continuar"
 
 #.frontend
 #: ../turboui/src/Forms/VerificationCodeInput.stories.tsx:15
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:362
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:433
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:367
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:438
 msgid "Continue ->"
 msgstr "Continuar ->"
 
@@ -8789,7 +8870,7 @@ msgid "Continue to checkout"
 msgstr "Continuar para o pagamento"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:311
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:316
 msgid "Continue without this invitation"
 msgstr "Continuar sem este convite"
 
@@ -9204,7 +9285,7 @@ msgid "Create and manage tokens for programmatic access"
 msgstr "Crie e gerencie tokens para acesso por código"
 
 #.frontend
-#: ../turboui/src/NewDocumentPage/index.tsx:102
+#: ../turboui/src/NewDocumentPage/index.tsx:103
 msgid "Create document"
 msgstr "Criar documento"
 
@@ -9527,7 +9608,7 @@ msgid "Database ID"
 msgstr "ID do banco de dados"
 
 #.frontend
-#: ../turboui/src/DateField/DateDisplay.tsx:20
+#: ../turboui/src/DateField/DateDisplay.tsx:21
 #: ../turboui/src/DateField/index.tsx:109
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:108
 #: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:94
@@ -10022,7 +10103,7 @@ msgid "Destination type"
 msgstr "Tipo de destino"
 
 #.frontend
-#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:100
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:106
 msgid "Diagram preview"
 msgstr "Prévia do diagrama"
 
@@ -10311,8 +10392,8 @@ msgstr "Detalhes da mudança para um plano inferior"
 #: ../turboui/src/CompanyExportPage/index.tsx:137
 #: ../turboui/src/FilePage/index.tsx:166
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:67
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:270
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:424
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:281
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:441
 #: assets/js/pages/ProjectTemplateFilePage/index.tsx:64
 #: assets/js/pages/ResourceHubFilePage/Options.tsx:30
 msgid "Download"
@@ -10556,6 +10637,7 @@ msgstr "Editar"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:136
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:28
 #: ../turboui/src/PrivacyField/index.tsx:194
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:83
 #: assets/js/components/Badges/AccessLevelBadges.tsx:116
 #: assets/js/features/Permissions/index.tsx:33
 #: assets/js/features/Permissions/index.tsx:47
@@ -10602,10 +10684,10 @@ msgstr "Editar link"
 msgid "Edit Profile"
 msgstr "Editar perfil"
 
-#.frontend
-#: assets/js/pages/ProjectCheckInEditPage/page.tsx:94
-msgid "Edit Project Check-In"
-msgstr "Editar check-in do projeto"
+#~ #.frontend
+#~ #: assets/js/pages/ProjectCheckInEditPage/page.tsx:94
+#~ msgid "Edit Project Check-In"
+#~ msgstr "Editar check-in do projeto"
 
 #.frontend
 #: assets/js/pages/SpaceEditPage/index.tsx:45
@@ -10667,17 +10749,22 @@ msgid "Edit product"
 msgstr "Editar produto"
 
 #.frontend
+#: assets/js/pages/ProjectCheckInEditPage/page.tsx:94
+msgid "Edit project check-in"
+msgstr "Editar check-in do projeto"
+
+#.frontend
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:88
 msgid "Edit retrospective"
 msgstr "Editar retrospectiva"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:445
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:450
 msgid "Edit signup details"
 msgstr "Editar dados do cadastro"
 
 #.frontend
-#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:76
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:81
 msgid "Edit source"
 msgstr "Editar código-fonte"
 
@@ -10777,9 +10864,14 @@ msgstr "Editando retrospectiva"
 msgid "Editing locked after 3 days"
 msgstr "Edição bloqueada após 3 dias"
 
+#~ #.frontend
+#~ #: ../turboui/src/ProjectCheckInFormPage/index.tsx:194
+#~ msgid "Editing the Check-In from <date/>"
+#~ msgstr "Editando o check-in de <date/>"
+
 #.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:194
-msgid "Editing the Check-In from <date/>"
+msgid "Editing the check-in from <date/>"
 msgstr "Editando o check-in de <date/>"
 
 #~ #.frontend
@@ -10975,7 +11067,7 @@ msgstr "Informe um endereço de e-mail válido"
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:24
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:84
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:142
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:147
 #: lib/operately_web/api/signup/errors.ex:42
 msgid "Enter a valid email address."
 msgstr "Informe um endereço de e-mail válido."
@@ -10988,7 +11080,7 @@ msgstr "Informe um valor"
 
 #.elixir
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:141
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:146
 #: lib/operately_web/api/signup/errors.ex:39
 msgid "Enter an email address with no more than 255 characters."
 msgstr "Digite um endereço de e-mail com no máximo 255 caracteres."
@@ -11051,13 +11143,13 @@ msgid "Enter your current password"
 msgstr "Digite sua senha atual"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:329
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:334
 msgid "Enter your full name"
 msgstr "Digite seu nome completo"
 
 #.elixir
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:146
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:151
 #: lib/operately_web/api/signup/errors.ex:46
 msgid "Enter your full name using no more than 255 characters."
 msgstr "Digite seu nome completo com no máximo 255 caracteres."
@@ -12315,6 +12407,7 @@ msgstr "De: %{start_date} a %{end_date}"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:135
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:34
 #: ../turboui/src/PrivacyField/index.tsx:197
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:82
 #: assets/js/components/Badges/AccessLevelBadges.tsx:101
 #: assets/js/features/Permissions/index.tsx:40
 #: assets/js/features/Permissions/index.tsx:46
@@ -12325,7 +12418,7 @@ msgstr "Acesso total"
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:52
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:328
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:333
 msgid "Full Name"
 msgstr "Nome completo"
 
@@ -12457,11 +12550,11 @@ msgstr "Objetivo em Markdown"
 msgid "Goal Champion"
 msgstr "Champion do objetivo"
 
-#.frontend
-#: assets/js/pages/GoalCheckInPage/useGoalCheckInPageTitle.tsx:11
-#: assets/js/pages/GoalCheckInPage/useGoalCheckInPageTitle.tsx:13
-msgid "Goal Check-In"
-msgstr "Check-in do objetivo"
+#~ #.frontend
+#~ #: assets/js/pages/GoalCheckInPage/useGoalCheckInPageTitle.tsx:11
+#~ #: assets/js/pages/GoalCheckInPage/useGoalCheckInPageTitle.tsx:13
+#~ msgid "Goal Check-In"
+#~ msgstr "Check-in do objetivo"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:310
@@ -12475,8 +12568,10 @@ msgstr "Reviewer do objetivo"
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:329
+#: assets/js/pages/GoalCheckInPage/useGoalCheckInPageTitle.tsx:11
+#: assets/js/pages/GoalCheckInPage/useGoalCheckInPageTitle.tsx:13
 msgid "Goal check-in"
-msgstr "Check-in de objetivo"
+msgstr "Check-in do objetivo"
 
 #.frontend
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:265
@@ -12764,7 +12859,7 @@ msgid "Image"
 msgstr "Imagem"
 
 #.frontend
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:355
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:372
 msgid "Image preview"
 msgstr "Prévia da imagem"
 
@@ -13218,7 +13313,7 @@ msgid "Invite people"
 msgstr "Convidar pessoas"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:85
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:83
 msgid "Invite someone new to the organization"
 msgstr "Convidar uma nova pessoa para a empresa"
 
@@ -13657,9 +13752,14 @@ msgstr "Deixe notas aqui..."
 msgid "Let teammates know what you focus on. You can change this later."
 msgstr "Mostre aos colegas qual o seu foco. Você pode alterar isso depois."
 
+#~ #.frontend
+#~ #: ../turboui/src/ProjectCheckInFormPage/index.tsx:186
+#~ msgid "Let's Check In"
+#~ msgstr "Vamos fazer um check-in"
+
 #.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:186
-msgid "Let's Check In"
+msgid "Let's check in"
 msgstr "Vamos fazer um check-in"
 
 #.frontend
@@ -14159,9 +14259,9 @@ msgstr "Marcar tarefa como concluída"
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:22
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:23
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:90
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:193
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:194
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:202
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:164
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:165
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:173
 msgid "Markdown shortcuts"
 msgstr "Atalhos de Markdown"
 
@@ -14181,7 +14281,8 @@ msgid "Marko Anastasov, CEO & Founder, Operately"
 msgstr "Marko Anastasov, CEO e fundador, Operately"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:134
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:88
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:113
 msgid "Member"
 msgstr "Membro"
 
@@ -14448,7 +14549,7 @@ msgstr "Receita mensal"
 #~ msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:172
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:143
 msgid "More formatting options"
 msgstr "Mais opções de formatação"
 
@@ -15828,7 +15929,7 @@ msgid "Only empty Resource Hubs can be deleted. Remove all documents, drafts, fi
 msgstr "Somente centrais de recursos vazias podem ser excluídas. Exclua primeiro todos os documentos, rascunhos, arquivos, links e pastas."
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:83
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:81
 msgid "Only existing members can be added."
 msgstr "Somente membros existentes podem ser adicionados."
 
@@ -15940,7 +16041,7 @@ msgstr "Ops! Algo deu errado."
 
 #.frontend
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:111
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:240
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:243
 msgid "Open %{name} preview"
 msgstr "Abrir prévia de %{name}"
 
@@ -15996,7 +16097,7 @@ msgstr "Abrir busca global"
 
 #.frontend
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:111
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:241
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:244
 msgid "Open image preview"
 msgstr "Abrir prévia da imagem"
 
@@ -16120,7 +16221,7 @@ msgid "Or, <cancel>Cancel</cancel> or <discard>Discard draft</discard>"
 msgstr "Ou <cancel>Cancelar</cancel> ou <discard>Descartar rascunho</discard>"
 
 #.frontend
-#: ../turboui/src/NewDocumentPage/index.tsx:145
+#: ../turboui/src/NewDocumentPage/index.tsx:146
 msgid "Or, <discard>Discard this document</discard>"
 msgstr "Ou <discard>Descartar este documento</discard>"
 
@@ -16363,7 +16464,7 @@ msgstr "Os objetivos superiores são exibidos para dar contexto"
 #: assets/js/pages/LoginPage/index.tsx:134
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:336
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:341
 msgid "Password"
 msgstr "Senha"
 
@@ -16415,7 +16516,7 @@ msgstr "Senha alterada com sucesso"
 #: assets/js/pages/JoinPage/index.tsx:93
 #: assets/js/pages/ResetPasswordPage/index.tsx:34
 #: assets/js/pages/SetupPage/page.tsx:72
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:159
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:164
 msgid "Passwords do not match"
 msgstr "As senhas não são iguais"
 
@@ -16735,7 +16836,7 @@ msgstr "Informe seus dados para entrar"
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:114
 #: assets/js/pages/SetupPage/page.tsx:208
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:361
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:366
 msgid "Please fill in all fields"
 msgstr "Preencha todos os campos"
 
@@ -16907,7 +17008,7 @@ msgstr "Pressione Tab para selecionar a opção e sair do menu."
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:73
-#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:80
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:85
 msgid "Preview"
 msgstr "Prévia"
 
@@ -17395,7 +17496,7 @@ msgid "Publish"
 msgstr "Publicar"
 
 #.frontend
-#: ../turboui/src/DocumentEditPage/index.tsx:91
+#: ../turboui/src/DocumentEditPage/index.tsx:92
 #: assets/js/pages/DiscussionEditPage/index.tsx:68
 msgid "Publish Now"
 msgstr "Publicar agora"
@@ -17899,7 +18000,8 @@ msgid "Remove header row"
 msgstr "Remover linha de cabeçalho"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:174
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:91
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:116
 msgid "Remove member"
 msgstr "Remover membro"
 
@@ -18790,7 +18892,7 @@ msgstr "Salvar"
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:155
 #: ../turboui/src/AccountSettingsPage/index.tsx:89
 #: ../turboui/src/CommentSection/CommentItem.tsx:397
-#: ../turboui/src/DocumentEditPage/index.tsx:83
+#: ../turboui/src/DocumentEditPage/index.tsx:84
 #: ../turboui/src/ProfileEditPage/index.tsx:142
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:446
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:456
@@ -18814,7 +18916,7 @@ msgid "Save annotation"
 msgstr "Salvar anotação"
 
 #.frontend
-#: ../turboui/src/NewDocumentPage/index.tsx:137
+#: ../turboui/src/NewDocumentPage/index.tsx:138
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:428
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:474
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:120
@@ -19723,8 +19825,8 @@ msgstr "Sair"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:23
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:285
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:405
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:290
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:410
 msgid "Sign Up"
 msgstr "Cadastrar-se"
 
@@ -19735,7 +19837,7 @@ msgstr "Cadastrar-se e entrar para %{companyName}"
 
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:174
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:307
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:312
 msgid "Sign in"
 msgstr "Entrar"
 
@@ -19756,7 +19858,7 @@ msgstr "Entrar com o Google"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:51
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:290
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:295
 msgid "Sign up for Operately"
 msgstr "Cadastre-se no Operately"
 
@@ -19902,7 +20004,6 @@ msgstr "Ocorreu um erro ao participar. Tente novamente."
 
 #.elixir
 #: lib/operately/operations/account_signing_up.ex:120
-#: lib/operately/operations/account_signing_up.ex:121
 #: lib/operately_web/api/cli_auth.ex:730
 #: lib/operately_web/api/cli_auth.ex:890
 #: lib/operately_web/api/invitations.ex:186
@@ -21688,7 +21789,7 @@ msgstr "Ocorreu um erro ao atualizar sua senha. Tente novamente."
 #.elixir
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:95
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:105
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:110
 #: assets/js/pages/SpaceAddPage/index.tsx:50
 #: lib/operately_web/api/signup/errors.ex:56
 msgid "There was an unexpected error. Please try again later."
@@ -21959,16 +22060,16 @@ msgstr "Esta empresa continuará no plano pago atual até o final do ciclo de fa
 #~ msgid "This content is ready to publish."
 #~ msgstr "Este conteúdo está pronto para publicação."
 
+#.frontend
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:95
+msgid "This diagram could not be rendered."
+msgstr "Não foi possível exibir este diagrama."
+
 #.elixir
 #: lib/operately/operations/account_signing_up.ex:118
 #: lib/operately_web/api/signup/errors.ex:25
 msgid "This email domain is not allowed by the invitation."
 msgstr "O domínio deste e-mail não é permitido pelo convite."
-
-#.frontend
-#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:89
-msgid "This diagram could not be rendered."
-msgstr "Não foi possível exibir este diagrama."
 
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:88
@@ -23423,14 +23524,14 @@ msgstr "Usar outro e-mail"
 
 #.elixir
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:153
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:158
 #: lib/operately_web/api/signup/errors.ex:50
 msgid "Use a password with no more than 72 UTF-8 bytes. Some characters use more than one byte."
 msgstr "Use uma senha com no máximo 72 bytes em UTF-8. Alguns caracteres usam mais de um byte."
 
 #.elixir
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:152
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:157
 #: lib/operately_web/api/signup/errors.ex:52
 msgid "Use at least 12 characters, including an uppercase letter, a lowercase letter, and a number."
 msgstr "Use pelo menos 12 caracteres, incluindo uma letra maiúscula, uma letra minúscula e um número."
@@ -23457,7 +23558,7 @@ msgstr "Use estes valores ao chamar a API externa do Operately."
 #~ msgstr "Use esta URL para criar uma conexão no seu cliente de IA."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:291
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:296
 msgid "Use your work email — keep work and life separate."
 msgstr "Use seu e-mail profissional — separe trabalho e vida pessoal."
 
@@ -23577,6 +23678,7 @@ msgstr "Ver instruções de uso da API"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:138
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:16
 #: ../turboui/src/PrivacyField/index.tsx:188
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:85
 #: assets/js/components/Badges/AccessLevelBadges.tsx:146
 #: assets/js/features/Permissions/index.tsx:12
 #: assets/js/features/Permissions/index.tsx:49
@@ -23595,13 +23697,13 @@ msgstr "Ver objetivo arquivado"
 msgid "View Archived Project"
 msgstr "Ver projeto arquivado"
 
-#.elixir
-#: lib/operately_email/emails/goal_check_in_email.ex:51
-#: lib/operately_email/emails/project_check_in_acknowledged_email.ex:20
-#: lib/operately_email/emails/project_check_in_submitted_email.ex:41
-#: lib/operately_email/templates/goal_check_in_acknowledgement.html.eex:6
-msgid "View Check-In"
-msgstr "Ver check-in"
+#~ #.elixir
+#~ #: lib/operately_email/emails/goal_check_in_email.ex:51
+#~ #: lib/operately_email/emails/project_check_in_acknowledged_email.ex:20
+#~ #: lib/operately_email/emails/project_check_in_submitted_email.ex:41
+#~ #: lib/operately_email/templates/goal_check_in_acknowledgement.html.eex:6
+#~ msgid "View Check-In"
+#~ msgstr "Ver check-in"
 
 #.elixir
 #: lib/operately_email/emails/project_check_in_commented_email.ex:30
@@ -23784,6 +23886,14 @@ msgstr "Ver arquivados"
 msgid "View billing history"
 msgstr "Ver histórico de faturamento"
 
+#.elixir
+#: lib/operately_email/emails/goal_check_in_email.ex:51
+#: lib/operately_email/emails/project_check_in_acknowledged_email.ex:20
+#: lib/operately_email/emails/project_check_in_submitted_email.ex:41
+#: lib/operately_email/templates/goal_check_in_acknowledgement.html.eex:6
+msgid "View check-in"
+msgstr "Ver check-in"
+
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:281
 msgid "View data"
@@ -23814,7 +23924,7 @@ msgstr "Somente leitura"
 
 #.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:361
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:278
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:294
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:418
 msgid "View original"
 msgstr "Ver original"
@@ -24038,7 +24148,7 @@ msgid "We've emailed %{name} a link to finish setting up their account. You can 
 msgstr "Enviamos a %{name} um link por e-mail para concluir a configuração da conta. Você também pode compartilhá-lo abaixo."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:460
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:465
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
 msgstr "Enviamos um código de 6 caracteres para <email>%{email}</email>. O código expira em 5 minutos, então digite-o em breve."
 
@@ -24233,7 +24343,7 @@ msgid "Will be posted on <date/> at <time/>"
 msgstr "Será publicado em <date/> às <time/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:319
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:324
 msgid "Work Email"
 msgstr "E-mail profissional"
 
@@ -25171,6 +25281,16 @@ msgstr "alterou o título deste documento de “%{previousTitle}” para “%{ti
 #~ msgid "changed the title of this task from <from>\"%{fromTitle}\"</from> to <to>\"%{toTitle}\"</to>"
 #~ msgstr ""
 
+#.frontend
+#: ../turboui/src/CommentSection/CommentSection.tsx:25
+#: ../turboui/src/CommentSection/FeedRows.tsx:81
+#: assets/js/features/activities/feedItemLinks.tsx:55
+#: assets/js/features/activities/feedItemLinks.tsx:60
+#: assets/js/features/activities/feedItemLinks.tsx:65
+#: assets/js/features/activities/feedItemLinks.tsx:70
+msgid "check-in"
+msgstr "check-in"
+
 #.elixir
 #: lib/operately_email/emails/project_closed_email.ex:55
 msgid "closed the project"
@@ -25675,7 +25795,7 @@ msgid "name can't be blank"
 msgstr "o nome não pode ficar em branco"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:320
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:325
 msgid "name@company.com"
 msgstr "nome@empresa.com"
 
