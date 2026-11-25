@@ -41,6 +41,31 @@ export const CompactTypography: Story = {
   args: { content: richTextTypographyContent, className: "text-sm", mentionedPersonLookup: async () => null },
 };
 
+export const ImageCaptions: Story = {
+  args: {
+    className: "[&_.blob-image_img]:max-h-56",
+    mentionedPersonLookup: async () => null,
+    content: {
+      type: "doc",
+      content: ["landscape.jpg", ""].map((alt) => ({
+        type: "paragraph",
+        content: [
+          {
+            type: "blob",
+            attrs: {
+              src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+              alt,
+              title: "landscape.jpg",
+              filetype: "image/jpeg",
+              status: "uploaded",
+            },
+          },
+        ],
+      })),
+    },
+  },
+};
+
 export const ResolvedResourceLinks: Story = {
   args: {
     content: {
