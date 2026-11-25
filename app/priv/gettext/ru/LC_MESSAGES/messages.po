@@ -5195,7 +5195,7 @@ msgid "<author>%{name}</author> on <date/>"
 msgstr "<author>%{name}</author>, <date/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:381
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:386
 msgid "<bold>What happens next?</bold> Operately will send you a code to verify your email address."
 msgstr "<bold>Что дальше?</bold> Operately отправит вам код для подтверждения адреса электронной почты."
 
@@ -5460,8 +5460,9 @@ msgstr "Доступ"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:136
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:89
 #: assets/js/pages/GoalAccessAddPage/index.tsx:114
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:137
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:114
 msgid "Access Level"
 msgstr "Уровень доступа"
 
@@ -5838,7 +5839,7 @@ msgid "Add administrators"
 msgstr "Добавить администраторов"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/AttachmentButton.tsx:55
+#: ../turboui/src/RichEditor/components/AttachmentButton.tsx:57
 msgid "Add an Image or File"
 msgstr "Добавить изображение или файл"
 
@@ -5851,7 +5852,8 @@ msgid "Add annotation"
 msgstr "Добавить примечание"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:153
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:90
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:115
 msgid "Add another member"
 msgstr "Добавить ещё одного участника"
 
@@ -5927,13 +5929,13 @@ msgid "Add measurement"
 msgstr "Добавить измерение"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:76
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:93
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:74
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:91
 msgid "Add members"
 msgstr "Добавить участников"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:80
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:78
 msgid "Add members to %{name}"
 msgstr "Добавить участников в «%{name}»"
 
@@ -6792,8 +6794,8 @@ msgstr "Хотя бы 1 заглавная буква"
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:79
 #: assets/js/pages/SetupPage/page.tsx:152
 #: assets/js/pages/SetupPage/page.tsx:164
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:338
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:350
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:343
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:355
 msgid "At least 12 characters"
 msgstr "Не менее 12 символов"
 
@@ -6958,7 +6960,7 @@ msgstr "Вернуться ко входу"
 
 #.frontend
 #: assets/js/pages/GoalAccessAddPage/index.tsx:60
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:78
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:76
 msgid "Back to Team & Access"
 msgstr "Вернуться к команде и доступу"
 
@@ -7350,7 +7352,7 @@ msgstr "Куратор и ответственный не могут быть о
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:114
 #: ../turboui/src/DateField/components/ActionButtons.tsx:23
 #: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:36
-#: ../turboui/src/DocumentEditPage/index.tsx:96
+#: ../turboui/src/DocumentEditPage/index.tsx:97
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:143
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:155
 #: ../turboui/src/Forms/Submit.tsx:24
@@ -7697,7 +7699,7 @@ msgid "Check not found"
 msgstr "Пункт чек-листа не найден"
 
 #.frontend
-#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:90
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:96
 msgid "Check the diagram source and try again."
 msgstr "Проверьте исходный код диаграммы и повторите попытку."
 
@@ -7730,7 +7732,7 @@ msgid "Check your current inbox"
 msgstr "Проверьте свой текущий почтовый ящик"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:411
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:416
 msgid "Check your email for a code"
 msgstr "Проверьте свою электронную почту на наличие кода"
 
@@ -8142,7 +8144,7 @@ msgid "Close Project"
 msgstr "Завершить проект"
 
 #.frontend
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:368
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:385
 msgid "Close image preview"
 msgstr "Закрыть предварительный просмотр изображения"
 
@@ -8274,6 +8276,7 @@ msgstr "Столбец удалён"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:137
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:22
 #: ../turboui/src/PrivacyField/index.tsx:191
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:84
 #: assets/js/components/Badges/AccessLevelBadges.tsx:131
 #: assets/js/features/Permissions/index.tsx:26
 #: assets/js/features/Permissions/index.tsx:48
@@ -8673,7 +8676,7 @@ msgstr "Подтвердить новый пароль"
 
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:82
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:348
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:353
 msgid "Confirm Password"
 msgstr "Подтвердить пароль"
 
@@ -8803,8 +8806,8 @@ msgstr "Продолжить"
 
 #.frontend
 #: ../turboui/src/Forms/VerificationCodeInput.stories.tsx:15
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:362
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:433
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:367
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:438
 msgid "Continue ->"
 msgstr "Продолжить ->"
 
@@ -8819,7 +8822,7 @@ msgid "Continue to checkout"
 msgstr "Перейти к оплате"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:311
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:316
 msgid "Continue without this invitation"
 msgstr "Продолжить без этого приглашения"
 
@@ -9231,7 +9234,7 @@ msgid "Create and manage tokens for programmatic access"
 msgstr "Создание и управление токенами для программного доступа"
 
 #.frontend
-#: ../turboui/src/NewDocumentPage/index.tsx:102
+#: ../turboui/src/NewDocumentPage/index.tsx:103
 msgid "Create document"
 msgstr "Создать документ"
 
@@ -9539,7 +9542,7 @@ msgid "Database ID"
 msgstr "ID базы данных"
 
 #.frontend
-#: ../turboui/src/DateField/DateDisplay.tsx:20
+#: ../turboui/src/DateField/DateDisplay.tsx:21
 #: ../turboui/src/DateField/index.tsx:109
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:108
 #: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:94
@@ -10009,7 +10012,7 @@ msgid "Destination type"
 msgstr "Тип назначения"
 
 #.frontend
-#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:100
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:106
 msgid "Diagram preview"
 msgstr "Предварительный просмотр диаграммы"
 
@@ -10283,8 +10286,8 @@ msgstr "Подробности перехода на более низкий т�
 #: ../turboui/src/CompanyExportPage/index.tsx:137
 #: ../turboui/src/FilePage/index.tsx:166
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:67
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:270
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:424
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:281
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:441
 #: assets/js/pages/ProjectTemplateFilePage/index.tsx:64
 #: assets/js/pages/ResourceHubFilePage/Options.tsx:30
 msgid "Download"
@@ -10530,6 +10533,7 @@ msgstr "Редактировать"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:136
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:28
 #: ../turboui/src/PrivacyField/index.tsx:194
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:83
 #: assets/js/components/Badges/AccessLevelBadges.tsx:116
 #: assets/js/features/Permissions/index.tsx:33
 #: assets/js/features/Permissions/index.tsx:47
@@ -10646,12 +10650,12 @@ msgid "Edit retrospective"
 msgstr "Редактировать итоги"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:445
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:450
 msgid "Edit signup details"
 msgstr "Изменить данные регистрации"
 
 #.frontend
-#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:76
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:81
 msgid "Edit source"
 msgstr "Редактировать исходный код"
 
@@ -10936,7 +10940,7 @@ msgstr "Введите действительный адрес электрон�
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:24
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:84
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:142
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:147
 #: lib/operately_web/api/signup/errors.ex:42
 msgid "Enter a valid email address."
 msgstr "Введите действительный адрес электронной почты."
@@ -10949,7 +10953,7 @@ msgstr "Введите значение"
 
 #.elixir
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:141
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:146
 #: lib/operately_web/api/signup/errors.ex:39
 msgid "Enter an email address with no more than 255 characters."
 msgstr "Введите адрес электронной почты длиной не более 255 символов."
@@ -11012,13 +11016,13 @@ msgid "Enter your current password"
 msgstr "Введите свой текущий пароль"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:329
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:334
 msgid "Enter your full name"
 msgstr "Введите своё полное имя"
 
 #.elixir
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:146
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:151
 #: lib/operately_web/api/signup/errors.ex:46
 msgid "Enter your full name using no more than 255 characters."
 msgstr "Введите полное имя длиной не более 255 символов."
@@ -12201,6 +12205,7 @@ msgstr "От: %{start_date} до %{end_date}"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:135
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:34
 #: ../turboui/src/PrivacyField/index.tsx:197
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:82
 #: assets/js/components/Badges/AccessLevelBadges.tsx:101
 #: assets/js/features/Permissions/index.tsx:40
 #: assets/js/features/Permissions/index.tsx:46
@@ -12211,7 +12216,7 @@ msgstr "Полный доступ"
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:52
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:328
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:333
 msgid "Full Name"
 msgstr "Полное имя"
 
@@ -12650,7 +12655,7 @@ msgid "Image"
 msgstr "Изображение"
 
 #.frontend
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:355
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:372
 msgid "Image preview"
 msgstr "Предпросмотр изображения"
 
@@ -13099,7 +13104,7 @@ msgid "Invite people"
 msgstr "Пригласить людей"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:85
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:83
 msgid "Invite someone new to the organization"
 msgstr "Пригласить нового человека в компанию"
 
@@ -14025,9 +14030,9 @@ msgstr "Отметить задачу как выполненную"
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:22
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:23
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:90
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:193
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:194
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:202
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:164
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:165
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:173
 msgid "Markdown shortcuts"
 msgstr "Сочетания символов Markdown"
 
@@ -14047,7 +14052,8 @@ msgid "Marko Anastasov, CEO & Founder, Operately"
 msgstr "Марко Анастасов, генеральный директор и основатель Operately"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:134
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:88
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:113
 msgid "Member"
 msgstr "Участник"
 
@@ -14309,7 +14315,7 @@ msgstr "Ежемесячный доход"
 #~ msgstr "Подробнее в документации: <actionLink>Руководства по настройке</actionLink>"
 
 #.frontend
-#: ../turboui/src/RichEditor/components/Toolbar.tsx:172
+#: ../turboui/src/RichEditor/components/Toolbar.tsx:143
 msgid "More formatting options"
 msgstr "Больше вариантов форматирования"
 
@@ -14859,6 +14865,11 @@ msgid "No activity yet"
 msgstr "Действий пока нет"
 
 #.frontend
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:42
+msgid "No additional people to show."
+msgstr "Других людей в списке нет."
+
+#.frontend
 #: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:203
 msgid "No archived tasks."
 msgstr "Нет архивных задач."
@@ -15142,10 +15153,10 @@ msgstr "Нет новых обновлений."
 msgid "No one"
 msgstr "Никто"
 
-#.frontend
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:43
-msgid "No one else has access beyond people already assigned to this project."
-msgstr "Доступ есть только у людей, уже назначенных на этот проект."
+#~ #.frontend
+#~ #: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:43
+#~ msgid "No one else has access beyond people already assigned to this project."
+#~ msgstr "Доступ есть только у людей, уже назначенных на этот проект."
 
 #.frontend
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:202
@@ -15646,7 +15657,7 @@ msgid "Only empty Resource Hubs can be deleted. Remove all documents, drafts, fi
 msgstr "Удалить можно только пустые центры ресурсов. Сначала удалите все документы, черновики, файлы, ссылки и папки."
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:83
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:81
 msgid "Only existing members can be added."
 msgstr "Можно добавлять только существующих участников."
 
@@ -15748,7 +15759,7 @@ msgstr "Что-то пошло не так."
 
 #.frontend
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:111
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:240
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:243
 msgid "Open %{name} preview"
 msgstr "Открыть предпросмотр «%{name}»"
 
@@ -15804,7 +15815,7 @@ msgstr "Открыть глобальный поиск"
 
 #.frontend
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:111
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:241
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:244
 msgid "Open image preview"
 msgstr "Открыть предпросмотр изображения"
 
@@ -15928,7 +15939,7 @@ msgid "Or, <cancel>Cancel</cancel> or <discard>Discard draft</discard>"
 msgstr "Или <cancel>отменить</cancel> либо <discard>удалить черновик</discard>"
 
 #.frontend
-#: ../turboui/src/NewDocumentPage/index.tsx:145
+#: ../turboui/src/NewDocumentPage/index.tsx:146
 msgid "Or, <discard>Discard this document</discard>"
 msgstr "Или <discard>удалить этот документ</discard>"
 
@@ -15985,7 +15996,7 @@ msgstr "Другое"
 
 #.frontend
 #: ../turboui/src/OtherPeopleWithAccess/Modal.tsx:25
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:69
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:67
 #: assets/js/pages/GoalAccessManagementPage/OtherPeople.tsx:32
 #: assets/js/pages/SpaceAccessManagementPage/OtherPeople.tsx:33
 msgid "Other People with Access"
@@ -16137,7 +16148,7 @@ msgstr "Родительские цели показаны для контекс
 #: assets/js/pages/LoginPage/index.tsx:134
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:336
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:341
 msgid "Password"
 msgstr "Пароль"
 
@@ -16189,7 +16200,7 @@ msgstr "Пароль успешно изменён"
 #: assets/js/pages/JoinPage/index.tsx:93
 #: assets/js/pages/ResetPasswordPage/index.tsx:34
 #: assets/js/pages/SetupPage/page.tsx:72
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:159
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:164
 msgid "Passwords do not match"
 msgstr "Пароли не совпадают"
 
@@ -16333,7 +16344,7 @@ msgid "People who have access to the goal based on their company or space member
 msgstr "Люди, имеющие доступ к цели как участники компании или пространства, но не назначенные на неё напрямую."
 
 #.frontend
-#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:71
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:69
 msgid "People who have access to the project based on their company or space membership but are not directly assigned to the project."
 msgstr "Люди, имеющие доступ к проекту как участники компании или пространства, но не назначенные на него напрямую."
 
@@ -16509,7 +16520,7 @@ msgstr "Пожалуйста, введите свои данные, чтобы �
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:114
 #: assets/js/pages/SetupPage/page.tsx:208
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:361
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:366
 msgid "Please fill in all fields"
 msgstr "Пожалуйста, заполните все поля"
 
@@ -16681,7 +16692,7 @@ msgstr "Нажмите Tab, чтобы выбрать опцию и выйти �
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:73
-#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:80
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:85
 msgid "Preview"
 msgstr "Предварительный просмотр"
 
@@ -17158,7 +17169,7 @@ msgid "Publish"
 msgstr "Опубликовать"
 
 #.frontend
-#: ../turboui/src/DocumentEditPage/index.tsx:91
+#: ../turboui/src/DocumentEditPage/index.tsx:92
 #: assets/js/pages/DiscussionEditPage/index.tsx:68
 msgid "Publish Now"
 msgstr "Опубликовать сейчас"
@@ -17647,7 +17658,8 @@ msgid "Remove header row"
 msgstr "Удалить строку заголовка"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:174
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:91
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:116
 msgid "Remove member"
 msgstr "Убрать участника"
 
@@ -18518,7 +18530,7 @@ msgstr "Сохранить"
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:155
 #: ../turboui/src/AccountSettingsPage/index.tsx:89
 #: ../turboui/src/CommentSection/CommentItem.tsx:397
-#: ../turboui/src/DocumentEditPage/index.tsx:83
+#: ../turboui/src/DocumentEditPage/index.tsx:84
 #: ../turboui/src/ProfileEditPage/index.tsx:142
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:446
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:456
@@ -18542,7 +18554,7 @@ msgid "Save annotation"
 msgstr "Сохранить примечание"
 
 #.frontend
-#: ../turboui/src/NewDocumentPage/index.tsx:137
+#: ../turboui/src/NewDocumentPage/index.tsx:138
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:428
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:474
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:120
@@ -19452,8 +19464,8 @@ msgstr "Выйти"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:23
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:285
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:405
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:290
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:410
 msgid "Sign Up"
 msgstr "Зарегистрироваться"
 
@@ -19464,7 +19476,7 @@ msgstr "Зарегистрироваться и присоединиться к 
 
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:174
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:307
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:312
 msgid "Sign in"
 msgstr "Войти"
 
@@ -19485,7 +19497,7 @@ msgstr "Войти через Google"
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:51
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:290
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:295
 msgid "Sign up for Operately"
 msgstr "Зарегистрироваться в Operately"
 
@@ -19631,7 +19643,6 @@ msgstr "Во время присоединения что-то пошло не �
 
 #.elixir
 #: lib/operately/operations/account_signing_up.ex:120
-#: lib/operately/operations/account_signing_up.ex:121
 #: lib/operately_web/api/cli_auth.ex:730
 #: lib/operately_web/api/cli_auth.ex:890
 #: lib/operately_web/api/invitations.ex:186
@@ -21401,7 +21412,7 @@ msgstr "Не удалось обновить пароль. Повторите п
 #.elixir
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:95
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:105
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:110
 #: assets/js/pages/SpaceAddPage/index.tsx:50
 #: lib/operately_web/api/signup/errors.ex:56
 msgid "There was an unexpected error. Please try again later."
@@ -21652,16 +21663,16 @@ msgstr "Текущий платный тариф компании останет
 msgid "This company will stay on its current paid plan until the end of the current billing period."
 msgstr "Текущий платный тариф компании останется активным до конца расчётного периода."
 
+#.frontend
+#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:95
+msgid "This diagram could not be rendered."
+msgstr "Не удалось отобразить эту диаграмму."
+
 #.elixir
 #: lib/operately/operations/account_signing_up.ex:118
 #: lib/operately_web/api/signup/errors.ex:25
 msgid "This email domain is not allowed by the invitation."
 msgstr "Этот домен электронной почты не разрешён приглашением."
-
-#.frontend
-#: ../turboui/src/RichEditor/extensions/Mermaid/MermaidCodeBlockView.tsx:89
-msgid "This diagram could not be rendered."
-msgstr "Не удалось отобразить эту диаграмму."
 
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:88
@@ -23092,14 +23103,14 @@ msgstr "Использовать другой адрес электронной 
 
 #.elixir
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:153
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:158
 #: lib/operately_web/api/signup/errors.ex:50
 msgid "Use a password with no more than 72 UTF-8 bytes. Some characters use more than one byte."
 msgstr "Используйте пароль размером не более 72 байт в UTF-8. Некоторые символы занимают больше одного байта."
 
 #.elixir
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:152
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:157
 #: lib/operately_web/api/signup/errors.ex:52
 msgid "Use at least 12 characters, including an uppercase letter, a lowercase letter, and a number."
 msgstr "Используйте не менее 12 символов, включая заглавную букву, строчную букву и цифру."
@@ -23126,7 +23137,7 @@ msgstr "Используйте эти значения при вызове вн�
 #~ msgstr "Используйте этот URL, чтобы настроить подключение в вашем клиенте ИИ."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:291
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:296
 msgid "Use your work email — keep work and life separate."
 msgstr "Используйте рабочую электронную почту — держите работу и жизнь отдельно."
 
@@ -23236,6 +23247,7 @@ msgstr "Посмотреть инструкции по использовани�
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:138
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:16
 #: ../turboui/src/PrivacyField/index.tsx:188
+#: ../turboui/src/SpaceMemberFields/index.stories.tsx:85
 #: assets/js/components/Badges/AccessLevelBadges.tsx:146
 #: assets/js/features/Permissions/index.tsx:12
 #: assets/js/features/Permissions/index.tsx:49
@@ -23473,7 +23485,7 @@ msgstr "Только просмотр"
 
 #.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:361
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:278
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:294
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:418
 msgid "View original"
 msgstr "Посмотреть оригинал"
@@ -23692,7 +23704,7 @@ msgid "We've emailed %{name} a link to finish setting up their account. You can 
 msgstr "Мы отправили %{name} ссылку по электронной почте для завершения настройки учётной записи. Вы также можете поделиться ею ниже."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:460
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:465
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
 msgstr "Мы отправили код из 6 символов на <email>%{email}</email>. Код действителен 5 минут — введите его до истечения этого срока."
 
@@ -23882,7 +23894,7 @@ msgid "Will be posted on <date/> at <time/>"
 msgstr "Будет опубликовано <date/> в <time/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:319
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:324
 msgid "Work Email"
 msgstr "Рабочая почта"
 
@@ -25262,7 +25274,7 @@ msgid "name can't be blank"
 msgstr "Имя не может быть пустым"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:320
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:325
 msgid "name@company.com"
 msgstr "name@company.com"
 
