@@ -19,8 +19,8 @@ export function WorkMapNavigation({ tabsState, timelineAvailable = false, view =
   const timelinePath = buildViewPath(location.pathname, location.search, "timeline");
 
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-stroke-base px-4 shadow-b-xs">
-      <div className="min-w-0 flex-1 overflow-x-auto">
+    <div className="flex flex-wrap items-center justify-between gap-x-4 border-b border-stroke-base px-4 shadow-b-xs">
+      <div className="w-full min-w-0 sm:w-auto sm:flex-1">
         <Tabs tabs={tabsState} showBorder={false} />
       </div>
 
