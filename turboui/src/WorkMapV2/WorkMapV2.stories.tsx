@@ -1,6 +1,9 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
+import { CompanyNavigation } from "../CompanyNavigation";
+import { defaultProps as navigationProps } from "../CompanyNavigation/mockData";
+import { AddItemModal } from "../WorkMap/components/AddItemModal";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { WorkMapV2Page, defaultWorkMapV2Filters, type WorkMapV2Item, type WorkMapV2PageProps } from ".";
 
@@ -8,6 +11,7 @@ const growth = { name: "Growth & GTM" };
 const product = { name: "Product" };
 const filip = person("Filip B.");
 const marko = person("Marko A.");
+const productSpace = { id: "product", name: "Product", link: "/spaces/product" };
 
 function person(fullName: string) {
   return { id: fullName, fullName, avatarUrl: null };
@@ -100,6 +104,7 @@ export const ActiveWork: Story = {};
 export const NestedSpaceMap: Story = {
   args: {
     title: "Product Work Map",
+    space: { name: productSpace.name, href: productSpace.link },
     items: [
       item("Ship SuperPlane v1.2", 54, null, "Finalize release scope", {
         type: "goal",
@@ -188,11 +193,68 @@ export const ClearFilters: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.queryByRole("table")).not.toBeInTheDocument();
+    await expect(canvas.getByRole("button", { name: "Filter" })).toBeVisible();
     await userEvent.click(canvas.getByRole("button", { name: "Clear filters" }));
     await expect(canvas.getAllByRole("rowheader")).toHaveLength(11);
   },
 };
-export const EmptyMap: Story = { args: { items: [] } };
+
+function EmptySpaceStory(props: WorkMapV2PageProps) {
+  const [items, setItems] = React.useState(props.items);
+  const [adding, setAdding] = React.useState<AddItemModal.ItemType | null>(null);
+  return (
+    <div className="flex h-screen flex-col">
+      <CompanyNavigation
+        {...navigationProps}
+        companyName="SuperPlane"
+        unreadNotificationCount={0}
+        reviewCount={0}
+        me={{ ...navigationProps.me, fullName: "Marko A.", avatarUrl: null }}
+      />
+      <div className="relative min-h-0 flex-1 overflow-auto">
+        <StoryPage
+          {...props}
+          items={items}
+          onAddProject={() => setAdding("project")}
+          onAddGoal={() => setAdding("goal")}
+        />
+      </div>
+      {adding && (
+        <AddItemModal
+          isOpen
+          close={() => setAdding(null)}
+          parentGoal={null}
+          space={productSpace}
+          spaceSearch={async () => [productSpace]}
+          initialItemType={adding}
+          hideTypeSelector
+          hideCreateMore
+          save={async ({ name, type }) => {
+            const created = item(name, 0, null, "", { type, status: "pending", owner: null, space: productSpace });
+            setItems((previous) => [...previous, created]);
+            return { id: created.id };
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+export const EmptyMap: Story = {
+  name: "Empty space map",
+  render: (args) => <EmptySpaceStory {...args} />,
+  args: {
+    items: [],
+    title: "Product Work Map",
+    space: { name: productSpace.name, href: productSpace.link },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.queryByRole("button", { name: "Filter" })).not.toBeInTheDocument();
+    await expect(canvas.getByRole("button", { name: "Add a project" })).toBeVisible();
+    await expect(canvas.getByRole("button", { name: "Add a goal" })).toBeVisible();
+  },
+};
 
 async function openFilterChoices(canvasElement: HTMLElement, label: string) {
   await userEvent.click(within(canvasElement).getByRole("button", { name: "Filter" }));

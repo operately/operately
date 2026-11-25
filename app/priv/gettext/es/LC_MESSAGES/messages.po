@@ -4442,7 +4442,7 @@ msgstr[0] "Se te atribuirá %{count} conversación de esta plantilla porque su a
 msgstr[1] "Se te atribuirán %{count} conversaciones de esta plantilla porque sus autores originales ya no están activos."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:37
+#: ../turboui/src/WorkMapV2/index.tsx:45
 msgid "1 goal"
 msgid_plural "%{count} goals"
 msgstr[0] "%{count} objetivo"
@@ -4520,14 +4520,14 @@ msgstr[0] "%{count} elemento"
 msgstr[1] "%{count} elementos"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:36
+#: ../turboui/src/WorkMapV2/index.tsx:44
 msgid "1 matching goal"
 msgid_plural "%{count} matching goals"
 msgstr[0] "%{count} objetivo coincidente"
 msgstr[1] "%{count} objetivos coincidentes"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:34
+#: ../turboui/src/WorkMapV2/index.tsx:42
 msgid "1 matching project"
 msgid_plural "%{count} matching projects"
 msgstr[0] "%{count} proyecto coincidente"
@@ -4698,7 +4698,7 @@ msgstr[0] "Se notificará a %{count} persona cuando alguien comente en esta tare
 msgstr[1] "Se notificará a %{count} personas cuando alguien comente en esta tarea."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:37
+#: ../turboui/src/WorkMapV2/index.tsx:45
 #: assets/js/features/goals/GoalTree/tree/goalNode.tsx:72
 msgid "1 project"
 msgid_plural "%{count} projects"
@@ -5610,6 +5610,7 @@ msgstr "Agregar un documento o archivo"
 
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:79
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:32
 msgid "Add a goal"
 msgstr "Añadir un objetivo"
 
@@ -5626,6 +5627,7 @@ msgstr "Añadir una nueva tarea"
 
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:86
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:23
 msgid "Add a project"
 msgstr "Agregar un proyecto"
 
@@ -5634,6 +5636,11 @@ msgstr "Agregar un proyecto"
 #: ../turboui/src/ProjectPage/Overview.tsx:54
 msgid "Add a project description..."
 msgstr "Añadir una descripción del proyecto..."
+
+#.frontend
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:12
+msgid "Add a project your team is working on, or a goal it wants to reach."
+msgstr "Añade un proyecto en el que trabaje tu equipo o un objetivo que quiera alcanzar."
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:229
@@ -5899,7 +5906,7 @@ msgid "Add the server configuration"
 msgstr "Añadir la configuración del servidor"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:46
+#: ../turboui/src/WorkMapV2/index.tsx:65
 msgid "Add work"
 msgstr "Añadir trabajo"
 
@@ -7857,7 +7864,7 @@ msgstr "Quitar filtro"
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:274
-#: ../turboui/src/WorkMapV2/index.tsx:74
+#: ../turboui/src/WorkMapV2/index.tsx:90
 msgid "Clear filters"
 msgstr "Limpiar filtros"
 
@@ -8048,7 +8055,7 @@ msgid "Collapse"
 msgstr "Contraer"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Table.tsx:103
+#: ../turboui/src/WorkMapV2/Table.tsx:104
 msgid "Collapse %{name}"
 msgstr "Contraer %{name}"
 
@@ -11177,7 +11184,7 @@ msgid "Expand"
 msgstr "Expandir"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Table.tsx:103
+#: ../turboui/src/WorkMapV2/Table.tsx:104
 msgid "Expand %{name}"
 msgstr "Expandir %{name}"
 
@@ -14853,7 +14860,7 @@ msgid "No goal selected"
 msgstr "Ningún objetivo seleccionado"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:65
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:9
 msgid "No goals or projects yet"
 msgstr "Todavía no hay objetivos ni proyectos"
 
@@ -14894,7 +14901,7 @@ msgstr "No hay plantillas coincidentes."
 
 #.frontend
 #: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:122
-#: ../turboui/src/WorkMapV2/index.tsx:68
+#: ../turboui/src/WorkMapV2/index.tsx:86
 msgid "No matching work."
 msgstr "No se encontró ningún trabajo que coincida."
 
@@ -15077,7 +15084,7 @@ msgid "No projects found."
 msgstr "No se encontraron proyectos."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:67
+#: ../turboui/src/WorkMapV2/index.tsx:86
 msgid "No projects match these filters"
 msgstr "Ningún proyecto coincide con estos filtros"
 
@@ -15926,12 +15933,12 @@ msgstr "Objetivo superior: Ninguno (objetivo de nivel superior)"
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:122
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:117
-#: ../turboui/src/WorkMapV2/Table.tsx:121
+#: ../turboui/src/WorkMapV2/Table.tsx:122
 msgid "Parent goal"
 msgstr "Objetivo superior"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:58
+#: ../turboui/src/WorkMapV2/index.tsx:80
 msgid "Parent goals shown for context"
 msgstr "Los objetivos superiores se muestran como contexto"
 
@@ -22138,7 +22145,7 @@ msgid "Try again later"
 msgstr "Inténtalo de nuevo más tarde"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:72
+#: ../turboui/src/WorkMapV2/index.tsx:88
 msgid "Try another filter or clear them to see more work."
 msgstr "Prueba otro filtro o quita los filtros para ver más trabajo."
 
@@ -23643,6 +23650,7 @@ msgstr "Correo electrónico de trabajo"
 #: ../turboui/src/GoalPage/PageHeader.tsx:19
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:98
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:112
+#: ../turboui/src/WorkMapV2/index.tsx:61
 #: assets/js/features/goals/GoalSubpageNavigation/index.tsx:15
 #: assets/js/features/goals/GoalSubpageNavigation/index.tsx:17
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:59

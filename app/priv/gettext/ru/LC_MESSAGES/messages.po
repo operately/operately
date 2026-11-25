@@ -4509,7 +4509,7 @@ msgstr[2] "Обсуждения из этого шаблона, которые �
 msgstr[3] "Обсуждения из этого шаблона, которые будут приписаны вам, поскольку их авторы больше не активны: %{count}."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:37
+#: ../turboui/src/WorkMapV2/index.tsx:45
 msgid "1 goal"
 msgid_plural "%{count} goals"
 msgstr[0] "%{count} цель"
@@ -4609,7 +4609,7 @@ msgstr[2] "%{count} элементов"
 msgstr[3] "%{count} элемента"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:36
+#: ../turboui/src/WorkMapV2/index.tsx:44
 msgid "1 matching goal"
 msgid_plural "%{count} matching goals"
 msgstr[0] "%{count} подходящая цель"
@@ -4618,7 +4618,7 @@ msgstr[2] "%{count} подходящих целей"
 msgstr[3] "%{count} подходящей цели"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:34
+#: ../turboui/src/WorkMapV2/index.tsx:42
 msgid "1 matching project"
 msgid_plural "%{count} matching projects"
 msgstr[0] "%{count} подходящий проект"
@@ -4837,7 +4837,7 @@ msgstr[2] "Уведомления о новых комментариях к за
 msgstr[3] "Уведомления о новых комментариях к задаче получат: %{count} человека."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:37
+#: ../turboui/src/WorkMapV2/index.tsx:45
 #: assets/js/features/goals/GoalTree/tree/goalNode.tsx:72
 msgid "1 project"
 msgid_plural "%{count} projects"
@@ -5783,6 +5783,7 @@ msgstr "Добавить документ или файл"
 
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:79
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:32
 msgid "Add a goal"
 msgstr "Добавить цель"
 
@@ -5799,6 +5800,7 @@ msgstr "Добавить новую задачу"
 
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:86
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:23
 msgid "Add a project"
 msgstr "Добавить проект"
 
@@ -5807,6 +5809,11 @@ msgstr "Добавить проект"
 #: ../turboui/src/ProjectPage/Overview.tsx:54
 msgid "Add a project description..."
 msgstr "Добавить описание проекта..."
+
+#.frontend
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:12
+msgid "Add a project your team is working on, or a goal it wants to reach."
+msgstr "Добавьте проект, над которым работает ваша команда, или цель, которой она хочет достичь."
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:229
@@ -6072,7 +6079,7 @@ msgid "Add the server configuration"
 msgstr "Добавить конфигурацию сервера"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:46
+#: ../turboui/src/WorkMapV2/index.tsx:65
 msgid "Add work"
 msgstr "Добавить работу"
 
@@ -8034,7 +8041,7 @@ msgstr "Сбросить фильтр"
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:274
-#: ../turboui/src/WorkMapV2/index.tsx:74
+#: ../turboui/src/WorkMapV2/index.tsx:90
 msgid "Clear filters"
 msgstr "Сбросить фильтры"
 
@@ -8225,7 +8232,7 @@ msgid "Collapse"
 msgstr "Свернуть"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Table.tsx:103
+#: ../turboui/src/WorkMapV2/Table.tsx:104
 msgid "Collapse %{name}"
 msgstr "Свернуть %{name}"
 
@@ -11360,7 +11367,7 @@ msgid "Expand"
 msgstr "Развернуть"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Table.tsx:103
+#: ../turboui/src/WorkMapV2/Table.tsx:104
 msgid "Expand %{name}"
 msgstr "Развернуть %{name}"
 
@@ -15038,7 +15045,7 @@ msgid "No goal selected"
 msgstr "Цель не выбрана"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:65
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:9
 msgid "No goals or projects yet"
 msgstr "Пока нет целей и проектов"
 
@@ -15079,7 +15086,7 @@ msgstr "Никаких подходящих шаблонов."
 
 #.frontend
 #: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:122
-#: ../turboui/src/WorkMapV2/index.tsx:68
+#: ../turboui/src/WorkMapV2/index.tsx:86
 msgid "No matching work."
 msgstr "Подходящая работа не найдена."
 
@@ -15262,7 +15269,7 @@ msgid "No projects found."
 msgstr "Никаких проектов не найдено."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:67
+#: ../turboui/src/WorkMapV2/index.tsx:86
 msgid "No projects match these filters"
 msgstr "Нет проектов, соответствующих этим фильтрам"
 
@@ -16113,12 +16120,12 @@ msgstr "Родительская цель: нет (цель верхнего у�
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:122
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:117
-#: ../turboui/src/WorkMapV2/Table.tsx:121
+#: ../turboui/src/WorkMapV2/Table.tsx:122
 msgid "Parent goal"
 msgstr "Родительская цель"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:58
+#: ../turboui/src/WorkMapV2/index.tsx:80
 msgid "Parent goals shown for context"
 msgstr "Родительские цели показаны для контекста"
 
@@ -22372,7 +22379,7 @@ msgid "Try again later"
 msgstr "Попробуйте позже"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:72
+#: ../turboui/src/WorkMapV2/index.tsx:88
 msgid "Try another filter or clear them to see more work."
 msgstr "Выберите другой фильтр или сбросьте фильтры, чтобы увидеть больше результатов."
 
@@ -23881,6 +23888,7 @@ msgstr "Рабочая почта"
 #: ../turboui/src/GoalPage/PageHeader.tsx:19
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:98
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:112
+#: ../turboui/src/WorkMapV2/index.tsx:61
 #: assets/js/features/goals/GoalSubpageNavigation/index.tsx:15
 #: assets/js/features/goals/GoalSubpageNavigation/index.tsx:17
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:59

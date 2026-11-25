@@ -4410,7 +4410,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:37
+#: ../turboui/src/WorkMapV2/index.tsx:45
 msgid "1 goal"
 msgid_plural "%{count} goals"
 msgstr[0] ""
@@ -4488,14 +4488,14 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:36
+#: ../turboui/src/WorkMapV2/index.tsx:44
 msgid "1 matching goal"
 msgid_plural "%{count} matching goals"
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:34
+#: ../turboui/src/WorkMapV2/index.tsx:42
 msgid "1 matching project"
 msgid_plural "%{count} matching projects"
 msgstr[0] ""
@@ -4659,7 +4659,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:37
+#: ../turboui/src/WorkMapV2/index.tsx:45
 #: assets/js/features/goals/GoalTree/tree/goalNode.tsx:72
 msgid "1 project"
 msgid_plural "%{count} projects"
@@ -5559,6 +5559,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:79
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:32
 msgid "Add a goal"
 msgstr ""
 
@@ -5575,6 +5576,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:86
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:23
 msgid "Add a project"
 msgstr ""
 
@@ -5582,6 +5584,11 @@ msgstr ""
 #: ../turboui/src/ProjectPage/Overview.tsx:53
 #: ../turboui/src/ProjectPage/Overview.tsx:54
 msgid "Add a project description..."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:12
+msgid "Add a project your team is working on, or a goal it wants to reach."
 msgstr ""
 
 #.frontend
@@ -5843,7 +5850,7 @@ msgid "Add the server configuration"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:46
+#: ../turboui/src/WorkMapV2/index.tsx:65
 msgid "Add work"
 msgstr ""
 
@@ -7745,7 +7752,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:274
-#: ../turboui/src/WorkMapV2/index.tsx:74
+#: ../turboui/src/WorkMapV2/index.tsx:90
 msgid "Clear filters"
 msgstr ""
 
@@ -7936,7 +7943,7 @@ msgid "Collapse"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Table.tsx:103
+#: ../turboui/src/WorkMapV2/Table.tsx:104
 msgid "Collapse %{name}"
 msgstr ""
 
@@ -11044,7 +11051,7 @@ msgid "Expand"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Table.tsx:103
+#: ../turboui/src/WorkMapV2/Table.tsx:104
 msgid "Expand %{name}"
 msgstr ""
 
@@ -14637,7 +14644,7 @@ msgid "No goal selected"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:65
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:9
 msgid "No goals or projects yet"
 msgstr ""
 
@@ -14678,7 +14685,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:122
-#: ../turboui/src/WorkMapV2/index.tsx:68
+#: ../turboui/src/WorkMapV2/index.tsx:86
 msgid "No matching work."
 msgstr ""
 
@@ -14861,7 +14868,7 @@ msgid "No projects found."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:67
+#: ../turboui/src/WorkMapV2/index.tsx:86
 msgid "No projects match these filters"
 msgstr ""
 
@@ -15705,12 +15712,12 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:122
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:117
-#: ../turboui/src/WorkMapV2/Table.tsx:121
+#: ../turboui/src/WorkMapV2/Table.tsx:122
 msgid "Parent goal"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:58
+#: ../turboui/src/WorkMapV2/index.tsx:80
 msgid "Parent goals shown for context"
 msgstr ""
 
@@ -21816,7 +21823,7 @@ msgid "Try again later"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:72
+#: ../turboui/src/WorkMapV2/index.tsx:88
 msgid "Try another filter or clear them to see more work."
 msgstr ""
 
@@ -23300,6 +23307,7 @@ msgstr ""
 #: ../turboui/src/GoalPage/PageHeader.tsx:19
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:98
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:112
+#: ../turboui/src/WorkMapV2/index.tsx:61
 #: assets/js/features/goals/GoalSubpageNavigation/index.tsx:15
 #: assets/js/features/goals/GoalSubpageNavigation/index.tsx:17
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:59
