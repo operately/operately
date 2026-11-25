@@ -8,8 +8,8 @@ export function useGoalCheckInPageTitle(): string[] {
   const mode = Pages.usePageMode();
 
   if (mode === "edit") {
-    return [t("Editing"), t("Goal Check-In"), goal.name];
+    return [t("Editing"), t("Goal check-in"), goal.name];
   } else {
-    return [t("Goal Check-In"), goal.name];
+    return [t("Goal check-in"), goal.name];
   }
 }

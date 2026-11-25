@@ -52,7 +52,7 @@ const GoalUpdateCommented: ActivityHandler = {
     if (page === "goal") {
       return (
         <Trans
-          i18nKey="{{author}} <action>commented</action> on a <checkIn>Check-In</checkIn>"
+          i18nKey="{{author}} <action>commented</action> on a <checkIn>check-in</checkIn>"
           values={values}
           components={components}
         />
@@ -60,7 +60,7 @@ const GoalUpdateCommented: ActivityHandler = {
     } else {
       return (
         <Trans
-          i18nKey="{{author}} <action>commented</action> on a <checkIn>Check-In</checkIn> in the <goal>{{goalName}}</goal> goal"
+          i18nKey="{{author}} <action>commented</action> on a <checkIn>check-in</checkIn> in the <goal>{{goalName}}</goal> goal"
           values={values}
           components={components}
         />

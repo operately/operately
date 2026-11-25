@@ -52,22 +52,22 @@ export const goalDocsAndFilesLink = (paths: Paths, goal: api.Goal) => {
 
 export const goalCheckInLink = (paths: Paths, checkIn?: api.GoalProgressUpdate | null) => {
   if (!checkIn) {
-    return i18n.t("Check-In");
+    return i18n.t("check-in");
   }
 
   const path = paths.goalCheckInPath(checkIn.id);
 
-  return <Link to={path}>{i18n.t("Check-In")}</Link>;
+  return <Link to={path}>{i18n.t("check-in")}</Link>;
 };
 
 export const projectCheckInLink = (paths: Paths, checkIn?: api.ProjectCheckIn | null) => {
   if (!checkIn?.id) {
-    return i18n.t("Check-In");
+    return i18n.t("check-in");
   }
 
   const path = paths.projectCheckInPath(checkIn.id);
 
-  return <Link to={path}>{i18n.t("Check-In")}</Link>;
+  return <Link to={path}>{i18n.t("check-in")}</Link>;
 };
 
 export const spaceLink = (paths: Paths, space: api.Space) => {

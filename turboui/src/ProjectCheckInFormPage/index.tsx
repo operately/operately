@@ -183,7 +183,7 @@ function Header({ props }: { props: ProjectCheckInFormPage.Props }) {
   if (props.mode === "create") {
     return (
       <div>
-        <div className="text-2xl font-bold mx-auto">{t("Let's Check In")}</div>
+        <div className="text-2xl font-bold mx-auto">{t("Let's check in")}</div>
       </div>
     );
   }
@@ -192,7 +192,7 @@ function Header({ props }: { props: ProjectCheckInFormPage.Props }) {
     <div>
       <div className="text-2xl font-bold mx-auto">
         <Trans
-          i18nKey="Editing the Check-In from <date/>"
+          i18nKey="Editing the check-in from <date/>"
           components={{
             date: (
               <FormattedTime {...props.formattedTimePreferences} time={displayDate(props.checkIn)} format="long-date" />

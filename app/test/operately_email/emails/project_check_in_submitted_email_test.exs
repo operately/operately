@@ -75,12 +75,12 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmailTest do
     assert_acknowledge_email()
   end
 
-  test "champion gets a View Check-In CTA when they authored the check-in", ctx do
+  test "champion gets a View check-in CTA when they authored the check-in", ctx do
     send_check_in_email(ctx, ctx.champion)
     assert_view_check_in_email()
   end
 
-  test "reviewer gets a View Check-In CTA when they authored the check-in", ctx do
+  test "reviewer gets a View check-in CTA when they authored the check-in", ctx do
     ctx = add_reviewer_check_in(ctx)
 
     send_check_in_email(ctx, ctx.reviewer, ctx.reviewer_check_in)
@@ -94,12 +94,12 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmailTest do
     assert_acknowledge_email()
   end
 
-  test "company owner gets a View Check-In CTA", ctx do
+  test "company owner gets a View check-in CTA", ctx do
     send_check_in_email(ctx, ctx.owner)
     assert_view_check_in_email()
   end
 
-  test "space member who is not champion or reviewer gets a View Check-In CTA", ctx do
+  test "space member who is not champion or reviewer gets a View check-in CTA", ctx do
     send_check_in_email(ctx, ctx.editor)
     assert_view_check_in_email()
   end
@@ -137,15 +137,15 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmailTest do
       assert email.html_body =~ ">Acknowledge</a>"
       assert email.html_body =~ "acknowledge=true"
       assert email.text_body =~ "Acknowledge:"
-      refute email.html_body =~ ">View Check-In</a>"
+      refute email.html_body =~ ">View check-in</a>"
       true
     end)
   end
 
   defp assert_view_check_in_email do
     assert_email_sent(fn email ->
-      assert email.html_body =~ ">View Check-In</a>"
-      assert email.text_body =~ "View Check-In:"
+      assert email.html_body =~ ">View check-in</a>"
+      assert email.text_body =~ "View check-in:"
       refute email.html_body =~ ">Acknowledge</a>"
       refute email.html_body =~ "acknowledge=true"
       refute email.text_body =~ "Acknowledge:"

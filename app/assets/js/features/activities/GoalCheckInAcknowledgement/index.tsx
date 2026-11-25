@@ -40,7 +40,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
     if (page === "goal") {
       return (
         <Trans
-          i18nKey="{{author}} acknowledged the <checkIn>Check-In</checkIn>"
+          i18nKey="{{author}} acknowledged the <checkIn>check-in</checkIn>"
           values={{ author: activityAuthorName(activity) }}
           components={{ checkIn: link }}
         />
@@ -48,7 +48,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
     } else {
       return (
         <Trans
-          i18nKey="{{author}} acknowledged the <checkIn>Check-In</checkIn> in the <goal>{{goalName}}</goal> goal"
+          i18nKey="{{author}} acknowledged the <checkIn>check-in</checkIn> in the <goal>{{goalName}}</goal> goal"
           values={{ author: activityAuthorName(activity), goalName: goal.name }}
           components={{ checkIn: link, goal: goalLink(paths, goal) }}
         />

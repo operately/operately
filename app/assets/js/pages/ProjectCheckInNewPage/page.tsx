@@ -73,7 +73,7 @@ export function Page() {
   return (
     <ProjectCheckInFormPage
       mode="create"
-      pageTitle={[t("Check-In"), project.name!]}
+      pageTitle={[t("Check-in"), project.name!]}
       navigation={buildNavigation(project, paths)}
       cancelLink={paths.projectCheckInsPath(project.id!)}
       richTextHandlers={richTextHandlers}
@@ -98,7 +98,7 @@ function buildNavigation(project: ReturnType<typeof useLoadedData>["project"], p
   }
 
   items.push({ to: paths.projectPath(project.id!), label: project.name! });
-  items.push({ to: paths.projectCheckInsPath(project.id!), label: i18n.t("Check-Ins") });
+  items.push({ to: paths.projectCheckInsPath(project.id!), label: i18n.t("Check-ins") });
 
   return items;
 }

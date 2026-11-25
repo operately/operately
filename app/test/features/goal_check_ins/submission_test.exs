@@ -45,8 +45,8 @@ defmodule Operately.Features.GoalChecksIns.SubmissionTest do
     ctx
     |> Steps.given_a_check_in_exists()
     |> Steps.visit_check_ins_tab()
-    |> UI.assert_text("Check-In for #{month}", testid: "check-in-title")
-    |> UI.refute_text("Check-In for #{month} #{today.day}", testid: "check-in-title")
+    |> UI.assert_text("Check-in for #{month}", testid: "check-in-title")
+    |> UI.refute_text("Check-in for #{month} #{today.day}", testid: "check-in-title")
   end
 
   feature "edit a submitted check-in", ctx do

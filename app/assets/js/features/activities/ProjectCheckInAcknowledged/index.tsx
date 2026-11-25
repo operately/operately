@@ -42,7 +42,7 @@ const ProjectCheckInAcknowledged: ActivityHandler = {
     if (page === "project") {
       return (
         <Trans
-          i18nKey="{{author}} acknowledged a <checkIn>Check-In</checkIn>"
+          i18nKey="{{author}} acknowledged a <checkIn>check-in</checkIn>"
           values={{ author: activityAuthorName(activity) }}
           components={{ checkIn }}
         />
@@ -50,7 +50,7 @@ const ProjectCheckInAcknowledged: ActivityHandler = {
     } else {
       return (
         <Trans
-          i18nKey="{{author}} acknowledged a <checkIn>Check-In</checkIn> in the <project>{{projectName}}</project> project"
+          i18nKey="{{author}} acknowledged a <checkIn>check-in</checkIn> in the <project>{{projectName}}</project> project"
           values={{ author: activityAuthorName(activity), projectName: project.name }}
           components={{ checkIn, project: projectLink(paths, project) }}
         />
