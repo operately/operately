@@ -143,8 +143,7 @@ export function useEditor(props: UseEditorProps): EditorState {
 
   const editor = TipTap.useEditor({
     shouldRerenderOnTransaction: true,
-    // Markdown shortcuts apply only while typing, except Highlight's
-    // "==text==" paste behavior. Link handles URLs during clipboard parsing.
+    // MarkdownPaste and Link process clipboard content before insertion.
     enablePasteRules: ["highlight"],
     editable: props.editable,
     content: initialContent,

@@ -52,8 +52,7 @@ function createPasteLinkPlugin(linkType: MarkType, rules: PasteRule[]): Plugin {
       return [node];
     }
 
-    // Reuse Tiptap's URL validation and Markdown-aware matching. Discard
-    // replacements so pasted Markdown syntax stays literal.
+    // Only auto-link bare URLs here. MarkdownPaste handles explicit Markdown links.
     const matches = rules
       .flatMap((rule) => (typeof rule.find === "function" ? (rule.find(node.text ?? "") ?? []) : []))
       .filter((match) => match.replaceWith === undefined)
