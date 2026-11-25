@@ -12,7 +12,7 @@ jest.mock("turboui", () => ({}));
 jest.mock("@/components/Pages", () => ({
   useLoadedData: () => ({
     companyInput: { includeGeneralSpace: true },
-    workMapInput: {},
+    workMapInput: { includeReviewer: true },
     editableSpacesInput: { query: "", accessLevel: "edit_access" },
     templatesInput: { archiveStatus: "active" },
   }),
@@ -50,7 +50,9 @@ describe("CompanyWorkMapPage loading", () => {
   });
 
   async function mount() {
-    queryClient.setQueryData(Api.companies.getWorkMapQueryKey({}), { workMap: [{ id: "project-1" }] });
+    queryClient.setQueryData(Api.companies.getWorkMapQueryKey({ includeReviewer: true }), {
+      workMap: [{ id: "project-1" }],
+    });
     function Harness() {
       loaded = useLoadedData();
       return null;
@@ -92,7 +94,10 @@ describe("CompanyWorkMapPage loading", () => {
     await Promise.resolve();
     expect(completed).toBe(false);
     request.resolve({ data: { work_map: [] } });
-    await expect(pending).resolves.toMatchObject({ workMapInput: {}, companyInput: { includeGeneralSpace: true } });
+    await expect(pending).resolves.toMatchObject({
+      workMapInput: { includeReviewer: true },
+      companyInput: { includeGeneralSpace: true },
+    });
     expect(axios.get).toHaveBeenCalledTimes(1);
   });
 

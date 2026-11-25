@@ -31,6 +31,8 @@ beforeEach(() => {
   get.mockReset().mockImplementation(async (url) => {
     if (url.endsWith("/companies/get"))
       return { data: { company: { id: "acme", enabled_experimental_features: ["work_map_v2"] } } };
+    if (url.endsWith("/work_maps/get_settings"))
+      return { data: { can_edit: true, default_view: null, ordered_item_ids: [], pinned_kpis: [] } };
     if (url.endsWith("/companies/get_work_map")) return { data: { work_map: [] } };
     if (url.endsWith("/spaces/get")) return { data: { space: { id: "product", name: "Product" } } };
     throw new Error("Unexpected request " + url);
@@ -54,6 +56,8 @@ it.each([
     );
     const mapRequests = () => get.mock.calls.filter(([url]) => url.endsWith("/get_work_map"));
 
+    const settingsRequests = () => get.mock.calls.filter(([url]) => url.endsWith("/work_maps/get_settings"));
+
     try {
       await route.handle.dataLoader({ params, request: new Request(new URL(href, home)) });
       expect(mapRequests()).toHaveLength(1);
@@ -64,6 +68,12 @@ it.each([
       await router.navigate(mapPath + "?lifecycle=closed");
       expect(router.state.errors).toBeNull();
       expect(router.state.location.pathname + router.state.location.search).toBe(mapPath + "?lifecycle=closed");
+      expect(mapRequests()).toHaveLength(1);
+      expect(settingsRequests()).toHaveLength(1);
+
+      await router.navigate("/acme");
+      await router.navigate(mapPath);
+      expect(settingsRequests()).toHaveLength(2);
       expect(mapRequests()).toHaveLength(1);
     } finally {
       router.dispose();
