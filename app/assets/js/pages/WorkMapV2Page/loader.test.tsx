@@ -18,7 +18,11 @@ it.each([undefined, "product"])("recovers expired data when the map mounts (spac
   Api.default.setBasePath("/api/v2");
   Api.default.setHeaders({ "x-company-id": "acme" });
   jest.mocked(axios.get).mockImplementation(async (url) => ({
-    data: url.endsWith("/spaces/get") ? { space: { id, name: "Product" } } : { work_map: [] },
+    data: url.endsWith("/work_maps/get_settings")
+      ? { can_edit: true, default_view: null, ordered_item_ids: [], pinned_kpis: [] }
+      : url.endsWith("/spaces/get")
+        ? { space: { id, name: "Product" } }
+        : { work_map: [] },
   }));
   const inputs = await preload({ params: { id } });
   jest.mocked(Pages.useLoadedData).mockReturnValue(inputs);

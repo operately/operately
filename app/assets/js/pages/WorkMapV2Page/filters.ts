@@ -1,4 +1,10 @@
-import type { WorkMapV2Filters } from "turboui";
+import type { WorkMapItemType, WorkMapItemState } from "@/api";
+import { readPersonalFilters, clearViewParams } from "./viewParams";
+
+interface WorkMapV2Filters {
+  workTypes: WorkMapItemType[];
+  lifecycle: WorkMapItemState[];
+}
 
 const workTypes = ["goal", "project"] as const;
 const lifecycleStates = ["active", "paused", "closed"] as const;
@@ -36,11 +42,15 @@ export function writeFilters(search: URLSearchParams, filters: WorkMapV2Filters)
 }
 
 export function legacySearch(search: URLSearchParams) {
-  const { workTypes, lifecycle } = readFilters(search);
-  const result = new URLSearchParams(search);
-  result.delete("workType");
-  result.delete("lifecycle");
-  result.delete("tab");
+  const advanced = readPersonalFilters(search);
+  const { workTypes, lifecycle } = advanced
+    ? {
+        workTypes: advanced.find((f) => f.field === "work_type" && f.operator !== "is_not")?.values ?? [],
+        lifecycle: advanced.find((f) => f.field === "lifecycle" && f.operator !== "is_not")?.values ?? [],
+      }
+    : readFilters(search);
+  const result = clearViewParams(search);
+  if (search.get("view") === "timeline") result.set("view", "timeline");
 
   if (lifecycle.length === 1 && lifecycle[0] === "closed") result.set("tab", "completed");
   else if (lifecycle.length === 1 && lifecycle[0] === "paused") result.set("tab", "paused");
