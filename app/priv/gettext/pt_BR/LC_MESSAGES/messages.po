@@ -5583,7 +5583,7 @@ msgstr "A atividade dos seus espaços, objetivos e projetos aparecerá aqui."
 #: ../turboui/src/Checklist/index.tsx:171
 #: ../turboui/src/GoalPage/Targets.tsx:19
 #: ../turboui/src/ResourceHub/AddFilesButton.tsx:38
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:116
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:129
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:266
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
@@ -6003,7 +6003,7 @@ msgid "Add, edit, or remove task statuses. Click the icon to change the color an
 msgstr "Adicione, edite ou remova status de tarefas. Clique no ícone para mudar a cor e a aparência."
 
 #.frontend
-#: ../turboui/src/RichEditor/components/LinkButton.tsx:25
+#: ../turboui/src/RichEditor/components/LinkButton.tsx:17
 msgid "Add/Edit Links"
 msgstr "Adicionar/editar links"
 
@@ -7316,7 +7316,7 @@ msgstr "Não pode ser a mesma pessoa que o champion"
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:179
 #: ../turboui/src/ResourceHub/nodeMenus/MoveResource.tsx:95
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:57
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:120
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:132
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:149
 #: ../turboui/src/SchedulePosting/ScheduleModal.tsx:96
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:136
@@ -13014,6 +13014,7 @@ msgstr "Link de convite inválido"
 #.frontend
 #: ../turboui/src/LinkEditPage/index.tsx:30
 #: ../turboui/src/LinkNewPage/index.tsx:31
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:135
 msgid "Invalid link"
 msgstr "Link inválido"
 
@@ -18772,7 +18773,7 @@ msgstr "Igual ao sistema"
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:128
 #: ../turboui/src/PageDescription/index.tsx:195
 #: ../turboui/src/PrivacyField/index.tsx:120
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:106
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:129
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:396
 #: ../turboui/src/TitleSetupPrompt/index.tsx:63
 #: assets/js/features/ProjectRetrospective/Form.tsx:82
@@ -22737,6 +22738,7 @@ msgstr "Tipo:"
 
 #.frontend
 #: ../turboui/src/LinkNewPage/index.tsx:58
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:113
 msgid "URL"
 msgstr "URL"
 
@@ -22985,7 +22987,7 @@ msgid "Unlimited storage"
 msgstr "Armazenamento ilimitado"
 
 #.frontend
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:110
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:132
 msgid "Unlink"
 msgstr "Remover link"
 
@@ -25561,7 +25563,7 @@ msgid "eg. https://www.example.com/file/8430762"
 msgstr "Ex.: https://www.example.com/file/8430762"
 
 #.frontend
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:94
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:115
 msgid "ex. https://example.com"
 msgstr "ex.: https://example.com"
 

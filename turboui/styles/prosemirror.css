@@ -253,6 +253,10 @@
  *
  */
 
+.ProseMirror [data-editor-selection] {
+  background-color: rgba(66, 153, 225, 0.5);
+}
+
 .ProseMirror mark[data-highlight="unset"] {
   color: var(--color-content-base);
   background-color: transparent !important;

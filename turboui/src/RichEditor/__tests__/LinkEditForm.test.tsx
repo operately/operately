@@ -9,6 +9,8 @@ import FakeTextSelection from "../extensions/FakeTextSelection";
 import { AutoLinkSuppression } from "../extensions/Link/AutoLinkSuppression";
 import { normalizeRichTextContent } from "../richTextContent";
 
+const setLinkEditActive = jest.fn();
+
 // Wrapper component to provide the editor context
 function TestEditor({ content, onEditorReady }: { content: string; onEditorReady: (editor: Editor) => void }) {
   const editor = useEditor({
@@ -35,7 +37,7 @@ function TestEditor({ content, onEditorReady }: { content: string; onEditorReady
       value={{
         editor,
         linkEditActive: true,
-        setLinkEditActive: jest.fn(),
+        setLinkEditActive,
         submittable: true,
         focused: true,
         empty: false,
@@ -53,17 +55,6 @@ function TestEditor({ content, onEditorReady }: { content: string; onEditorReady
     </EditorContext.Provider>
   );
 }
-
-// Mock the EditorContext hook since we are rendering LinkEditForm which uses it
-// We need to control the linkEditActive state
-jest.mock("../EditorContext", () => {
-  const actual = jest.requireActual("../EditorContext");
-  return {
-    ...actual,
-    useLinkState: () => [true, jest.fn()], // Always active for these tests
-    useTipTapEditor: () => null,
-  };
-});
 
 describe("LinkEditForm", () => {
   let editorRef: Editor | null;
@@ -121,9 +112,6 @@ describe("LinkEditForm", () => {
     fireEvent.change(input, { target: { value: "https://new.com" } });
     fireEvent.click(screen.getByText("Save"));
 
-    // Clean up the fake selection mark before assertion if needed, or assert loosely
-    // The actual output contains the FakeTextSelection mark: <mark style="...">...</mark>
-    // We can just check that the href is updated and the old one is gone.
     expect(editorRef?.getHTML()).toContain('href="https://new.com"');
     expect(editorRef?.getHTML()).not.toContain("https://old.com");
   });
@@ -141,8 +129,7 @@ describe("LinkEditForm", () => {
 
     fireEvent.click(screen.getByText("Unlink"));
 
-    // FakeTextSelection might leave a mark, so we check for absence of link
-    expect(editorRef?.getHTML()).not.toContain("<a href=");
+    expect(editorRef?.getHTML()).not.toContain("<a ");
   });
 
   it("preserves an explicitly unlinked URL when saving and loading", async () => {
@@ -204,7 +191,7 @@ describe("LinkEditForm", () => {
 
     fireEvent.click(screen.getByText("Unlink"));
 
-    expect(editorRef?.getHTML()).not.toContain("<a href=");
+    expect(editorRef?.getHTML()).not.toContain("<a ");
   });
 
   it("creates a new link on selected text correctly", async () => {

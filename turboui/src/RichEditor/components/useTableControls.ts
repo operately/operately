@@ -6,7 +6,7 @@ import type { Transaction } from "@tiptap/pm/state";
 import type { Node as DocumentNode } from "@tiptap/pm/model";
 import { dismissToast, showInfoToast } from "../../Toasts";
 import { tableTarget, runTableAction, type TableAction, type TableTarget } from "./tableActions";
-import { bindTableKeyboard } from "./tableKeyboard";
+import { bindTableKeyboard } from "./editorKeyboard";
 
 type OpenMenu = { kind: "settings" } | { kind: "context"; x: number; y: number } | null;
 

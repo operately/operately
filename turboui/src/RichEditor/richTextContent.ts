@@ -59,7 +59,8 @@ function normalizeRichTextChildren(children: RichTextNode[], autoLink: boolean):
     textRun = [];
   };
 
-  for (const child of children) {
+  for (const source of children) {
+    const child = stripTemporarySelection(source);
     if (isAutoLinkableTextNode(child, autoLink)) {
       textRun.push(child);
       continue;
@@ -71,6 +72,13 @@ function normalizeRichTextChildren(children: RichTextNode[], autoLink: boolean):
 
   flushTextRun();
   return normalizedChildren;
+}
+
+function stripTemporarySelection(node: RichTextNode): RichTextNode {
+  if (!node.marks?.some((mark) => mark.type === "fakeTextSelection")) return node;
+
+  const marks = node.marks.filter((mark) => mark.type !== "fakeTextSelection");
+  return { ...node, marks: marks.length ? marks : undefined };
 }
 
 function isAutoLinkableTextNode(node: RichTextNode, autoLink: boolean): boolean {
