@@ -19,10 +19,20 @@ async function openStory(id: string): Promise<Locator> {
 }
 
 async function verticalGap(before: Locator, after: Locator): Promise<number> {
-  const beforeBox = await before.boundingBox();
-  const afterBox = await after.boundingBox();
-  assert.ok(beforeBox && afterBox, "Both blocks must have visible bounds");
-  return afterBox.y - beforeBox.y - beforeBox.height;
+  const afterElement = await after.elementHandle();
+  assert.ok(afterElement, "The following block must exist");
+
+  try {
+    // Measure both blocks together so diagram rendering cannot shift the layout between reads.
+    return await before.evaluate((beforeElement, afterElement) => {
+      const beforeBox = beforeElement.getBoundingClientRect();
+      const afterBox = afterElement.getBoundingClientRect();
+      if (!beforeBox.height || !afterBox.height) throw new Error("Both blocks must have visible bounds");
+      return afterBox.top - beforeBox.bottom;
+    }, afterElement);
+  } finally {
+    await afterElement.dispose();
+  }
 }
 
 const previousBlock = (block: Locator) => block.locator("xpath=preceding-sibling::*[1]");
@@ -118,7 +128,8 @@ describe("Rich text typography in a browser", () => {
     await page.goto(storyUrl("components-richeditor--mermaid-diagram"));
     const prose = page.locator(".ProseMirror[contenteditable]").first();
     const code = prose.locator(".node-codeBlock");
-    await code.waitFor();
+    const preview = code.locator(".mermaid-preview");
+    await preview.locator("svg").waitFor();
     closeTo(parseFloat(await computed(code, "margin-top")), 12, "Mermaid outer top margin at 16px");
     closeTo(parseFloat(await computed(code, "margin-bottom")), 12, "Mermaid outer bottom margin at 16px");
     closeTo(
@@ -128,8 +139,6 @@ describe("Rich text typography in a browser", () => {
     );
     closeTo(await verticalGap(previousBlock(code), code), 12, "gap before Mermaid");
     closeTo(await verticalGap(code, nextBlock(code)), 12, "gap after Mermaid");
-    const preview = code.locator(".mermaid-preview");
-    await preview.locator("svg").waitFor();
     await code.getByRole("button", { name: "Edit source" }).click();
     assert.equal(await code.locator(".mermaid-source").isVisible(), true);
     await code.getByRole("button", { name: "Preview" }).click();
