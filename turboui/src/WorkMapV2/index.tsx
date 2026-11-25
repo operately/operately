@@ -6,21 +6,28 @@ import { tn } from "../i18n";
 import { IconChevronRight, IconPlus } from "../icons";
 import { BlackLink } from "../Link";
 import { PageNew } from "../Page";
-import { filterWorkMap, type WorkMapV2Filters, type WorkMapV2Item } from "./filterWorkMap";
+import { filterWorkMap, visibleRows, type WorkMapViewState, type WorkMapV2Item } from "./filterWorkMap";
 import { EmptyWork } from "./EmptyWork";
+import { Timeline } from "./Timeline";
 import { Table } from "./Table";
 import { Toolbar } from "./Toolbar";
 
-export { defaultWorkMapV2Filters, type WorkMapV2Filters, type WorkMapV2Item } from "./filterWorkMap";
+export { builtInWorkMapView, mapColumns, type WorkMapViewState, type WorkMapV2Item } from "./filterWorkMap";
 
 export interface WorkMapV2PageProps {
   title: string;
-  space?: { name: string; href: string };
+  space?: { id: string; name: string; href: string };
   onAddProject?: () => void;
   onAddGoal?: () => void;
   items: WorkMapV2Item[];
-  filters: WorkMapV2Filters;
-  onFiltersChange: (filters: WorkMapV2Filters) => void;
+  view: WorkMapViewState;
+  onViewChange: (view: WorkMapViewState) => void;
+  onReset: () => void;
+  adjusted: boolean;
+  scopeName: string;
+  orderedItemIds?: string[];
+  onSaveDefault?: () => void;
+  saving?: boolean;
   formattedTimePreferences: FormattedTimePreferences;
 }
 
@@ -30,13 +37,34 @@ export function WorkMapV2Page({
   onAddProject,
   onAddGoal,
   items,
-  filters,
-  onFiltersChange,
+  view,
+  onViewChange,
+  onReset,
+  adjusted,
+  scopeName,
+  orderedItemIds,
+  onSaveDefault,
+  saving,
   formattedTimePreferences,
 }: WorkMapV2PageProps) {
   const { t } = useTranslation();
-  const { rows, counts, hasContext } = React.useMemo(() => filterWorkMap(items, filters), [items, filters]);
-  const onlyType = filters.workTypes.length === 1 ? filters.workTypes[0] : undefined;
+  const { locale, timezone } = formattedTimePreferences;
+  const { rows, counts, hasContext, undated } = React.useMemo(
+    () => filterWorkMap(items, view, orderedItemIds ?? [], locale, timezone, space?.id),
+    [items, view, orderedItemIds, locale, timezone, space?.id],
+  );
+  const [collapsed, setCollapsed] = React.useState<Set<string>>(() => new Set());
+  const visible = React.useMemo(() => visibleRows(rows, collapsed), [rows, collapsed]);
+  function toggle(id: string) {
+    setCollapsed((previous) => {
+      const next = new Set(previous);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+  const typeFilter = view.filters.find((f) => f.field === "work_type" && f.operator !== "is_not");
+  const onlyType = typeFilter?.values.length === 1 ? typeFilter.values[0] : undefined;
   const summary =
     onlyType === "project"
       ? tn("1 matching project", "{{count}} matching projects", counts.project)
@@ -52,7 +80,11 @@ export function WorkMapV2Page({
         <div className="flex min-w-0 items-center gap-3">
           {space && (
             <>
-              <BlackLink to={space.href} underline="hover" className="truncate text-lg font-semibold dark:text-[#c2c4cd]">
+              <BlackLink
+                to={space.href}
+                underline="hover"
+                className="truncate text-lg font-semibold dark:text-[#c2c4cd]"
+              >
                 {space.name}
               </BlackLink>
               <IconChevronRight size={16} className="shrink-0 text-content-dimmed" />
@@ -66,18 +98,56 @@ export function WorkMapV2Page({
           </PrimaryButton>
         )}
       </header>
-      {items.length > 0 && <Toolbar filters={filters} onFiltersChange={onFiltersChange} />}
+      {items.length > 0 && (
+        <Toolbar
+          items={items}
+          view={view}
+          onChange={onViewChange}
+          onReset={onReset}
+          adjusted={adjusted}
+          scopeName={scopeName}
+          spaceId={space?.id}
+          onSave={onSaveDefault}
+          saving={saving}
+        />
+      )}
       {!items.length ? (
         <EmptyWork onAddProject={onAddProject} onAddGoal={onAddGoal} />
       ) : rows.length > 0 ? (
         <>
-          <Table key={JSON.stringify(filters)} rows={rows} formattedTimePreferences={formattedTimePreferences} />
+          {view.view === "table" ? (
+            <Table
+              rows={visible}
+              columns={view.columns}
+              onToggle={toggle}
+              formattedTimePreferences={formattedTimePreferences}
+            />
+          ) : (
+            <Timeline
+              rows={visible}
+              onToggle={toggle}
+              scale={view.timelineScale}
+              onScale={(timelineScale) => onViewChange({ ...view, timelineScale })}
+              preferences={formattedTimePreferences}
+            />
+          )}
           <footer
             role="status"
             className="flex flex-wrap justify-between gap-2 px-4 py-4 text-xs text-content-dimmed sm:px-7"
           >
             {summary}
             {hasContext && <span>{t("Parent goals shown for context")}</span>}
+            {view.view === "timeline" && (
+              <span>
+                {[
+                  undated.goal > 0 && tn("1 goal without dates", "{{count}} goals without dates", undated.goal),
+                  undated.project > 0 &&
+                    tn("1 project without dates", "{{count}} projects without dates", undated.project),
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </span>
+            )}
           </footer>
         </>
       ) : (
@@ -86,7 +156,7 @@ export function WorkMapV2Page({
             {onlyType === "project" ? t("No projects match these filters") : t("No matching work.")}
           </h2>
           <p className="text-sm text-content-dimmed">{t("Try another filter or clear them to see more work.")}</p>
-          <SecondaryButton size="sm" onClick={() => onFiltersChange({ workTypes: [], lifecycle: [] })}>
+          <SecondaryButton size="sm" onClick={() => onViewChange({ ...view, filters: [] })}>
             {t("Clear filters")}
           </SecondaryButton>
         </div>

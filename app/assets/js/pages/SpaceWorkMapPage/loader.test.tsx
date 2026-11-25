@@ -31,7 +31,7 @@ jest.mock("../../models/workMap", () => ({
 jest.mock("@/hooks/useFormattedTimePreferences", () => ({ useFormattedTimePreferences: () => ({}) }));
 jest.mock("@/components/Pages", () => ({
   useLoadedData: () => ({
-    workMapInput: { spaceId: "space-1" },
+    workMapInput: { spaceId: "space-1", includeReviewer: true },
     spaceInput: { id: "space-1", includeAccessLevels: true, includePermissions: true },
     templatesInput: { archiveStatus: "active" },
     editableSpacesInput: { query: "", accessLevel: "edit_access" },
@@ -104,7 +104,9 @@ describe("SpaceWorkMapPage loading", () => {
   });
 
   async function mount(workMap = [{ id: "project-1" }]) {
-    queryClient.setQueryData(Api.companies.getWorkMapQueryKey({ spaceId: space.id }), { workMap });
+    queryClient.setQueryData(Api.companies.getWorkMapQueryKey({ spaceId: space.id, includeReviewer: true }), {
+      workMap,
+    });
     queryClient.setQueryData(Api.spaces.getQueryKey(spaceInput), { space });
     function Harness() {
       const state = useLoadedData();
@@ -133,7 +135,9 @@ describe("SpaceWorkMapPage loading", () => {
     }));
     await preload({ params: { id: space.id } });
     const key =
-      missing === "map" ? Api.companies.getWorkMapQueryKey({ spaceId: space.id }) : Api.spaces.getQueryKey(spaceInput);
+      missing === "map"
+        ? Api.companies.getWorkMapQueryKey({ spaceId: space.id, includeReviewer: true })
+        : Api.spaces.getQueryKey(spaceInput);
     queryClient.removeQueries({ queryKey: key, exact: true });
     const recovery = deferred();
     const templates = deferred();
@@ -194,7 +198,9 @@ describe("SpaceWorkMapPage loading", () => {
 
   it("treats a successful response without a space as an invariant failure", async () => {
     queryClient.setQueryData(Api.spaces.getQueryKey(spaceInput), { space: null });
-    queryClient.setQueryData(Api.companies.getWorkMapQueryKey({ spaceId: space.id }), { workMap: [] });
+    queryClient.setQueryData(Api.companies.getWorkMapQueryKey({ spaceId: space.id, includeReviewer: true }), {
+      workMap: [],
+    });
     jest.mocked(axios.get).mockResolvedValue({ data: { templates: [] } });
     const onError = jest.fn();
     const log = jest.spyOn(console, "error").mockImplementation(() => {});
@@ -239,7 +245,7 @@ describe("SpaceWorkMapPage loading", () => {
       mapRequest.resolve({ data: { work_map: [] } });
       spaceRequest.resolve({ data: { space } });
       await expect(pending).resolves.toEqual({
-        workMapInput: { spaceId: space.id },
+        workMapInput: { spaceId: space.id, includeReviewer: true },
         spaceInput,
         templatesInput: { archiveStatus: "active" },
         editableSpacesInput: { query: "", accessLevel: "edit_access" },
