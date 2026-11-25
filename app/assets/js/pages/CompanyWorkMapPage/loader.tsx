@@ -1,4 +1,7 @@
 import Api, { type Company, type ProjectTemplate, type Space, type WorkMapItem } from "@/api";
+import { loadCompanyWorkMap } from "@/models/workMap/loadHierarchy";
+import { redirectIfFeatureEnabled } from "@/routes/redirectUtils";
+import { pilotWorkMapPath } from "@/pages/WorkMapV2Page/routing";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import { useQuery } from "@tanstack/react-query";
@@ -17,13 +20,17 @@ interface LoadedData {
   };
 }
 
-export async function loader() {
+export async function loader({ request }: { request: Request }) {
+  await redirectIfFeatureEnabled(request, { feature: "work_map_v2", path: pilotWorkMapPath(request) });
+  return preload();
+}
+
+export async function preload() {
   const companyInput = { includeGeneralSpace: true };
-  const workMapInput = {};
   const editableSpacesInput = { query: "", accessLevel: "edit_access" as const };
   const templatesInput = { archiveStatus: "active" as const };
 
-  await Api.companies.getWorkMapQuery(workMapInput);
+  const { workMapInput } = await loadCompanyWorkMap();
 
   return { companyInput, workMapInput, editableSpacesInput, templatesInput };
 }
