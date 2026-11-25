@@ -5,6 +5,7 @@ import { GoalPage } from ".";
 import { SecondaryButton } from "../Button";
 import { GoalTargetList } from "../GoalTargetList";
 import { SectionHeader } from "./SectionHeader";
+import { mobileActionClassName } from "./mobileActionClassName";
 
 export function Targets(props: GoalPage.State) {
   const { t } = useTranslation();
@@ -15,7 +16,12 @@ export function Targets(props: GoalPage.State) {
       <SectionHeader
         title={t("Targets")}
         buttons={
-          <SecondaryButton size="xxs" onClick={() => setAddActive(true)} testId="add-target">
+          <SecondaryButton
+            size="xxs"
+            onClick={() => setAddActive(true)}
+            testId="add-target"
+            className={mobileActionClassName}
+          >
             {t("Add")}
           </SecondaryButton>
         }
@@ -34,6 +40,7 @@ export function Targets(props: GoalPage.State) {
 
       <div className="mt-3">
         <GoalTargetList
+          actionButtonClassName={mobileActionClassName}
           targets={props.targets}
           canReorder={props.permissions.canEdit}
           showEditButton={props.permissions.canEdit}

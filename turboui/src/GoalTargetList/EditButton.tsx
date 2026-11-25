@@ -14,7 +14,13 @@ export function EditButton({ state, target }: { state: State; target: TargetStat
 
   return (
     <div className="mt-px">
-      <SecondaryButton size="xxs" onClick={onClick} icon={IconPencil} testId={createTestId("edit-target", target.name)}>
+      <SecondaryButton
+        size="xxs"
+        onClick={onClick}
+        icon={IconPencil}
+        testId={createTestId("edit-target", target.name)}
+        className={state.actionButtonClassName}
+      >
         {t("Edit")}
       </SecondaryButton>
     </div>

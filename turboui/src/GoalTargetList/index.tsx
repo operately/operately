@@ -67,6 +67,7 @@ export namespace GoalTargetList {
 
   export interface Props {
     targets: Target[];
+    actionButtonClassName?: string;
 
     canReorder?: boolean;
     showEditButton?: boolean;
@@ -277,13 +278,21 @@ function TargetAdd({ state }: { state: State }) {
             placeholder={t("e.g. users")}
           />
         </div>
-        <div className="flex items-center gap-2 mt-4">
+        <div
+          className={classNames("flex items-center gap-2 mt-4", { "flex-wrap": Boolean(state.actionButtonClassName) })}
+        >
           <SwitchToggle value={createMore} setValue={setCreateMore} label={t("Create more")} />
           <div className="flex-1"></div>
-          <SecondaryButton size="xs" onClick={() => state.cancelAdd()} type="button" testId="cancel">
+          <SecondaryButton
+            size="xs"
+            onClick={() => state.cancelAdd()}
+            type="button"
+            testId="cancel"
+            className={state.actionButtonClassName}
+          >
             {t("Cancel")}
           </SecondaryButton>
-          <PrimaryButton size="xs" type="submit" testId="save">
+          <PrimaryButton size="xs" type="submit" testId="save" className={state.actionButtonClassName}>
             {t("Add Target")}
           </PrimaryButton>
         </div>
@@ -327,11 +336,21 @@ function TargetUpdate({ state, target }: { state: State; target: TargetState }) 
             validate: (v) => !isNaN(Number(v)) || t("Must be a number"),
           })}
         />
-        <div className="flex items-center gap-2 justify-end mt-4">
-          <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)} type="button" testId="cancel">
+        <div
+          className={classNames("flex items-center gap-2 justify-end mt-4", {
+            "flex-wrap": Boolean(state.actionButtonClassName),
+          })}
+        >
+          <SecondaryButton
+            size="xs"
+            onClick={() => state.cancelEdit(target.id)}
+            type="button"
+            testId="cancel"
+            className={state.actionButtonClassName}
+          >
             {t("Cancel")}
           </SecondaryButton>
-          <PrimaryButton size="xs" type="submit" testId="save">
+          <PrimaryButton size="xs" type="submit" testId="save" className={state.actionButtonClassName}>
             {t("Save")}
           </PrimaryButton>
         </div>
@@ -402,11 +421,20 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
             {...register("unit", textValidation)}
           />
         </div>
-        <div className="flex items-center gap-2 justify-end mt-4">
-          <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)} type="button">
+        <div
+          className={classNames("flex items-center gap-2 justify-end mt-4", {
+            "flex-wrap": Boolean(state.actionButtonClassName),
+          })}
+        >
+          <SecondaryButton
+            size="xs"
+            onClick={() => state.cancelEdit(target.id)}
+            type="button"
+            className={state.actionButtonClassName}
+          >
             {t("Cancel")}
           </SecondaryButton>
-          <PrimaryButton size="xs" type="submit" testId="save">
+          <PrimaryButton size="xs" type="submit" testId="save" className={state.actionButtonClassName}>
             {t("Save")}
           </PrimaryButton>
         </div>
@@ -436,12 +464,25 @@ function TargetDelete({ state, target }: { state: State; target: TargetState }) 
       </div>
       <p>{t("This will remove your target and all associated progress tracking.")}</p>
 
-      <div className="flex items-center gap-2 justify-end mt-6">
-        <SecondaryButton size="xs" onClick={() => state.cancelDelete(target.id)}>
+      <div
+        className={classNames("flex items-center gap-2 justify-end mt-6", {
+          "flex-wrap": Boolean(state.actionButtonClassName),
+        })}
+      >
+        <SecondaryButton
+          size="xs"
+          onClick={() => state.cancelDelete(target.id)}
+          className={state.actionButtonClassName}
+        >
           {t("Cancel")}
         </SecondaryButton>
 
-        <DangerButton size="xs" onClick={() => state.deleteTarget(target.id)} testId="confirm">
+        <DangerButton
+          size="xs"
+          onClick={() => state.deleteTarget(target.id)}
+          testId="confirm"
+          className={state.actionButtonClassName}
+        >
           {t("Yes, Delete")}
         </DangerButton>
       </div>
