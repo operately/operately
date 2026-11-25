@@ -12,6 +12,16 @@ const resourceUrl = `${window.location.origin}/acme-0abc/projects/website-xyz`;
 // JSDOM does not implement ClipboardEvent; pasteText/pasteHTML provide the clipboard content.
 const pasteEvent = Object.assign(new Event("paste"), { clipboardData: null });
 
+function pasteClipboard(editor: Editor, entries: Record<string, string>) {
+  fireEvent.paste(editor.view.dom, {
+    clipboardData: {
+      getData: (type: string) => entries[type] ?? "",
+      items: [],
+      files: [],
+    },
+  });
+}
+
 it.each([
   ["plain text", ""],
   ["HTML text", `<p>${resourceUrl}</p>`],
@@ -19,13 +29,7 @@ it.each([
 ])("links a URL on a DOM paste event with %s", async (_format, html) => {
   const { editor, result, onUpdate } = await setup();
 
-  fireEvent.paste(editor.view.dom, {
-    clipboardData: {
-      getData: (type: string) => ({ "text/html": html, "text/plain": resourceUrl })[type] ?? "",
-      items: [],
-      files: [],
-    },
-  });
+  pasteClipboard(editor, { "text/html": html, "text/plain": resourceUrl });
 
   const json = result.current.getJson();
   expect(json.content[0].content).toMatchObject([
@@ -89,17 +93,133 @@ it("links multiple URLs in pasted text, including the final word without whitesp
   ]);
 });
 
-it("keeps pasted Markdown literal while linking a neighboring plain URL", async () => {
+it("pastes Markdown formatting and still links bare URLs", async () => {
   const { editor, result } = await setup();
-  const markdown = '**bold** [label](https://example.com "Title")';
+  const markdown = "**bold** [label](https://example.com)";
 
+  pasteClipboard(editor, { "text/plain": `${markdown} ${resourceUrl}` });
+
+  expect(result.current.getJson().content[0].content).toMatchObject([
+    { text: "bold", marks: [{ type: "bold" }] },
+    { text: " " },
+    { text: "label", marks: [{ type: "link", attrs: { href: "https://example.com" } }] },
+    { text: " " },
+    { text: resourceUrl, marks: [{ type: "link", attrs: { href: resourceUrl } }] },
+  ]);
+});
+
+it.each([
+  [
+    "plain-text clipboard",
+    { "text/plain": "## Plan\n\n**literal** ==literal==" },
+    ["## Plan", "**literal** ==literal=="],
+  ],
+  [
+    "VS Code Markdown clipboard",
+    {
+      "text/plain": "```mermaid\nflowchart TD\n```",
+      "text/html": "<div>```mermaid<br>flowchart TD<br>```</div>",
+      "vscode-editor-data": '{"mode":"markdown"}',
+    },
+    ["```mermaid", "flowchart TD", "```"],
+  ],
+])("keeps Markdown literal when using the plain-paste shortcut with a %s", async (_source, entries, lines) => {
+  const { editor, result } = await setup();
+
+  fireEvent.keyDown(editor.view.dom, { key: "v", code: "KeyV", keyCode: 86, ctrlKey: true, shiftKey: true });
+  pasteClipboard(editor, entries);
+
+  expect(result.current.getJson().content).toEqual(
+    lines.map((text) => ({ type: "paragraph", content: [{ type: "text", text }] })),
+  );
+});
+
+it("preserves literal Markdown and its code mark after enabling inline code at an empty cursor", async () => {
+  const { editor, result } = await setup();
   act(() => {
-    editor.view.pasteText(`${markdown} ${resourceUrl}`, pasteEvent);
+    editor.commands.setCode();
   });
 
-  expect(result.current.getJson().content[0].content).toEqual([
-    { type: "text", text: `${markdown} ` },
-    expect.objectContaining({ text: resourceUrl, marks: [expect.objectContaining({ type: "link" })] }),
+  pasteClipboard(editor, { "text/plain": "**literal**" });
+
+  expect(result.current.getJson().content).toEqual([
+    { type: "paragraph", content: [{ type: "text", text: "**literal**", marks: [{ type: "code" }] }] },
+  ]);
+});
+
+it.each([
+  ["plain text", {}],
+  ["VS Code Markdown", { "vscode-editor-data": '{"mode":"markdown"}', "text/html": "<div>## Plan</div>" }],
+])("pastes a Markdown document from %s as rich text blocks", async (_format, entries) => {
+  const { editor, result } = await setup();
+  const markdown = "## Plan\n\n- First\n- Second\n\n> A quote\n\n```js\n// **literal**\n```";
+
+  pasteClipboard(editor, { "text/plain": markdown, ...entries });
+
+  expect(result.current.getJson().content).toMatchObject([
+    { type: "heading", attrs: { level: 2 }, content: [{ text: "Plan" }] },
+    {
+      type: "bulletList",
+      content: [
+        { type: "listItem", content: [{ type: "paragraph", content: [{ text: "First" }] }] },
+        { type: "listItem", content: [{ type: "paragraph", content: [{ text: "Second" }] }] },
+      ],
+    },
+    { type: "blockquote", content: [{ type: "paragraph", content: [{ text: "A quote" }] }] },
+    { type: "codeBlock", attrs: { language: "js" }, content: [{ text: "// **literal**" }] },
+    { type: "paragraph" },
+  ]);
+});
+
+it("pastes ordinary text copied from a Markdown file as paragraphs", async () => {
+  const { editor, result } = await setup();
+
+  pasteClipboard(editor, { "text/plain": "First line\nSecond line", "vscode-editor-data": '{"mode":"markdown"}' });
+
+  expect(result.current.getJson().content).toMatchObject([
+    { type: "paragraph", content: [{ text: "First line" }] },
+    { type: "paragraph", content: [{ text: "Second line" }] },
+  ]);
+});
+
+it("preserves the language and text of code copied from VS Code", async () => {
+  const { editor, result } = await setup();
+  const source = 'const label = "**literal**";';
+
+  pasteClipboard(editor, { "text/plain": source, "vscode-editor-data": '{"mode":"javascript"}' });
+
+  expect(result.current.getJson().content[0]).toMatchObject({
+    type: "codeBlock",
+    attrs: { language: "javascript" },
+    content: [{ text: source }],
+  });
+});
+
+it("pastes Markdown source literally inside an existing code block", async () => {
+  const { editor, result } = await setup();
+  const source = "## Example\n\n**literal**";
+  act(() => {
+    editor.commands.setCodeBlock();
+  });
+
+  pasteClipboard(editor, { "text/plain": source });
+
+  expect(result.current.getJson().content[0]).toMatchObject({
+    type: "codeBlock",
+    content: [{ text: source }],
+  });
+});
+
+it("uses the HTML representation when the clipboard also includes Markdown-like text", async () => {
+  const { editor, result } = await setup();
+
+  pasteClipboard(editor, {
+    "text/plain": "## Plain representation",
+    "text/html": "<p><em>HTML representation</em></p>",
+  });
+
+  expect(result.current.getJson().content).toMatchObject([
+    { type: "paragraph", content: [{ text: "HTML representation", marks: [{ type: "italic" }] }] },
   ]);
 });
 
