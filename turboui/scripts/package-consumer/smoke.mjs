@@ -20,7 +20,9 @@ try {
 
   const address = server.httpServer.address();
   assert.ok(address && typeof address !== "string");
-  await page.goto(`http://127.0.0.1:${address.port}`);
+  // The consumer marker below waits for the installed app to render.
+  const response = await page.goto(`http://127.0.0.1:${address.port}`, { waitUntil: "commit" });
+  assert.ok(response?.ok(), "The installed consumer preview must return a successful response");
   const button = page.locator('[data-test-id="increment"]');
   await page.locator('[data-test-id="consumer"][data-click-count="0"]').waitFor();
   await button.click();
