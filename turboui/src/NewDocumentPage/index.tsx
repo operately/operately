@@ -88,6 +88,7 @@ export function NewDocumentPage(props: NewDocumentPage.Props) {
               hideBorder
               showToolbarTopBorder
               fontSize="text-lg"
+              fontWeight="font-normal"
               horizontalPadding="px-0"
               verticalPadding="pt-2"
             />

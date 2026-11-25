@@ -4,6 +4,7 @@ import React from "react";
 import { Editor, useEditor } from "./index";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { PrimaryButton } from "../Button";
+import { richTextTypographyContent } from "../demos/richTextTypography";
 
 const meta: Meta<typeof Editor> = {
   title: "Components/RichEditor",
@@ -47,6 +48,13 @@ export const Default: Story = {
     });
 
     return <Editor editor={editor} />;
+  },
+};
+
+export const Typography: Story = {
+  render: () => {
+    const editor = useEditor({ content: richTextTypographyContent, handlers: createMockRichEditorHandlers() });
+    return <Editor editor={editor} className="text-lg" />;
   },
 };
 
@@ -157,6 +165,7 @@ export const MermaidDiagram: Story = {
       content: {
         type: "doc",
         content: [
+          { type: "paragraph", content: [{ type: "text", text: "The diagram follows this paragraph." }] },
           {
             type: "codeBlock",
             attrs: { language: "mermaid" },
@@ -167,6 +176,7 @@ export const MermaidDiagram: Story = {
               },
             ],
           },
+          { type: "paragraph", content: [{ type: "text", text: "This paragraph follows the diagram." }] },
         ],
       },
       handlers: createMockRichEditorHandlers(),
