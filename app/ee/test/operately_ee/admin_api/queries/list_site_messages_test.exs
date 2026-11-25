@@ -46,6 +46,24 @@ defmodule OperatelyEE.AdminApi.Queries.ListSiteMessagesTest do
       assert returned.active == true
     end
 
+    test "returns encoded audiences for targeted messages", ctx do
+      company_id = OperatelyWeb.Paths.company_id(ctx.company)
+
+      {:ok, message} =
+        SiteMessages.create(%{
+          title: "Targeted",
+          description: RichText.rich_text("For one company"),
+          all_companies: false,
+          active: true,
+          company_ids: [company_id]
+        })
+
+      assert {200, %{messages: [returned]}} = admin_query(ctx.conn, :list_site_messages, %{})
+      assert returned.id == OperatelyWeb.Paths.site_message_id(message)
+      assert returned.all_companies == false
+      assert returned.company_ids == [company_id]
+    end
+
     test "returns an empty list when no messages exist", ctx do
       assert {200, %{messages: []}} = admin_query(ctx.conn, :list_site_messages, %{})
     end

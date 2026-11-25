@@ -144,26 +144,34 @@ defmodule Operately.SiteMessages do
 
   # Hydrates the virtual company_ids field from join-table rows as encoded API IDs.
   def load_company_ids(messages) when is_list(messages) do
-    Enum.map(messages, &load_company_ids/1)
+    message_ids = for message <- messages, not message.all_companies, do: message.id
+    company_ids_by_message = load_company_ids_by_message(message_ids)
+
+    Enum.map(messages, fn message ->
+      %{message | company_ids: Map.get(company_ids_by_message, message.id, [])}
+    end)
   end
 
   def load_company_ids(%SiteMessage{} = message) do
-    company_ids =
-      if message.all_companies do
-        []
-      else
-        from(smc in SiteMessageCompany,
-          join: c in Company, on: c.id == smc.company_id,
-          where: smc.site_message_id == ^message.id,
-          select: {c.name, c.short_id},
-          order_by: [asc: c.name]
-        )
-        |> Repo.all()
-        |> Enum.map(fn {name, short_id} ->
-          OperatelyWeb.Paths.company_id(%Company{name: name, short_id: short_id})
-        end)
-      end
+    [loaded_message] = load_company_ids([message])
+    loaded_message
+  end
 
-    %{message | company_ids: company_ids}
+  defp load_company_ids_by_message([]), do: %{}
+
+  defp load_company_ids_by_message(message_ids) do
+    from(smc in SiteMessageCompany,
+      join: company in assoc(smc, :company),
+      where: smc.site_message_id in ^message_ids,
+      select: {smc.site_message_id, company.name, company.short_id},
+      order_by: [asc: company.name]
+    )
+    |> Repo.all()
+    |> Enum.group_by(
+      fn {message_id, _name, _short_id} -> message_id end,
+      fn {_message_id, name, short_id} ->
+        OperatelyWeb.Paths.company_id(%Company{name: name, short_id: short_id})
+      end
+    )
   end
 end
