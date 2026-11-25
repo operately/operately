@@ -202,10 +202,10 @@ function EditMode({
     <div className="mt-2">
       <Editor editor={editor} />
       <div className={actionButtonClassName ? "flex flex-wrap gap-2 mt-2" : "flex gap-2 mt-2"}>
-        <PrimaryButton size="xs" onClick={save} className={actionButtonClassName}>
+        <PrimaryButton size="xs" onClick={save} testId="save-description" className={actionButtonClassName}>
           {t("Save")}
         </PrimaryButton>
-        <SecondaryButton size="xs" onClick={cancel} className={actionButtonClassName}>
+        <SecondaryButton size="xs" onClick={cancel} testId="cancel-description" className={actionButtonClassName}>
           {t("Cancel")}
         </SecondaryButton>
       </div>

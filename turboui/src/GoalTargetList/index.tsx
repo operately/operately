@@ -430,6 +430,7 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
             size="xs"
             onClick={() => state.cancelEdit(target.id)}
             type="button"
+            testId="cancel"
             className={state.actionButtonClassName}
           >
             {t("Cancel")}
@@ -472,6 +473,7 @@ function TargetDelete({ state, target }: { state: State; target: TargetState }) 
         <SecondaryButton
           size="xs"
           onClick={() => state.cancelDelete(target.id)}
+          testId="cancel"
           className={state.actionButtonClassName}
         >
           {t("Cancel")}

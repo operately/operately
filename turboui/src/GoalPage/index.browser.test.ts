@@ -96,9 +96,9 @@ describe("goal actions in a browser", () => {
     assert.ok(bounds.height >= 44);
 
     await editDescription.click();
-    await assertTouchSize(page.getByRole("button", { name: "Save", exact: true }));
-    await assertTouchSize(page.getByRole("button", { name: "Cancel", exact: true }));
-    await page.getByRole("button", { name: "Cancel", exact: true }).click();
+    await assertTouchSize(page.locator('[data-test-id="save-description"]'));
+    await assertTouchSize(page.locator('[data-test-id="cancel-description"]'));
+    await page.locator('[data-test-id="cancel-description"]').click();
 
     const update = page.locator('[data-test-id^="update-target-"]').first();
     await assertTouchSize(update);
@@ -142,13 +142,13 @@ describe("goal actions in a browser", () => {
     await edit.click();
     await page.locator('[data-test-id="target-name"]').waitFor();
     await assertTouchSize(page.locator('[data-test-id="save"]'));
-    await assertTouchSize(page.getByRole("button", { name: "Cancel", exact: true }));
-    await page.getByRole("button", { name: "Cancel", exact: true }).click();
+    await assertTouchSize(page.locator('[data-test-id="cancel"]'));
+    await page.locator('[data-test-id="cancel"]').click();
 
     await page.locator('[data-test-id^="target-"]').first().click();
     await page.locator('[data-test-id="delete-target"]').first().click();
     await assertTouchSize(page.locator('[data-test-id="confirm"]'));
-    await assertTouchSize(page.getByRole("button", { name: "Cancel", exact: true }));
+    await assertTouchSize(page.locator('[data-test-id="cancel"]'));
     await assertNoHorizontalOverflow();
   });
 
