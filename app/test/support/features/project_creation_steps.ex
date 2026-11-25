@@ -73,6 +73,47 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     |> UI.click(testid: "new-dropdown-new-project")
   end
 
+  step :open_project_form, ctx do
+    UI.visit(ctx, Paths.new_project_path(ctx.company))
+  end
+
+  step :set_viewport, ctx, {width, height} do
+    Map.update!(ctx, :session, &Wallaby.Browser.resize_window(&1, width, height))
+  end
+
+  step :open_project_form_with_template, ctx do
+    ctx = Factory.add_project_template(ctx, :template, :group, creator: :champion, name: "Launch kit")
+
+    ctx
+    |> UI.visit(Paths.new_project_path(ctx.company, space_id: ctx.group, template_id: ctx.template))
+    |> UI.assert_has(testid: "startdate")
+  end
+
+  step :assert_project_submit_follows_access_section, ctx do
+    ctx =
+      ctx
+      |> UI.assert_has(testid: "project-access-section")
+      |> UI.assert_has(testid: "submit")
+
+    UI.execute("assert_project_submit_follows_access_section", ctx, fn session ->
+      Wallaby.Browser.execute_script(
+        session,
+        """
+          const section = document.querySelector('[data-test-id="project-access-section"]');
+          const submit = document.querySelector('[data-test-id="submit"]');
+          return {
+            gap: submit.getBoundingClientRect().top - section.getBoundingClientRect().bottom,
+            hasOverflow: document.documentElement.scrollWidth > window.innerWidth + 1
+          };
+        """,
+        fn geometry ->
+          assert geometry["gap"] >= 0 and geometry["gap"] <= 96, "submit gap was #{geometry["gap"]}px"
+          refute geometry["hasOverflow"]
+        end
+      )
+    end)
+  end
+
   step :submit_project_form, ctx, fields do
     ctx
     |> UI.fill(testid: "name", with: fields.name)
