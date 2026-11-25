@@ -56,6 +56,8 @@ const convertTimeframe = (timeframe: WorkMapItem["timeframe"]) => {
 };
 
 export type { WorkMapItem };
+export * from "./workMapSettingsLifecycle";
+export * from "./useSaveWorkMapDefaultView";
 
 export async function invalidateWorkMapQueries(queryClient: QueryClient): Promise<void> {
   await Promise.all([
