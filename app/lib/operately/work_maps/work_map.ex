@@ -248,6 +248,7 @@ defmodule Operately.WorkMaps.WorkMap do
     end
   end
 
+  defp parent_restriction_for_item(_, %{include_cross_space_parents: true}), do: nil
   defp parent_restriction_for_item(%{type: :project, state: state}, filters) when state in [:paused, :closed] do
     Map.get(filters, :space_id)
   end

@@ -12,6 +12,7 @@ import { StatusBadge } from "../StatusBadge";
 import { formatNumber } from "../utils/formatting";
 import type { WorkMapColumn } from "../ApiTypes";
 import type { VisibleRow, WorkMapV2Item } from "./filterWorkMap";
+import { ReviewerField, type ReviewerEditing } from "./ReviewerField";
 
 export function columnLabels(t: (key: string) => string) {
   return {
@@ -31,7 +32,16 @@ export function Table({
   columns,
   onToggle,
   formattedTimePreferences,
+  reviewerEditing,
+  quickAdd,
+  organize,
 }: {
+  quickAdd?: (item: WorkMapV2Item) => React.ReactNode;
+  reviewerEditing?: ReviewerEditing;
+  organize?: {
+    controls: (row: VisibleRow) => React.ReactNode;
+    rowProps: (row: VisibleRow) => React.HTMLAttributes<HTMLTableRowElement>;
+  };
   rows: VisibleRow[];
   columns: WorkMapColumn[];
   onToggle: (id: string) => void;
@@ -73,21 +83,32 @@ export function Table({
           {rows.map((row) => (
             <tr
               key={row.item.id}
-              className={`h-[46px] border-b border-surface-outline ${row.contextOnly ? "bg-surface-dimmed text-content-dimmed" : ""}`}
+              {...organize?.rowProps(row)}
+              className={`group/row h-[46px] border-b border-surface-outline ${row.contextOnly ? "bg-surface-dimmed text-content-dimmed" : ""}`}
             >
               <th
                 scope="row"
                 colSpan={row.contextOnly ? columns.length : 1}
                 className="px-3 pl-7 text-left font-normal"
               >
-                <RowName row={row} onToggle={onToggle} />
+                <div className="flex items-center gap-1">
+                  {organize?.controls(row)}
+                  <RowName row={row} onToggle={onToggle} />
+                  {!row.contextOnly && quickAdd?.(row.item)}
+                </div>
               </th>
               {!row.contextOnly &&
                 columns
                   .filter((c) => c !== "name")
-                  .map((column) => (
-                    <Detail key={column} column={column} item={row.item} preferences={formattedTimePreferences} />
-                  ))}
+                  .map((column) =>
+                    column === "reviewer" && reviewerEditing?.canEdit(row.item.id) ? (
+                      <td key={column} className="px-3">
+                        <ReviewerField item={row.item} editing={reviewerEditing} />
+                      </td>
+                    ) : (
+                      <Detail key={column} column={column} item={row.item} preferences={formattedTimePreferences} />
+                    ),
+                  )}
             </tr>
           ))}
         </tbody>

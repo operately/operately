@@ -2855,7 +2855,7 @@ msgstr "%{company_name} : votre travail du jour"
 
 #.frontend
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:55
-#: assets/js/pages/WorkMapV2Page/page.tsx:34
+#: assets/js/pages/WorkMapV2Page/page.tsx:46
 msgid "%{company} Work Map"
 msgstr "Carte des objectifs et projets de %{company}"
 
@@ -2908,7 +2908,7 @@ msgstr[0] "%{count} résultat disponible."
 msgstr[1] "%{count} résultats disponibles."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:85
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:97
 msgid "%{count} shown"
 msgstr "%{count} visibles"
 
@@ -2975,7 +2975,7 @@ msgid "%{duration} <status>overdue</status>."
 msgstr "<status>En retard</status> de %{duration}."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:120
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:123
 msgid "%{field} %{operator} %{values}"
 msgstr "%{field} %{operator} %{values}"
 
@@ -4503,7 +4503,7 @@ msgstr[0] "%{count} discussion de ce modèle vous sera attribuée car le compte 
 msgstr[1] "%{count} discussions de ce modèle vous seront attribuées car les comptes de leurs auteurs ne sont plus actifs."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:73
+#: ../turboui/src/WorkMapV2/index.tsx:80
 msgid "1 goal"
 msgid_plural "%{count} goals"
 msgstr[0] "%{count} objectif"
@@ -4566,7 +4566,7 @@ msgstr[0] "%{count} objectif terminé cette année."
 msgstr[1] "%{count} objectifs terminés cette année."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:143
+#: ../turboui/src/WorkMapV2/index.tsx:169
 msgid "1 goal without dates"
 msgid_plural "%{count} goals without dates"
 msgstr[0] "%{count} objectif sans dates"
@@ -4588,14 +4588,14 @@ msgstr[0] "%{count} élément"
 msgstr[1] "%{count} éléments"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:72
+#: ../turboui/src/WorkMapV2/index.tsx:79
 msgid "1 matching goal"
 msgid_plural "%{count} matching goals"
 msgstr[0] "%{count} objectif correspondant"
 msgstr[1] "%{count} objectifs correspondants"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:70
+#: ../turboui/src/WorkMapV2/index.tsx:77
 msgid "1 matching project"
 msgid_plural "%{count} matching projects"
 msgstr[0] "%{count} projet correspondant"
@@ -4611,6 +4611,7 @@ msgstr[1] "%{count} membres"
 
 #.frontend
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:100
+#: ../turboui/src/WorkMapV2/AddWork.tsx:184
 msgid "1 milestone"
 msgid_plural "%{count} milestones"
 msgstr[0] "%{count} jalon"
@@ -4631,7 +4632,7 @@ msgstr[0] "<highlight>En retard</highlight> de %{count} mois."
 msgstr[1] "<highlight>En retard</highlight> de %{count} mois."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:58
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:60
 msgid "1 month ago"
 msgstr "Il y a un mois"
 
@@ -4771,7 +4772,7 @@ msgstr[0] "%{count} personne recevra une notification lors de l’ajout d’un c
 msgstr[1] "%{count} personnes recevront une notification lors de l’ajout d’un commentaire sur cette tâche."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:73
+#: ../turboui/src/WorkMapV2/index.tsx:80
 #: assets/js/features/goals/GoalTree/tree/goalNode.tsx:72
 msgid "1 project"
 msgid_plural "%{count} projects"
@@ -4807,7 +4808,7 @@ msgstr[0] "%{count} projet terminé cette année."
 msgstr[1] "%{count} projets terminés cette année."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:145
+#: ../turboui/src/WorkMapV2/index.tsx:171
 msgid "1 project without dates"
 msgid_plural "%{count} projects without dates"
 msgstr[0] "%{count} projet sans dates"
@@ -4852,6 +4853,7 @@ msgstr[1] "1 sous-objectif et %{count} projets"
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:63
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:100
 #: ../turboui/src/TaskBoard/components/CompletedMilestonesSection.tsx:98
+#: ../turboui/src/WorkMapV2/AddWork.tsx:185
 msgid "1 task"
 msgid_plural "%{count} tasks"
 msgstr[0] "%{count} tâche"
@@ -4872,7 +4874,7 @@ msgstr[0] "<highlight>En retard</highlight> de %{count} semaine."
 msgstr[1] "<highlight>En retard</highlight> de %{count} semaines."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:57
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:59
 msgid "1 week ago"
 msgstr "Il y a une semaine"
 
@@ -4907,7 +4909,7 @@ msgstr[0] "%{count} an"
 msgstr[1] "%{count} ans"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:61
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:63
 msgid "1 year ago"
 msgstr "Il y a un an"
 
@@ -4961,7 +4963,7 @@ msgid "24-hour clock"
 msgstr "Format 24 heures"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:59
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:61
 msgid "3 months ago"
 msgstr "Il y a 3 mois"
 
@@ -4976,7 +4978,7 @@ msgid "5 minutes"
 msgstr "5 minutes"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:60
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:62
 msgid "6 months ago"
 msgstr "Il y a 6 mois"
 
@@ -5458,7 +5460,7 @@ msgstr "Compte introuvable"
 
 #.frontend
 #: ../turboui/src/StatusBadge/index.tsx:103
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:67
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:69
 msgid "Achieved"
 msgstr "Atteint"
 
@@ -5532,7 +5534,7 @@ msgstr "Le code d’activation a expiré"
 #: ../turboui/src/MilestonePage/index.tsx:368
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:317
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:333
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:65
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:67
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:332
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:96
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:139
@@ -5565,7 +5567,7 @@ msgid "Active tasks"
 msgstr "Tâches actives"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:115
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:118
 msgid "Active work"
 msgstr "Travaux en cours"
 
@@ -5629,6 +5631,7 @@ msgstr "L’activité de vos espaces, objectifs et projets apparaîtra ici."
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
 #: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:216
+#: ../turboui/src/WorkMapV2/AddWork.tsx:57
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:102
 msgid "Add"
 msgstr "Ajouter"
@@ -5650,7 +5653,7 @@ msgstr "Ajouter un élément à la liste de contrôle"
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:123
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:177
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:193
 msgid "Add Goal"
 msgstr "Ajouter un objectif"
 
@@ -5683,7 +5686,7 @@ msgstr "Ajouter des personnes"
 
 #.frontend
 #: ../turboui/src/Forms/ProjectPickers.stories.tsx:66
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:177
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:193
 #: assets/js/pages/ProjectAddPage/page.tsx:178
 msgid "Add Project"
 msgstr "Ajouter un projet"
@@ -5722,8 +5725,8 @@ msgid "Add a document or file"
 msgstr "Ajouter un document ou un fichier"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:79
-#: ../turboui/src/WorkMapV2/EmptyWork.tsx:32
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:80
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:34
 msgid "Add a goal"
 msgstr "Ajouter un objectif"
 
@@ -5739,8 +5742,8 @@ msgid "Add a new task"
 msgstr "Ajouter une nouvelle tâche"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:86
-#: ../turboui/src/WorkMapV2/EmptyWork.tsx:23
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:87
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:24
 msgid "Add a project"
 msgstr "Ajouter un projet"
 
@@ -5837,7 +5840,7 @@ msgstr "Ajouter des fichiers, des documents ou des liens"
 
 #.frontend
 #: ../turboui/src/GoalPage/RelatedWork.tsx:21
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:77
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:81
 msgid "Add goal"
 msgstr "Ajouter un objectif"
 
@@ -5935,7 +5938,7 @@ msgstr "Ajouter des personnes à l’objectif %{goalName}"
 
 #.frontend
 #: ../turboui/src/GoalPage/RelatedWork.tsx:24
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:77
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:81
 msgid "Add project"
 msgstr "Ajouter un projet"
 
@@ -6020,7 +6023,7 @@ msgid "Add the server configuration"
 msgstr "Ajouter la configuration du serveur"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:97
+#: ../turboui/src/WorkMapV2/AddWork.tsx:65
 msgid "Add work"
 msgstr "Ajouter un objectif ou un projet"
 
@@ -6030,7 +6033,7 @@ msgid "Add your first milestone"
 msgstr "Ajouter votre premier jalon"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:154
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:161
 msgid "Add your first project"
 msgstr "Ajouter votre premier projet"
 
@@ -6170,7 +6173,7 @@ msgstr "L’ajout ou la réactivation de personnes seront bloqués lorsque la li
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:76
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:82
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:86
 msgid "Adding under <goal>%{goalName}</goal>"
 msgstr "Ajout sous l’objectif <goal>%{goalName}</goal>"
 
@@ -6220,7 +6223,7 @@ msgstr "Les administrateurs ne peuvent pas se retirer eux-mêmes"
 #.frontend
 #: ../turboui/src/RichContentDiff/index.tsx:149
 #: ../turboui/src/RichContentDiff/index.tsx:151
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:47
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:49
 msgid "After"
 msgstr "Après"
 
@@ -6642,6 +6645,11 @@ msgid "Assign people"
 msgstr "Assigner des personnes"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/ReviewerField.tsx:43
+msgid "Assign reviewer"
+msgstr "Attribuer un référent"
+
+#.frontend
 #: ../turboui/src/AssigneesField/index.tsx:147
 #: ../turboui/src/TaskPage/Sidebar.tsx:308
 #: ../turboui/src/TaskPage/Sidebar.tsx:355
@@ -6659,7 +6667,7 @@ msgid "Assigned On"
 msgstr "Date d’assignation"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:40
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:41
 msgid "Assigned goals and projects will appear here."
 msgstr "Les objectifs et projets assignés apparaîtront ici."
 
@@ -6983,7 +6991,7 @@ msgstr "Notifications groupées"
 #.frontend
 #: ../turboui/src/RichContentDiff/index.tsx:148
 #: ../turboui/src/RichContentDiff/index.tsx:150
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:46
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:48
 msgid "Before"
 msgstr "Avant"
 
@@ -7344,7 +7352,8 @@ msgstr "Cette personne ne peut pas être aussi responsable"
 #: ../turboui/src/TemplateDiscussionForm/index.tsx:75
 #: ../turboui/src/TemplateProjectPage/MilestoneFormModal.tsx:82
 #: ../turboui/src/TemplateProjectPage/TemplateMoveResourceModal.tsx:63
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:173
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:183
+#: ../turboui/src/WorkMapV2/Organize.tsx:123
 #: assets/js/features/goals/GoalTargetsV2/EditTargetCard.tsx:114
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:83
 #: assets/js/pages/GoalCheckInPage/Options.tsx:89
@@ -7410,7 +7419,7 @@ msgstr "Impossible d’accéder à l’espace."
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:147
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:249
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:274
 msgid "Cannot be empty"
 msgstr "Ce champ ne peut pas être vide"
 
@@ -7448,7 +7457,7 @@ msgstr "Catégorie"
 #.frontend
 #: ../turboui/src/SmallStatusIndicator/constants.ts:16
 #: ../turboui/src/StatusBadge/index.tsx:135
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:51
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:53
 #: assets/js/features/goals/GoalCheckIn/StatusSelector.tsx:26
 msgid "Caution"
 msgstr "À risque"
@@ -7476,7 +7485,7 @@ msgstr "Actions de la cellule"
 #: ../turboui/src/TemplateProjectPage/People.tsx:37
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:27
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:225
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:35
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:37
 #: ../turboui/src/WorkMapV2/Table.tsx:23
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:235
 #: assets/js/pages/ProjectAddPage/page.tsx:185
@@ -7886,6 +7895,11 @@ msgid "Choose a plan with more member capacity."
 msgstr "Choisissez un forfait autorisant davantage de membres."
 
 #.frontend
+#: ../turboui/src/WorkMapV2/AddWork.tsx:161
+msgid "Choose a project template"
+msgstr "Choisir un modèle de projet"
+
+#.frontend
 #: ../turboui/src/TaskPage/MoveModal.tsx:167
 msgid "Choose a status for the destination board."
 msgstr "Choisissez un statut pour le tableau de destination."
@@ -7941,7 +7955,7 @@ msgstr "Choisissez combien de temps Operately doit attendre avant d’envoyer le
 #~ msgstr "Choisissez une apparence claire ou sombre, ou suivez les paramètres de votre ordinateur."
 
 #.frontend
-#: ../turboui/src/PersonField/index.tsx:370
+#: ../turboui/src/PersonField/index.tsx:411
 msgid "Choose someone else"
 msgstr "Choisir une autre personne"
 
@@ -7988,18 +8002,18 @@ msgstr[0] "Retirer la personne assignée"
 msgstr[1] "Retirer les personnes assignées"
 
 #.frontend
-#: ../turboui/src/PersonField/index.tsx:397
+#: ../turboui/src/PersonField/index.tsx:438
 msgid "Clear assignment"
 msgstr "Retirer l’assignation"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:287
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:292
 msgid "Clear filter"
 msgstr "Effacer le filtre"
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:274
-#: ../turboui/src/WorkMapV2/index.tsx:160
+#: ../turboui/src/WorkMapV2/index.tsx:186
 msgid "Clear filters"
 msgstr "Effacer les filtres"
 
@@ -8190,7 +8204,7 @@ msgid "Collapse"
 msgstr "Réduire"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Table.tsx:110
+#: ../turboui/src/WorkMapV2/Table.tsx:131
 msgid "Collapse %{name}"
 msgstr "Replier %{name}"
 
@@ -8227,7 +8241,7 @@ msgid "Column deleted"
 msgstr "Colonne supprimée"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:85
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:97
 msgid "Columns"
 msgstr "Colonnes"
 
@@ -8519,8 +8533,8 @@ msgstr "Terminer « %{name} » ?"
 #: ../turboui/src/SearchPage/index.tsx:340
 #: ../turboui/src/StatusBadge/index.tsx:111
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:90
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:65
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:68
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:67
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:70
 #: lib/operately/md/goal/checklist.ex:22
 #: lib/operately/md/project.ex:131
 msgid "Completed"
@@ -8544,7 +8558,7 @@ msgstr "Date de fin"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:126
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:38
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:40
 msgid "Completed date"
 msgstr "Date de fin"
 
@@ -8584,7 +8598,7 @@ msgid "Completed with errors"
 msgstr "Terminé avec des erreurs"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:116
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:119
 msgid "Completed work"
 msgstr "Travaux terminés"
 
@@ -8596,7 +8610,7 @@ msgid "Completed:"
 msgstr "Terminé :"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:87
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:88
 msgid "Concrete steps and tasks with specific deliverables. Get things done."
 msgstr "Des étapes concrètes et des tâches avec des livrables précis. Passez à l’action."
 
@@ -8730,7 +8744,7 @@ msgid "Contact us"
 msgstr "Nous contacter"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:44
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:46
 msgid "Contains"
 msgstr "Contient"
 
@@ -9063,11 +9077,13 @@ msgstr "Impossible de charger les KPI"
 #.frontend
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:42
 #: assets/js/pages/SpaceWorkMapPage/page.tsx:45
+#: assets/js/pages/WorkMapV2Page/useCreation.ts:58
 msgid "Couldn't load options for adding goals and projects."
 msgstr "Impossible de charger les options d’ajout d’objectifs et de projets."
 
 #.frontend
 #: assets/js/models/people/usePeopleSearchError.ts:7
+#: assets/js/pages/WorkMapV2Page/useReviewerEditing.ts:33
 msgid "Couldn't load people"
 msgstr "Impossible de charger les personnes"
 
@@ -9090,6 +9106,16 @@ msgstr "Impossible de charger davantage d’activités."
 #: assets/js/models/workMap/useSaveWorkMapDefaultView.ts:15
 msgid "Couldn’t save the default view"
 msgstr "Impossible d’enregistrer la vue par défaut"
+
+#.frontend
+#: assets/js/pages/WorkMapV2Page/useOrganization.ts:37
+msgid "Couldn’t save the map order"
+msgstr "Impossible d’enregistrer l’ordre de la carte"
+
+#.frontend
+#: assets/js/pages/WorkMapV2Page/useReviewerEditing.ts:46
+msgid "Couldn’t update the reviewer"
+msgstr "Impossible de modifier le référent"
 
 #.frontend
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:396
@@ -9235,7 +9261,7 @@ msgstr "Créer un jalon"
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:105
 #: ../turboui/src/TaskCreationModal/index.tsx:382
 #: ../turboui/src/TemplateProjectPage/MilestoneFormModal.tsx:76
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:167
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:177
 msgid "Create more"
 msgstr "Créer d’autres éléments"
 
@@ -9264,7 +9290,7 @@ msgstr "Créer un produit"
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:97
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:173
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:180
 msgid "Create project"
 msgstr "Créer un projet"
 
@@ -9356,7 +9382,7 @@ msgstr "Les dates de création et de dernière utilisation apparaîtront ici lor
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:108
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:37
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:39
 msgid "Created date"
 msgstr "Date de création"
 
@@ -9473,7 +9499,7 @@ msgid "Current value"
 msgstr "Valeur actuelle"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:279
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:284
 msgid "Custom date"
 msgstr "Date personnalisée"
 
@@ -10138,7 +10164,7 @@ msgstr "Masquer le message"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:42
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:70
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:82
 msgid "Display"
 msgstr "Affichage"
 
@@ -10244,7 +10270,7 @@ msgid "Documents & Files"
 msgstr "Documents et fichiers"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:45
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:47
 msgid "Does not contain"
 msgstr "Ne contient pas"
 
@@ -10324,6 +10350,11 @@ msgid "Drafts"
 msgstr "Brouillons"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/Organize.tsx:120
+msgid "Drag to reorder. Drop on a goal to change its parent."
+msgstr "Faites glisser les éléments pour les réordonner. Déposez un élément sur un objectif pour l’y rattacher."
+
+#.frontend
 #: ../turboui/src/ResourceHub/FileDragAndDropArea.tsx:34
 msgid "Drop files here to upload them"
 msgstr "Déposez les fichiers ici pour les ajouter"
@@ -10345,7 +10376,7 @@ msgstr "Échéance"
 
 #.frontend
 #: ../turboui/src/WorkMap/utils/timeline.ts:104
-#: ../turboui/src/WorkMapV2/Timeline.tsx:237
+#: ../turboui/src/WorkMapV2/Timeline.tsx:389
 msgid "Due %{date}"
 msgstr "Échéance le %{date}"
 
@@ -10379,9 +10410,9 @@ msgstr "Échéance le <date/>"
 #: ../turboui/src/TaskPage/Sidebar.tsx:257
 #: ../turboui/src/TaskPage/Sidebar.tsx:332
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:213
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:36
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:38
 #: ../turboui/src/WorkMapV2/Table.tsx:21
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:30
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:42
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
 #: lib/operately/md/goal/timeframe.ex:10
 #: lib/operately/md/project/timeframe.ex:11
@@ -10922,7 +10953,7 @@ msgid "Enter API key"
 msgstr "Saisissez la clé API"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:124
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:131
 msgid "Enter a project name."
 msgstr "Saisissez un nom de projet."
 
@@ -11371,7 +11402,7 @@ msgid "Expand"
 msgstr "Développer"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Table.tsx:110
+#: ../turboui/src/WorkMapV2/Table.tsx:131
 msgid "Expand %{name}"
 msgstr "Déplier %{name}"
 
@@ -11546,12 +11577,12 @@ msgid "Failed to create the goal"
 msgstr "Impossible de créer l’objectif"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:312
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:337
 msgid "Failed to create the goal."
 msgstr "Impossible de créer l’objectif."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:312
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:337
 msgid "Failed to create the project."
 msgstr "Impossible de créer le projet."
 
@@ -12033,7 +12064,7 @@ msgstr "Remplissez tous les champs obligatoires"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:374
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:126
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:130
 msgid "Filter"
 msgstr "Filtrer"
 
@@ -12043,10 +12074,15 @@ msgid "Finalizing Import"
 msgstr "Finalisation de l’import"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:135
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:136
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:139
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:140
 msgid "Find a filter…"
 msgstr "Rechercher un filtre…"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/ReviewerField.tsx:39
+msgid "Find a person…"
+msgstr "Rechercher une personne…"
 
 #.frontend
 #: ../turboui/src/MilestoneField/index.tsx:428
@@ -12323,7 +12359,8 @@ msgstr "Aller à l’accueil"
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:165
 #: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:155
 #: ../turboui/src/SearchPage/index.tsx:317
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:96
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:100
+#: ../turboui/src/WorkMapV2/AddWork.tsx:70
 #: assets/js/pages/GoalAccessAddPage/index.tsx:38
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:32
 #: assets/js/pages/GoalEditAccessLevelsPage/index.tsx:25
@@ -12411,7 +12448,7 @@ msgid "Goal reopened"
 msgstr "Objectif rouvert"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:32
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:34
 msgid "Goal status"
 msgstr "Statut de l’objectif"
 
@@ -12431,7 +12468,7 @@ msgstr "Changement de période de l’objectif"
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:259
 #: ../turboui/src/SearchPage/filterOptions.ts:11
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:69
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:64
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:66
 #: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:95
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:258
 msgid "Goals"
@@ -12721,7 +12758,7 @@ msgid "In progress (blue)"
 msgstr "En cours (bleu)"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:70
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:72
 msgid "In the past"
 msgstr "Dans le passé"
 
@@ -13145,17 +13182,17 @@ msgid "Invited you as an outside collaborator"
 msgstr "Vous a invité comme collaborateur externe"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:41
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:43
 msgid "Is"
 msgstr "Est"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:42
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:44
 msgid "Is any of"
 msgstr "Est l’une des valeurs suivantes"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:43
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:45
 msgid "Is not"
 msgstr "N’est pas"
 
@@ -13600,7 +13637,7 @@ msgid "Let's set up your company."
 msgstr "Configurons votre entreprise."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:30
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:32
 msgid "Lifecycle"
 msgstr "Cycle de vie"
 
@@ -13884,7 +13921,7 @@ msgid "Logging for <date>today</date>"
 msgstr "Enregistrement pour <date>aujourd’hui</date>"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:80
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:81
 msgid "Long-term outcomes you're working toward. Track overall progress and impact."
 msgstr "Les résultats à long terme que vous visez. Suivez l’avancement global et l’impact."
 
@@ -14025,7 +14062,7 @@ msgid "Managers have full access to resources in this space, including team and 
 msgstr "Les administrateurs de l’espace disposent d’un accès complet à ses ressources, y compris à la gestion de l’équipe et des accès."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:28
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:40
 msgid "Map order"
 msgstr "Ordre de la carte"
 
@@ -14269,7 +14306,7 @@ msgstr "Minute"
 
 #.frontend
 #: ../turboui/src/StatusBadge/index.tsx:151
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:67
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:69
 msgid "Missed"
 msgstr "Non atteint"
 
@@ -14347,7 +14384,7 @@ msgid "Monthly revenue"
 msgstr "Chiffre d’affaires mensuel"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Timeline.tsx:48
+#: ../turboui/src/WorkMapV2/Timeline.tsx:237
 msgid "Months"
 msgstr "Mois"
 
@@ -14522,12 +14559,12 @@ msgstr "Score NPS"
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:73
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:393
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:121
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:125
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:201
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:31
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:33
 #: ../turboui/src/WorkMapV2/Table.tsx:18
-#: ../turboui/src/WorkMapV2/Timeline.tsx:144
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:29
+#: ../turboui/src/WorkMapV2/Timeline.tsx:274
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:41
 #: assets/js/pages/SpaceEditPage/index.tsx:51
 msgid "Name"
 msgstr "Nom"
@@ -14621,7 +14658,7 @@ msgstr "Erreur réseau"
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:183
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:321
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:346
 msgid "Network error"
 msgstr "Erreur réseau"
 
@@ -14810,8 +14847,8 @@ msgstr "Nouvelle période : %{new_start_date} → %{new_end_date}"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:97
-#: ../turboui/src/WorkMapV2/Timeline.tsx:114
-#: ../turboui/src/WorkMapV2/Timeline.tsx:118
+#: ../turboui/src/WorkMapV2/Timeline.tsx:248
+#: ../turboui/src/WorkMapV2/Timeline.tsx:249
 msgid "Next"
 msgstr "Suivant"
 
@@ -15027,7 +15064,7 @@ msgid "No data yet"
 msgstr "Aucune donnée pour le moment"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Timeline.tsx:231
+#: ../turboui/src/WorkMapV2/Timeline.tsx:380
 msgid "No dates"
 msgstr "Sans dates"
 
@@ -15150,7 +15187,7 @@ msgstr "Aucun modèle correspondant."
 
 #.frontend
 #: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:122
-#: ../turboui/src/WorkMapV2/index.tsx:156
+#: ../turboui/src/WorkMapV2/index.tsx:182
 msgid "No matching work."
 msgstr "Aucun travail correspondant."
 
@@ -15333,7 +15370,7 @@ msgid "No projects found."
 msgstr "Aucun projet trouvé."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:156
+#: ../turboui/src/WorkMapV2/index.tsx:182
 msgid "No projects match these filters"
 msgstr "Aucun projet ne correspond à ces filtres"
 
@@ -15424,6 +15461,11 @@ msgid "No template"
 msgstr "Aucun modèle"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/AddWork.tsx:189
+msgid "No templates found"
+msgstr "Aucun modèle trouvé"
+
+#.frontend
 #: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:64
 msgid "No templates in this tab yet."
 msgstr "Aucun modèle dans cet onglet pour le moment."
@@ -15481,7 +15523,7 @@ msgid "Not Set"
 msgstr "Non défini"
 
 #.frontend
-#: ../turboui/src/PersonField/index.tsx:124
+#: ../turboui/src/PersonField/index.tsx:133
 msgid "Not assigned"
 msgstr "Non assignée"
 
@@ -15522,7 +15564,7 @@ msgid "Not started (gray)"
 msgstr "Non commencé (gris)"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:94
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:95
 msgid "Not sure? Start with a project - you can always set goals later."
 msgstr "Vous hésitez ? Commencez par un projet ; vous pourrez définir des objectifs plus tard."
 
@@ -15568,7 +15610,7 @@ msgid "Notes:"
 msgstr "Notes :"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:39
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:40
 msgid "Nothing here yet."
 msgstr "Aucun élément pour le moment."
 
@@ -15630,7 +15672,7 @@ msgstr "En difficulté"
 
 #.frontend
 #: ../turboui/src/StatusBadge/index.tsx:143
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:52
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:54
 #: assets/js/features/goals/GoalCheckIn/StatusSelector.tsx:29
 msgid "Off track"
 msgstr "En difficulté"
@@ -15657,7 +15699,7 @@ msgstr "À la date de début du projet"
 
 #.frontend
 #: ../turboui/src/StatusBadge/index.tsx:95
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:50
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:52
 #: assets/js/features/goals/GoalCheckIn/StatusSelector.tsx:23
 msgid "On track"
 msgstr "En bonne voie"
@@ -15904,6 +15946,13 @@ msgid "Open tasks"
 msgstr "Tâches ouvertes"
 
 #.frontend
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:161
+#: ../turboui/src/WorkMapV2/AddWork.tsx:84
+#: ../turboui/src/WorkMapV2/AddWork.tsx:164
+msgid "Open template library"
+msgstr "Ouvrir la bibliothèque de modèles"
+
+#.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/McpSetupInstructions.tsx:228
 msgid "Open your client’s MCP settings"
 msgstr "Ouvrir les paramètres MCP de votre client"
@@ -16027,9 +16076,14 @@ msgid "Org Chart"
 msgstr "Organigramme"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:121
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:134
 msgid "Organize"
 msgstr "Organiser"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/Organize.tsx:118
+msgid "Organize Work Map"
+msgstr "Organiser la carte des objectifs et projets"
 
 #.frontend
 #: ../turboui/src/SpaceTaskBoardCard/ZeroState.tsx:24
@@ -16059,7 +16113,7 @@ msgstr "Autres personnes ayant accès"
 #.frontend
 #: ../turboui/src/SmallStatusIndicator/constants.ts:25
 #: ../turboui/src/StatusBadge/index.tsx:127
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:54
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:56
 msgid "Outdated"
 msgstr "À actualiser"
 
@@ -16185,12 +16239,12 @@ msgstr "Objectif parent : aucun (objectif de premier niveau)"
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:122
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:117
-#: ../turboui/src/WorkMapV2/Table.tsx:127
+#: ../turboui/src/WorkMapV2/Table.tsx:148
 msgid "Parent goal"
 msgstr "Objectif parent"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:139
+#: ../turboui/src/WorkMapV2/index.tsx:165
 msgid "Parent goals shown for context"
 msgstr "Les objectifs parents sont affichés pour situer les résultats"
 
@@ -16290,8 +16344,8 @@ msgstr "Mettre ce projet en pause ?"
 #: ../turboui/src/SmallStatusIndicator/constants.ts:22
 #: ../turboui/src/StatusBadge/index.tsx:119
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:83
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:65
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:68
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:67
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:70
 msgid "Paused"
 msgstr "En pause"
 
@@ -16306,7 +16360,7 @@ msgid "Paused the %{projectName} project"
 msgstr "A mis le projet %{projectName} en pause"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:117
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:120
 msgid "Paused work"
 msgstr "Travaux en pause"
 
@@ -16364,7 +16418,7 @@ msgstr "Collègues ayant le même responsable hiérarchique"
 
 #.frontend
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:274
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:53
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:55
 msgid "Pending"
 msgstr "En attente"
 
@@ -16591,7 +16645,7 @@ msgstr "Sélectionnez une ressource"
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:154
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:256
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:281
 msgid "Please select a space"
 msgstr "Sélectionnez un espace"
 
@@ -16605,14 +16659,14 @@ msgstr "Réessayez"
 #: ../turboui/src/CommentSection/CommentInput.tsx:91
 #: ../turboui/src/CommentSection/CommentItem.tsx:226
 #: ../turboui/src/InlineComments/Thread.tsx:57
-#: ../turboui/src/Reactions/index.tsx:59
 #: ../turboui/src/Reactions/index.tsx:205
+#: ../turboui/src/Reactions/index.tsx:59
 #: assets/js/models/people/usePeopleSearchError.ts:7
 #: assets/js/models/workMap/useSaveWorkMapDefaultView.ts:15
-#: assets/js/pages/AccountApiTokensPage/index.tsx:61
-#: assets/js/pages/AccountApiTokensPage/index.tsx:84
 #: assets/js/pages/AccountApiTokensPage/index.tsx:113
 #: assets/js/pages/AccountApiTokensPage/index.tsx:142
+#: assets/js/pages/AccountApiTokensPage/index.tsx:61
+#: assets/js/pages/AccountApiTokensPage/index.tsx:84
 #: assets/js/pages/AccountMcpConnectionsPage/index.tsx:41
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:185
 #: assets/js/pages/CompanyExportPage/index.tsx:31
@@ -16620,6 +16674,9 @@ msgstr "Réessayez"
 #: assets/js/pages/SpacePage/page.tsx:179
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:51
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:73
+#: assets/js/pages/WorkMapV2Page/useOrganization.ts:37
+#: assets/js/pages/WorkMapV2Page/useReviewerEditing.ts:33
+#: assets/js/pages/WorkMapV2Page/useReviewerEditing.ts:46
 #: ee/assets/js/pages/SaasAdminCompanyPage/FeatureFlagsSection.tsx:43
 #: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:32
 #: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:43
@@ -16769,8 +16826,8 @@ msgid "Preview: %{size}"
 msgstr "Aperçu : %{size}"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Timeline.tsx:106
-#: ../turboui/src/WorkMapV2/Timeline.tsx:110
+#: ../turboui/src/WorkMapV2/Timeline.tsx:245
+#: ../turboui/src/WorkMapV2/Timeline.tsx:246
 msgid "Previous"
 msgstr "Précédent"
 
@@ -16914,7 +16971,7 @@ msgstr "Priorité"
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:117
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:265
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:160
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:170
 msgid "Privacy"
 msgstr "Visibilité"
 
@@ -16967,7 +17024,7 @@ msgstr "Profil"
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:115
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:207
 #: ../turboui/src/WorkMapV2/Table.tsx:20
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:32
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:44
 #: lib/operately/md/goal.ex:29
 #: lib/operately/md/goal.ex:98
 #: lib/operately/md/project.ex:319
@@ -16995,8 +17052,9 @@ msgstr "Avance comme prévu. Aucun point bloquant."
 #: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:155
 #: ../turboui/src/SearchPage/index.tsx:315
 #: ../turboui/src/TaskPage/MoveModal.tsx:113
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:105
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:222
+#: ../turboui/src/WorkMapV2/AddWork.tsx:73
 #: assets/js/features/activities/ProjectContributorsAddition/index.tsx:87
 #: lib/operately/md/milestone.ex:20
 #: lib/operately/md/task.ex:105
@@ -17084,13 +17142,18 @@ msgid "Project duration"
 msgstr "Durée du projet"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/AddWork.tsx:81
+msgid "Project from template…"
+msgstr "Projet à partir d’un modèle…"
+
+#.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:130
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:98
 msgid "Project level"
 msgstr "Niveau du projet"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:166
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:173
 msgid "Project name"
 msgstr "Nom du projet"
 
@@ -17156,7 +17219,7 @@ msgid "Project start date <text>*</text>"
 msgstr "Date de début du projet <text>*</text>"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:33
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:35
 msgid "Project status"
 msgstr "Statut du projet"
 
@@ -17177,7 +17240,7 @@ msgstr "Projet : %{projectName}"
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:258
 #: ../turboui/src/SearchPage/filterOptions.ts:10
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:76
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:64
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:66
 #: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:96
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:259
 msgid "Projects"
@@ -17284,7 +17347,7 @@ msgstr "T%{quarter}"
 #.elixir
 #.frontend
 #: ../turboui/src/DateField/utils.ts:46
-#: ../turboui/src/WorkMapV2/Timeline.tsx:167
+#: ../turboui/src/WorkMapV2/Timeline.tsx:208
 #: ../turboui/src/utils/timeframes.tsx:38
 #: assets/js/utils/timeframes.tsx:20
 #: lib/operately_email/date_formatting.ex:11
@@ -17307,7 +17370,7 @@ msgid "Quarterly Goal 2"
 msgstr "Objectif trimestriel 2"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Timeline.tsx:48
+#: ../turboui/src/WorkMapV2/Timeline.tsx:238
 msgid "Quarters"
 msgstr "Trimestres"
 
@@ -17757,6 +17820,11 @@ msgid "Remove reminder"
 msgstr "Supprimer le rappel"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/ReviewerField.tsx:40
+msgid "Remove reviewer"
+msgstr "Retirer le référent"
+
+#.frontend
 #: ../turboui/src/SaasAdminAccountActionsMenu/index.tsx:34
 #: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:119
 msgid "Remove site admin access"
@@ -18034,17 +18102,17 @@ msgstr "Instructions de réinitialisation du mot de passe"
 #~ msgstr "Réinitialiser l’ordre des tâches"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:117
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:129
 msgid "Reset to company default"
 msgstr "Rétablir la vue par défaut de l’entreprise"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:117
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:129
 msgid "Reset to space default"
 msgstr "Rétablir la vue par défaut de l’espace"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:65
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:77
 msgid "Reset view"
 msgstr "Réinitialiser la vue"
 
@@ -18427,6 +18495,11 @@ msgstr "Examiner le point d’avancement hebdomadaire"
 msgid "Reviewer"
 msgstr "Référent"
 
+#.frontend
+#: ../turboui/src/WorkMapV2/ReviewerField.tsx:38
+msgid "Reviewer · %{name}"
+msgstr "Référent · %{name}"
+
 #.elixir
 #: lib/operately/md/goal.ex:139
 msgid "Reviewer: Not Assigned"
@@ -18681,6 +18754,11 @@ msgstr "Enregistrer le brouillon"
 #~ msgstr "Enregistrer les données d’exemple"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/Organize.tsx:126
+msgid "Save order"
+msgstr "Enregistrer l’ordre"
+
+#.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:105
 msgid "Save project as template"
 msgstr "Enregistrer le projet comme modèle"
@@ -18769,6 +18847,11 @@ msgstr "L’heure programmée doit être dans le futur"
 #: ../turboui/src/SearchPage/index.tsx:61
 msgid "Search"
 msgstr "Rechercher"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/AddWork.tsx:169
+msgid "Search %{name} templates…"
+msgstr "Rechercher des modèles dans %{name}…"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:414
@@ -18901,6 +18984,11 @@ msgid "Search spaces..."
 msgstr "Rechercher des espaces…"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/AddWork.tsx:168
+msgid "Search templates"
+msgstr "Rechercher des modèles"
+
+#.frontend
 #: ../turboui/src/SelectLocalization/index.ts:51
 msgid "Search term: %{term}."
 msgstr "Terme recherché : %{term}."
@@ -18914,7 +19002,7 @@ msgstr "Rechercher dans les titres et le contenu…"
 #.frontend
 #: ../turboui/src/AssigneesField/index.tsx:343
 #: ../turboui/src/GlobalSearch/index.tsx:195
-#: ../turboui/src/PersonField/index.tsx:535
+#: ../turboui/src/PersonField/index.tsx:577
 msgid "Search..."
 msgstr "Rechercher…"
 
@@ -18954,7 +19042,7 @@ msgstr "Découvrez les changements prévus avant le passage de cette entreprise 
 #~ msgstr "Consultez le travail de votre équipe et le vôtre, avec l’avancement et les échéances."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:73
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:74
 msgid "See what you and your team are working on, with progress and due dates."
 msgstr "Consultez le travail de votre équipe et le vôtre, avec l’avancement et les échéances."
 
@@ -19018,7 +19106,7 @@ msgstr "Sélectionner un objectif…"
 
 #.frontend
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:191
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:263
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:288
 msgid "Select a project start date."
 msgstr "Sélectionnez une date de début du projet."
 
@@ -19120,7 +19208,7 @@ msgstr "Sélectionner les personnes à notifier"
 
 #.frontend
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:131
-#: ../turboui/src/PersonField/index.tsx:123
+#: ../turboui/src/PersonField/index.tsx:132
 msgid "Select person"
 msgstr "Sélectionner une personne"
 
@@ -19307,7 +19395,7 @@ msgid "Set date"
 msgstr "Définir la date"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:113
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:125
 msgid "Set default view for %{name}"
 msgstr "Définir comme vue par défaut pour %{name}"
 
@@ -19448,6 +19536,16 @@ msgid "Share this link to this draft with anyone who has access to this space:"
 msgstr "Partagez ce lien vers le brouillon avec toute personne ayant accès à cet espace :"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/Organize.tsx:143
+msgid "Shared company order"
+msgstr "Ordre partagé de l’entreprise"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/Organize.tsx:143
+msgid "Shared space order"
+msgstr "Ordre partagé de l’espace"
+
+#.frontend
 #: ../turboui/src/PublicDocumentPage/index.tsx:70
 msgid "Shared with Operately"
 msgstr "Partagé avec Operately"
@@ -19484,7 +19582,7 @@ msgstr[0] "Afficher %{count} élément de plus"
 msgstr[1] "Afficher %{count} éléments de plus"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:106
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:118
 msgid "Show KPIs"
 msgstr "Afficher les KPI"
 
@@ -19774,7 +19872,7 @@ msgid "Sort results"
 msgstr "Trier les résultats"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:75
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:87
 msgid "Sort within each goal"
 msgstr "Tri dans chaque objectif"
 
@@ -19796,9 +19894,9 @@ msgstr "Analyse de la source"
 #: ../turboui/src/GoalAddForm/index.tsx:103
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:424
 #: ../turboui/src/TaskPage/MoveModal.tsx:114
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:133
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:137
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:219
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:34
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:36
 #: ../turboui/src/WorkMapV2/Table.tsx:22
 #: assets/js/pages/ProjectAddPage/page.tsx:147
 #: lib/operately/md/goal.ex:30
@@ -19987,7 +20085,7 @@ msgid "Start again"
 msgstr "Recommencer"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:70
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:71
 msgid "Start by adding a goal or project"
 msgstr "Commencez par ajouter un objectif ou un projet"
 
@@ -20031,7 +20129,12 @@ msgid "Start search index maintenance?"
 msgstr "Lancer la maintenance de l’index de recherche ?"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:156
+#: ../turboui/src/WorkMapV2/AddWork.tsx:193
+msgid "Start with a blank project"
+msgstr "Commencer avec un projet vide"
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:163
 msgid "Start with something already in motion. You can add tasks, milestones, and teammates next."
 msgstr "Commencez par un travail déjà en cours. Vous pourrez ensuite ajouter des tâches, des jalons et des membres de l’équipe."
 
@@ -20092,7 +20195,7 @@ msgstr "Statistiques"
 #: ../turboui/src/TaskCreationModal/index.tsx:307
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:204
 #: ../turboui/src/WorkMapV2/Table.tsx:19
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:31
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:43
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:325
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:256
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:283
@@ -20356,7 +20459,7 @@ msgstr "TÂCHES"
 #: ../turboui/src/RichEditor/components/TableButton.tsx:27
 #: ../turboui/src/RichEditor/extensions/Table.ts:49
 #: ../turboui/src/WorkMap/components/WorkMapNavigation.tsx:33
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:42
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:54
 msgid "Table"
 msgstr "Tableau"
 
@@ -21216,7 +21319,7 @@ msgid "The project could not be created. Check the form and try again."
 msgstr "Le projet n’a pas pu être créé. Vérifiez le formulaire et réessayez."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:144
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:151
 msgid "The project could not be created. Try again."
 msgstr "Le projet n’a pas pu être créé. Réessayez."
 
@@ -22218,8 +22321,8 @@ msgstr[1] "Période raccourcie de %{count} jours"
 
 #.frontend
 #: ../turboui/src/WorkMap/components/WorkMapNavigation.tsx:34
-#: ../turboui/src/WorkMapV2/Timeline.tsx:101
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:49
+#: ../turboui/src/WorkMapV2/Timeline.tsx:119
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:61
 msgid "Timeline"
 msgstr "Chronologie"
 
@@ -22299,7 +22402,7 @@ msgstr "Pour supprimer le statut <strong>%{label}</strong>, sélectionnez un sta
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:12
 #: ../turboui/src/FormattedTime/ShortDate.tsx:33
-#: ../turboui/src/WorkMapV2/Timeline.tsx:121
+#: ../turboui/src/WorkMapV2/Timeline.tsx:252
 #: ../turboui/src/utils/time.tsx:198
 #: assets/js/utils/time.tsx:134
 msgid "Today"
@@ -22413,7 +22516,7 @@ msgid "Track the numbers this space cares about and log updates on a weekly or m
 msgstr "Suivez les chiffres importants pour cet espace et enregistrez leurs valeurs chaque semaine ou chaque mois."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:179
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:186
 msgid "Tracking an outcome instead? <goal>Add a goal</goal>."
 msgstr "Vous souhaitez plutôt suivre un résultat ? <goal>Ajoutez un objectif</goal>."
 
@@ -22439,6 +22542,7 @@ msgstr "Domaines e-mail autorisés uniquement"
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:46
 #: assets/js/pages/InviteLinkFullPage/index.tsx:45
 #: assets/js/pages/SpaceWorkMapPage/page.tsx:49
+#: assets/js/pages/WorkMapV2Page/useCreation.ts:60
 msgid "Try again"
 msgstr "Réessayer"
 
@@ -22448,13 +22552,14 @@ msgid "Try again later"
 msgstr "Réessayer plus tard"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:158
+#: ../turboui/src/WorkMapV2/index.tsx:184
 msgid "Try another filter or clear them to see more work."
 msgstr "Essayez un autre filtre ou effacez les filtres pour voir plus de résultats."
 
 #.frontend
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:42
 #: assets/js/pages/SpaceWorkMapPage/page.tsx:45
+#: assets/js/pages/WorkMapV2Page/useCreation.ts:58
 msgid "Try loading them again."
 msgstr "Essayez de les charger à nouveau."
 
@@ -22612,7 +22717,7 @@ msgstr "Non autorisé"
 #: ../turboui/src/CompanyBilling/formatting.ts:50
 #: ../turboui/src/CompanyBilling/storageFormatting.ts:12
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:68
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:112
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:115
 msgid "Unavailable"
 msgstr "Indisponible"
 
@@ -23181,6 +23286,11 @@ msgstr "À utiliser pour le travail à faire ou en pause"
 #~ msgstr "Utiliser dans une conversation"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/AddWork.tsx:201
+msgid "Use template"
+msgstr "Utiliser le modèle"
+
+#.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:48
 msgid "Use these values when calling the external Operately API."
 msgstr "Utilisez ces valeurs lors des appels à l’API externe d’Operately."
@@ -23560,7 +23670,9 @@ msgid "View permission breakdown"
 msgstr "Voir le détail des autorisations"
 
 #.frontend
-#: ../turboui/src/PersonField/index.tsx:361
+#: ../turboui/src/PersonField/index.tsx:350
+#: ../turboui/src/PersonField/index.tsx:351
+#: ../turboui/src/PersonField/index.tsx:402
 msgid "View profile"
 msgstr "Voir le profil"
 
@@ -23785,7 +23897,7 @@ msgid "Weekly check-ins keep everyone in the loop. Updates will appear here."
 msgstr "Les points d’avancement hebdomadaires permettent de tenir tout le monde au courant. Ils apparaîtront ici."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Timeline.tsx:48
+#: ../turboui/src/WorkMapV2/Timeline.tsx:236
 msgid "Weeks"
 msgstr "Semaines"
 
@@ -23971,7 +24083,7 @@ msgstr "E-mail professionnel"
 #: ../turboui/src/GoalPage/PageHeader.tsx:19
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:98
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:112
-#: ../turboui/src/WorkMapV2/index.tsx:93
+#: ../turboui/src/WorkMapV2/index.tsx:100
 #: assets/js/features/goals/GoalSubpageNavigation/index.tsx:15
 #: assets/js/features/goals/GoalSubpageNavigation/index.tsx:17
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:59
@@ -23994,7 +24106,7 @@ msgstr "E-mail professionnel"
 #: assets/js/pages/ProjectDiscussionPage/page.tsx:109
 #: assets/js/pages/ProjectDiscussionPage/page.tsx:111
 #: assets/js/pages/SpaceWorkMapPage/page.tsx:81
-#: assets/js/pages/WorkMapV2Page/page.tsx:34
+#: assets/js/pages/WorkMapV2Page/page.tsx:46
 msgid "Work Map"
 msgstr "Carte des objectifs et projets"
 
@@ -24016,7 +24128,7 @@ msgstr "Le travail n’a pas encore commencé."
 
 #.frontend
 #: ../turboui/src/WorkMap/components/WorkMapNavigation.tsx:31
-#: ../turboui/src/WorkMapV2/Toolbar.tsx:38
+#: ../turboui/src/WorkMapV2/Toolbar.tsx:50
 msgid "Work map view"
 msgstr "Vue de la carte des objectifs et projets"
 
@@ -24026,7 +24138,7 @@ msgid "Work together on tasks that don’t belong to a specific project."
 msgstr "Collaborez sur les tâches qui n’appartiennent pas à un projet précis."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:29
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:31
 msgid "Work type"
 msgstr "Type de travail"
 
@@ -24213,7 +24325,7 @@ msgid "You don't have any drafts."
 msgstr "Vous n’avez aucun brouillon."
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:316
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:341
 msgid "You don't have permission to create goals or projects in this space. Choose another space or ask a space manager for Edit access."
 msgstr "Vous n’avez pas l’autorisation de créer des objectifs ou des projets dans cet espace. Choisissez un autre espace ou demandez à un administrateur de l’espace le droit de le modifier."
 
@@ -24798,7 +24910,7 @@ msgid "assigned %{reviewer_full_name} as the project reviewer"
 msgstr "a confié le rôle de référent du projet à %{reviewer_full_name}"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:97
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
 msgid "big-picture outcome"
 msgstr "un résultat global"
 
@@ -24979,7 +25091,7 @@ msgid "completed the milestone \"%{milestone_title}\""
 msgstr "a terminé le jalon « %{milestone_title} »"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:102
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:106
 msgid "concrete actions or deliverables"
 msgstr "des actions concrètes ou des livrables"
 
@@ -25117,7 +25229,7 @@ msgid "e.g. HR System Update"
 msgstr "Par exemple : mise à jour du système RH"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:124
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:128
 msgid "e.g. Implement new website design"
 msgstr "Par exemple : mettre en place le nouveau design du site"
 
@@ -25127,7 +25239,7 @@ msgid "e.g. Increase monthly signup count"
 msgstr "Par exemple : augmenter le nombre d’inscriptions mensuelles"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/AddItemModal.tsx:124
+#: ../turboui/src/WorkMap/components/AddItemModal.tsx:128
 msgid "e.g. Increase user acquisition"
 msgstr "Par exemple : augmenter l’acquisition d’utilisateurs"
 
@@ -25142,7 +25254,7 @@ msgid "e.g. John Johnson"
 msgstr "Par exemple : Jean Martin"
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:167
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:174
 msgid "e.g. Launch the new website"
 msgstr "Par exemple : lancer le nouveau site"
 

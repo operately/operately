@@ -21,6 +21,7 @@ export interface WorkMapV2Item extends Pick<
 > {
   space: Pick<Space, "id" | "name"> | null;
   owner: MapPerson | null;
+  parentId?: string | null;
   reviewer?: MapPerson | null;
   reviewerPath?: string | null;
   completedOn?: string | null;

@@ -15,6 +15,7 @@ interface ZeroStateProps {
   spaceSearch: SpaceField.SearchSpaceFn;
   addItem: WorkMap.AddNewItemFn;
   addItemDefaultSpace: SpaceField.Space;
+  getSpacePrivacy?: AddItemModal.Props["getSpacePrivacy"];
   hideCompanyAccess?: boolean;
   zeroStateMessage?: string;
   variant?: WorkMap.EmptyStateVariant;
@@ -112,7 +113,13 @@ export function ZeroStateCanAdd({
   );
 }
 
-function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onItemCreated }: ZeroStateProps) {
+function FirstProjectZeroState({
+  spaceSearch,
+  addItem,
+  addItemDefaultSpace,
+  onItemCreated,
+  getSpacePrivacy,
+}: ZeroStateProps) {
   const { t } = useTranslation();
   const [navigationPending, setNavigationPending] = React.useState(false);
   const [goalModalOpen, setGoalModalOpen] = React.useState(false);
@@ -203,6 +210,7 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
         hideTypeSelector
         hideCreateMore
         keepOpenAfterSave={Boolean(onItemCreated)}
+        getSpacePrivacy={getSpacePrivacy}
         onSaved={onItemCreated}
       />
     </div>

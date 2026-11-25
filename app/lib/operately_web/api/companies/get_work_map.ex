@@ -16,6 +16,7 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMap do
     field? :contributor_id, :id, null: true
     field? :only_completed, :boolean, null: true
     field? :include_assignees, :boolean, null: true
+    field? :include_cross_space_parents, :boolean, null: false
     field? :include_reviewer, :boolean, null: true
   end
 
@@ -37,6 +38,7 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMap do
         contributor_id: inputs[:contributor_id],
         only_completed: inputs[:only_completed] || false,
         include_assignees: inputs[:include_assignees] || false,
+        include_cross_space_parents: inputs[:include_cross_space_parents] || false,
         include_reviewer: inputs[:include_reviewer] || false
       })
 

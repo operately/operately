@@ -29,11 +29,11 @@ export async function loader({ params, request }: { params: { id: string }; requ
   return preload({ params });
 }
 
-export async function preload({ params }: { params: { id: string } }) {
+export async function preload({ params }: { params: { id: string } }, includeCrossSpaceParents = false) {
   const templatesInput = { archiveStatus: "active" as const };
   const editableSpacesInput = { query: "", accessLevel: "edit_access" as const };
 
-  const { workMapInput, spaceInput } = await loadSpaceWorkMap(params.id);
+  const { workMapInput, spaceInput } = await loadSpaceWorkMap(params.id, includeCrossSpaceParents);
 
   return { workMapInput, spaceInput, templatesInput, editableSpacesInput };
 }

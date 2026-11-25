@@ -1,24 +1,28 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { PrimaryButton, SecondaryButton } from "../Button";
+import { SecondaryButton } from "../Button";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import { tn } from "../i18n";
-import { IconChevronRight, IconPlus } from "../icons";
+import { IconChevronRight } from "../icons";
 import { BlackLink } from "../Link";
 import { PageNew } from "../Page";
 import { filterWorkMap, visibleRows, type WorkMapViewState, type WorkMapV2Item } from "./filterWorkMap";
 import { EmptyWork } from "./EmptyWork";
 import { Timeline } from "./Timeline";
 import { Table } from "./Table";
+import { Organize, type Organization } from "./Organize";
+import { useAddWork, type WorkMapCreation } from "./AddWork";
 import { Toolbar } from "./Toolbar";
+import type { ReviewerEditing } from "./ReviewerField";
 
 export { builtInWorkMapView, mapColumns, type WorkMapViewState, type WorkMapV2Item } from "./filterWorkMap";
 
 export interface WorkMapV2PageProps {
   title: string;
   space?: { id: string; name: string; href: string };
-  onAddProject?: () => void;
-  onAddGoal?: () => void;
+  organization?: Organization;
+  creation?: WorkMapCreation;
+  reviewerEditing?: ReviewerEditing;
   items: WorkMapV2Item[];
   view: WorkMapViewState;
   onViewChange: (view: WorkMapViewState) => void;
@@ -33,9 +37,10 @@ export interface WorkMapV2PageProps {
 
 export function WorkMapV2Page({
   title,
+  organization,
+  creation,
+  reviewerEditing,
   space,
-  onAddProject,
-  onAddGoal,
   items,
   view,
   onViewChange,
@@ -48,6 +53,8 @@ export function WorkMapV2Page({
   formattedTimePreferences,
 }: WorkMapV2PageProps) {
   const { t } = useTranslation();
+  const addWork = useAddWork(creation, scopeName, space?.id);
+  const [organizing, setOrganizing] = React.useState(false);
   const { locale, timezone } = formattedTimePreferences;
   const { rows, counts, hasContext, undated } = React.useMemo(
     () => filterWorkMap(items, view, orderedItemIds ?? [], locale, timezone, space?.id),
@@ -92,75 +99,98 @@ export function WorkMapV2Page({
           )}
           <h1 className="shrink-0 text-2xl font-semibold tracking-tight">{space ? t("Work Map") : title}</h1>
         </div>
-        {items.length > 0 && (
-          <PrimaryButton size="sm" icon={IconPlus} disabled>
-            {t("Add work")}
-          </PrimaryButton>
-        )}
+        {items.length > 0 && !organizing && addWork.menu}
       </header>
-      {items.length > 0 && (
-        <Toolbar
-          items={items}
-          view={view}
-          onChange={onViewChange}
-          onReset={onReset}
-          adjusted={adjusted}
-          scopeName={scopeName}
-          spaceId={space?.id}
-          onSave={onSaveDefault}
-          saving={saving}
+
+      {organizing && organization ? (
+        <Organize
+          initialRows={
+            filterWorkMap(
+              items,
+              { ...view, sort: "map_order", filters: [] },
+              orderedItemIds ?? [],
+              locale,
+              timezone,
+              space?.id,
+            ).rows
+          }
+          columns={view.columns}
+          formattedTimePreferences={formattedTimePreferences}
+          organization={organization}
+          space={Boolean(space)}
+          onClose={() => setOrganizing(false)}
         />
-      )}
-      {!items.length ? (
-        <EmptyWork onAddProject={onAddProject} onAddGoal={onAddGoal} />
-      ) : rows.length > 0 ? (
+      ) : (
         <>
-          {view.view === "table" ? (
-            <Table
-              rows={visible}
-              columns={view.columns}
-              onToggle={toggle}
-              formattedTimePreferences={formattedTimePreferences}
-            />
-          ) : (
-            <Timeline
-              rows={visible}
-              onToggle={toggle}
-              scale={view.timelineScale}
-              onScale={(timelineScale) => onViewChange({ ...view, timelineScale })}
-              preferences={formattedTimePreferences}
+          {items.length > 0 && (
+            <Toolbar
+              items={items}
+              view={view}
+              onChange={onViewChange}
+              onReset={onReset}
+              adjusted={adjusted}
+              scopeName={scopeName}
+              spaceId={space?.id}
+              onOrganize={organization ? () => setOrganizing(true) : undefined}
+              onSave={onSaveDefault}
+              saving={saving}
             />
           )}
-          <footer
-            role="status"
-            className="flex flex-wrap justify-between gap-2 px-4 py-4 text-xs text-content-dimmed sm:px-7"
-          >
-            {summary}
-            {hasContext && <span>{t("Parent goals shown for context")}</span>}
-            {view.view === "timeline" && (
-              <span>
-                {[
-                  undated.goal > 0 && tn("1 goal without dates", "{{count}} goals without dates", undated.goal),
-                  undated.project > 0 &&
-                    tn("1 project without dates", "{{count}} projects without dates", undated.project),
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </span>
-            )}
-          </footer>
+          {!items.length ? (
+            addWork.onboarding || <EmptyWork onAddProject={addWork.addProject} onAddGoal={addWork.addGoal} />
+          ) : rows.length > 0 ? (
+            <>
+              {view.view === "table" ? (
+                <Table
+                  reviewerEditing={reviewerEditing}
+                  quickAdd={addWork.quickAdd}
+                  rows={visible}
+                  columns={view.columns}
+                  onToggle={toggle}
+                  formattedTimePreferences={formattedTimePreferences}
+                />
+              ) : (
+                <Timeline
+                  rows={visible}
+                  onToggle={toggle}
+                  scale={view.timelineScale}
+                  onScale={(timelineScale) => onViewChange({ ...view, timelineScale })}
+                  preferences={formattedTimePreferences}
+                />
+              )}
+              <footer
+                role="status"
+                className="flex flex-wrap justify-between gap-2 px-4 py-4 text-xs text-content-dimmed sm:px-7"
+              >
+                {summary}
+                {hasContext && <span>{t("Parent goals shown for context")}</span>}
+                {view.view === "timeline" && (
+                  <span>
+                    {[
+                      undated.goal > 0 && tn("1 goal without dates", "{{count}} goals without dates", undated.goal),
+                      undated.project > 0 &&
+                        tn("1 project without dates", "{{count}} projects without dates", undated.project),
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </span>
+                )}
+              </footer>
+            </>
+          ) : (
+            <div className="flex flex-col items-center gap-3 px-4 py-16 text-center">
+              <h2 className="text-lg font-semibold">
+                {onlyType === "project" ? t("No projects match these filters") : t("No matching work.")}
+              </h2>
+              <p className="text-sm text-content-dimmed">{t("Try another filter or clear them to see more work.")}</p>
+              <SecondaryButton size="sm" onClick={() => onViewChange({ ...view, filters: [] })}>
+                {t("Clear filters")}
+              </SecondaryButton>
+            </div>
+          )}
         </>
-      ) : (
-        <div className="flex flex-col items-center gap-3 px-4 py-16 text-center">
-          <h2 className="text-lg font-semibold">
-            {onlyType === "project" ? t("No projects match these filters") : t("No matching work.")}
-          </h2>
-          <p className="text-sm text-content-dimmed">{t("Try another filter or clear them to see more work.")}</p>
-          <SecondaryButton size="sm" onClick={() => onViewChange({ ...view, filters: [] })}>
-            {t("Clear filters")}
-          </SecondaryButton>
-        </div>
       )}
+      {addWork.dialogs}
     </PageNew>
   );
 }
