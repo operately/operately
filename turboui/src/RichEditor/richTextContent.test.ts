@@ -39,6 +39,24 @@ const validRichDescription = {
 };
 
 describe("normalizeRichTextContent", () => {
+  it("removes temporary selection marks from saved content and preserves real highlights", () => {
+    const highlight = { type: "highlight", attrs: { highlight: "bgYellow" } };
+    const content = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "Selected text", marks: [highlight, { type: "fakeTextSelection" }] }],
+        },
+      ],
+    };
+
+    expect(normalizeRichTextContent(content)).toEqual({
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "text", text: "Selected text", marks: [highlight] }] }],
+    });
+  });
+
   it("removes empty text nodes without mutating the source document", () => {
     expect(normalizeRichTextContent(descriptionWithEmptyTextNodes)).toEqual({
       type: "doc",

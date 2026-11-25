@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import * as React from "react";
+import React from "react";
 
 import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
@@ -10,17 +10,9 @@ export function LinkButton({ editor, iconSize }): JSX.Element {
   const { t } = useTranslation();
   const [linkEditActive, setLinkEditActive] = useLinkState();
 
-  const toggleLink = React.useCallback(() => {
-    if (linkEditActive) {
-      setLinkEditActive(false);
-    } else {
-      setLinkEditActive(true);
-    }
-  }, [editor]);
-
   return (
     <ToolbarToggleButton
-      onClick={toggleLink}
+      onClick={() => setLinkEditActive((active) => !active)}
       isActive={editor?.isActive("link") || linkEditActive}
       title={t("Add/Edit Links")}
     >
