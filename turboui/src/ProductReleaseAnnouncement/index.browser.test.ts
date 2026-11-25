@@ -1,7 +1,16 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import type { Page } from "playwright";
 
 declare const page: Page;
+
+const sharedClampStyles = readFileSync(new URL("../../styles/lineclamp.css", import.meta.url), "utf8");
+
+async function openAnnouncement(story: string) {
+  await page.goto(storyUrl(story));
+  // The app loads shared clamp rules after Tailwind, unlike Storybook.
+  await page.addStyleTag({ content: sharedClampStyles });
+}
 
 function storyUrl(story: string) {
   const url = new URL("iframe.html", process.env.TARGET_URL);
@@ -51,7 +60,7 @@ function assertControlsFit(result: Awaited<ReturnType<typeof layout>>, width: nu
 describe("product release announcement in a browser", () => {
   test("uses at most 120 pixels at 374px with the long release title", async () => {
     await page.setViewportSize({ width: 374, height: 812 });
-    await page.goto(storyUrl("compact"));
+    await openAnnouncement("compact");
 
     const result = await layout();
     assertControlsFit(result, 374);
@@ -64,7 +73,7 @@ describe("product release announcement in a browser", () => {
 
   test("fits at 320px with translated controls and a long title", async () => {
     await page.setViewportSize({ width: 320, height: 812 });
-    await page.goto(storyUrl("compact-portuguese"));
+    await openAnnouncement("compact-portuguese");
 
     const result = await layout();
     assertControlsFit(result, 320);
@@ -79,7 +88,7 @@ describe("product release announcement in a browser", () => {
 
   test.each([640, 1280])("keeps desktop layout at %ipx", async (width) => {
     await page.setViewportSize({ width, height: 812 });
-    await page.goto(storyUrl("toast"));
+    await openAnnouncement("toast");
 
     const result = await layout();
     assertControlsFit(result, width);
@@ -93,7 +102,7 @@ describe("product release announcement in a browser", () => {
 
   test("keeps both controls keyboard reachable and dismisses the story", async () => {
     await page.setViewportSize({ width: 374, height: 812 });
-    await page.goto(storyUrl("compact"));
+    await openAnnouncement("compact");
     const link = page.getByRole("link", { name: "View release" });
     const dismiss = page.getByRole("button", { name: "Dismiss" });
     for (let tab = 0; tab < 10 && !(await link.evaluate((element) => element === document.activeElement)); tab++) {

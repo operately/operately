@@ -34,7 +34,7 @@ export function ProductReleaseAnnouncement({ release, onDismiss }: ProductReleas
 
           <div className="min-w-0 flex-1">
             <p className="text-xs text-content-dimmed">{t("New release")}</p>
-            <p className="mt-0.5 text-sm font-medium text-content-base line-clamp-2 sm:line-clamp-3">{release.title}</p>
+            <p className="mt-0.5 text-sm font-medium text-content-base line-clamp-2 sm:!line-clamp-3">{release.title}</p>
 
             <div className="mt-2 sm:mt-3">
               <PrimaryButton
