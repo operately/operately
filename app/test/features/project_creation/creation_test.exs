@@ -18,6 +18,22 @@ defmodule Operately.Features.ProjectCreation.CreationTest do
     |> Steps.assert_project_created_feed()
   end
 
+  @tag login_as: :champion
+  feature "project submit follows the form on narrow screens", ctx do
+    ctx
+    |> Steps.set_viewport({374, 812})
+    |> Steps.open_project_form()
+    |> Steps.assert_project_submit_follows_access_section()
+    |> Steps.set_viewport({374, 1180})
+    |> Steps.assert_project_submit_follows_access_section()
+    |> Steps.change_project_access_level_to_invite_only()
+    |> Steps.assert_project_submit_follows_access_section()
+    |> Steps.open_project_form_with_template()
+    |> Steps.assert_project_submit_follows_access_section()
+    |> Steps.set_viewport({1280, 900})
+    |> Steps.assert_project_submit_follows_access_section()
+  end
+
   @tag login_as: :reviewer
   feature "add project and assign someone else as champion, myself as reviewer", ctx do
     params = %{name: "Website Redesign", space: ctx.group, creator: ctx.reviewer, champion: ctx.champion, reviewer: ctx.reviewer}

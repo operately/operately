@@ -135,7 +135,7 @@ function Form() {
 
   return (
     <Forms.Form form={form}>
-      <Paper.Body minHeight="300px">
+      <Paper.Body minHeight="300px" fullHeightOnMobile={false}>
         <Forms.FieldGroup>
           <Forms.TextInput
             label={t("Project Name")}
@@ -205,7 +205,7 @@ function PrivacyLevel() {
   const [isAdvanced] = Forms.useFieldValue<boolean>("showAdvancedAccess");
 
   return (
-    <Paper.DimmedSection>
+    <Paper.DimmedSection testId="project-access-section">
       <div className="flex items-center justify-between">
         <PrivacyLevelTitle field={"access"} />
         <PrivacyEdit />
