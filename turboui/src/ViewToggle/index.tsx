@@ -14,9 +14,8 @@ interface LinkOption<Value extends string> extends BaseOption<Value> {
   to: string;
 }
 
-interface ButtonOption<Value extends string> extends BaseOption<Value> {
-  onSelect: (value: Value) => void;
-}
+type ButtonOption<Value extends string> = BaseOption<Value> &
+  ({ disabled?: false; onSelect: (value: Value) => void } | { disabled: true; onSelect?: never });
 
 export type ViewToggleOption<Value extends string> = LinkOption<Value> | ButtonOption<Value>;
 
@@ -80,7 +79,8 @@ function ViewToggleItem<Value extends string>({ option, active }: { option: View
       className={className}
       data-test-id={option.testId}
       aria-pressed={active}
-      onClick={() => option.onSelect(option.value)}
+      disabled={option.disabled}
+      onClick={() => option.onSelect?.(option.value)}
     >
       {content}
     </button>
