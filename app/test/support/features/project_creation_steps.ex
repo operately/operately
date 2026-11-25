@@ -90,6 +90,11 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
   end
 
   step :assert_project_submit_follows_access_section, ctx do
+    ctx =
+      ctx
+      |> UI.assert_has(testid: "project-access-section")
+      |> UI.assert_has(testid: "submit")
+
     UI.execute("assert_project_submit_follows_access_section", ctx, fn session ->
       Wallaby.Browser.execute_script(
         session,
