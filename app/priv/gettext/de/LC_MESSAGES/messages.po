@@ -4446,7 +4446,7 @@ msgstr[1] "%{count} Diskussionen in dieser Vorlage werden dir zugeschrieben, wei
 #: ../turboui/src/WorkMapV2/index.tsx:45
 msgid "1 goal"
 msgid_plural "%{count} goals"
-msgstr[0] "%{count} Ziel"
+msgstr[0] "1 Ziel"
 msgstr[1] "%{count} Ziele"
 
 #.frontend
@@ -4524,14 +4524,14 @@ msgstr[1] "%{count} Einträge"
 #: ../turboui/src/WorkMapV2/index.tsx:44
 msgid "1 matching goal"
 msgid_plural "%{count} matching goals"
-msgstr[0] "%{count} passendes Ziel"
+msgstr[0] "1 passendes Ziel"
 msgstr[1] "%{count} passende Ziele"
 
 #.frontend
 #: ../turboui/src/WorkMapV2/index.tsx:42
 msgid "1 matching project"
 msgid_plural "%{count} matching projects"
-msgstr[0] "%{count} passendes Projekt"
+msgstr[0] "1 passendes Projekt"
 msgstr[1] "%{count} passende Projekte"
 
 #.frontend
