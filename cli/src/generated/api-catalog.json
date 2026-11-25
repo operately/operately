@@ -26593,6 +26593,17 @@
         },
         {
           "default": null,
+          "name": "include_cross_space_parents",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
           "name": "include_reviewer",
           "type": {
             "name": "boolean",

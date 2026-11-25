@@ -3,7 +3,9 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { CompanyNavigation } from "../CompanyNavigation";
 import { defaultProps as navigationProps } from "../CompanyNavigation/mockData";
-import { AddItemModal } from "../WorkMap/components/AddItemModal";
+import type { ReviewerEditing } from "./ReviewerField";
+import { move, type OrganizationDraft } from "./organization";
+import { filterWorkMap, type WorkMapRow } from "./filterWorkMap";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { WorkMapV2Page, builtInWorkMapView, type WorkMapV2Item, type WorkMapV2PageProps } from ".";
 
@@ -142,12 +144,78 @@ const items = [
   item("Community office hours", 33, "2026-12-04", "Publish the agenda", { space: growth, owner: filip }, null),
 ];
 
-function StoryPage(props: WorkMapV2PageProps) {
+const searchReviewers: ReviewerEditing["search"] = async (item, query) =>
+  [filip, marko].filter(
+    (person) =>
+      person.id !== item.owner?.id &&
+      person.id !== item.reviewer?.id &&
+      person.fullName.toLowerCase().includes(query.toLowerCase()),
+  );
+
+function StoryPage({ editableReviewers, ...props }: WorkMapV2PageProps & { editableReviewers?: boolean }) {
   const [view, setView] = React.useState(props.view);
   const [defaults, setDefaults] = React.useState(builtInWorkMapView(Boolean(props.space)));
+  const [storyItems, setItems] = React.useState(props.items);
+  const [order, setOrder] = React.useState<string[]>([]);
+  const spaces = [productSpace, { ...growth, link: "/spaces/growth" }];
+  function toItem(row: WorkMapRow): WorkMapV2Item {
+    return { ...row.item, children: row.children.map(toItem) };
+  }
   return (
     <WorkMapV2Page
       {...props}
+      items={storyItems}
+      reviewerEditing={
+        editableReviewers
+          ? {
+              canEdit: () => true,
+              search: searchReviewers,
+              save: async (item, reviewer) => {
+                function update(row: WorkMapV2Item): WorkMapV2Item {
+                  return row.id === item.id
+                    ? { ...row, reviewer, reviewerPath: null }
+                    : { ...row, children: row.children.map(update) };
+                }
+                setItems((items) => items.map(update));
+              },
+            }
+          : undefined
+      }
+      orderedItemIds={order}
+      organization={{
+        canReparent: () => true,
+        save: async (ids, changes) => {
+          let draft: OrganizationDraft = {
+            rows: filterWorkMap(storyItems, { ...defaults, filters: [] }, [], "en", "UTC").rows,
+            parentChanges: [],
+          };
+          for (const change of changes) {
+            const target = change.parentId ?? draft.rows[0]?.item.id;
+            if (target) draft = move(draft, change.itemId, target, change.parentId ? "inside" : "after", true);
+          }
+          setItems(draft.rows.map(toItem));
+          setOrder(ids);
+          return true;
+        },
+      }}
+      creation={{
+        spaces,
+        defaultSpace: productSpace,
+        spaceSearch: async () => spaces,
+        templates: [{ id: "release", name: "Product release", spaceId: product.id, milestoneCount: 3, taskCount: 14 }],
+        templateLibraryPath: "/project-templates",
+        save: async ({ name, type, space, parentId }) => {
+          const created = item(name, 0, null, "", { type, space, status: "pending", owner: null });
+          function insert(rows: WorkMapV2Item[]): WorkMapV2Item[] {
+            return rows.map((row) => ({
+              ...row,
+              children: row.id === parentId ? [...row.children, created] : insert(row.children),
+            }));
+          }
+          setItems((previous) => (parentId ? insert(previous) : [...previous, created]));
+          return { id: created.id };
+        },
+      }}
       view={view}
       onViewChange={setView}
       onReset={() => setView(defaults)}
@@ -187,6 +255,42 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const ActiveWork: Story = {};
+
+export const OrganizeMap: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Organize" }));
+    await expect(canvas.getByRole("link", { name: "Pilot onboarding guide" })).toBeVisible();
+  },
+};
+
+export const InlineReviewer: Story = {
+  args: {
+    space: { id: product.id, name: product.name, href: productSpace.link },
+    view: builtInWorkMapView(true),
+    scopeName: product.name,
+  },
+  render: (args) => <StoryPage {...args} editableReviewers />,
+  play: async ({ canvasElement }) => {
+    const row = within(canvasElement).getByRole("link", { name: "GitHub Enterprise" }).closest("tr");
+    if (!row) throw new Error("Reviewer row is missing");
+    await userEvent.click(within(row).getByRole("button", { name: /Filip/ }));
+    const picker = within(canvasElement.ownerDocument.body);
+    await userEvent.click(picker.getByRole("button", { name: "Remove reviewer" }));
+    await userEvent.click(within(row).getByRole("button", { name: "Assign reviewer" }));
+    await userEvent.click(await within(picker.getByRole("dialog")).findByText(marko.fullName));
+    await expect(within(row).getByRole("button", { name: /Marko/ })).toBeVisible();
+  },
+};
+
+export const ProjectTemplates: Story = {
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    await userEvent.click(within(canvasElement).getByRole("button", { name: "Add work" }));
+    await userEvent.click(await body.findByRole("menuitem", { name: "Project from template…" }));
+    await expect(body.getByText("Product release")).toBeVisible();
+  },
+};
 
 export const Timeline: Story = {
   args: { view: { ...builtInWorkMapView(false), view: "timeline" } },
@@ -297,6 +401,7 @@ export const ChangeFilters: Story = {
     clearFilter.focus();
     await userEvent.keyboard("{Enter}");
     await waitFor(() => expect(canvas.getByRole("button", { name: "Filter" })).toHaveFocus());
+    await expect(canvas.queryByRole("button", { name: "Reset view" })).not.toBeInTheDocument();
   },
 };
 
@@ -316,8 +421,6 @@ export const ClearFilters: Story = {
 };
 
 function EmptySpaceStory(props: WorkMapV2PageProps) {
-  const [items, setItems] = React.useState(props.items);
-  const [adding, setAdding] = React.useState<AddItemModal.ItemType | null>(null);
   return (
     <div className="flex h-screen flex-col">
       <CompanyNavigation
@@ -328,30 +431,8 @@ function EmptySpaceStory(props: WorkMapV2PageProps) {
         me={{ ...navigationProps.me, fullName: "Marko A.", avatarUrl: null }}
       />
       <div className="relative min-h-0 flex-1 overflow-auto">
-        <StoryPage
-          {...props}
-          items={items}
-          onAddProject={() => setAdding("project")}
-          onAddGoal={() => setAdding("goal")}
-        />
+        <StoryPage {...props} />
       </div>
-      {adding && (
-        <AddItemModal
-          isOpen
-          close={() => setAdding(null)}
-          parentGoal={null}
-          space={productSpace}
-          spaceSearch={async () => [productSpace]}
-          initialItemType={adding}
-          hideTypeSelector
-          hideCreateMore
-          save={async ({ name, type }) => {
-            const created = item(name, 0, null, "", { type, status: "pending", owner: null, space: productSpace });
-            setItems((previous) => [...previous, created]);
-            return { id: created.id };
-          }}
-        />
-      )}
     </div>
   );
 }

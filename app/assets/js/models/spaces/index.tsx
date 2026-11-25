@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useQuerySearch } from "@/models/search/useQuerySearch";
 import Api, * as api from "@/api";
 import { SpaceField } from "turboui";
@@ -26,6 +27,27 @@ export {
 } from "./spaceAccessLifecycle";
 
 export { usePotentialSpaceMembersSearch } from "./usePotentialSpaceMembersSearch";
+
+export function useEditableSpaces({ enabled }: { enabled: boolean }) {
+  return useQuery({
+    ...Api.spaces.searchQueryOptions({ query: "", accessLevel: "edit_access" }),
+    select: (result) => result.spaces,
+    enabled,
+  });
+}
+
+export function useGetSpacePrivacy() {
+  const client = useQueryClient();
+  return useCallback(
+    async (id: string) => {
+      const { space } = await client.fetchQuery(
+        Api.spaces.getQueryOptions({ id, includeAccessLevels: true, includePermissions: true }),
+      );
+      return space?.privateSpace ?? true;
+    },
+    [client],
+  );
+}
 
 interface SpaceSearchAttrs {
   accessLevel?: api.AccessOptions;

@@ -4,6 +4,7 @@ import Modal from "../../Modal";
 
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { PrivacyField } from "../../PrivacyField";
+import { BlackLink } from "../../Link";
 import { ProjectTemplateFields, ProjectTemplateSelection } from "../../ProjectTemplateSelection";
 import { SpaceField } from "../../SpaceField";
 import { SwitchToggle } from "../../SwitchToggle";
@@ -28,6 +29,9 @@ export namespace AddItemModal {
     parentGoal: { id: string; name: string } | null;
     spaceSearch: SpaceField.SearchSpaceFn;
     save: (props: SaveProps) => Promise<{ id: string }>;
+    templateLibraryPath?: string;
+    initialTemplateId?: string;
+    getSpacePrivacy?: (spaceId: string) => Promise<boolean>;
     initialItemType?: ItemType;
     hideTypeSelector?: boolean;
     hideCompanyAccess?: boolean;
@@ -152,13 +156,19 @@ export function AddItemModal(props: AddItemModal.Props) {
               />
             )}
 
+            {props.templateLibraryPath && state.itemType === "project" && (
+              <BlackLink to={props.templateLibraryPath} className="text-sm">
+                {t("Open template library")}
+              </BlackLink>
+            )}
+
             <PrivacyField
               accessLevels={state.accessLevels}
               setAccessLevels={state.setAccessLevels}
               resourceType={state.itemType}
               variant="form-field"
               label={t("Privacy")}
-              hideCompanyAccess={Boolean(props.hideCompanyAccess)}
+              hideCompanyAccess={state.hideCompanyAccess || state.privacyLoading}
             />
           </div>
 
@@ -173,7 +183,13 @@ export function AddItemModal(props: AddItemModal.Props) {
                 {t("Cancel")}
               </SecondaryButton>
 
-              <PrimaryButton type="submit" loading={state.submitting} testId="submit" size="sm">
+              <PrimaryButton
+                type="submit"
+                loading={state.submitting}
+                disabled={state.privacyLoading}
+                testId="submit"
+                size="sm"
+              >
                 {state.itemType === "goal" ? t("Add Goal") : t("Add Project")}
               </PrimaryButton>
             </div>
@@ -192,7 +208,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
   const [space, setSpace] = React.useState<SpaceField.Space | null>(props.space || null);
   const [nameError, setNameError] = React.useState<string | undefined>(undefined);
   const [spaceError, setSpaceError] = React.useState<string | undefined>(undefined);
-  const [templateId, setTemplateId] = React.useState("");
+  const [templateId, setTemplateId] = React.useState(props.initialTemplateId ?? "");
   const [startDate, setStartDate] = React.useState("");
   const [startDateError, setStartDateError] = React.useState<string | undefined>(undefined);
   const [createMore, setCreateMore] = React.useState(false);
@@ -201,6 +217,22 @@ function useAddItemModalState(props: AddItemModal.Props) {
     company: props.hideCompanyAccess ? "no_access" : "edit",
     space: "edit",
   });
+
+  const [privacy, setPrivacy] = React.useState<{ id: string; private: boolean }>();
+  const spaceId = space?.id;
+  React.useEffect(() => {
+    if (!props.isOpen || !spaceId || !props.getSpacePrivacy) return;
+    let active = true;
+    const resolve = (isPrivate: boolean) => {
+      if (active) setPrivacy({ id: spaceId, private: isPrivate });
+    };
+    props.getSpacePrivacy(spaceId).then(resolve, () => resolve(true));
+    return () => {
+      active = false;
+    };
+  }, [spaceId, props.isOpen, props.getSpacePrivacy]);
+  const privacyLoading = Boolean(props.getSpacePrivacy && spaceId && privacy?.id !== spaceId);
+  const hideCompanyAccess = Boolean(props.hideCompanyAccess || (privacy?.id === spaceId && privacy?.private));
 
   const [submitting, setSubmitting] = React.useState(false);
 
@@ -223,24 +255,17 @@ function useAddItemModalState(props: AddItemModal.Props) {
   React.useEffect(() => {
     if (props.isOpen) {
       setItemType(props.initialItemType || "goal");
-      setTemplateId("");
+      setTemplateId(props.initialTemplateId ?? "");
       setStartDate("");
       setStartDateError(undefined);
-
-      if (props.hideCompanyAccess) {
-        setAccessLevels((levels) => {
-          if (levels.company === "no_access") return levels;
-          return { ...levels, company: "no_access" };
-        });
-      }
     }
-  }, [props.isOpen, props.initialItemType, props.hideCompanyAccess]);
+  }, [props.isOpen, props.initialItemType, props.initialTemplateId]);
 
   React.useEffect(() => {
-    if (!props.hideCompanyAccess) return;
-    if (accessLevels.company === "no_access") return;
-    setAccessLevels((levels) => ({ ...levels, company: "no_access" }));
-  }, [props.hideCompanyAccess, accessLevels.company]);
+    if (hideCompanyAccess && accessLevels.company !== "no_access") {
+      setAccessLevels((levels) => ({ ...levels, company: "no_access" }));
+    }
+  }, [hideCompanyAccess, accessLevels.company]);
 
   const validate = (): boolean => {
     let ok = true;
@@ -270,7 +295,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
   };
 
   const submit = async () => {
-    if (!validate()) {
+    if (privacyLoading || !validate()) {
       return;
     }
 
@@ -280,7 +305,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
         name: name.trim(),
         type: itemType,
         space: space!,
-        accessLevels: props.hideCompanyAccess ? { ...accessLevels, company: "no_access" } : accessLevels,
+        accessLevels: hideCompanyAccess ? { ...accessLevels, company: "no_access" } : accessLevels,
         parentId: props.parentGoal ? props.parentGoal.id : null,
         ...(itemType === "project" && templateId ? { templateId, startDate } : {}),
       });
@@ -343,6 +368,8 @@ function useAddItemModalState(props: AddItemModal.Props) {
     setStartDate,
     startDateError,
     spaceSearch: props.spaceSearch,
+    hideCompanyAccess,
+    privacyLoading,
     accessLevels,
     setAccessLevels,
     submit,

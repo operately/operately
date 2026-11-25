@@ -16,6 +16,7 @@ export function EmptyWork({ onAddProject, onAddGoal }: { onAddProject?: () => vo
         <div className="mt-5 flex flex-wrap justify-center gap-2.5">
           {onAddProject && (
             <PrimaryButton
+              testId="add-project"
               size="sm"
               className="min-h-9 px-3.5 dark:border-[#4a64c7] dark:bg-[#4a64c7] dark:hover:bg-[#536fd6]"
               onClick={onAddProject}
@@ -25,6 +26,7 @@ export function EmptyWork({ onAddProject, onAddGoal }: { onAddProject?: () => vo
           )}
           {onAddGoal && (
             <SecondaryButton
+              testId="add-goal"
               size="sm"
               className="min-h-9 px-3.5 dark:border-[#464953] dark:bg-[#292b32] dark:text-[#f6f7fe] dark:hover:bg-[#32343b]"
               onClick={onAddGoal}

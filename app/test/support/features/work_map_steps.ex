@@ -137,6 +137,68 @@ defmodule Operately.Support.Features.WorkMapSteps do
     UI.visit(ctx, Paths.work_map_path(ctx.company))
   end
 
+  step :assign_project_reviewer, ctx do
+    field = "reviewer-#{Paths.project_id(ctx.project)}"
+    ctx = ctx
+      |> UI.click(testid: field)
+      |> UI.click(testid: UI.testid([field, "search-result", ctx.candidate.full_name]))
+      |> UI.wait_until_text(ctx.candidate.full_name, testid: field)
+
+    assert Operately.Projects.get_reviewer(ctx.project).id == ctx.candidate.id
+    ctx
+  end
+
+  step :assert_read_only_map, ctx do
+    ctx
+    |> UI.assert_has(css: "a[href='#{Paths.goal_path(ctx.company, ctx.goal)}']")
+    |> UI.refute_has(testid: "work-map-organize")
+    |> UI.refute_has(testid: "work-map-add-work")
+    |> UI.refute_has(testid: "reviewer-#{Paths.goal_id(ctx.goal)}")
+  end
+
+  step :choose_project_template, ctx do
+    ctx
+    |> UI.click(testid: "work-map-add-work")
+    |> UI.click(testid: "work-map-template-picker")
+    |> UI.click(testid: "choose-template-#{Paths.project_template_id(ctx.template)}")
+    |> UI.click(testid: "use-template")
+  end
+
+  step :setup_first_company_map, ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+    {:ok, company} = Operately.Companies.update_company(ctx.company, %{setup_completed: false})
+    ctx |> Map.put(:company, company) |> Map.put(:person, ctx.creator)
+  end
+
+  step :stage_project_at_top_level, ctx do
+    ctx = UI.click(ctx, testid: "work-map-organize")
+
+    UI.execute("drag project beside a top-level project", ctx, fn session ->
+      session
+      |> Wallaby.Browser.hover(UI.query(testid: "drag-#{Paths.project_id(ctx.company_child_project1)}"))
+      |> Wallaby.Browser.button_down()
+      |> Wallaby.Browser.move_mouse_by(8, 0)
+      |> Wallaby.Browser.hover(UI.query(testid: "drag-#{Paths.project_id(ctx.company_root_project1)}"))
+      # Move off the handle and across the row to trigger dragover before releasing.
+      |> Wallaby.Browser.move_mouse_by(12, 0)
+      |> Wallaby.Browser.move_mouse_by(12, 0)
+      |> Wallaby.Browser.button_up()
+    end)
+    |> UI.assert_has(css: "[data-test-id='save-map-order']:enabled")
+  end
+
+  step :cancel_map_changes, ctx do
+    ctx = ctx |> UI.click(testid: "cancel-organize") |> UI.assert_has(testid: "work-map-organize")
+    assert Operately.Repo.reload!(ctx.company_child_project1).goal_id == ctx.company_goal1.id
+    ctx
+  end
+
+  step :save_project_at_top_level, ctx do
+    ctx = ctx |> UI.click(testid: "save-map-order") |> UI.assert_has(testid: "work-map-organize")
+    assert is_nil(Operately.Repo.reload!(ctx.company_child_project1).goal_id)
+    ctx
+  end
+
   step :save_timeline_as_default, ctx do
     ctx
     |> UI.click(testid: "work-map-timeline")

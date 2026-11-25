@@ -25,6 +25,7 @@ export interface BaseButtonProps extends MenuOptions, Linkable, Clickable, Testa
   children: React.ReactNode;
   ariaLabel?: string;
   "aria-expanded"?: boolean;
+  "aria-pressed"?: boolean;
   loading?: boolean;
   type?: "button" | "submit";
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
@@ -134,6 +135,7 @@ function UnstyledActionButton(props: UnstyledButtonProps) {
       disabled={disabled}
       aria-label={props.ariaLabel}
       aria-expanded={props["aria-expanded"]}
+      aria-pressed={props["aria-pressed"]}
       data-test-id={props.testId}
     >
       {children}
