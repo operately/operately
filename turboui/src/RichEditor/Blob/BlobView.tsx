@@ -200,18 +200,21 @@ function VideoView({ node, deleteNode, view, updateAttributes }) {
 function ImageView({ node, deleteNode, updateAttributes, view }) {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const caption = node.attrs.alt ?? node.attrs.title;
+  const hasCaption = Boolean(caption?.trim());
 
-  const disableEnter = (e: React.KeyboardEvent<HTMLSpanElement>) => {
+  const disableEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
       return;
     }
   };
 
-  const updateTitle = (e: React.FocusEvent<HTMLSpanElement>) => {
+  const updateCaption = (e: React.FocusEvent<HTMLDivElement>) => {
+    const editedCaption = e.currentTarget.innerText;
     updateAttributes({
-      alt: e.target.innerText,
-      title: e.target.innerText,
+      alt: editedCaption,
+      title: editedCaption,
     });
   };
 
@@ -250,34 +253,48 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
       <div className="flex items-center justify-center">{imgNode}</div>
 
       <div className="footer flex flex-wrap items-center gap-x-1 gap-y-0 justify-center">
-        <NodeViewContent
-          className="title outline-none min-w-0 max-w-full truncate"
-          contentEditable={view.editable}
-          suppressContentEditableWarning={true}
-          onKeyDown={disableEnter}
-          onBlur={updateTitle}
-        >
-          {node.attrs.alt}
-        </NodeViewContent>
-        {!view.editable && (
-          <span className="flex items-center gap-1 shrink-0 whitespace-nowrap">
-            <div className="text-content-dimmed text-sm">•</div>
-            <a
-              className="text-content-dimmed text-sm underline cursor-pointer"
-              title={node.attrs.title}
-              href={downloadableUrl(node.attrs.src)}
-            >
-              {t("Download")}
-            </a>
-          </span>
+        {(view.editable || hasCaption) && (
+          <div
+            className="title outline-none min-w-0 max-w-full truncate"
+            contentEditable={view.editable}
+            suppressContentEditableWarning={true}
+            onKeyDown={disableEnter}
+            onBlur={updateCaption}
+          >
+            {caption}
+          </div>
         )}
         {!view.editable && (
-          <span className="flex items-center gap-1 shrink-0 whitespace-nowrap">
-            <div className="text-content-dimmed text-sm">•</div>
-            <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src} target="_blank">
-              {t("View original")}
-            </a>
-          </span>
+          <>
+            <span className="flex items-center gap-1 shrink-0 whitespace-nowrap">
+              {hasCaption && (
+                <span className="text-content-dimmed text-sm" aria-hidden="true">
+                  •
+                </span>
+              )}
+              <DivLink
+                className="text-content-dimmed text-sm underline cursor-pointer"
+                title={node.attrs.title}
+                to={downloadableUrl(node.attrs.src)}
+                external
+              >
+                {t("Download")}
+              </DivLink>
+            </span>
+            <span className="flex items-center gap-1 shrink-0 whitespace-nowrap">
+              <span className="text-content-dimmed text-sm" aria-hidden="true">
+                •
+              </span>
+              <DivLink
+                className="text-content-dimmed text-sm underline cursor-pointer"
+                to={node.attrs.src}
+                target="_blank"
+                external
+              >
+                {t("View original")}
+              </DivLink>
+            </span>
+          </>
         )}
       </div>
 
