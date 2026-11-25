@@ -17,6 +17,7 @@ import { mentionExtensions } from "./mentionExtensions";
 import { MentionResources } from "./extensions/MentionResources";
 import type { RichEditorHandlers } from "./useEditor";
 import { MermaidCodeBlock } from "./extensions/Mermaid";
+import { MarkdownPaste } from "./extensions/MarkdownPaste";
 
 export type CreateRichEditorExtensionsOptions = {
   inlineComments?: InlineCommentsOptions;
@@ -68,6 +69,8 @@ export function createRichEditorExtensions(
     AutoLinkSuppression,
     LinkExtension,
   ];
+
+  if (editable) extensions.push(MarkdownPaste);
 
   if (options.placeholder != null) {
     extensions.push(Placeholder.configure({ placeholder: options.placeholder }));
