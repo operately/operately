@@ -37,19 +37,19 @@ defmodule Operately.Support.Features.FeedSteps do
   end
 
   def assert_goal_check_in_acknowledgement(ctx, author: author) do
-    ctx |> assert_feed_item_exists(author, "acknowledged the Check-In", "")
+    ctx |> assert_feed_item_exists(author, "acknowledged the check-in", "")
   end
 
   def assert_goal_check_in_acknowledgement(ctx, author: author, goal_name: goal_name) do
-    ctx |> assert_feed_item_exists(author, "acknowledged the Check-In in the #{goal_name} goal", "")
+    ctx |> assert_feed_item_exists(author, "acknowledged the check-in in the #{goal_name} goal", "")
   end
 
   def assert_goal_check_in_commented(ctx, author: author, comment: comment) do
-    ctx |> assert_feed_item_exists(author, "commented on a Check-In", comment)
+    ctx |> assert_feed_item_exists(author, "commented on a check-in", comment)
   end
 
   def assert_goal_check_in_commented(ctx, author: author, goal_name: goal_name, comment: comment) do
-    ctx |> assert_feed_item_exists(author, "commented on a Check-In in the #{goal_name} goal", comment)
+    ctx |> assert_feed_item_exists(author, "commented on a check-in in the #{goal_name} goal", comment)
   end
 
   #
@@ -188,28 +188,28 @@ defmodule Operately.Support.Features.FeedSteps do
 
   def assert_project_check_in_submitted(ctx, author: author, description: description) do
     ctx
-    |> assert_feed_item_exists(author, "submitted a Check-In", "On Track")
+    |> assert_feed_item_exists(author, "submitted a check-in", "On Track")
     |> UI.assert_text(description)
   end
 
   def assert_project_check_in_submitted(ctx, author: author, project_name: project_name, description: description) do
     ctx
-    |> assert_feed_item_exists(author, "submitted a Check-In in the #{project_name} project", "On Track")
+    |> assert_feed_item_exists(author, "submitted a check-in in the #{project_name} project", "On Track")
     |> UI.assert_text(description)
   end
 
   def assert_project_check_in_acknowledged(ctx, author: author) do
     ctx
-    |> assert_feed_item_exists(author, "acknowledged a Check-In", "")
+    |> assert_feed_item_exists(author, "acknowledged a check-in", "")
   end
 
   def assert_project_check_in_acknowledged(ctx, author: author, project_name: project_name) do
     ctx
-    |> assert_feed_item_exists(author, "acknowledged a Check-In in the #{project_name} project", "")
+    |> assert_feed_item_exists(author, "acknowledged a check-in in the #{project_name} project", "")
   end
 
   def assert_project_check_in_commented(ctx, author: author, comment: comment) do
-    ctx |> assert_feed_item_exists(author, "commented on Check-In", comment)
+    ctx |> assert_feed_item_exists(author, "commented on check-in", comment)
   end
 
   #

@@ -52,7 +52,7 @@ const ProjectCheckInCommented: ActivityHandler = {
     if (page === "project") {
       return (
         <Trans
-          i18nKey="{{author}} <action>commented</action> on <checkIn>Check-In</checkIn>"
+          i18nKey="{{author}} <action>commented</action> on <checkIn>check-in</checkIn>"
           values={values}
           components={components}
         />
@@ -60,7 +60,7 @@ const ProjectCheckInCommented: ActivityHandler = {
     } else {
       return (
         <Trans
-          i18nKey="{{author}} <action>commented</action> on <checkIn>Check-In</checkIn> in the <project>{{projectName}}</project> project"
+          i18nKey="{{author}} <action>commented</action> on <checkIn>check-in</checkIn> in the <project>{{projectName}}</project> project"
           values={values}
           components={components}
         />

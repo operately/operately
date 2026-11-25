@@ -48,7 +48,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
       update.author_id,
       [update.goal.reviewer_id, update.goal.champion_id],
       url,
-      gettext("View Check-In")
+      gettext("View check-in")
     )
   end
 

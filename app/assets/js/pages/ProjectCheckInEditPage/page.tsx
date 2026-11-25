@@ -91,7 +91,7 @@ export function Page() {
   return (
     <ProjectCheckInFormPage
       mode="edit"
-      pageTitle={[t("Edit Project Check-In"), checkIn.project.name!]}
+      pageTitle={[t("Edit project check-in"), checkIn.project.name!]}
       navigation={buildProjectCheckInEditNavigation(checkIn, paths)}
       cancelLink={paths.projectCheckInPath(checkIn.id!)}
       richTextHandlers={richTextHandlers}

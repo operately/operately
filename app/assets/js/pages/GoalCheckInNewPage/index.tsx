@@ -43,7 +43,7 @@ function Header() {
     <div>
       <h1 className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
         <Trans
-          i18nKey="Check-In for <date/>"
+          i18nKey="Check-in for <date/>"
           components={{ date: <FormattedTime {...formattedTimePreferences} time={new Date()} format="long-date" /> }}
         />
       </h1>

@@ -18,11 +18,11 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   pageHtmlTitle(_activity: Activity): string {
-    return i18n.t("Check In");
+    return i18n.t("Check-in");
   },
 
   PageTitle(_props: { activity: any }) {
-    return <Trans i18nKey="Check In" />;
+    return <Trans i18nKey="Check-in" />;
   },
 
   PageContent(_data: { activity: Activity }) {

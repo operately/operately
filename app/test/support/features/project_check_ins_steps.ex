@@ -102,12 +102,12 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.click(testid: "status-dropdown-#{status}")
     |> UI.fill_rich_text(description)
     |> UI.click(testid: "submit")
-    |> UI.assert_text("Check-In for")
+    |> UI.assert_text("Check-in for")
   end
 
   step :assert_check_in_submitted, ctx, %{status: status, description: description} do
     ctx
-    |> UI.assert_text("Check-In for")
+    |> UI.assert_text("Check-in for")
     |> UI.assert_text(description)
     |> UI.assert_text(@status_to_on_screen[status])
   end
@@ -131,7 +131,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.assert_has(testid: UI.testid(["nav-item", ctx.space.name]))
     |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
     |> UI.assert_has(testid: UI.testid(["nav-item", ctx.project.name]))
-    |> UI.assert_has(testid: UI.testid(["nav-item", "Check-Ins"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Check-ins"]))
   end
 
   step :visit_project_check_in_new_page, ctx, project_key \\ :project do
@@ -145,7 +145,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     ctx
     |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
     |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_project.name]))
-    |> UI.assert_has(testid: UI.testid(["nav-item", "Check-Ins"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Check-ins"]))
     |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
   end
 
@@ -153,7 +153,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     ctx
     |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
     |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_project.name]))
-    |> UI.assert_has(testid: UI.testid(["nav-item", "Check-Ins"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Check-ins"]))
     |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
   end
 
@@ -345,7 +345,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.visit(Paths.project_check_in_path(ctx.company, ctx.check_in))
     |> UI.wait_until_testid(testid: "edit-check-in")
     |> UI.click(testid: "edit-check-in")
-    |> UI.assert_text("Editing the Check-In from")
+    |> UI.assert_text("Editing the check-in from")
     |> UI.fill_rich_text(description)
     |> UI.click(testid: "publish-draft")
     |> UI.sleep(300)
@@ -478,7 +478,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
       end
       |> resolve_acknowledger(ctx)
 
-    ctx |> UI.assert_text("#{person.full_name} acknowledged this Check-In")
+    ctx |> UI.assert_text("#{person.full_name} acknowledged this check-in")
   end
 
   step :assert_acknowledgement_email_sent_to_champion, ctx, %{status: _status, description: _description} do
@@ -626,17 +626,17 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.click(testid: "tab-activity")
     |> FeedSteps.assert_feed_item_exists(%{
       author: author,
-      title: "commented on Check-In"
+      title: "commented on check-in"
     })
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_feed_item_exists(%{
       author: author,
-      title: "commented on Check-In"
+      title: "commented on check-in"
     })
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_feed_item_exists(%{
       author: author,
-      title: "commented on Check-In"
+      title: "commented on check-in"
     })
   end
 
@@ -682,20 +682,20 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "tab-activity")
     |> UI.refute_text("Ooops, something went wrong")
-    |> FeedSteps.assert_feed_item_exists(ctx.champion, "submitted a Check-In", "")
-    |> FeedSteps.assert_feed_item_exists(reviewer, "acknowledged a Check-In", "")
-    |> FeedSteps.assert_feed_item_exists(reviewer, "commented on Check-In", "")
+    |> FeedSteps.assert_feed_item_exists(ctx.champion, "submitted a check-in", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "acknowledged a check-in", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "commented on check-in", "")
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> UI.refute_text("Ooops, something went wrong")
-    |> FeedSteps.assert_feed_item_exists(ctx.champion, "submitted a Check-In in the #{ctx.project.name} project", "")
-    |> FeedSteps.assert_feed_item_exists(reviewer, "acknowledged a Check-In in the #{ctx.project.name} project", "")
-    |> FeedSteps.assert_feed_item_exists(reviewer, "commented on Check-In", "")
+    |> FeedSteps.assert_feed_item_exists(ctx.champion, "submitted a check-in in the #{ctx.project.name} project", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "acknowledged a check-in in the #{ctx.project.name} project", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "commented on check-in", "")
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_has(testid: "company-feed")
     |> UI.refute_text("Ooops, something went wrong")
-    |> FeedSteps.assert_feed_item_exists(ctx.champion, "submitted a Check-In in the #{ctx.project.name} project", "")
-    |> FeedSteps.assert_feed_item_exists(reviewer, "acknowledged a Check-In in the #{ctx.project.name} project", "")
-    |> FeedSteps.assert_feed_item_exists(reviewer, "commented on Check-In", "")
+    |> FeedSteps.assert_feed_item_exists(ctx.champion, "submitted a check-in in the #{ctx.project.name} project", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "acknowledged a check-in in the #{ctx.project.name} project", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "commented on check-in", "")
   end
 
   step :copy_comment_link, ctx do

@@ -21,7 +21,7 @@ describe("buildProjectCheckInEditNavigation", () => {
       { to: "/spaces/space-1", label: "Operations" },
       { to: "/spaces/space-1/work-map/projects", label: "Work Map" },
       { to: "/projects/project-1", label: "Apollo" },
-      { to: "/projects/project-1?tab=check-ins", label: "Check-Ins" },
+      { to: "/projects/project-1?tab=check-ins", label: "Check-ins" },
     ]);
   });
 
@@ -36,7 +36,7 @@ describe("buildProjectCheckInEditNavigation", () => {
     expect(items).toEqual([
       { to: "/work-map/projects", label: "Work Map" },
       { to: "/projects/project-1", label: "Apollo" },
-      { to: "/projects/project-1?tab=check-ins", label: "Check-Ins" },
+      { to: "/projects/project-1?tab=check-ins", label: "Check-ins" },
     ]);
     expect(items.some((item) => item.label === "Operations")).toBe(false);
   });
