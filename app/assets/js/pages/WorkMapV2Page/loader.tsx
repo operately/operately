@@ -22,14 +22,18 @@ export async function preload({ params }: { params: { id?: string } }) {
 
 type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
-export function useLoadedData(): LoadedData {
+export function useLoadedData(): LoadedData | null {
   const { workMapInput, spaceInput } = Pages.useLoadedData<LoaderResult>();
-  const { data: workMapData } = useLoadedQuery(Api.companies.getWorkMapQueryOptions(workMapInput));
-  const { data: spaceData } = useLoadedQuery({
+  const workMapQuery = useLoadedQuery(Api.companies.getWorkMapQueryOptions(workMapInput));
+  const spaceQuery = useLoadedQuery({
     ...Api.spaces.getQueryOptions(spaceInput ?? { id: "" }),
     enabled: spaceInput !== null,
   });
 
+  if (workMapQuery.isPending || (spaceInput && spaceQuery.isPending)) return null;
+
+  const workMapData = workMapQuery.data;
+  const spaceData = spaceQuery.data;
   assertPresent(workMapData, "Work Map data is unavailable");
   if (spaceInput) assertPresent(spaceData?.space, `Work Map space is unavailable for space "${spaceInput.id}"`);
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
-import { WorkMapV2Page } from "turboui";
+import { ContentListSkeleton, WorkMapV2Page } from "turboui";
 
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { usePaths } from "@/routes/paths";
@@ -15,7 +15,10 @@ export function Page() {
   const { company } = useCompanyLoaderData();
   const [search, setSearch] = useSearchParams();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { workMap, space } = useLoadedData();
+  const data = useLoadedData();
+
+  if (!data) return <ContentListSkeleton />;
+  const { workMap, space } = data;
 
   return (
     <WorkMapV2Page

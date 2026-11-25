@@ -2,9 +2,13 @@ import axios from "axios";
 import { createMemoryRouter } from "react-router";
 import Api from "@/api";
 import { queryClient } from "@/api/queryClient";
+import companyPage from "@/pages/CompanyWorkMapPage";
+import spacePage from "@/pages/SpaceWorkMapPage";
 import workMapPage from "./index";
 import { pageRoute } from "@/routes/pageRoute";
 
+jest.mock("@/pages/CompanyWorkMapPage/page", () => ({ Page: () => null }));
+jest.mock("@/pages/SpaceWorkMapPage/page", () => ({ Page: () => null }));
 jest.mock("axios");
 jest.mock("nprogress", () => ({ start: jest.fn(), isStarted: () => false }));
 jest.mock("@/features/DevBar/useDevBarData", () => ({ setDevData: jest.fn() }));
@@ -36,24 +40,33 @@ beforeEach(() => {
 afterEach(() => queryClient.clear());
 
 it.each([
-  ["work-map", "/acme/work-map", {}],
-  ["spaces/:id/work-map", "/acme/spaces/product/work-map", { id: "product" }],
-] as const)("reuses the preloaded %s hierarchy when opening and filtering the map", async (path, href, params) => {
-  const route = pageRoute(path, workMapPage);
-  const router = createMemoryRouter([{ path: "/:companyId", children: [{ index: true }, route] }], {
-    initialEntries: ["/acme"],
-  });
-  const mapRequests = () => get.mock.calls.filter(([url]) => url.endsWith("/get_work_map"));
+  ["work-map", "/acme/work-map", {}, companyPage],
+  ["spaces/:id/work-map", "/acme/spaces/product/work-map", { id: "product" }, spacePage],
+] as const)(
+  "reuses the preloaded %s hierarchy when opening and filtering the map",
+  async (path, href, params, entryPage) => {
+    const route = pageRoute(path, entryPage);
+    const router = createMemoryRouter(
+      [{ path: "/:companyId", children: [{ index: true }, route, pageRoute(path + "/v2", workMapPage)] }],
+      {
+        initialEntries: ["/acme"],
+      },
+    );
+    const mapRequests = () => get.mock.calls.filter(([url]) => url.endsWith("/get_work_map"));
 
-  try {
-    await route.handle.dataLoader({ params, request: new Request(new URL(href, home)) });
-    expect(mapRequests()).toHaveLength(1);
-    await router.navigate(href);
-    await router.navigate(href + "?lifecycle=closed");
-    expect(router.state.errors).toBeNull();
-    expect(router.state.location.pathname + router.state.location.search).toBe(href + "?lifecycle=closed");
-    expect(mapRequests()).toHaveLength(1);
-  } finally {
-    router.dispose();
-  }
-});
+    try {
+      await route.handle.dataLoader({ params, request: new Request(new URL(href, home)) });
+      expect(mapRequests()).toHaveLength(1);
+      await router.navigate(href);
+      expect(router.state.errors).toBeNull();
+      const mapPath = href + "/v2";
+      expect(router.state.location.pathname).toBe(mapPath);
+      await router.navigate(mapPath + "?lifecycle=closed");
+      expect(router.state.errors).toBeNull();
+      expect(router.state.location.pathname + router.state.location.search).toBe(mapPath + "?lifecycle=closed");
+      expect(mapRequests()).toHaveLength(1);
+    } finally {
+      router.dispose();
+    }
+  },
+);
