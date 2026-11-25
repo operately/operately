@@ -55,6 +55,33 @@ function expectMentionContent(container: HTMLElement) {
 }
 
 describe("RichContent", () => {
+  it.each([
+    { alt: "diagram.png", title: "diagram.png", row: /^diagram\.png\s*•\s*Download\s*•\s*View original$/ },
+    { alt: "System diagram", title: "diagram.png", row: /^System diagram\s*•\s*Download\s*•\s*View original$/ },
+    { alt: null, title: "diagram.png", row: /^diagram\.png\s*•\s*Download\s*•\s*View original$/ },
+    { alt: "", title: "diagram.png", row: /^Download\s*•\s*View original$/ },
+    { alt: null, title: null, row: /^Download\s*•\s*View original$/ },
+  ])("shows the image actions after the visible caption ($alt, $title)", async ({ alt, title, row }) => {
+    const { container } = renderRichContent({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "blob", attrs: { src: "/diagram.png", alt, title, filetype: "image/png", status: "uploaded" } },
+          ],
+        },
+      ],
+    });
+
+    expect(await screen.findByRole("link", { name: "Download" })).toHaveAttribute(
+      "href",
+      "/diagram.png?disposition=attachment",
+    );
+    expect(screen.getByRole("link", { name: "View original" })).toHaveAttribute("href", "/diagram.png");
+    expect(container).toHaveTextContent(row);
+  });
+
   it("refreshes read-only tables without discarding stored widths or attachments", async () => {
     const tableContent = (text: string) => ({
       type: "doc",
