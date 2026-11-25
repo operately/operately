@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
 import Api from "@/api";
 import { queryClient } from "@/api/queryClient";
-import { loader, useLoadedData } from "./loader";
+import { preload, useLoadedData } from "./loader";
 
 jest.mock("axios");
 jest.mock("turboui", () => ({}));
@@ -79,11 +79,11 @@ describe("CompanyWorkMapPage loading", () => {
     await flush();
   }
 
-  it("only requests the work map before completing the loader", async () => {
+  it("preloads the work map without fetching creation options", async () => {
     const request = deferred();
     jest.mocked(axios.get).mockReturnValue(request.promise);
     let completed = false;
-    const pending = loader().then((inputs) => {
+    const pending = preload().then((inputs) => {
       completed = true;
       return inputs;
     });
@@ -201,9 +201,9 @@ describe("CompanyWorkMapPage loading", () => {
     },
   );
 
-  it("does not automatically retry the work-map loader request", async () => {
+  it("does not automatically retry a failed Work Map preload", async () => {
     jest.mocked(axios.get).mockRejectedValue(new Error("Work map unavailable"));
-    await expect(loader()).rejects.toThrow("Work map unavailable");
+    await expect(preload()).rejects.toThrow("Work map unavailable");
     await exhaustRetries();
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(queryClient.getDefaultOptions().queries?.retry).toBe(false);

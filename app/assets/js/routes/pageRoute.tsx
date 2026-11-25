@@ -21,13 +21,12 @@ export function pageRoute(path: string, pageModule: PageModule, options: Options
   options = { ...defaultOptions, ...options };
 
   const Element = pageModule.Page;
-  const loader = pageModule.loader;
 
   return {
     path: path,
     loader: pageLoader(path, pageModule, options),
     // Used for preloading, which doesn't need navigation effects or authentication redirects.
-    handle: { dataLoader: loader, auth: options.auth, preload: options.preload },
+    handle: { dataLoader: pageModule.preload ?? pageModule.loader, auth: options.auth, preload: options.preload },
     element: <Element />,
     shouldRevalidate: pageModule.shouldRevalidate,
   };
