@@ -89,14 +89,14 @@ function PaperPreview({ state }: { state: "published" | "draft" | "scheduled" })
   const { t } = useTranslation();
 
   return (
-    <div className="relative w-full bg-surface-base" data-test-id="check-in-paper-preview">
+    <div className="relative mx-auto w-full max-w-4xl bg-surface-base" data-test-id="check-in-paper-preview">
       <PageOptions
         options={[
           {
             type: "action",
             icon: IconEdit,
             label: t("Edit"),
-            onClick: () => {},
+            onClick: () => console.log("Edit check-in"),
             keepOutsideOnBigScreen: true,
             testId: "check-in-edit",
           },
@@ -104,7 +104,7 @@ function PaperPreview({ state }: { state: "published" | "draft" | "scheduled" })
             type: "action",
             icon: IconTrash,
             label: state === "published" ? t("Delete check-in") : t("Discard draft"),
-            onClick: () => {},
+            onClick: () => console.log(state === "published" ? "Delete check-in" : "Discard draft"),
           },
         ]}
         testId="check-in-options"
