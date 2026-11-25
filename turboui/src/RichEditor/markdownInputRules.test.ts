@@ -148,7 +148,7 @@ describe("RichEditor markdown input rules", () => {
     expect(text.marks?.[0]).toMatchObject({ type: "link", attrs: { href: "https://example.com" } });
   });
 
-  it("keeps pasted markdown literal", () => {
+  it("does not run Markdown input rules on paste transactions", () => {
     const bold = makeEditor();
     paste(bold, "**bold**");
     expect(firstText(bold)).toEqual({ type: "text", text: "**bold**" });
