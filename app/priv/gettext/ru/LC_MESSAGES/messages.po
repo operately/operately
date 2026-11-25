@@ -5684,7 +5684,7 @@ msgstr "Здесь появятся действия из ваших прост�
 #: ../turboui/src/Checklist/index.tsx:171
 #: ../turboui/src/GoalPage/Targets.tsx:19
 #: ../turboui/src/ResourceHub/AddFilesButton.tsx:38
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:116
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:129
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:266
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
@@ -6104,7 +6104,7 @@ msgid "Add, edit, or remove task statuses. Click the icon to change the color an
 msgstr "Добавьте, отредактируйте или удалите статусы задач. Нажмите на значок, чтобы изменить цвет и внешний вид."
 
 #.frontend
-#: ../turboui/src/RichEditor/components/LinkButton.tsx:25
+#: ../turboui/src/RichEditor/components/LinkButton.tsx:17
 msgid "Add/Edit Links"
 msgstr "Добавить/отредактировать ссылки"
 
@@ -7379,7 +7379,7 @@ msgstr "Куратор и ответственный не могут быть о
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:179
 #: ../turboui/src/ResourceHub/nodeMenus/MoveResource.tsx:95
 #: ../turboui/src/ResourceHubPage/RenameCollectionModal.tsx:57
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:120
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:132
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:149
 #: ../turboui/src/SchedulePosting/ScheduleModal.tsx:96
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:136
@@ -12895,6 +12895,7 @@ msgstr "Недействительная ссылка на приглашени�
 #.frontend
 #: ../turboui/src/LinkEditPage/index.tsx:30
 #: ../turboui/src/LinkNewPage/index.tsx:31
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:135
 msgid "Invalid link"
 msgstr "Недействительная ссылка"
 
@@ -18500,7 +18501,7 @@ msgstr "Как в системе"
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:128
 #: ../turboui/src/PageDescription/index.tsx:195
 #: ../turboui/src/PrivacyField/index.tsx:120
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:106
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:129
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:396
 #: ../turboui/src/TitleSetupPrompt/index.tsx:63
 #: assets/js/features/ProjectRetrospective/Form.tsx:82
@@ -22432,6 +22433,7 @@ msgstr "Тип:"
 
 #.frontend
 #: ../turboui/src/LinkNewPage/index.tsx:58
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:113
 msgid "URL"
 msgstr "URL"
 
@@ -22680,7 +22682,7 @@ msgid "Unlimited storage"
 msgstr "Без лимита хранилища"
 
 #.frontend
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:110
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:132
 msgid "Unlink"
 msgstr "Удалить связь"
 
@@ -25148,7 +25150,7 @@ msgid "eg. https://www.example.com/file/8430762"
 msgstr "Например, https://www.example.com/file/8430762"
 
 #.frontend
-#: ../turboui/src/RichEditor/LinkEditForm.tsx:94
+#: ../turboui/src/RichEditor/LinkEditForm.tsx:115
 msgid "ex. https://example.com"
 msgstr "Например, https://example.com"
 
