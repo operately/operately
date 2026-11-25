@@ -11,9 +11,7 @@ it("translates the empty state and the modal heading", async () => {
   await i18n.changeLanguage("pt-BR");
   render(<OtherPeopleWithAccessModal isOpen onClose={jest.fn()} people={[]} />);
   expect(screen.getByText(i18n.t("Other People with Access"))).toBeInTheDocument();
-  expect(
-    screen.getByText("Nenhuma outra pessoa tem acesso além das pessoas já atribuídas a este projeto."),
-  ).toBeInTheDocument();
+  expect(screen.getByText("Nenhuma pessoa adicional para mostrar.")).toBeInTheDocument();
 });
 
 it("keeps literal names and looks up the description and loading heading", () => {
@@ -39,7 +37,5 @@ it("falls back to English", async () => {
   i18n.removeResourceBundle("pt-BR", "translation");
   await i18n.changeLanguage("pt-BR");
   render(<OtherPeopleWithAccess people={[]} />);
-  expect(
-    screen.getByText("No one else has access beyond people already assigned to this project."),
-  ).toBeInTheDocument();
+  expect(screen.getByText("No additional people to show.")).toBeInTheDocument();
 });
