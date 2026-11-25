@@ -1,6 +1,7 @@
 import { PageModule } from "@/routes/types";
 
-import { loader } from "./loader";
+import { shouldRevalidate } from "@/pages/WorkMapV2Page/routing";
+import { loader, preload } from "./loader";
 import { Page } from "./page";
 
-export default { name: "CompanyWorkMapPage", loader, Page } as PageModule;
+export default { name: "CompanyWorkMapPage", loader, preload, Page, shouldRevalidate } as PageModule;

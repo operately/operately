@@ -135,6 +135,7 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("spaces/:id/edit/general-access", pages.SpaceEditGeneralAccessPage),
         pageRoute("spaces/:id/add-members", pages.SpaceAddMembersPage),
         pageRoute("spaces/:id/work-map", pages.SpaceWorkMapPage),
+        pageRoute("spaces/:id/work-map/v2", pages.WorkMapV2Page),
         pageRoute("spaces/:id/boards/:boardId", pages.SpaceKanbanPage),
         pageRoute("spaces/:id/kpis", pages.SpaceKpisPage),
         pageRoute("spaces/:id/kpis/:kpiId", pages.SpaceKpisPage),
@@ -163,6 +164,7 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("discussions/:id/edit", pages.DiscussionEditPage),
 
         pageRoute("work-map", pages.CompanyWorkMapPage),
+        pageRoute("work-map/v2", pages.WorkMapV2Page),
         pageRoute("project-templates", pages.ProjectTemplatesPage),
         pageRoute("project-templates/:templateId/discussions/new", pages.ProjectTemplateDiscussionNewPage),
         pageRoute("project-templates/:templateId/discussions/:id/edit", pages.ProjectTemplateDiscussionEditPage),
