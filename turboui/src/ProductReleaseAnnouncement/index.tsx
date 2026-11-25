@@ -21,22 +21,22 @@ export function ProductReleaseAnnouncement({ release, onDismiss }: ProductReleas
 
   return (
     <div
-      className="fixed bottom-6 right-6 z-40 w-[min(100%-2rem,24rem)]"
+      className="fixed bottom-4 right-4 z-40 w-[calc(100%-2rem)] sm:bottom-6 sm:right-6 sm:w-[min(100%-2rem,24rem)]"
       role="status"
       aria-live="polite"
       data-test-id="product-release-toast"
     >
       <div className="rounded-2xl border border-surface-outline bg-surface-base shadow-xl">
-        <div className="flex items-start gap-3 p-4">
-          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-callout-info-bg text-callout-info-content">
+        <div className="flex items-start gap-2 p-2 sm:gap-3 sm:p-4">
+          <div className="mt-0.5 hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-callout-info-bg text-callout-info-content sm:flex">
             <IconSparkles size={18} aria-hidden="true" />
           </div>
 
           <div className="min-w-0 flex-1">
             <p className="text-xs text-content-dimmed">{t("New release")}</p>
-            <p className="mt-0.5 text-sm font-medium text-content-base line-clamp-3">{release.title}</p>
+            <p className="mt-0.5 text-sm font-medium text-content-base line-clamp-2 sm:!line-clamp-3">{release.title}</p>
 
-            <div className="mt-3">
+            <div className="mt-2 sm:mt-3">
               <PrimaryButton
                 size="sm"
                 linkTo={PRODUCT_RELEASES_PAGE_URL}
