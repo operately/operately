@@ -77,6 +77,7 @@ const bodyPaddings = {
 interface BodyProps {
   children?: React.ReactNode;
   minHeight?: string;
+  fullHeightOnMobile?: boolean;
   className?: string;
   noPadding?: boolean;
   backgroundColor?: string;
@@ -86,6 +87,7 @@ interface BodyProps {
 export function Body({
   children,
   minHeight = "none",
+  fullHeightOnMobile = true,
   className = "",
   noPadding = false,
   backgroundColor = "bg-surface-base",
@@ -98,8 +100,8 @@ export function Body({
     "relative",
     backgroundColor,
 
-    // full height on mobile, no min height on larger screens
-    "min-h-dvh sm:min-h-0",
+    // full height on mobile by default, no min height on larger screens
+    fullHeightOnMobile && "min-h-dvh sm:min-h-0",
 
     // apply border shadow and rounded corners on larger screens
     "sm:border sm:border-surface-outline",
