@@ -28,6 +28,8 @@ import type { Checklist } from "../Checklist";
 
 type GoalPageStoryArgs = Partial<Omit<GoalPage.Props, "description">> & {
   description?: string | null;
+  addSubgoalLink?: string;
+  addSubprojectLink?: string;
 };
 
 const meta = {
@@ -168,8 +170,8 @@ function Component(props: GoalPageStoryArgs) {
       manageAccessLink="#"
       newCheckInLink={storyPath("Pages/GoalCheckInPage", "Default")}
       newDiscussionLink="#"
-      addSubgoalLink="#"
-      addSubprojectLink="#"
+      addSubgoalLink={props.addSubgoalLink ?? "#"}
+      addSubprojectLink={props.addSubprojectLink ?? "#"}
       parentGoal={parentGoal}
       setParentGoal={setParentGoal}
       parentGoalSearch={parentGoalSearchFn}
@@ -762,6 +764,30 @@ export const Mobile: Story = {
       value: "mobile2",
       isRotated: false,
     },
+  },
+};
+
+export const MobileEmpty: Story = {
+  ...Mobile,
+  args: {
+    description: null,
+    targets: [],
+    checklistItems: [],
+    relatedWorkItems: [],
+    addSubgoalLink: "/goals/new?parentGoalId=goal-1&spaceId=space-1",
+    addSubprojectLink: "/projects/new?goalId=goal-1&spaceId=space-1",
+  },
+};
+
+export const MobilePopulated: Story = {
+  ...Mobile,
+  args: {
+    description,
+    targets: mockTargets,
+    checklistItems: mockChecklistItems,
+    relatedWorkItems: mockRelatedWorkItems,
+    addSubgoalLink: "/goals/new?parentGoalId=goal-1&spaceId=space-1",
+    addSubprojectLink: "/projects/new?goalId=goal-1&spaceId=space-1",
   },
 };
 

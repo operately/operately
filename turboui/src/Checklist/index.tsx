@@ -56,6 +56,7 @@ export namespace Checklist {
     sectionTitleBottomMargin?: string;
     togglable?: boolean;
     disabled?: boolean;
+    actionButtonClassName?: string;
   }
 
   export interface InternalProps {
@@ -64,6 +65,7 @@ export namespace Checklist {
     showEditButton?: boolean;
     togglable?: boolean;
     disabled?: boolean;
+    actionButtonClassName?: string;
 
     addActive?: boolean;
     onAddActiveChange?: (active: boolean) => void;
@@ -99,6 +101,7 @@ export function Checklist(props: Checklist.Props) {
         togglable={togglable}
         addActive={addActive}
         onAddClick={() => setAddActive(true)}
+        actionButtonClassName={props.actionButtonClassName}
       />
 
       {Boolean(!addActive && props.items.length === 0) && (
@@ -124,6 +127,7 @@ export function Checklist(props: Checklist.Props) {
           updateItem={props.updateItem}
           toggleItem={props.toggleItem}
           updateItemIndex={props.updateItemIndex}
+          actionButtonClassName={props.actionButtonClassName}
         />
       </div>
     </div>
@@ -139,6 +143,7 @@ function ChecklistSectionHeader({
   addActive,
   onAddClick,
   title,
+  actionButtonClassName,
 }: {
   completionPercentage: number;
   completedCount: number;
@@ -148,11 +153,12 @@ function ChecklistSectionHeader({
   addActive: boolean;
   onAddClick: () => void;
   title: string;
+  actionButtonClassName?: string;
 }) {
   const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
+      <div className={classNames("flex items-center gap-3", { "flex-wrap": Boolean(actionButtonClassName) })}>
         <h2 className="font-semibold">{title}</h2>
         {totalCount > 0 && (
           <div className="flex items-center gap-2">
@@ -167,7 +173,12 @@ function ChecklistSectionHeader({
           </div>
         )}
         {canEdit && !addActive && togglable && (
-          <SecondaryButton size="xxs" onClick={onAddClick} testId="add-checklist-item">
+          <SecondaryButton
+            size="xxs"
+            onClick={onAddClick}
+            testId="add-checklist-item"
+            className={actionButtonClassName}
+          >
             {t("Add")}
           </SecondaryButton>
         )}
@@ -322,14 +333,22 @@ function ChecklistItemAdd({ state }: { state: State }) {
           onKeyDown={handleKeyDown}
           {...register("name", nameValidation)}
         />
-        <div className="flex items-center mt-4">
+        <div
+          className={classNames("flex items-center mt-4", { "flex-wrap gap-2": Boolean(state.actionButtonClassName) })}
+        >
           <SwitchToggle value={createMore} setValue={setCreateMore} label={t("Create more")} />
           <div className="flex-1"></div>
           <div className="flex gap-2">
-            <SecondaryButton size="xs" onClick={() => state.cancelAdd()} type="button" testId="cancel">
+            <SecondaryButton
+              size="xs"
+              onClick={() => state.cancelAdd()}
+              type="button"
+              testId="cancel"
+              className={state.actionButtonClassName}
+            >
               {t("Cancel")}
             </SecondaryButton>
-            <PrimaryButton size="xs" type="submit" testId="save">
+            <PrimaryButton size="xs" type="submit" testId="save" className={state.actionButtonClassName}>
               {t("Add Check")}
             </PrimaryButton>
           </div>
@@ -374,11 +393,20 @@ function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemS
           onKeyDown={handleKeyDown}
           {...register("name", nameValidation)}
         />
-        <div className="flex items-center gap-2 justify-end mt-4">
-          <SecondaryButton size="xs" onClick={() => state.cancelEdit(item.id)} type="button">
+        <div
+          className={classNames("flex items-center gap-2 justify-end mt-4", {
+            "flex-wrap": Boolean(state.actionButtonClassName),
+          })}
+        >
+          <SecondaryButton
+            size="xs"
+            onClick={() => state.cancelEdit(item.id)}
+            type="button"
+            className={state.actionButtonClassName}
+          >
             {t("Cancel")}
           </SecondaryButton>
-          <PrimaryButton size="xs" type="submit" testId="save">
+          <PrimaryButton size="xs" type="submit" testId="save" className={state.actionButtonClassName}>
             {t("Save")}
           </PrimaryButton>
         </div>

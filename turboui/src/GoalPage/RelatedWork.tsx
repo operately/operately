@@ -5,6 +5,7 @@ import { ContentListState } from "../ContentListState";
 import { SecondaryButton } from "../Button";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { SectionHeader } from "./SectionHeader";
+import { mobileActionClassName } from "./mobileActionClassName";
 
 export function RelatedWork(props: GoalPage.State) {
   const { t } = useTranslation();
@@ -16,11 +17,21 @@ export function RelatedWork(props: GoalPage.State) {
 
   const buttons =
     canAddRelatedWork && spaceProps ? (
-      <div className="flex items-center gap-2">
-        <SecondaryButton size="xxs" linkTo={spaceProps.addSubgoalLink} testId="add-subgoal">
+      <div className="flex flex-wrap items-center gap-2 max-w-full">
+        <SecondaryButton
+          size="xxs"
+          linkTo={spaceProps.addSubgoalLink}
+          testId="add-subgoal"
+          className={`${mobileActionClassName} max-w-full whitespace-normal`}
+        >
           {t("Add goal")}
         </SecondaryButton>
-        <SecondaryButton size="xxs" linkTo={spaceProps.addSubprojectLink}>
+        <SecondaryButton
+          size="xxs"
+          linkTo={spaceProps.addSubprojectLink}
+          testId="add-project"
+          className={`${mobileActionClassName} max-w-full whitespace-normal`}
+        >
           {t("Add project")}
         </SecondaryButton>
       </div>
@@ -28,7 +39,12 @@ export function RelatedWork(props: GoalPage.State) {
 
   return (
     <div data-test-id="related-work-section">
-      <SectionHeader title={t("Subgoals & Projects")} buttons={buttons} showButtons={canAddRelatedWork} />
+      <SectionHeader
+        title={t("Subgoals & Projects")}
+        buttons={buttons}
+        showButtons={canAddRelatedWork}
+        stackButtonsOnMobile
+      />
 
       <ContentListState
         name="related-work"

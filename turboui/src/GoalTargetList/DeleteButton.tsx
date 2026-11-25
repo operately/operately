@@ -13,7 +13,13 @@ export function DeleteButton({ state, target }: { state: State; target: TargetSt
 
   return (
     <div className="mt-px">
-      <SecondaryButton size="xxs" onClick={onClick} icon={IconTrash} testId="delete-target">
+      <SecondaryButton
+        size="xxs"
+        onClick={onClick}
+        icon={IconTrash}
+        testId="delete-target"
+        className={state.actionButtonClassName}
+      >
         {t("Delete")}
       </SecondaryButton>
     </div>
