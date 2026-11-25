@@ -15,6 +15,8 @@ type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxl
 interface MenuProps extends TestableElement {
   triggerIcon?: React.ComponentType<{ size: number }>;
   triggerLabel?: string;
+  triggerClassName?: string;
+  triggerRef?: React.Ref<HTMLButtonElement>;
   ariaLabel?: string;
   children: React.ReactNode;
   customTrigger?: React.ReactNode;
@@ -131,7 +133,12 @@ function Trigger(props: MenuProps) {
   } else {
     return (
       <DropdownMenu.Trigger
-        className={classNames(menuTriggerClass, props.triggerLabel && "flex items-center gap-2 text-sm font-medium")}
+        ref={props.triggerRef}
+        className={classNames(
+          menuTriggerClass,
+          props.triggerLabel && "flex items-center gap-2 text-sm font-medium",
+          props.triggerClassName,
+        )}
         aria-label={props.ariaLabel}
         data-test-id={props.testId}
         disabled={props.readonly}
@@ -139,8 +146,9 @@ function Trigger(props: MenuProps) {
       >
         {props.triggerLabel ? (
           <>
+            {props.triggerIcon && <TriggerIcon size={14} />}
             {props.triggerLabel}
-            <IconChevronDown size={16} />
+            {!props.triggerIcon && <IconChevronDown size={16} />}
           </>
         ) : (
           <TriggerIcon size={20} />
