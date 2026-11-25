@@ -48,6 +48,7 @@ export * from "./TextSeparator";
 export * from "./Timeline";
 export * from "./ViewToggle";
 export * from "./WorkMap";
+export * from "./WorkMapV2";
 
 import RichContent from "./RichContent";
 

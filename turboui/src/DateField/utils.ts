@@ -39,7 +39,7 @@ export const getYearDate = (year: number, useStartOfPeriod = false) => {
  * @param date The selected date object
  * @returns Formatted date string
  */
-export function getDateWithoutCurrentYear(date: DateField.ContextualDate) {
+export function getDateWithoutCurrentYear(date: DateField.ContextualDate, locale = i18n.resolvedLanguage) {
   if (!date.date) return date.value;
 
   if (date.dateType === "quarter") {
@@ -51,7 +51,7 @@ export function getDateWithoutCurrentYear(date: DateField.ContextualDate) {
 
   if (date.dateType === "year") return date.value;
 
-  return formatDate(date.date, i18n.resolvedLanguage, {
+  return formatDate(date.date, locale, {
     month: "short",
     day: date.dateType === "day" ? "numeric" : undefined,
     year: date.dateType === "month" || date.date.getFullYear() !== getCurrentYear() ? "numeric" : undefined,

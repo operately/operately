@@ -12,12 +12,13 @@ export namespace DateDisplay {
   export interface Props {
     date: DateField.ContextualDate | null;
     placeholder?: string;
+    locale?: string;
   }
 }
 
-export function DateDisplay({ date, placeholder }: DateDisplay.Props) {
+export function DateDisplay({ date, placeholder, locale }: DateDisplay.Props) {
   const { t } = useTranslation();
-  const displayText = date ? getDateWithoutCurrentYear(date) : (placeholder ?? t("Date"));
+  const displayText = date ? getDateWithoutCurrentYear(date, locale) : (placeholder ?? t("Date"));
 
   return <>{displayText}</>;
 }
