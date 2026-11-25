@@ -270,8 +270,9 @@ function FilterEditor({
             label={text}
             checked={values.includes(value)}
             onChange={() => {
-              if (date) update(value === "past" ? "before" : operator, [value]);
-              else update(operator, values.includes(value) ? values.filter((v) => v !== value) : [...values, value]);
+              if (values.includes(value)) update(operator, values.filter((v) => v !== value));
+              else if (date) update(value === "past" ? "before" : operator, [value]);
+              else update(operator, [...values, value]);
             }}
           />
         ))

@@ -284,6 +284,14 @@ export const ChangeFilters: Story = {
     await userEvent.click(canvas.getByRole("button", { name: "Reset view" }));
     await expect(canvas.getAllByRole("rowheader")).toHaveLength(9);
 
+    const dates = await openFilterChoices(canvasElement, "Due date");
+    const preset = await dates.findByRole("menuitemcheckbox", { name: "In the past" });
+    await userEvent.click(preset);
+    await expect(preset).toBeChecked();
+    await userEvent.click(preset);
+    await expect(preset).not.toBeChecked();
+    await userEvent.keyboard("{Escape}{Escape}");
+
     await userEvent.click(canvas.getByRole("button", { name: "Active work" }));
     const clearFilter = await body.findByRole("menuitem", { name: "Clear filter" });
     clearFilter.focus();
