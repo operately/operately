@@ -7,6 +7,7 @@ import { SubscribersSelector } from "../Subscriptions";
 import { emptyContent } from "../RichContent/contentOps";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
+import { richTextTypographyContent } from "../demos/richTextTypography";
 
 const meta = {
   title: "Pages/DocumentEditPage",
@@ -103,6 +104,23 @@ export const Published: Story = {
         console.log("Submit", values, meta);
         return true;
       }}
+    />
+  ),
+};
+
+export const Typography: Story = {
+  args: {} as DocumentEditPageTypes.Props,
+  render: () => (
+    <DocumentEditPage
+      pageTitle="Edit Document"
+      navigation={navigation}
+      richTextHandlers={createMockRichEditorHandlers()}
+      initialTitle="Launch plan"
+      initialContent={richTextTypographyContent}
+      cancelLink="/documents/doc-1"
+      hideSubscriptions
+      hidePublishAction
+      onSubmit={async () => true}
     />
   ),
 };

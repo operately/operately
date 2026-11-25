@@ -4,6 +4,7 @@ import { Page } from "../Page";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 import { genPeople } from "../utils/storybook/genPeople";
 import RichContent from "./index";
+import { richTextTypographyContent } from "../demos/richTextTypography";
 
 const meta: Meta<typeof RichContent> = {
   title: "Components/RichContent",
@@ -31,6 +32,14 @@ const meta: Meta<typeof RichContent> = {
 
 export default meta;
 type Story = StoryObj<typeof RichContent>;
+
+export const Typography: Story = {
+  args: { content: richTextTypographyContent, className: "text-lg", mentionedPersonLookup: async () => null },
+};
+
+export const CompactTypography: Story = {
+  args: { content: richTextTypographyContent, className: "text-sm", mentionedPersonLookup: async () => null },
+};
 
 export const ResolvedResourceLinks: Story = {
   args: {
