@@ -2,8 +2,9 @@ import React from "react";
 
 import { Toolbar } from "./components/Toolbar";
 import { TableControls } from "./components/TableControls";
+import { bindLinkKeyboard } from "./components/editorKeyboard";
 import { EditorContext, TipTapEditorContent } from "./EditorContext";
-import { useLinkEditFormClose } from "./LinkEditForm";
+import { LinkEditForm } from "./LinkEditForm";
 import { EditorState } from "./useEditor";
 import classNames from "../utils/classnames";
 
@@ -41,8 +42,17 @@ export function Editor(props: EditorProps) {
 }
 
 function EditorContent(props: EditorProps): JSX.Element {
-  const handleClick = useLinkEditFormClose();
-  const editor = props.editor.editor;
+  const { editor, setLinkEditActive } = props.editor;
+
+  React.useEffect(() => {
+    if (!editor || editor.isDestroyed) return;
+
+    return bindLinkKeyboard(editor.view.dom, (event) => {
+      if (event.defaultPrevented || !editor.isEditable || !editor.view.hasFocus()) return;
+      setLinkEditActive(true);
+      return false;
+    });
+  }, [editor, setLinkEditActive]);
 
   const handleFocus = () => {
     // Focus the editor if it's not already focused and is editable
@@ -61,8 +71,8 @@ function EditorContent(props: EditorProps): JSX.Element {
   const contentClassName = classNames("min-h-[100px]", props.padding ?? "p-3");
 
   return (
-    <div onClick={handleClick} className={className}>
-      {!props.hideToolbar && <Toolbar compact={props.compactToolbar} />}
+    <div className={className}>
+      {props.hideToolbar ? <LinkEditForm editor={editor} /> : <Toolbar compact={props.compactToolbar} />}
 
       <div onClick={handleFocus} className="ProseMirror cursor-text text-content-accent relative">
         <TipTapEditorContent className={contentClassName} />
