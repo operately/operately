@@ -23,24 +23,53 @@ export const MarkdownPaste = Extension.create({
   priority: 101,
 
   addProseMirrorPlugins() {
+    let pasteWithoutFormatting = false;
+
     return [
       new Plugin({
         props: {
-          handlePaste(view, { clipboardData }) {
+          handleDOMEvents: {
+            paste() {
+              pasteWithoutFormatting = false;
+              return false;
+            },
+          },
+          transformPastedText(text, plain) {
+            // ProseMirror reports the plain-paste shortcut while parsing the clipboard.
+            pasteWithoutFormatting = plain;
+            return text;
+          },
+          handlePaste(view, { clipboardData }, slice) {
+            const preservePlainText = pasteWithoutFormatting;
+            pasteWithoutFormatting = false;
             if (!clipboardData || clipboardData.files.length > 0) return false;
 
             const text = clipboardData.getData("text/plain");
             if (!text) return false;
 
-            const vsCodeMetadata = clipboardData.getData("vscode-editor-data");
-            const fromMarkdownFile = isVSCodeMarkdown(vsCodeMetadata);
-            if (!fromMarkdownFile && (vsCodeMetadata || clipboardData.getData("text/html"))) return false;
-
-            const { $from } = view.state.selection;
+            const { state } = view;
+            const { $from } = state.selection;
             if ($from.parent.type.spec.code) return false;
 
-            const inInlineCode = $from.marks().some((mark) => mark.type.spec.code);
-            const html = inInlineCode ? null : renderMarkdown(text);
+            const vsCodeMetadata = clipboardData.getData("vscode-editor-data");
+            const fromMarkdownFile = isVSCodeMarkdown(vsCodeMetadata);
+            if (!preservePlainText && !fromMarkdownFile && (vsCodeMetadata || clipboardData.getData("text/html"))) {
+              return false;
+            }
+
+            const marks = state.storedMarks ?? $from.marks();
+            const inInlineCode = marks.some((mark) => mark.type.spec.code);
+            if (inInlineCode || preservePlainText) {
+              const transaction = inInlineCode
+                ? state.tr.insertText(text.replace(/\r\n?/g, "\n"))
+                : state.tr.replaceSelection(slice);
+
+              // Insert literal text without running the editor's formatting paste rules.
+              view.dispatch(transaction.setMeta("paste", true).scrollIntoView());
+              return true;
+            }
+
+            const html = renderMarkdown(text);
             if (!html && !fromMarkdownFile) return false;
 
             // Reuse the editor's normal paste processing without the source clipboard metadata.

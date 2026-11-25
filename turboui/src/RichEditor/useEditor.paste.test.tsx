@@ -109,6 +109,45 @@ it("pastes Markdown formatting and still links bare URLs", async () => {
 });
 
 it.each([
+  [
+    "plain-text clipboard",
+    { "text/plain": "## Plan\n\n**literal** ==literal==" },
+    ["## Plan", "**literal** ==literal=="],
+  ],
+  [
+    "VS Code Markdown clipboard",
+    {
+      "text/plain": "```mermaid\nflowchart TD\n```",
+      "text/html": "<div>```mermaid<br>flowchart TD<br>```</div>",
+      "vscode-editor-data": '{"mode":"markdown"}',
+    },
+    ["```mermaid", "flowchart TD", "```"],
+  ],
+])("keeps Markdown literal when using the plain-paste shortcut with a %s", async (_source, entries, lines) => {
+  const { editor, result } = await setup();
+
+  fireEvent.keyDown(editor.view.dom, { key: "v", code: "KeyV", keyCode: 86, ctrlKey: true, shiftKey: true });
+  pasteClipboard(editor, entries);
+
+  expect(result.current.getJson().content).toEqual(
+    lines.map((text) => ({ type: "paragraph", content: [{ type: "text", text }] })),
+  );
+});
+
+it("preserves literal Markdown and its code mark after enabling inline code at an empty cursor", async () => {
+  const { editor, result } = await setup();
+  act(() => {
+    editor.commands.setCode();
+  });
+
+  pasteClipboard(editor, { "text/plain": "**literal**" });
+
+  expect(result.current.getJson().content).toEqual([
+    { type: "paragraph", content: [{ type: "text", text: "**literal**", marks: [{ type: "code" }] }] },
+  ]);
+});
+
+it.each([
   ["plain text", {}],
   ["VS Code Markdown", { "vscode-editor-data": '{"mode":"markdown"}', "text/html": "<div>## Plan</div>" }],
 ])("pastes a Markdown document from %s as rich text blocks", async (_format, entries) => {
