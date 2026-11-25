@@ -13,6 +13,8 @@ defmodule OperatelyWeb.Api.WorkMaps do
 
     outputs do
       field :can_edit, :boolean, null: false
+      field :reparentable_item_ids, list_of(:id), null: false
+      field :reviewer_editable_item_ids, list_of(:id), null: false
       field :default_view, :work_map_default_view, null: true
       field :ordered_item_ids, list_of(:id), null: false
       field :pinned_kpis, list_of(:work_map_kpi), null: false
@@ -21,10 +23,13 @@ defmodule OperatelyWeb.Api.WorkMaps do
     def call(conn, inputs) do
       with {:ok, scope} <- WorkMaps.Scope.resolve(conn, inputs[:space_id]) do
         settings = WorkMaps.Settings.read(scope)
+        permissions = WorkMaps.ItemPermissions.read(scope, OperatelyWeb.Api.Helpers.company_read_only(conn))
 
         {:ok,
          %{
            can_edit: scope.can_edit,
+           reparentable_item_ids: permissions.reparentable,
+           reviewer_editable_item_ids: permissions.reviewer_editable,
            default_view: settings.default_view,
            ordered_item_ids: Enum.map(settings.ordered_items, &WorkMaps.item_id/1),
            pinned_kpis: Enum.map(settings.pinned_kpis, &WorkMaps.kpi_summary/1)

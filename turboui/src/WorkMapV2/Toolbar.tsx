@@ -15,13 +15,25 @@ interface Props {
   items: WorkMapV2Item[];
   onChange: (view: WorkMapViewState) => void;
   onReset: () => void;
+  onOrganize?: () => void;
   onSave?: () => void;
   saving?: boolean;
   adjusted: boolean;
   scopeName: string;
   spaceId?: string;
 }
-export function Toolbar({ view, items, onChange, onReset, onSave, saving, adjusted, scopeName, spaceId }: Props) {
+export function Toolbar({
+  view,
+  items,
+  onChange,
+  onReset,
+  onSave,
+  onOrganize,
+  saving,
+  adjusted,
+  scopeName,
+  spaceId,
+}: Props) {
   const { t } = useTranslation();
   const labels = columnLabels(t);
   const sorts: Record<WorkMapSort, string> = {
@@ -60,7 +72,7 @@ export function Toolbar({ view, items, onChange, onReset, onSave, saving, adjust
         onChange={(filters) => onChange({ ...view, filters })}
       />
       <div className="ml-auto flex items-center gap-2">
-        {adjusted && (
+        {adjusted && view.filters.length > 0 && (
           <SecondaryButton size="xs" onClick={onReset} testId="work-map-reset-view">
             {t("Reset view")}
           </SecondaryButton>
@@ -117,9 +129,11 @@ export function Toolbar({ view, items, onChange, onReset, onSave, saving, adjust
             {spaceId ? t("Reset to space default") : t("Reset to company default")}
           </MenuActionItem>
         </Menu>
-        <SecondaryButton size="xs" disabled icon={IconGripVertical}>
-          {t("Organize")}
-        </SecondaryButton>
+        {onOrganize && (
+          <SecondaryButton testId="work-map-organize" size="xs" onClick={onOrganize} icon={IconGripVertical}>
+            {t("Organize")}
+          </SecondaryButton>
+        )}
       </div>
     </div>
   );

@@ -251,7 +251,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   defp needs_contributor?(args), do: Map.get(args, :contributor_id) != nil
 
   defp extract_filters(args) do
-    Map.take(args, [:space_id, :parent_goal_id, :champion_id, :reviewer_id, :contributor_id, :only_completed])
+    Map.take(args, [:space_id, :parent_goal_id, :champion_id, :reviewer_id, :contributor_id, :only_completed, :include_cross_space_parents])
   end
 
   #

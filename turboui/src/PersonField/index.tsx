@@ -4,8 +4,9 @@ import * as Popover from "../Embedding/Popover";
 import * as React from "react";
 
 import { IconCircleX, IconExternalLink, IconSearch, IconUser, IconUserPlus } from "../icons";
+import { UnstyledButton } from "../Button/UnstalyedButton";
 import { Avatar } from "../Avatar";
-import { DivLink } from "../Link";
+import { BlackLink, DivLink } from "../Link";
 import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 
@@ -32,7 +33,14 @@ export namespace PersonField {
     onSearch: (query: string) => Promise<void>;
   }
 
+  export interface Picker {
+    title: string;
+    placeholder: string;
+    removeLabel: string;
+  }
+
   interface BaseProps {
+    picker?: Picker;
     person: Person | null;
 
     isOpen?: boolean;
@@ -66,6 +74,7 @@ export namespace PersonField {
   export type Props = ReadonlyProps | EditableProps;
 
   export interface State {
+    picker?: Picker;
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
 
@@ -157,6 +166,7 @@ export function useState(props: PersonField.Props): PersonField.State {
   };
 
   return {
+    picker: props.picker,
     person: props.person,
     setPerson: props.setPerson,
 
@@ -330,8 +340,39 @@ function Dialog({ state }: { state: PersonField.State }) {
           }
         }}
       >
-        {state.dialogMode === "menu" && <DialogMenu state={state} />}
-        {state.dialogMode === "search" && <DialogSearch state={state} />}
+        {state.picker ? (
+          <>
+            <div className="flex items-center justify-between gap-2 border-b border-surface-outline px-2 py-1.5 text-sm font-semibold">
+              {state.picker.title}
+              {state.person?.profileLink && (
+                <BlackLink
+                  to={state.person.profileLink}
+                  aria-label={i18n.t("View profile")}
+                  title={i18n.t("View profile")}
+                >
+                  <IconExternalLink size={14} />
+                </BlackLink>
+              )}
+            </div>
+            <DialogSearch state={state} />
+            {state.person && (
+              <UnstyledButton
+                className="w-full border-t border-surface-outline px-2 py-1.5 text-left text-sm hover:bg-surface-highlight"
+                testId={`${state.testId}-clear-assignment`}
+                onClick={() => {
+                  state.setPerson?.(null);
+                  state.setIsOpen(false);
+                }}
+              >
+                {state.picker.removeLabel}
+              </UnstyledButton>
+            )}
+          </>
+        ) : state.dialogMode === "menu" ? (
+          <DialogMenu state={state} />
+        ) : (
+          <DialogSearch state={state} />
+        )}
       </Popover.Content>
     </Popover.Portal>
   );
@@ -532,7 +573,8 @@ function DialogSearch({ state }: { state: PersonField.State }) {
         {/* Use text-base (16px) on mobile to prevent auto-zoom and text-sm (14px) on desktop for consistency */}
         <input
           className="w-full border border-surface-outline rounded-lg px-2 py-1.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-base bg-surface-base text-content-base"
-          placeholder={t("Search...")}
+          aria-label={state.picker?.placeholder}
+          placeholder={state.picker?.placeholder ?? t("Search...")}
           value={state.searchQuery}
           autoFocus
           onChange={(e) => state.setSearchQuery(e.target.value)}

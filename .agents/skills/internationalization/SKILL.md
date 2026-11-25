@@ -15,6 +15,7 @@ Read the reference for the current task before making changes. Keep detailed wor
 ## Essential rules
 
 - Hardcoded system-authored, user-visible copy is forbidden. Use the existing translation wrappers and supply translations for every supported language.
+- Before finishing, compare each changed translation with its language glossary. Check product terms in context, including plurals, borrowed words, and label capitalization. If existing copy conflicts with the glossary, follow the glossary.
 - Edit PO files, regenerate catalogs/resources, and run `make test.i18n` plus focused tests. Never edit generated JSON. Completeness checks do not replace the review described in the guides.
 - Preserve user content, machine identifiers, escaping, English defaults, and existing locale behavior. Keep changes within the requested scope.
 - Native-speaker review is recommended when available for glossaries, new languages, and routine copy changes. It is optional: do not block translation, merge, or release, or raise review findings solely because native-speaker approval or review metadata is absent. AI may draft terminology and translations; only claim native-speaker review when it actually occurred.

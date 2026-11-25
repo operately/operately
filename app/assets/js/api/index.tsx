@@ -3638,6 +3638,7 @@ export interface CompaniesGetWorkMapInput {
   contributorId?: Id | null;
   onlyCompleted?: boolean | null;
   includeAssignees?: boolean | null;
+  includeCrossSpaceParents?: boolean;
   includeReviewer?: boolean | null;
 }
 
@@ -4665,6 +4666,8 @@ export interface WorkMapsGetSettingsInput {
 
 export interface WorkMapsGetSettingsResult {
   canEdit: boolean;
+  reparentableItemIds: Id[];
+  reviewerEditableItemIds: Id[];
   defaultView: WorkMapDefaultView | null;
   orderedItemIds: Id[];
   pinnedKpis: WorkMapKpi[];

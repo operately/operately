@@ -26,7 +26,7 @@ export async function loader({ params, request }: { params: { id?: string }; req
 export async function preload({ params }: { params: { id?: string } }) {
   const settingsInput = params.id ? { spaceId: params.id } : {};
   const [inputs] = await Promise.all([
-    params.id ? loadSpaceWorkMap(params.id) : loadCompanyWorkMap(),
+    params.id ? loadSpaceWorkMap(params.id, true) : loadCompanyWorkMap(),
     queryClient.fetchQuery(Api.work_maps.getSettingsQueryOptions(settingsInput)),
   ]);
   return { ...inputs, settingsInput };

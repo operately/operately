@@ -7,8 +7,12 @@ export async function loadCompanyWorkMap() {
   return { workMapInput, spaceInput: null };
 }
 
-export async function loadSpaceWorkMap(id: string) {
-  const workMapInput = { spaceId: id, includeReviewer: true };
+export async function loadSpaceWorkMap(id: string, includeCrossSpaceParents = false) {
+  const workMapInput = {
+    spaceId: id,
+    includeReviewer: true,
+    ...(includeCrossSpaceParents && { includeCrossSpaceParents }),
+  };
   const spaceInput = { id, includeAccessLevels: true, includePermissions: true };
   await Promise.all([Api.companies.getWorkMapQuery(workMapInput), Api.spaces.getQuery(spaceInput)]);
   return { workMapInput, spaceInput };
