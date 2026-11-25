@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Mcp.Tools.Companies.GetWorkMap do
       annotations: read_annotations(),
       security_schemes: read_security_schemes(),
       discovery_metadata: %{"category" => "companies"},
-      examples: [%{"title" => "Get Work Map", "arguments" => %{}}],
+      examples: [%{"title" => "Get Work Map", "arguments" => %{}}, %{"title" => "Get space work with cross-space parent goals", "arguments" => %{"space_id" => "<space-id>", "include_cross_space_parents" => true}}],
       input_schema:
         JsonSchema.object(
           %{
@@ -29,6 +29,7 @@ defmodule OperatelyWeb.Mcp.Tools.Companies.GetWorkMap do
             "contributor_id" => JsonSchema.string("Optional contributor id."),
             "only_completed" => JsonSchema.boolean("Return only completed work when true; defaults to false."),
             "include_assignees" => JsonSchema.boolean("Include assignees; defaults to false."),
+            "include_cross_space_parents" => JsonSchema.boolean("Keep visible parent goals from other spaces for paused and completed work; defaults to false."),
             "include_reviewer" => JsonSchema.boolean("Include reviewers; defaults to false.")
           },
           required: []
@@ -45,6 +46,7 @@ defmodule OperatelyWeb.Mcp.Tools.Companies.GetWorkMap do
          {:ok, inputs} <- Helpers.put_present(inputs, arguments, "reviewer_id", :reviewer_id, &Helpers.decode_optional_id/1),
          {:ok, inputs} <- Helpers.put_present(inputs, arguments, "contributor_id", :contributor_id, &Helpers.decode_optional_id/1),
          {:ok, inputs} <- Helpers.put_present(inputs, arguments, "only_completed", :only_completed, &Inputs.boolean/1),
+         {:ok, inputs} <- Helpers.put_present(inputs, arguments, "include_cross_space_parents", :include_cross_space_parents, &Inputs.boolean/1),
          {:ok, inputs} <- Helpers.put_present(inputs, arguments, "include_assignees", :include_assignees, &Inputs.boolean/1),
          {:ok, inputs} <- Helpers.put_present(inputs, arguments, "include_reviewer", :include_reviewer, &Inputs.boolean/1) do
       Api.call(conn, inputs)
