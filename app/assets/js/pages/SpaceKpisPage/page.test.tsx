@@ -1,5 +1,6 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
 import React from "react";
+import { MemoryRouter } from "react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/api/queryClient";
 import { renderHook } from "@/__tests__/renderHook";
@@ -22,7 +23,6 @@ jest.mock("./loader", () => ({
   useLoadedData: () => ({ space: { id: "space1", name: "Growth" }, kpis: [], kpi: null }),
   useRefresh: () => jest.fn(),
 }));
-jest.mock("react-router", () => ({ useNavigate: () => jest.fn() }));
 jest.mock("@/routes/paths", () => ({
   usePaths: () => ({
     profilePath: (id: string) => `/profiles/${id}`,
@@ -51,7 +51,9 @@ test("passes the authenticated current-company person to the shared KPI page", (
 
   const wrapper = ({ children }: React.PropsWithChildren) => (
     <QueryClientProvider client={queryClient}>
-      <Page />
+      <MemoryRouter>
+        <Page />
+      </MemoryRouter>
       {children}
     </QueryClientProvider>
   );
