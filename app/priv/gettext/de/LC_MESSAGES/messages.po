@@ -3147,7 +3147,7 @@ msgid "%{name} now opens with this view."
 msgstr "Für %{name} wird jetzt diese Ansicht geöffnet."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:71
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:72
 msgid "%{name} space"
 msgstr "Arbeitsbereich %{name}"
 
@@ -5521,7 +5521,7 @@ msgid "Acknowledged retrospective"
 msgstr "Rückblick als gelesen bestätigt"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:71
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:72
 msgid "Across spaces"
 msgstr "Arbeitsbereichsübergreifend"
 
@@ -9124,7 +9124,7 @@ msgid "Couldn't update task item"
 msgstr "Aufgabeneintrag konnte nicht aktualisiert werden"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:77
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:78
 #: ../turboui/src/WorkMapV2/PinManager.tsx:230
 msgid "Couldn’t load KPIs"
 msgstr "KPIs konnten nicht geladen werden"
@@ -9227,7 +9227,7 @@ msgid "Create Task"
 msgstr "Aufgabe erstellen"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:113
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:112
 msgid "Create a KPI"
 msgstr "KPI erstellen"
 
@@ -13421,8 +13421,8 @@ msgstr "KPI: <kpi>%{kpiName}</kpi>"
 #: ../turboui/src/SpaceKpisPage/index.tsx:234
 #: ../turboui/src/SpaceKpisPage/index.tsx:237
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:70
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:48
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:57
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:49
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:58
 msgid "KPIs"
 msgstr "KPIs"
 
@@ -13942,7 +13942,7 @@ msgstr "Wird geladen …"
 #: ../turboui/src/KpiGoalLinks/index.tsx:46
 #: ../turboui/src/KpiGoalLinks/index.tsx:93
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:289
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:84
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:85
 #: ../turboui/src/WorkMapV2/PinManager.tsx:241
 msgid "Loading…"
 msgstr "Wird geladen…"
@@ -14089,7 +14089,7 @@ msgid "Manage how you sign in and grant access to Operately."
 msgstr "Verwalte deine Anmeldung und den Zugriff auf Operately."
 
 #.frontend
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:108
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:107
 #: ../turboui/src/WorkMapV2/PinManager.tsx:37
 msgid "Manage pins"
 msgstr "Angeheftete KPIs verwalten"
@@ -14994,10 +14994,10 @@ msgstr "Kein Zugriff"
 msgid "No Companies Found"
 msgstr "Keine Unternehmen gefunden"
 
-#.frontend
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:97
-msgid "No KPIs pinned to this map."
-msgstr "In dieser Arbeitsübersicht sind keine KPIs angeheftet."
+#~ #.frontend
+#~ #: ../turboui/src/WorkMapV2/KpiStrip.tsx:97
+#~ msgid "No KPIs pinned to this map."
+#~ msgstr "In dieser Arbeitsübersicht sind keine KPIs angeheftet."
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:104
@@ -15005,7 +15005,7 @@ msgid "No KPIs yet"
 msgstr "Noch keine KPIs"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:98
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:97
 msgid "No KPIs yet. Track a number over time, like weekly active teams."
 msgstr "Noch keine KPIs. Verfolge eine Kennzahl im Zeitverlauf, etwa die Zahl der wöchentlich aktiven Teams."
 
@@ -15161,7 +15161,7 @@ msgstr "Keine Mitwirkenden"
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:89
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:93
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:155
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:154
 #: ../turboui/src/WorkMapV2/PinManager.tsx:361
 msgid "No data"
 msgstr "Keine Daten"
@@ -16648,7 +16648,7 @@ msgid "Pin %{name}"
 msgstr "%{name} anheften"
 
 #.frontend
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:108
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:107
 msgid "Pin KPIs"
 msgstr "KPIs anheften"
 
@@ -22699,7 +22699,7 @@ msgstr "Nur vertrauenswürdige E-Mail-Domains"
 
 #.frontend
 #: ../turboui/src/InfiniteScroll/index.tsx:117
-#: ../turboui/src/WorkMapV2/KpiStrip.tsx:79
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:80
 #: ../turboui/src/WorkMapV2/PinManager.tsx:232
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:46
 #: assets/js/pages/InviteLinkFullPage/index.tsx:45
