@@ -1,3 +1,4 @@
+import { useFocusTrap } from "../utils/useFocusTrap";
 import { useEmbedding, useEmbeddedOverlay } from "../Embedding";
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -7,6 +8,7 @@ import { translationText } from "../i18n";
 import { IconX } from "../icons";
 
 export interface ModalProps {
+  trapFocus?: boolean;
   /**
    * Whether the modal is open
    */
@@ -61,6 +63,7 @@ export function Modal({
   headerClassName = "",
   children,
   size = "medium",
+  trapFocus = false,
   closeOnBackdropClick = true,
   contentClassName = "",
   contentPadding = "p-6",
@@ -72,6 +75,7 @@ export function Modal({
 
   const embedding = useEmbedding();
   const overlayRef = React.useRef<HTMLDivElement>(null);
+  useFocusTrap(overlayRef, mounted && isOpen && trapFocus && !embedding);
   useEmbeddedOverlay(mounted && isOpen, onClose, overlayRef);
 
   // Handle mounting the modal in the DOM
