@@ -7,7 +7,7 @@ import { ViewToggle } from "../ViewToggle";
 import { FilterMenu } from "./FilterMenu";
 import { CheckChoice, ChoiceGroup } from "./MenuChoices";
 import { mapColumns, type WorkMapViewState, type WorkMapV2Item } from "./filterWorkMap";
-import { columnLabels } from "./Table";
+import { columnLabels, useTableLayout } from "./Table";
 import type { WorkMapSort } from "../ApiTypes";
 
 interface Props {
@@ -36,6 +36,7 @@ export function Toolbar({
 }: Props) {
   const { t } = useTranslation();
   const labels = columnLabels(t);
+  const { visibleColumns } = useTableLayout(view.columns);
   const sorts: Record<WorkMapSort, string> = {
     map_order: t("Map order"),
     name: t("Name"),
@@ -94,7 +95,7 @@ export function Toolbar({
               />
             ))}
           </ChoiceGroup>
-          <ChoiceGroup label={t("Columns")} valueLabel={t("{{count}} shown", { count: view.columns.length })}>
+          <ChoiceGroup label={t("Columns")} valueLabel={t("{{count}} shown", { count: visibleColumns.length })}>
             {mapColumns.map((column) => (
               <CheckChoice
                 key={column}
