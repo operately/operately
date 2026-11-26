@@ -1,3 +1,4 @@
+import { useFocusTrap } from "../utils/useFocusTrap";
 import { useTranslation } from "react-i18next";
 import { useEmbedding, useEmbeddedOverlay } from "../Embedding";
 import React, { useEffect, useRef, useState } from "react";
@@ -140,45 +141,6 @@ export function SlideIn({
 
   // Use a portal to render the slide-in at the end of the document body
   return createPortal(slideInContent, embedding?.portalContainer ?? document.body);
-}
-
-// When enabled, keep keyboard focus inside the open panel and restore the previous focus on close.
-function useFocusTrap(panelRef: React.RefObject<HTMLDivElement>, enabled: boolean) {
-  React.useEffect(() => {
-    if (!enabled) return;
-
-    const panel = panelRef.current;
-    if (!panel) return;
-
-    const previous = document.activeElement;
-    const controls = () =>
-      Array.from(
-        panel.querySelectorAll<HTMLElement>(
-          'button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), [tabindex="0"], [contenteditable="true"]',
-        ),
-      ).filter((element) => !element.closest("[hidden]"));
-
-    if (!panel.contains(document.activeElement)) controls()[0]?.focus();
-
-    const trap = (event: KeyboardEvent) => {
-      if (event.key !== "Tab" || event.defaultPrevented) return;
-
-      const elements = controls();
-      const first = elements[0];
-      const last = elements[elements.length - 1];
-
-      if (event.shiftKey ? document.activeElement === first : document.activeElement === last) {
-        event.preventDefault();
-        (event.shiftKey ? last : first)?.focus();
-      }
-    };
-    panel.addEventListener("keydown", trap);
-
-    return () => {
-      panel.removeEventListener("keydown", trap);
-      if (previous instanceof HTMLElement && previous.isConnected) previous.focus();
-    };
-  }, [enabled, panelRef]);
 }
 
 export default SlideIn;

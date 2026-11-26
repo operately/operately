@@ -155,12 +155,12 @@ function FirstProjectZeroState({
   const submitting = form.state === "submitting" || navigationPending;
 
   return (
-    <div className="px-4 py-12 sm:py-16" data-test-id="first-project-zero-state">
+    <div className="px-4 py-12 sm:pt-[102px]" data-test-id="first-project-zero-state">
       <div className="mx-auto flex max-w-sm flex-col items-center gap-6 text-center">
         <div className="flex flex-col items-center gap-2">
-          <h2 className="text-balance text-xl font-semibold text-content-strong">{t("Add your first project")}</h2>
+          <h2 className="text-balance text-[23px] font-semibold text-content-strong">{t("Add your first project")}</h2>
           <p className="max-w-[42ch] text-pretty text-base text-content-dimmed sm:text-sm">
-            {t("Start with something already in motion. You can add tasks, milestones, and teammates next.")}
+            {t("Start with something your team is already working on.")}
           </p>
         </div>
 
