@@ -1,6 +1,8 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
+import type { WorkMapKpi } from "../ApiTypes";
+import type { WorkMapKpiStrip } from "./KpiStrip";
 import { CompanyNavigation } from "../CompanyNavigation";
 import { defaultProps as navigationProps } from "../CompanyNavigation/mockData";
 import type { ReviewerEditing } from "./ReviewerField";
@@ -152,7 +154,62 @@ const searchReviewers: ReviewerEditing["search"] = async (item, query) =>
       person.fullName.toLowerCase().includes(query.toLowerCase()),
   );
 
-function StoryPage({ editableReviewers, ...props }: WorkMapV2PageProps & { editableReviewers?: boolean }) {
+function kpi(name: string, space: typeof product, unit: string, recentValues: number[]): WorkMapKpi {
+  return {
+    __typename: "work_map_kpi",
+    id: name,
+    name,
+    spaceId: space.id,
+    spaceName: space.name,
+    unit,
+    cadence: "weekly",
+    recentValues,
+    value: recentValues.at(-1) ?? null,
+    period: recentValues.length ? "2026-11-16" : null,
+  };
+}
+
+const storyKpis = [
+  kpi("Weekly active teams", product, "teams", [96, 104, 101, 112, 124, 128]),
+  kpi("Design partners", growth, "teams", [7, 7, 9, 8, 11, 12]),
+  kpi("Successful runs", product, "%", [97, 97.8, 97.5, 98.1, 98.4]),
+  kpi("Customer interviews", growth, "interviews", [5, 8]),
+  kpi("Median run time", product, "s", [56, 50, 42]),
+];
+
+type KpiState = "pinned" | "unpinned" | "first-use" | "error";
+function useStoryKpis(state: KpiState, spaceId?: string): WorkMapKpiStrip {
+  const available = state === "first-use" ? [] : storyKpis.filter((kpi) => !spaceId || kpi.spaceId === spaceId);
+  const [ids, save] = React.useState(state === "unpinned" ? [] : available.slice(0, 3).map((k) => k.id));
+  const [input, search] = React.useState<{ query: string; offset: number } | null>(null);
+  const [error, setError] = React.useState(state === "error");
+  return {
+    pins: ids.flatMap((id) => available.filter((k) => k.id === id)),
+    limit: 3,
+    hasKpis: available.length > 0,
+    loading: false,
+    error,
+    retry: () => setError(false),
+    detailPath: (k) => "#kpi-" + k.id,
+    allPath: spaceId ? "#space-kpis" : undefined,
+    createPath: "#new-kpi",
+    results: available.filter((k) => k.name.toLowerCase().includes(input?.query.toLowerCase() ?? "")),
+    search,
+    searching: false,
+    searchError: false,
+    retrySearch: () => {},
+    hasMore: false,
+    saving: false,
+    save,
+  };
+}
+
+function StoryPage({
+  editableReviewers,
+  kpiState = "pinned",
+  ...props
+}: WorkMapV2PageProps & { editableReviewers?: boolean; kpiState?: KpiState }) {
+  const kpis = useStoryKpis(kpiState, props.space?.id);
   const [view, setView] = React.useState(props.view);
   const [defaults, setDefaults] = React.useState(builtInWorkMapView(Boolean(props.space)));
   const [storyItems, setItems] = React.useState(props.items);
@@ -164,6 +221,7 @@ function StoryPage({ editableReviewers, ...props }: WorkMapV2PageProps & { edita
   return (
     <WorkMapV2Page
       {...props}
+      kpis={kpis}
       items={storyItems}
       reviewerEditing={
         editableReviewers
@@ -201,6 +259,7 @@ function StoryPage({ editableReviewers, ...props }: WorkMapV2PageProps & { edita
       creation={{
         spaces,
         defaultSpace: productSpace,
+        onFirstItemCreated: kpiState === "first-use" ? () => {} : undefined,
         spaceSearch: async () => spaces,
         templates: [{ id: "release", name: "Product release", spaceId: product.id, milestoneCount: 3, taskCount: 14 }],
         templateLibraryPath: "/project-templates",
@@ -255,6 +314,45 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const ActiveWork: Story = {};
+
+export const ManagePins: Story = {
+  render: (args) => <StoryWithNavigation {...args} />,
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    await userEvent.click(within(canvasElement).getByRole("button", { name: "Manage pins" }));
+    const panel = within(await body.findByRole("dialog"));
+    await expect(panel.getByRole("button", { name: "Pin Median run time" })).toBeDisabled();
+    panel.getByRole("button", { name: "Unpin Successful runs" }).focus();
+    await userEvent.keyboard("{Enter}");
+    await expect(panel.getByRole("textbox")).toHaveFocus();
+    await userEvent.type(panel.getByRole("textbox"), "Median");
+    await userEvent.click(panel.getByRole("button", { name: "Pin Median run time" }));
+    await userEvent.clear(panel.getByRole("textbox"));
+    await userEvent.click(panel.getByRole("button", { name: "Unpin Median run time" }));
+    await userEvent.click(await panel.findByRole("button", { name: "Pin Successful runs" }));
+    panel.getByRole("button", { name: "Reorder Design partners" }).focus();
+    await userEvent.keyboard("{ArrowUp}");
+    await expect(within(canvasElement).getByRole("region", { name: "KPIs" }).querySelector("a")).toHaveTextContent(
+      "Design partners",
+    );
+  },
+};
+
+export const FirstKpi: Story = {
+  args: { items: [] },
+  render: (args) => <StoryWithNavigation {...args} kpiState="first-use" />,
+};
+
+export const RetryKpis: Story = {
+  render: (args) => <StoryPage {...args} kpiState="error" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const strip = within(canvas.getByRole("region", { name: "KPIs" }));
+    await expect(canvas.getByRole("table")).toBeVisible();
+    await userEvent.click(strip.getByRole("button", { name: "Try again" }));
+    await expect(strip.getByRole("link", { name: /Weekly active teams/ })).toBeVisible();
+  },
+};
 
 export const OrganizeMap: Story = {
   play: async ({ canvasElement }) => {
@@ -420,7 +518,7 @@ export const ClearFilters: Story = {
   },
 };
 
-function EmptySpaceStory(props: WorkMapV2PageProps) {
+function StoryWithNavigation(props: WorkMapV2PageProps & { kpiState?: KpiState }) {
   return (
     <div className="flex h-screen flex-col">
       <CompanyNavigation
@@ -430,7 +528,7 @@ function EmptySpaceStory(props: WorkMapV2PageProps) {
         reviewCount={0}
         me={{ ...navigationProps.me, fullName: "Marko A.", avatarUrl: null }}
       />
-      <div className="relative min-h-0 flex-1 overflow-auto">
+      <div className="relative min-h-0 flex-1 overflow-auto [anchor-name:--company-page]">
         <StoryPage {...props} />
       </div>
     </div>
@@ -439,7 +537,7 @@ function EmptySpaceStory(props: WorkMapV2PageProps) {
 
 export const EmptyMap: Story = {
   name: "Empty space map",
-  render: (args) => <EmptySpaceStory {...args} />,
+  render: (args) => <StoryWithNavigation {...args} kpiState="unpinned" />,
   args: {
     items: [],
     title: "Product Work Map",

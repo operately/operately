@@ -103,8 +103,11 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         </div>
 
         <NewKpiModal
-          isOpen={isNewOpen}
-          onClose={() => setIsNewOpen(false)}
+          isOpen={isNewOpen || Boolean(props.showCreateForm)}
+          onClose={() => {
+            setIsNewOpen(false);
+            props.onCloseCreateForm?.();
+          }}
           championSearch={props.championSearch}
           currentUser={props.currentUser}
           onCreate={props.onCreateKpi}
