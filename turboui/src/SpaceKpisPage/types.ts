@@ -1,3 +1,4 @@
+import type { GoalField } from "../GoalField";
 import type { FormattedTimePreferences } from "../FormattedTime";
 //
 // Shared types for the Space KPIs proof-of-concept.
@@ -139,7 +140,14 @@ export namespace SpaceKpisPage {
 
   export type MutationResult = { success: boolean; id?: string; error?: string };
 
+  export interface GoalLink extends Pick<GoalField.Props, "goal" | "setGoal" | "searchGoals" | "readonly"> {
+    loading: boolean;
+    error: boolean;
+    retry: () => void;
+  }
+
   export interface Props {
+    goalLink: GoalLink | false;
     showCreateForm?: boolean;
     onCloseCreateForm?: () => void;
     formattedTimePreferences: FormattedTimePreferences;

@@ -250,6 +250,7 @@ function GoalPageHarness({
         targets={[]}
         checklistItems={[]}
         relatedWorkItems={[]}
+        kpiLinks={false}
         checkIns={[]}
         discussions={[]}
         childrenCount={{
@@ -287,6 +288,36 @@ function GoalPageHarness({
 }
 
 describe("GoalPage", () => {
+  test("shows empty linked KPIs after related work when the feature is enabled", () => {
+    const { rerender } = render(<GoalPageHarness />);
+    expect(screen.queryByTestId("kpi-goal-links")).not.toBeInTheDocument();
+
+    rerender(
+      <GoalPageHarness
+        contentState={{
+          ...cachedContent,
+          permissions: generateGoalPermissions(false),
+          kpiLinks: {
+            items: [],
+            canLink: false,
+            loading: false,
+            error: false,
+            saving: false,
+            picker: null,
+            href: jest.fn(),
+            retry: jest.fn(),
+            setLink: jest.fn(),
+            search: jest.fn(),
+          },
+        }}
+      />,
+    );
+
+    const links = screen.getByTestId("kpi-goal-links");
+    expect(screen.getByTestId("related-work-section").nextElementSibling).toBe(links);
+    expect(screen.queryByTestId("link-resource")).not.toBeInTheDocument();
+  });
+
   test("keeps the goal overview accessible when docs fail", () => {
     render(<GoalPageHarness docsState={{ docsAndFilesAvailable: true, docsAndFilesError: true }} />);
     expect(screen.getByText("Goal description")).toBeInTheDocument();

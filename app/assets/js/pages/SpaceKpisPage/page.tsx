@@ -1,3 +1,4 @@
+import { useKpiGoalField } from "@/models/kpis/useKpiGoalLinks";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import i18n from "@/i18n";
 import * as React from "react";
@@ -28,6 +29,7 @@ export function Page() {
   const refresh = useRefresh();
   const queryClient = useQueryClient();
   const { space, kpis, kpi } = useLoadedData();
+  const goalLink = useKpiGoalField(kpi?.id);
 
   const peopleSearch = People.usePeopleSearch({ type: "space", id: space.id! });
   const richTextHandlers = useRichTextHandlers({
@@ -198,6 +200,7 @@ export function Page() {
       kpisLink={kpisLink}
       kpis={parsedKpis}
       selectedKpi={selectedKpi}
+      goalLink={goalLink}
       currentUser={People.parsePersonForTurboUi(paths, me)}
       showCreateForm={params.get("new") === "true" && !kpi && Boolean(space.permissions?.canEdit)}
       onCloseCreateForm={onCloseCreateForm}

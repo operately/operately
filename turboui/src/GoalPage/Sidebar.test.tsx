@@ -38,6 +38,7 @@ function sidebarProps(): GoalPage.State {
     targets: [],
     checklistItems: [],
     relatedWorkItems: [],
+    kpiLinks: false,
     checkIns: [],
     discussions: [],
     childrenCount: { checkInsCount: 0, discussionsCount: 0, docsAndFilesCount: 0 },

@@ -1,3 +1,4 @@
+import { useDemoKpiGoalLinks } from "../demos/kpis/useDemoKpiGoalLinks";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { GoalPage } from ".";
@@ -59,6 +60,7 @@ const defaultSpace: GoalPage.Space = {
 };
 
 function Component(props: GoalPageStoryArgs) {
+  const kpiLinks = useDemoKpiGoalLinks();
   const mockPeople = genPeople(10);
   const championSearch = usePersonFieldSearch(mockPeople);
   const reviewerSearch = usePersonFieldSearch(mockPeople);
@@ -127,6 +129,7 @@ function Component(props: GoalPageStoryArgs) {
   };
 
   const defaults = {
+    kpiLinks,
     description,
     status: "on_track" as const,
     state: "active" as const,

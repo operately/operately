@@ -55,6 +55,7 @@ export function CuratedTemplatePreviewPage(props: CuratedTemplatePreviewProps) {
             <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
               <KpiDetail
                 kpi={preview.kpi}
+                goalLink={false}
                 fields={{ ...preview.kpi, cadence: preview.cadence, update: unavailable }}
                 canManage={false}
                 canComment={false}
