@@ -176,12 +176,7 @@ function FirstProjectZeroState({
               />
             </Forms.FieldGroup>
 
-            <PrimaryButton
-              className="w-full dark:bg-[#4265ce] dark:hover:bg-[#3659bf]"
-              type="submit"
-              loading={submitting}
-              testId="create-first-project"
-            >
+            <PrimaryButton className="w-full" type="submit" loading={submitting} testId="create-first-project">
               {t("Create project")}
             </PrimaryButton>
           </div>

@@ -27,7 +27,6 @@ import { compareIds } from "../utils/ids";
 
 const menuItemClass =
   "min-h-[35px] rounded-md !gap-2 !px-2.5 !text-[13px] !font-normal !text-content-base [&_svg]:size-3.5 [&_svg]:text-content-dimmed dark:data-[highlighted]:bg-[#3b4050]";
-const primaryActionClass = "!bg-[#4265ce] !border-transparent hover:!bg-blue-700";
 
 export interface WorkMapCreation {
   defaultSpace?: SpaceField.Space;
@@ -88,7 +87,7 @@ export function useAddWork(creation: WorkMapCreation | undefined, scopeName: str
         triggerLabel={t("Add work")}
         triggerIcon={IconPlus}
         showTriggerChevron
-        triggerClassName={`h-8 shrink-0 !rounded-md !px-2.5 !text-[13px] !text-white-1 ${primaryActionClass}`}
+        triggerClassName="h-8 shrink-0 !rounded-md !bg-brand-1 !px-2.5 !text-[13px] !text-white-1 hover:!bg-blue-600"
         contentProps={{
           className:
             "w-[259px] !rounded-[10px] !p-[7px] dark:bg-[#2b2d34] dark:ring-[#50535f] [&>[role=separator]]:mx-0.5 [&>[role=separator]]:my-1.5",
@@ -291,7 +290,7 @@ function TemplatePicker({
         </UnstyledButton>
         <PrimaryButton
           size="sm"
-          className={`!px-2.5 !text-[13px] ${primaryActionClass}`}
+          className="!px-2.5 !text-[13px]"
           testId="use-template"
           disabled={!selected}
           onClick={() => selected && onSelect(selected)}

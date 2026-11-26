@@ -21,12 +21,7 @@ export function EmptyWork({
       {(onAddProject || onAddGoal) && (
         <div className="mt-5 flex flex-wrap justify-center gap-2.5">
           {onAddProject && (
-            <PrimaryButton
-              testId="add-project"
-              size="sm"
-              className="min-h-9 px-3.5 dark:border-[#4a64c7] dark:bg-[#4a64c7] dark:hover:bg-[#536fd6]"
-              onClick={onAddProject}
-            >
+            <PrimaryButton testId="add-project" size="sm" className="min-h-9 px-3.5" onClick={onAddProject}>
               {t("Add a project")}
             </PrimaryButton>
           )}
