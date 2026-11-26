@@ -9,6 +9,7 @@ import { IconChevronDown, IconChevronRight, IconGoal, IconProject } from "../ico
 import { BlackLink } from "../Link";
 import { ProgressBar } from "../ProgressBar";
 import { StatusBadge } from "../StatusBadge";
+import { useWindowSizeBreakpoints } from "../utils/useWindowSizeBreakpoint";
 import { formatNumber } from "../utils/formatting";
 import type { WorkMapColumn } from "../ApiTypes";
 import type { VisibleRow, WorkMapV2Item } from "./filterWorkMap";
@@ -25,6 +26,17 @@ export function columnLabels(t: (key: string) => string) {
     reviewer: t("Reviewer"),
     next_step: t("Next step"),
   };
+}
+
+export function useTableLayout(columns: WorkMapColumn[]) {
+  const breakpoint = useWindowSizeBreakpoints();
+  const phone = breakpoint === "xs";
+  const visibleColumns = columns.filter((column) => {
+    if (column === "due_date" || column === "space") return breakpoint === "lg" || breakpoint === "xl";
+    if (column === "champion" || column === "reviewer" || column === "next_step") return breakpoint === "xl";
+    return true;
+  });
+  return { phone, visibleColumns };
 }
 
 export function Table({
@@ -49,31 +61,29 @@ export function Table({
 }) {
   const { t } = useTranslation();
   const labels = columnLabels(t);
+  const { phone, visibleColumns } = useTableLayout(columns);
   const widths = {
-    name: "30.5%",
-    status: "124px",
-    progress: "8%",
-    due_date: "8.3%",
-    space: "9.9%",
+    name: "auto",
+    status: phone ? "96px" : "124px",
+    progress: phone ? "80px" : "144px",
+    due_date: "110px",
+    space: "12%",
     champion: "10%",
     reviewer: "10%",
-    next_step: "auto",
+    next_step: "18%",
   };
   return (
     <div className="overflow-x-auto">
-      <table
-        className="w-full table-fixed border-collapse text-left text-sm"
-        style={{ minWidth: Math.min(960, 240 + columns.length * 105) }}
-      >
+      <table className="w-full table-fixed border-collapse text-left text-sm">
         <colgroup>
-          {columns.map((c) => (
+          {visibleColumns.map((c) => (
             <col key={c} style={{ width: widths[c] }} />
           ))}
         </colgroup>
         <thead className="h-9 border-b border-surface-outline bg-surface-dimmed text-xs text-content-dimmed dark:bg-[#282b32]">
           <tr>
-            {columns.map((c) => (
-              <th key={c} scope="col" className="px-3 font-medium first:pl-7">
+            {visibleColumns.map((c) => (
+              <th key={c} scope="col" className="px-1 font-medium first:pl-2 sm:px-3 sm:first:pl-7">
                 {labels[c]}
               </th>
             ))}
@@ -88,17 +98,17 @@ export function Table({
             >
               <th
                 scope="row"
-                colSpan={row.contextOnly ? columns.length : 1}
-                className="px-3 py-0 pl-7 text-left font-normal"
+                colSpan={row.contextOnly ? visibleColumns.length : 1}
+                className="px-1 py-1 pl-2 text-left font-normal sm:px-3 sm:pl-7"
               >
                 <div className="flex items-center gap-1">
                   {organize?.controls(row)}
-                  <RowName row={row} onToggle={onToggle} />
+                  <RowName row={row} onToggle={onToggle} compact={phone} />
                   {!row.contextOnly && quickAdd?.(row.item)}
                 </div>
               </th>
               {!row.contextOnly &&
-                columns
+                visibleColumns
                   .filter((c) => c !== "name")
                   .map((column) =>
                     column === "reviewer" && reviewerEditing?.canEdit(row.item.id) ? (
@@ -106,7 +116,13 @@ export function Table({
                         <ReviewerField item={row.item} editing={reviewerEditing} />
                       </td>
                     ) : (
-                      <Detail key={column} column={column} item={row.item} preferences={formattedTimePreferences} />
+                      <Detail
+                        key={column}
+                        column={column}
+                        item={row.item}
+                        preferences={formattedTimePreferences}
+                        phone={phone}
+                      />
                     ),
                   )}
             </tr>
@@ -117,14 +133,25 @@ export function Table({
   );
 }
 
-export function RowName({ row, onToggle }: { row: VisibleRow; onToggle: (id: string) => void }) {
+export function RowName({
+  row,
+  onToggle,
+  compact = false,
+}: {
+  row: VisibleRow;
+  onToggle: (id: string) => void;
+  compact?: boolean;
+}) {
   const { t } = useTranslation();
   const { item, children, contextOnly, expanded, depth } = row;
   const ItemIcon = item.type === "goal" ? IconGoal : IconProject;
   const Chevron = expanded ? IconChevronDown : IconChevronRight;
 
   return (
-    <div className="flex min-w-0 items-center gap-2" style={{ paddingInlineStart: depth * 25 }}>
+    <div
+      className={`flex min-w-0 items-center ${compact ? "gap-1" : "gap-2"}`}
+      style={{ paddingInlineStart: compact ? `min(${depth * 25}px, 25%)` : depth * 25 }}
+    >
       {children.length ? (
         <UnstyledButton
           className="flex h-7 w-4 shrink-0 items-center justify-center rounded"
@@ -137,8 +164,13 @@ export function RowName({ row, onToggle }: { row: VisibleRow; onToggle: (id: str
       ) : (
         <span className="w-4 shrink-0" />
       )}
-      <ItemIcon size={23} className="shrink-0" />
-      <BlackLink to={item.itemPath} underline="hover" title={item.name} className="truncate">
+      <ItemIcon size={compact ? 18 : 23} className="shrink-0" />
+      <BlackLink
+        to={item.itemPath}
+        underline="hover"
+        title={item.name}
+        className={compact ? "min-w-0 [overflow-wrap:anywhere]" : "truncate"}
+      >
         {item.name}
       </BlackLink>
       {contextOnly && <span className="shrink-0 text-[11px] text-content-dimmed">{t("Parent goal")}</span>}
@@ -150,10 +182,12 @@ function Detail({
   column,
   item,
   preferences,
+  phone,
 }: {
   column: WorkMapColumn;
   item: WorkMapV2Item;
   preferences: FormattedTimePreferences;
+  phone: boolean;
 }) {
   const dueDate = item.timeframe?.contextualEndDate;
   const calendarDate = parseDate(dueDate?.date);
@@ -162,19 +196,30 @@ function Detail({
   switch (column) {
     case "status":
       return (
-        <td className="px-3">
-          <StatusBadge status={status} className="border-transparent shadow-none dark:border-transparent" />
+        <td className={phone ? "px-1" : "px-3"}>
+          <StatusBadge
+            status={status}
+            className="max-w-full !whitespace-normal border-transparent shadow-none dark:border-transparent"
+          />
         </td>
       );
     case "progress":
       return (
-        <td className="px-3">
+        <td className={phone ? "px-1" : "px-3"}>
           {item.progress === null ? (
             "—"
           ) : (
-            <div className="flex max-w-24 items-center gap-2 text-xs text-content-dimmed">
-              <ProgressBar progress={item.progress} size="sm" />
-              {formatNumber(item.progress / 100, preferences.locale, { style: "percent" })}
+            <div className="flex items-center gap-2 text-xs text-content-dimmed">
+              <div className="w-[70px] shrink-0">
+                <ProgressBar
+                  progress={item.progress}
+                  size="sm"
+                  status={item.status === "outdated" ? undefined : item.status}
+                />
+              </div>
+              <span className={phone ? "sr-only" : "w-10 shrink-0 text-right tabular-nums"}>
+                {formatNumber(item.progress / 100, preferences.locale, { style: "percent" })}
+              </span>
             </div>
           )}
         </td>

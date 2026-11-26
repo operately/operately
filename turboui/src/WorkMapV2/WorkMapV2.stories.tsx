@@ -374,6 +374,7 @@ export const InlineReviewer: Story = {
   },
   render: (args) => <StoryPage {...args} editableReviewers />,
   play: async ({ canvasElement }) => {
+    if (window.innerWidth < 1280) return;
     const row = within(canvasElement).getByRole("link", { name: "GitHub Enterprise" }).closest("tr");
     if (!row) throw new Error("Reviewer row is missing");
     await userEvent.click(within(row).getByRole("button", { name: /Filip/ }));
@@ -464,7 +465,9 @@ export const NestedSpaceMap: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("cell", { name: "Q4 2026" })).toBeVisible();
+    if (window.innerWidth >= 1024) {
+      await expect(canvas.getByRole("cell", { name: "Q4 2026" })).toBeVisible();
+    }
     await userEvent.click(canvas.getByRole("button", { name: /Collapse Improve release quality/ }));
     await userEvent.click(canvas.getByRole("button", { name: /Collapse Ship Nexus Dynamics/ }));
     await userEvent.click(canvas.getByRole("button", { name: /Expand Ship Nexus Dynamics/ }));
