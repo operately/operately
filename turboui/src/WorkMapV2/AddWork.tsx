@@ -90,7 +90,7 @@ export function useAddWork(creation: WorkMapCreation | undefined, scopeName: str
         triggerClassName="h-8 shrink-0 !rounded-md !bg-brand-1 !px-2.5 !text-[13px] !text-white-1 hover:!bg-blue-600"
         contentProps={{
           className:
-            "w-[259px] !rounded-[10px] !p-[7px] dark:bg-[#2b2d34] dark:ring-[#50535f] [&>[role=separator]]:mx-0.5 [&>[role=separator]]:my-1.5",
+            "w-[259px] !rounded-[10px] !p-[7px] data-[state=closed]:animate-none dark:bg-[#2b2d34] dark:ring-[#50535f] [&>[role=separator]]:mx-0.5 [&>[role=separator]]:my-1.5",
         }}
       >
         <MenuActionItem className={menuItemClass} icon={IconTarget} onClick={() => open("goal")}>
