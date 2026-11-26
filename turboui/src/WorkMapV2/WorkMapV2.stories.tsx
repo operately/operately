@@ -261,7 +261,11 @@ function StoryPage({
         defaultSpace: productSpace,
         onFirstItemCreated: kpiState === "first-use" ? () => {} : undefined,
         spaceSearch: async () => spaces,
-        templates: [{ id: "release", name: "Product release", spaceId: product.id, milestoneCount: 3, taskCount: 14 }],
+        templates: [
+          { id: "release", name: "Release checklist", spaceId: product.id, milestoneCount: 3, taskCount: 14 },
+          { id: "discovery", name: "Feature discovery", spaceId: product.id, milestoneCount: 2, taskCount: 8 },
+          { id: "launch", name: "Integration launch", spaceId: product.id, milestoneCount: 4, taskCount: 12 },
+        ],
         templateLibraryPath: "/project-templates",
         save: async ({ name, type, space, parentId }) => {
           const created = item(name, 0, null, "", { type, space, status: "pending", owner: null });
@@ -381,12 +385,25 @@ export const InlineReviewer: Story = {
   },
 };
 
+export const AddWorkMenu: Story = {
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    await userEvent.click(within(canvasElement).getByRole("button", { name: "Add work" }));
+    await userEvent.hover(await body.findByRole("menuitem", { name: "Project from template…" }));
+  },
+};
+
 export const ProjectTemplates: Story = {
+  args: {
+    space: { id: product.id, name: product.name, href: productSpace.link },
+    view: builtInWorkMapView(true),
+    scopeName: product.name,
+  },
   play: async ({ canvasElement }) => {
     const body = within(canvasElement.ownerDocument.body);
     await userEvent.click(within(canvasElement).getByRole("button", { name: "Add work" }));
     await userEvent.click(await body.findByRole("menuitem", { name: "Project from template…" }));
-    await expect(body.getByText("Product release")).toBeVisible();
+    await expect(body.getByRole("button", { name: /Release checklist/, pressed: true })).toBeVisible();
   },
 };
 
