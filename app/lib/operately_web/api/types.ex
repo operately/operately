@@ -314,6 +314,13 @@ defmodule OperatelyWeb.Api.Types do
     field :new_name, :string, null: false
   end
 
+  object :activity_content_kpi_goal_link_changed, for: Operately.Activities.Content.KpiGoalLinkChanged do
+    field :space, :space, null: false
+    field :kpi, :kpi, null: true
+    field :kpi_name, :string, null: false
+    field :linked, :boolean, null: false
+  end
+
   object :activity_content_kpi_entry_logged, for: Operately.Activities.Content.KpiEntryLogged do
     field :space, :space, null: false
     field :kpi, :kpi, null: true
@@ -1278,6 +1285,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_kpi_created,
       :activity_content_kpi_deleted,
       :activity_content_kpi_edited,
+      :activity_content_kpi_goal_link_changed,
       :activity_content_kpi_entry_logged,
       :activity_content_kpi_entry_commented,
       :activity_content_kpi_entry_edited,
@@ -3081,6 +3089,14 @@ defmodule OperatelyWeb.Api.Types do
     field :type, :work_map_item_type, null: false
     field :item_id, :id, null: false
     field :parent_id, :id, null: true
+  end
+
+  object :kpi_goal_link_item, for: Operately.Kpis.GoalLinks.Item do
+    field :id, :id, null: false
+    field :name, :string, null: false
+    field? :space_id, :id, null: false
+    field? :space_name, :string, null: false
+    field :can_unlink, :boolean, null: false
   end
 
   object :work_map_kpi, for: Operately.WorkMaps.WorkMapKpi do

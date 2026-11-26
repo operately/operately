@@ -17,6 +17,7 @@ import { SlideIn } from "../SlideIn";
 import { showErrorToast, showSuccessToast } from "../Toasts";
 import { tn } from "../i18n";
 import { IconDotsVertical, IconFlag, IconLink, IconMessage, IconPencil, IconTrash } from "../icons";
+import { GoalField } from "../GoalField";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
@@ -26,6 +27,7 @@ import { CADENCE_OPTIONS, formatCadence, latestEntry, latestTrend } from "./util
 type DetailFields = Omit<KpiFields, "cadence"> & { cadence: SpaceKpisPage.Cadence | null };
 
 interface KpiDetailProps {
+  goalLink: SpaceKpisPage.Props["goalLink"];
   kpi: SpaceKpisPage.Kpi;
   fields: DetailFields;
   canManage: boolean;
@@ -52,6 +54,7 @@ export function KpiDetail({
   fields,
   canManage,
   canComment = false,
+  goalLink,
   championSearch,
   onDescriptionChange,
   onLogUpdate,
@@ -139,6 +142,7 @@ export function KpiDetail({
       </div>
 
       <KpiSidebar
+        goalLink={goalLink}
         fields={fields}
         canManage={canManage}
         championSearch={championSearch}
@@ -202,12 +206,14 @@ function CurrentValue({ kpi, unit }: { kpi: SpaceKpisPage.Kpi; unit: string }) {
 }
 
 function KpiSidebar({
+  goalLink,
   fields,
   canManage,
   championSearch,
   onDelete,
   subscriptions,
 }: {
+  goalLink: KpiDetailProps["goalLink"];
   fields: DetailFields;
   canManage: boolean;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
@@ -239,6 +245,8 @@ function KpiSidebar({
         )}
       </SidebarSection>
 
+      {goalLink && <LinkedGoal {...goalLink} />}
+
       <SidebarSection title={t("Cadence")}>
         <CadenceField
           cadence={fields.cadence}
@@ -262,6 +270,28 @@ function KpiSidebar({
 
       <Actions canManage={canManage} onDelete={onDelete} />
     </aside>
+  );
+}
+
+function LinkedGoal({ loading, error, retry, ...field }: SpaceKpisPage.GoalLink) {
+  const { t } = useTranslation();
+  return (
+    <SidebarSection title={t("Linked goal")} testId="kpi-linked-goal">
+      {error ? (
+        <div role="alert" className="flex flex-wrap items-center gap-2 text-sm text-content-dimmed">
+          {t("Something went wrong. Please try again.")}
+          <SecondaryButton size="xxs" onClick={retry}>
+            {t("Retry")}
+          </SecondaryButton>
+        </div>
+      ) : loading ? (
+        <p role="status" className="text-sm text-content-dimmed">
+          {t("Loading…")}
+        </p>
+      ) : (
+        <GoalField {...field} allowReplace={false} emptyStateMessage={t("Link a goal")} testId="kpi-goal-field" />
+      )}
+    </SidebarSection>
   );
 }
 

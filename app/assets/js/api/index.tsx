@@ -570,6 +570,14 @@ export interface ActivityContentKpiEntryLogged {
   period: string;
 }
 
+export interface ActivityContentKpiGoalLinkChanged {
+  __typename: "activity_content_kpi_goal_link_changed";
+  space: Space;
+  kpi: Kpi | null;
+  kpiName: string;
+  linked: boolean;
+}
+
 export interface ActivityContentMessageArchiving {
   __typename: "activity_content_message_archiving";
   companyId?: string | null;
@@ -1999,6 +2007,15 @@ export interface KpiEntryEdit {
   insertedAt?: string | null;
 }
 
+export interface KpiGoalLinkItem {
+  __typename: "kpi_goal_link_item";
+  id: Id;
+  name: string;
+  spaceId?: Id;
+  spaceName?: string;
+  canUnlink: boolean;
+}
+
 export interface McpGrant {
   __typename: "mcp_grant";
   id: Id;
@@ -3133,6 +3150,7 @@ export type ActivityContent =
   | ActivityContentKpiCreated
   | ActivityContentKpiDeleted
   | ActivityContentKpiEdited
+  | ActivityContentKpiGoalLinkChanged
   | ActivityContentKpiEntryLogged
   | ActivityContentKpiEntryCommented
   | ActivityContentKpiEntryEdited
@@ -3986,6 +4004,42 @@ export interface InvitationsGetInviteLinkByTokenInput {
 
 export interface InvitationsGetInviteLinkByTokenResult {
   inviteLink?: InviteLink | null;
+}
+
+export interface KpiGoalLinksForGoalInput {
+  goalId: Id;
+}
+
+export interface KpiGoalLinksForGoalResult {
+  items: KpiGoalLinkItem[];
+  canLink: boolean;
+}
+
+export interface KpiGoalLinksForKpiInput {
+  kpiId: Id;
+}
+
+export interface KpiGoalLinksForKpiResult {
+  goal: KpiGoalLinkItem | null;
+  canLink: boolean;
+}
+
+export interface KpiGoalLinksSearchGoalsInput {
+  kpiId: Id;
+  query: string;
+}
+
+export interface KpiGoalLinksSearchGoalsResult {
+  items: KpiGoalLinkItem[];
+}
+
+export interface KpiGoalLinksSearchKpisInput {
+  goalId: Id;
+  query: string;
+}
+
+export interface KpiGoalLinksSearchKpisResult {
+  items: KpiGoalLinkItem[];
 }
 
 export interface KpisGetKpiInput {
@@ -5792,6 +5846,16 @@ export interface JoinCompanyResult {
   result: string;
 }
 
+export interface KpiGoalLinksSetLinkInput {
+  goalId: Id;
+  kpiId: Id;
+  linked: boolean;
+}
+
+export interface KpiGoalLinksSetLinkResult {
+  success: boolean;
+}
+
 export interface KpisAddKpiAnnotationInput {
   kpiId: Id;
   date: string;
@@ -7493,6 +7557,14 @@ class ApiNamespaceWorkMaps {
   }
 }
 
+class ApiNamespaceKpiGoalLinks {
+  constructor(private client: ApiClient) {}
+
+  async setLink(input: KpiGoalLinksSetLinkInput): Promise<KpiGoalLinksSetLinkResult> {
+    return this.client.post("/kpi_goal_links/set_link", input);
+  }
+}
+
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
@@ -8511,6 +8583,7 @@ export class ApiClient {
   public apiNamespaceBilling: ApiNamespaceBilling;
   public apiNamespaceEmailChanges: ApiNamespaceEmailChanges;
   public apiNamespaceWorkMaps: ApiNamespaceWorkMaps;
+  public apiNamespaceKpiGoalLinks: ApiNamespaceKpiGoalLinks;
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceNotifications: ApiNamespaceNotifications;
   public apiNamespaceFiles: ApiNamespaceFiles;
@@ -8542,6 +8615,7 @@ export class ApiClient {
     this.apiNamespaceBilling = new ApiNamespaceBilling(this);
     this.apiNamespaceEmailChanges = new ApiNamespaceEmailChanges(this);
     this.apiNamespaceWorkMaps = new ApiNamespaceWorkMaps(this);
+    this.apiNamespaceKpiGoalLinks = new ApiNamespaceKpiGoalLinks(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceNotifications = new ApiNamespaceNotifications(this);
     this.apiNamespaceFiles = new ApiNamespaceFiles(this);
@@ -9787,6 +9861,94 @@ export default {
       mutationOptions({
         mutationFn: (input: WorkMapsSaveLayoutAndHierarchyInput) =>
           defaultApiClient.apiNamespaceWorkMaps.saveLayoutAndHierarchy(input),
+      }),
+  },
+
+  kpi_goal_links: {
+    forGoalQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/kpi_goal_links/for_goal"),
+    forGoalQueryKey: (input: KpiGoalLinksForGoalInput) =>
+      buildApiQueryKey(defaultApiClient, "/kpi_goal_links/for_goal", input),
+    forGoalQueryOptions: (input: KpiGoalLinksForGoalInput) =>
+      buildApiQueryOptions<KpiGoalLinksForGoalInput, KpiGoalLinksForGoalResult>(
+        defaultApiClient,
+        "/kpi_goal_links/for_goal",
+        input,
+      ),
+    forGoalQuery: (input: KpiGoalLinksForGoalInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<KpiGoalLinksForGoalInput, KpiGoalLinksForGoalResult>(
+          defaultApiClient,
+          "/kpi_goal_links/for_goal",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    forKpiQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/kpi_goal_links/for_kpi"),
+    forKpiQueryKey: (input: KpiGoalLinksForKpiInput) =>
+      buildApiQueryKey(defaultApiClient, "/kpi_goal_links/for_kpi", input),
+    forKpiQueryOptions: (input: KpiGoalLinksForKpiInput) =>
+      buildApiQueryOptions<KpiGoalLinksForKpiInput, KpiGoalLinksForKpiResult>(
+        defaultApiClient,
+        "/kpi_goal_links/for_kpi",
+        input,
+      ),
+    forKpiQuery: (input: KpiGoalLinksForKpiInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<KpiGoalLinksForKpiInput, KpiGoalLinksForKpiResult>(
+          defaultApiClient,
+          "/kpi_goal_links/for_kpi",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    searchGoalsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/kpi_goal_links/search_goals"),
+    searchGoalsQueryKey: (input: KpiGoalLinksSearchGoalsInput) =>
+      buildApiQueryKey(defaultApiClient, "/kpi_goal_links/search_goals", input),
+    searchGoalsQueryOptions: (input: KpiGoalLinksSearchGoalsInput) =>
+      buildApiQueryOptions<KpiGoalLinksSearchGoalsInput, KpiGoalLinksSearchGoalsResult>(
+        defaultApiClient,
+        "/kpi_goal_links/search_goals",
+        input,
+      ),
+    searchGoalsQuery: (input: KpiGoalLinksSearchGoalsInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<KpiGoalLinksSearchGoalsInput, KpiGoalLinksSearchGoalsResult>(
+          defaultApiClient,
+          "/kpi_goal_links/search_goals",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    searchKpisQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/kpi_goal_links/search_kpis"),
+    searchKpisQueryKey: (input: KpiGoalLinksSearchKpisInput) =>
+      buildApiQueryKey(defaultApiClient, "/kpi_goal_links/search_kpis", input),
+    searchKpisQueryOptions: (input: KpiGoalLinksSearchKpisInput) =>
+      buildApiQueryOptions<KpiGoalLinksSearchKpisInput, KpiGoalLinksSearchKpisResult>(
+        defaultApiClient,
+        "/kpi_goal_links/search_kpis",
+        input,
+      ),
+    searchKpisQuery: (input: KpiGoalLinksSearchKpisInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<KpiGoalLinksSearchKpisInput, KpiGoalLinksSearchKpisResult>(
+          defaultApiClient,
+          "/kpi_goal_links/search_kpis",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    setLink: (input: KpiGoalLinksSetLinkInput) => defaultApiClient.apiNamespaceKpiGoalLinks.setLink(input),
+    useSetLink: () =>
+      useMutation<KpiGoalLinksSetLinkInput, KpiGoalLinksSetLinkResult>((input) =>
+        defaultApiClient.apiNamespaceKpiGoalLinks.setLink(input),
+      ),
+    setLinkMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: KpiGoalLinksSetLinkInput) => defaultApiClient.apiNamespaceKpiGoalLinks.setLink(input),
       }),
   },
 

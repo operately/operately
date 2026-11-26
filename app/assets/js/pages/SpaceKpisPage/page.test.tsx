@@ -8,6 +8,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { SpaceKpisPage } from "turboui";
 import { Page } from "./page";
 
+jest.mock("@/models/kpis/useKpiGoalLinks", () => ({ useKpiGoalField: () => false }));
 jest.mock("@/i18n", () => ({ __esModule: true, default: { t: (key: string) => key } }));
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: jest.fn() }));

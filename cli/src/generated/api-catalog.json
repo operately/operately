@@ -595,6 +595,10 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_kpi_goal_link_changed",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_kpi_entry_logged",
           "kind": "named"
         },
@@ -25647,6 +25651,135 @@
             },
             "optional": false,
             "nullable": true,
+            "has_default": false
+          }
+        ]
+      },
+      "kpi_goal_link_item": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "can_unlink",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "activity_content_kpi_goal_link_changed": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "kpi",
+            "type": {
+              "name": "kpi",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "kpi_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "linked",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
             "has_default": false
           }
         ]

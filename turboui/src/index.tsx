@@ -38,6 +38,7 @@ export * from "./PieChart";
 export * from "./ProgressBar";
 export * from "./RichContent";
 export * from "./ResourceHub";
+export type { KpiGoalLinksProps } from "./KpiGoalLinks";
 export * from "./SearchPage";
 export * from "./SearchIndexAdminPage";
 export * from "./Spacer";
