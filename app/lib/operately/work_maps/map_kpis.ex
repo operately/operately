@@ -5,18 +5,34 @@ defmodule Operately.WorkMaps.MapKpis do
   alias Operately.Kpis.Kpi
   alias Operately.Repo
 
-  def search(scope, search) do
-    visible(scope)
-    |> where([k], fragment("strpos(lower(?), lower(?)) > 0", k.name, ^search))
-    |> order_by([k], [k.name, k.id])
-    |> limit(50)
-    |> load()
+  @page_size 50
+
+  def any?(scope), do: Repo.exists?(visible(scope))
+
+  def search(scope, search, offset) do
+    rows =
+      visible(scope)
+      |> where([k], fragment("strpos(lower(?), lower(?)) > 0", k.name, ^search))
+      |> order_by([k], [k.name, k.id])
+      |> offset(^offset)
+      |> limit(^(@page_size + 1))
+      |> preload([space: s], space: s)
+      |> Repo.all()
+
+    {Kpis.load_recent_entries(Enum.take(rows, @page_size), 1), length(rows) > @page_size}
   end
 
   def pinned(_, []), do: []
 
   def pinned(scope, ids) do
-    kpis = visible(scope) |> where([k], k.id in ^ids) |> load() |> Map.new(&{&1.id, &1})
+    kpis =
+      visible(scope)
+      |> where([k], k.id in ^ids)
+      |> preload([space: s], space: s)
+      |> Repo.all()
+      |> Kpis.load_recent_entries()
+      |> Map.new(&{&1.id, &1})
+
     for id <- ids, kpi = kpis[id], do: kpi
   end
 
@@ -33,9 +49,5 @@ defmodule Operately.WorkMaps.MapKpis do
     query = from k in Kpi, join: s in assoc(k, :space), as: :space, where: s.company_id == ^scope.person.company_id and is_nil(s.deleted_at)
 
     if scope.space_id, do: where(query, [k], k.space_id == ^scope.space_id), else: query
-  end
-
-  defp load(query) do
-    query |> preload([space: s], space: s) |> Repo.all() |> Kpis.load_recent_entries(1)
   end
 end

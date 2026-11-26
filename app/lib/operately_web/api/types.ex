@@ -3083,7 +3083,8 @@ defmodule OperatelyWeb.Api.Types do
     field :parent_id, :id, null: true
   end
 
-  object :work_map_kpi do
+  object :work_map_kpi, for: Operately.WorkMaps.WorkMapKpi do
+    field :recent_values, list_of(:float), null: false
     field :id, :id, null: false
     field :name, :string, null: false
     field :space_id, :id, null: false

@@ -1,7 +1,7 @@
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import i18n from "@/i18n";
 import * as React from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { showErrorToast, SpaceKpisPage, type SpaceKpisPageTypes } from "turboui";
@@ -22,6 +22,7 @@ import { KpiEntryComments } from "./KpiEntryComments";
 export function Page() {
   const formattedTimePreferences = useFormattedTimePreferences();
   const paths = usePaths();
+  const [params, setParams] = useSearchParams();
   const me = useMe();
   const navigate = useNavigate();
   const refresh = useRefresh();
@@ -182,6 +183,13 @@ export function Page() {
       await refresh();
     });
 
+  const onCloseCreateForm = () => {
+    if (!params.has("new")) return;
+    const next = new URLSearchParams(params);
+    next.delete("new");
+    setParams(next, { replace: true });
+  };
+
   return (
     <SpaceKpisPage
       formattedTimePreferences={formattedTimePreferences}
@@ -191,6 +199,8 @@ export function Page() {
       kpis={parsedKpis}
       selectedKpi={selectedKpi}
       currentUser={People.parsePersonForTurboUi(paths, me)}
+      showCreateForm={params.get("new") === "true" && !kpi && Boolean(space.permissions?.canEdit)}
+      onCloseCreateForm={onCloseCreateForm}
       canManage={space.permissions?.canEdit ?? false}
       subscriptions={subscriptions}
       championSearch={championSearch}

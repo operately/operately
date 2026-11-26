@@ -37,4 +37,16 @@ it.each([undefined, "product"])("recovers expired data when the map mounts (spac
   });
   expect(result.current).toBeNull();
   await waitFor(() => expect(result.current).toMatchObject({ workMap: [], space: id ? { id } : undefined }));
+
+  const settingsCalls = jest.mocked(axios.get).mock.calls.filter(([url, config]) => {
+    const params = (config as { params?: { space_id?: string } } | undefined)?.params;
+    return String(url).endsWith("/work_maps/get_settings") && params?.space_id === id;
+  });
+  expect(settingsCalls).toHaveLength(1);
+  expect(settingsCalls[0]?.[1]).toEqual(
+    expect.objectContaining({
+      params: { ...(id && { space_id: id }), include_pinned_kpis: false },
+    }),
+  );
+  expect(result.current?.settingsInput).toEqual(id ? { spaceId: id } : {});
 });

@@ -3138,6 +3138,11 @@ msgid "%{name} invited you to join"
 msgstr "%{name} convidou você para participar"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:69
+msgid "%{name} space"
+msgstr "Espaço %{name}"
+
+#.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:420
 msgid "%{name} · %{date} · Done"
 msgstr "%{name} · %{date} · Concluído"
@@ -5570,6 +5575,11 @@ msgstr "Leitura do check-in confirmada"
 #: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:67
 msgid "Acknowledged retrospective"
 msgstr "Leitura da retrospectiva confirmada"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:69
+msgid "Across spaces"
+msgstr "Em todos os espaços"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:168
@@ -9250,9 +9260,20 @@ msgid "Couldn't update task item"
 msgstr "Não foi possível atualizar o item da tarefa"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:74
+#: ../turboui/src/WorkMapV2/PinManager.tsx:138
+msgid "Couldn’t load KPIs"
+msgstr "Não foi possível carregar os KPIs"
+
+#.frontend
 #: ../turboui/src/InfiniteScroll/index.tsx:114
 msgid "Couldn’t load more activities."
 msgstr "Não foi possível carregar mais atividades."
+
+#.frontend
+#: assets/js/pages/WorkMapV2Page/useKpiStrip.ts:47
+msgid "Couldn’t save KPI pins"
+msgstr "Não foi possível salvar os KPIs fixados"
 
 #.frontend
 #: assets/js/models/workMap/useSaveWorkMapDefaultView.ts:15
@@ -9335,6 +9356,11 @@ msgstr "Criar espaço"
 #: ../turboui/src/TaskCreationModal/index.tsx:285
 msgid "Create Task"
 msgstr "Criar tarefa"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:109
+msgid "Create a KPI"
+msgstr "Criar um KPI"
 
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:108
@@ -10555,6 +10581,11 @@ msgstr "Esboçar o plano"
 #: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
 msgid "Drafts"
 msgstr "Rascunhos"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:87
+msgid "Drag pinned KPIs into the order you want on the Work Map."
+msgstr "Arraste os KPIs fixados para definir a ordem no mapa de trabalho."
 
 #.frontend
 #: ../turboui/src/WorkMapV2/Organize.tsx:120
@@ -12373,6 +12404,11 @@ msgid "Finalizing Import"
 msgstr "Finalizando importação"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:127
+msgid "Find a KPI to pin…"
+msgstr "Buscar um KPI para fixar…"
+
+#.frontend
 #: ../turboui/src/WorkMapV2/FilterMenu.tsx:139
 #: ../turboui/src/WorkMapV2/FilterMenu.tsx:140
 msgid "Find a filter…"
@@ -13668,6 +13704,8 @@ msgstr "KPI: <kpi>%{kpiName}</kpi>"
 #: ../turboui/src/SpaceKpisPage/index.tsx:231
 #: ../turboui/src/SpaceKpisPage/index.tsx:234
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:70
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:48
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:55
 msgid "KPIs"
 msgstr "Indicadores (KPIs)"
 
@@ -14317,6 +14355,12 @@ msgstr "Gerenciar configurações de e-mail"
 #: ../turboui/src/AccountSecurityPage/index.tsx:27
 msgid "Manage how you sign in and grant access to Operately."
 msgstr "Gerencie como você entra e concede acesso ao Operately."
+
+#.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:104
+#: ../turboui/src/WorkMapV2/PinManager.tsx:66
+msgid "Manage pins"
+msgstr "Gerenciar KPIs fixados"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:122
@@ -15191,6 +15235,7 @@ msgstr "Novo período: %{new_start_date} → %{new_end_date}"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:97
+#: ../turboui/src/WorkMapV2/PinManager.tsx:174
 #: ../turboui/src/WorkMapV2/Timeline.tsx:248
 #: ../turboui/src/WorkMapV2/Timeline.tsx:249
 msgid "Next"
@@ -15251,9 +15296,19 @@ msgid "No Companies Found"
 msgstr "Nenhuma empresa encontrada"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:94
+msgid "No KPIs pinned to this map."
+msgstr "Nenhum KPI fixado neste mapa."
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:104
 msgid "No KPIs yet"
 msgstr "Nenhum KPI ainda"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:95
+msgid "No KPIs yet. Track a number over time, like weekly active teams."
+msgstr "Ainda não há KPIs. Acompanhe um número ao longo do tempo, como o de equipes ativas por semana."
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:73
@@ -15412,6 +15467,8 @@ msgstr "Nenhum contribuidor"
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:89
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:93
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:150
+#: ../turboui/src/WorkMapV2/PinManager.tsx:250
 msgid "No data"
 msgstr "Sem dados"
 
@@ -15521,6 +15578,11 @@ msgstr "Nenhuma importação ainda. Envie um pacote acima para criar a primeira.
 #: ../turboui/src/InlineComments/CommentsPanel.tsx:83
 msgid "No inline comments yet."
 msgstr "Ainda não há comentários no texto."
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:167
+msgid "No matching KPIs"
+msgstr "Nenhum KPI encontrado"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:464
@@ -16940,6 +17002,21 @@ msgid "Pick who will do it..."
 msgstr "Escolha quem vai fazer..."
 
 #.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:271
+msgid "Pin %{name}"
+msgstr "Fixar %{name}"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:104
+msgid "Pin KPIs"
+msgstr "Fixar KPIs"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:112
+msgid "Pinned to Work Map · %{used} of %{limit}"
+msgstr "Fixados no mapa de trabalho · %{used} de %{limit}"
+
+#.frontend
 #: assets/js/features/SpaceTools/Discussions/ZeroState.tsx:37
 msgid "Pitch Ideas"
 msgstr "Apresentar ideias"
@@ -17087,6 +17164,7 @@ msgstr "Tente novamente"
 #: assets/js/pages/SpacePage/page.tsx:179
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:51
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:73
+#: assets/js/pages/WorkMapV2Page/useKpiStrip.ts:47
 #: assets/js/pages/WorkMapV2Page/useOrganization.ts:37
 #: assets/js/pages/WorkMapV2Page/useReviewerEditing.ts:33
 #: assets/js/pages/WorkMapV2Page/useReviewerEditing.ts:46
@@ -17239,6 +17317,7 @@ msgid "Preview: %{size}"
 msgstr "Prévia: %{size}"
 
 #.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:171
 #: ../turboui/src/WorkMapV2/Timeline.tsx:245
 #: ../turboui/src/WorkMapV2/Timeline.tsx:246
 msgid "Previous"
@@ -18438,6 +18517,7 @@ msgstr "Reabrindo objetivo"
 
 #.frontend
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:340
+#: ../turboui/src/WorkMapV2/PinManager.tsx:217
 msgid "Reorder %{name}"
 msgstr "Reordenar %{name}"
 
@@ -19313,6 +19393,12 @@ msgstr "Buscar Templates de %{name}…"
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:414
 msgid "Search Index"
 msgstr "Índice de busca"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:126
+#: ../turboui/src/WorkMapV2/PinManager.tsx:127
+msgid "Search KPIs"
+msgstr "Buscar KPIs"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:487
@@ -23073,6 +23159,8 @@ msgstr "Somente domínios de e-mail confiáveis"
 
 #.frontend
 #: ../turboui/src/InfiniteScroll/index.tsx:117
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:76
+#: ../turboui/src/WorkMapV2/PinManager.tsx:140
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:46
 #: assets/js/pages/InviteLinkFullPage/index.tsx:45
 #: assets/js/pages/SpaceWorkMapPage/page.tsx:49
@@ -23398,6 +23486,11 @@ msgstr "Remover link"
 #: lib/operately/md/workmap.ex:92
 msgid "Unnamed"
 msgstr "Sem nome"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:271
+msgid "Unpin %{name}"
+msgstr "Desafixar %{name}"
 
 #.frontend
 #: ../turboui/src/NotificationToggle/index.tsx:49
@@ -24175,6 +24268,13 @@ msgstr "Somente leitura"
 #: ../turboui/src/CommentSection/CommentInput.tsx:294
 msgid "View all"
 msgstr "Ver todos"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:66
+#: ../turboui/src/WorkMapV2/PinManager.tsx:91
+#: ../turboui/src/WorkMapV2/PinManager.tsx:103
+msgid "View all KPIs"
+msgstr "Ver todos os KPIs"
 
 #.elixir
 #.frontend
@@ -26459,6 +26559,12 @@ msgstr "atualizou a descrição do objetivo"
 #: lib/operately_email/emails/goal_timeframe_editing_email.ex:37
 msgid "updated the goal's timeframe"
 msgstr "atualizou o período do objetivo"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:81
+#: ../turboui/src/WorkMapV2/PinManager.tsx:145
+msgid "Loading…"
+msgstr "Carregando…"
 
 #~ #.frontend
 #~ #: ../turboui/src/Timeline/ActivityComponents.tsx:149

@@ -137,6 +137,22 @@ defmodule Operately.Support.Features.WorkMapSteps do
     UI.visit(ctx, Paths.work_map_path(ctx.company))
   end
 
+  step :add_space_kpi, ctx do
+    kpi = Operately.KpisFixtures.kpi_fixture(ctx.creator, %{space_id: ctx.space.id})
+    Map.put(ctx, :kpi, kpi)
+  end
+
+  step :pin_kpi, ctx do
+    ctx
+    |> UI.click(testid: "manage-work-map-pins")
+    |> UI.click(testid: "pin-#{Paths.kpi_id(ctx.kpi)}")
+    |> UI.assert_has(testid: "unpin-#{Paths.kpi_id(ctx.kpi)}")
+  end
+
+  step :assert_kpi_pinned, ctx do
+    UI.assert_has(ctx, testid: "pinned-kpi-#{Paths.kpi_id(ctx.kpi)}")
+  end
+
   step :assign_project_reviewer, ctx do
     field = "reviewer-#{Paths.project_id(ctx.project)}"
     ctx = ctx

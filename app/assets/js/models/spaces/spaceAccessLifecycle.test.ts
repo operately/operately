@@ -36,6 +36,8 @@ it("invalidates access data for every space ID variant without touching unrelate
     Api.spaces.listQueryKey({ includeMembers: true }),
     Api.spaces.searchQueryKey({ query: "marketing" }),
     Api.companies.getWorkMapQueryKey({}),
+    Api.work_maps.getKpiPinsQueryKey({}),
+    Api.work_maps.searchKpisQueryKey({ spaceId: "space1", query: "sales" }),
     Api.companies.getWorkMapQueryKey({ spaceId: "space1" }),
     Api.companies.listActivitiesQueryKey({ scopeType: "space", scopeId: "space1", actions: [] }),
   ];
