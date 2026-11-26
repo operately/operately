@@ -2,7 +2,13 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { PrimaryButton, SecondaryButton } from "../Button";
 
-export function EmptyWork({ onAddProject, onAddGoal }: { onAddProject?: () => void; onAddGoal?: () => void }) {
+export function EmptyWork({
+  onAddProject,
+  onAddGoal,
+}: {
+  onAddProject?: React.MouseEventHandler<HTMLButtonElement>;
+  onAddGoal?: React.MouseEventHandler<HTMLButtonElement>;
+}) {
   const { t } = useTranslation();
   return (
     <section className="px-4 pb-12 pt-16 text-center sm:pt-[104px]">
@@ -15,12 +21,7 @@ export function EmptyWork({ onAddProject, onAddGoal }: { onAddProject?: () => vo
       {(onAddProject || onAddGoal) && (
         <div className="mt-5 flex flex-wrap justify-center gap-2.5">
           {onAddProject && (
-            <PrimaryButton
-              testId="add-project"
-              size="sm"
-              className="min-h-9 px-3.5 dark:border-[#4a64c7] dark:bg-[#4a64c7] dark:hover:bg-[#536fd6]"
-              onClick={onAddProject}
-            >
+            <PrimaryButton testId="add-project" size="sm" className="min-h-9 px-3.5" onClick={onAddProject}>
               {t("Add a project")}
             </PrimaryButton>
           )}

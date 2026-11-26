@@ -44,7 +44,7 @@ export function Toolbar({
     progress: t("Progress"),
   };
   return (
-    <div className="flex min-h-14 flex-wrap items-center gap-2 border-y border-surface-outline px-4 py-2 sm:px-7">
+    <div className="flex min-h-[57px] flex-wrap items-center gap-2 border-y border-surface-outline px-4 py-2 sm:px-7">
       <ViewToggle
         value={view.view}
         ariaLabel={t("Work map view")}

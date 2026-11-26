@@ -100,7 +100,9 @@ export function WorkMapV2Page({
               <IconChevronRight size={16} className="shrink-0 text-content-dimmed" />
             </>
           )}
-          <h1 className="shrink-0 text-2xl font-semibold tracking-tight">{space ? t("Work Map") : title}</h1>
+          <h1 className="min-w-0 break-words text-2xl font-semibold leading-tight tracking-tight">
+            {space ? t("Work Map") : title}
+          </h1>
         </div>
         {items.length > 0 && !organizing && addWork.menu}
       </header>
@@ -184,12 +186,12 @@ export function WorkMapV2Page({
               </footer>
             </>
           ) : (
-            <div className="flex flex-col items-center gap-3 px-4 py-16 text-center">
-              <h2 className="text-lg font-semibold">
+            <div className="flex flex-col items-center gap-2 px-4 py-16 text-center sm:pt-[100px]">
+              <h2 className="text-[23px] font-semibold leading-8">
                 {onlyType === "project" ? t("No projects match these filters") : t("No matching work.")}
               </h2>
               <p className="text-sm text-content-dimmed">{t("Try another filter or clear them to see more work.")}</p>
-              <SecondaryButton size="sm" onClick={() => onViewChange({ ...view, filters: [] })}>
+              <SecondaryButton className="mt-2" size="sm" onClick={() => onViewChange({ ...view, filters: [] })}>
                 {t("Clear filters")}
               </SecondaryButton>
             </div>

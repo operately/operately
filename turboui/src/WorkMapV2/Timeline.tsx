@@ -239,7 +239,7 @@ function TimelineToolbar({
   };
 
   return (
-    <div className="flex h-12 items-center gap-2 px-4 sm:px-7">
+    <div className="flex min-h-12 flex-wrap items-center gap-2 px-4 py-1 sm:px-7">
       <strong className="text-sm sm:text-base">{range}</strong>
 
       <SecondaryButton size="xs" ariaLabel={t("Previous")} icon={IconChevronLeft} onClick={onPrevious}>
@@ -269,7 +269,7 @@ function NameColumn({ rows, onToggle }: { rows: VisibleRow[]; onToggle: (id: str
   const { t } = useTranslation();
 
   return (
-    <div className="w-[40%] shrink-0 border-r border-surface-outline sm:w-[28%]">
+    <div className="w-[45%] shrink-0 border-r border-surface-outline sm:w-[28%]">
       <div className="h-8 border-b border-surface-outline bg-surface-dimmed px-4 py-1.5 text-xs sm:px-7">
         {t("Name")}
       </div>
@@ -383,10 +383,16 @@ function TimelineMark({
   }
 
   if (!start && end) {
+    const x = positionOf(end);
+    if (x < viewport.left || x >= viewport.right) return null;
+    const labelOnLeft = viewport.right - x < 96 && x - viewport.left > viewport.right - x;
+
     return (
-      <span className="absolute top-3 whitespace-nowrap text-xs" style={{ left: positionOf(end) }}>
-        <span className="text-indigo-600 dark:text-indigo-300">◆</span>{" "}
-        {t("Due {{date}}", { date: formatMarkDate(end, locale) })}
+      <span className="absolute top-3 text-xs" style={{ left: x }}>
+        <span className="text-indigo-600 dark:text-indigo-300">◆</span>
+        <span className={`absolute top-0 whitespace-nowrap ${labelOnLeft ? "right-full mr-1" : "left-full ml-1"}`}>
+          {t("Due {{date}}", { date: formatMarkDate(end, locale) })}
+        </span>
       </span>
     );
   }
