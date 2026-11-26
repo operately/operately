@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Documents.Update do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:attrs, fn -> parse_attrs(inputs) end)
+    |> run(:attrs, fn -> parse_attrs(inputs, conn.body_params) end)
     |> run(:document, fn ctx -> find_document(ctx.me, ctx.attrs) end)
     |> run(:permissions, fn ctx -> Permissions.check(ctx.document.request_info.access_level, :can_edit_document, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubDocumentEditing.run(ctx.me, ctx.document, ctx.attrs) end)
@@ -47,12 +47,25 @@ defmodule OperatelyWeb.Api.Documents.Update do
     end
   end
 
-  defp parse_attrs(inputs) do
-    {:ok, Map.merge(inputs, %{
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscriber_ids: inputs[:subscriber_ids] || [],
-      expected_version: inputs[:expected_version]
-    })}
+  defp parse_attrs(inputs, body_params) do
+    # TurboConnect normalizes a null list to [], so use the request body to keep null distinct from an explicit empty list.
+    subscriber_ids =
+      case body_params do
+        %{"subscriber_ids" => nil} -> nil
+        _ -> inputs[:subscriber_ids]
+      end
+
+    subscription_attrs =
+      if is_nil(inputs[:send_notifications_to_everyone]) and is_nil(subscriber_ids) do
+        %{send_to_everyone: nil, subscriber_ids: nil}
+      else
+        %{
+          send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+          subscriber_ids: subscriber_ids || []
+        }
+      end
+
+    {:ok, Map.merge(inputs, subscription_attrs)}
   end
 
   defp find_document(me, inputs) do

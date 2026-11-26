@@ -3,18 +3,26 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.UpdateDocumentTest do
 
   alias Operately.Notifications.SubscriptionList
   alias Operately.ResourceHubs.Document
+  alias Operately.Operations.SubscriptionsListEditing
   alias Operately.Support.Factory
   alias OperatelyWeb.Mcp.Tools.DocsAndFiles.UpdateDocument
   alias OperatelyWeb.Mcp.ToolConnHelper
   alias OperatelyWeb.Paths
 
-  test "call/2 updates a document with safe notification defaults" do
+  test "call/2 preserves subscriptions when notification arguments are omitted" do
     ctx =
       %{}
       |> Factory.setup()
+      |> Factory.add_company_member(:other)
       |> Factory.add_space(:space)
       |> Factory.fetch_default_resource_hub(:hub, :space)
       |> Factory.add_document(:document, :hub)
+
+    {:ok, _} =
+      SubscriptionsListEditing.run(subscription_list!(ctx.document.id), %{
+        send_notifications_to_everyone: true,
+        subscriber_ids: [ctx.creator.id, ctx.other.id]
+      })
 
     assert {:ok, %{document: document}} =
              UpdateDocument.call(ToolConnHelper.conn(ctx), %{
@@ -34,7 +42,8 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.UpdateDocumentTest do
 
     list = subscription_list!(document.id)
 
-    refute list.send_to_everyone
+    assert list.send_to_everyone
+    assert Map.new(list.subscriptions, &{&1.person_id, &1.canceled}) == %{ctx.creator.id => false, ctx.other.id => false}
   end
 
   test "subscribes selected people from notify_person_ids" do
