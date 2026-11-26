@@ -53,12 +53,9 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.UpdateDocument do
             "notify_person_ids" =>
               JsonSchema.array(
                 JsonSchema.string("A person identifier."),
-                description: "Optional people to notify about this update. Defaults to none beyond the author."
+                description: "People to notify about this update. Omit both notification inputs to retain current subscriptions."
               ),
-            "notify_everyone" =>
-              JsonSchema.boolean(
-                "When true, notify everyone eligible for this document. Defaults to false."
-              )
+            "notify_everyone" => JsonSchema.boolean("When true, notify everyone eligible for this document. Omit both notification inputs to retain the current setting.")
           },
           required: ["document_id", "name", "content"]
         ),
@@ -74,7 +71,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.UpdateDocument do
   def call(conn, %{"document_id" => document_id, "name" => name, "content" => content} = arguments) do
     with {:ok, document_id} <- Helpers.decode_id(document_id),
          {:ok, content} <- Helpers.markdown_to_rich_text_allow_blank(content),
-         {:ok, notification_inputs} <- Helpers.decode_notification_inputs(arguments) do
+         {:ok, notification_inputs} <- Helpers.decode_optional_notification_inputs(arguments) do
       DocumentUpdate.call(
         conn,
         Map.merge(

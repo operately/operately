@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.Documents.UpdateTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.ResourceHubs.Document
+  alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Access.Binding
   alias Operately.Support.RichText
 
@@ -155,6 +156,64 @@ defmodule OperatelyWeb.Api.Documents.UpdateTest do
     end
   end
 
+  describe "subscriptions" do
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:subscriber, :space)
+      |> Factory.add_space_member(:unsubscribed, :space)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+    end
+
+    test "an edit without subscription inputs preserves selected and canceled subscriptions", ctx do
+      document = create_document(ctx, false)
+      list = subscription_list!(document.id)
+      canceled = Enum.find(list.subscriptions, &(&1.person_id == ctx.unsubscribed.id))
+      {:ok, _} = canceled |> Subscription.changeset(%{canceled: true}) |> Repo.update()
+
+      assert {200, _} =
+               mutation(ctx.conn, [:documents, :update], %{
+                 document_id: Paths.document_id(document),
+                 name: "Edited name",
+                 content: RichText.rich_text("Edited content", :as_string)
+               })
+
+      assert Repo.reload!(document).current_version == 2
+      assert_subscription_state(document.id, false, %{ctx.creator.id => false, ctx.subscriber.id => false, ctx.unsubscribed.id => true})
+    end
+
+    test "null subscription inputs preserve send-to-everyone and subscribers", ctx do
+      document = create_document(ctx, true)
+
+      assert {200, _} =
+               mutation(ctx.conn, [:documents, :update], %{
+                 document_id: Paths.document_id(document),
+                 name: "Edited name",
+                 content: RichText.rich_text("Edited content", :as_string),
+                 send_notifications_to_everyone: nil,
+                 subscriber_ids: nil
+               })
+
+      assert_subscription_state(document.id, true, %{ctx.creator.id => false, ctx.subscriber.id => false, ctx.unsubscribed.id => false})
+    end
+
+    test "an explicit empty list with notifications disabled clears subscribers", ctx do
+      document = create_document(ctx, true)
+
+      assert {200, _} =
+               mutation(ctx.conn, [:documents, :update], %{
+                 document_id: Paths.document_id(document),
+                 name: "Edited name",
+                 content: RichText.rich_text("Edited content", :as_string),
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: []
+               })
+
+      assert_subscription_state(document.id, false, %{ctx.creator.id => true, ctx.subscriber.id => true, ctx.unsubscribed.id => true})
+    end
+  end
+
   test "mutation responses enrich titles while storing source content", ctx do
     ctx =
       ctx
@@ -185,6 +244,31 @@ defmodule OperatelyWeb.Api.Documents.UpdateTest do
   #
   # Helpers
   #
+
+  defp create_document(ctx, send_to_everyone) do
+    assert {200, response} =
+             mutation(ctx.conn, [:documents, :create], %{
+               resource_hub_id: Paths.resource_hub_id(ctx.hub),
+               name: "Document",
+               content: RichText.rich_text("Content", :as_string),
+               send_notifications_to_everyone: send_to_everyone,
+               subscriber_ids: Enum.map([ctx.subscriber, ctx.unsubscribed], &Paths.person_id/1)
+             })
+
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(response.document.id)
+    Repo.get!(Document, id)
+  end
+
+  defp subscription_list!(document_id) do
+    {:ok, list} = SubscriptionList.get(:system, parent_id: document_id, opts: [preload: :subscriptions])
+    list
+  end
+
+  defp assert_subscription_state(document_id, send_to_everyone, canceled_by_person) do
+    list = subscription_list!(document_id)
+    assert list.send_to_everyone == send_to_everyone
+    assert Map.new(list.subscriptions, &{&1.person_id, &1.canceled}) == canceled_by_person
+  end
 
   defp create_space(ctx, company_members_level, space_members_level) do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})

@@ -34,8 +34,12 @@ defmodule Operately.Features.ResourceHubDocument.AuthoringTest do
     |> Steps.visit_resource_hub_page()
     |> Steps.create_document(@document)
     |> Steps.assert_document_content(@document)
+    |> Steps.subscribe_other_user()
     |> Steps.edit_document(new_doc)
     |> Steps.assert_document_content(new_doc)
+    |> Steps.assert_author_and_other_user_subscribed()
+    |> Steps.visit_document_page()
+    |> Steps.assert_author_and_other_user_subscribed()
     |> Steps.assert_document_edited_on_space_feed(new_doc.name)
     |> Steps.assert_document_edited_on_company_feed(new_doc.name)
   end
