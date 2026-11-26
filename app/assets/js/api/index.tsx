@@ -3091,6 +3091,8 @@ export interface WorkMapItem {
 }
 
 export interface WorkMapKpi {
+  __typename: "work_map_kpi";
+  recentValues: number[];
   id: Id;
   name: string;
   spaceId: Id;
@@ -4660,8 +4662,19 @@ export interface TasksListTaskStatusesResult {
   taskStatuses: TaskStatus[];
 }
 
+export interface WorkMapsGetKpiPinsInput {
+  spaceId?: Id;
+}
+
+export interface WorkMapsGetKpiPinsResult {
+  kpis: WorkMapKpi[];
+  hasKpis: boolean;
+  pinLimit: number;
+}
+
 export interface WorkMapsGetSettingsInput {
   spaceId?: Id;
+  includePinnedKpis?: boolean;
 }
 
 export interface WorkMapsGetSettingsResult {
@@ -4676,10 +4689,12 @@ export interface WorkMapsGetSettingsResult {
 export interface WorkMapsSearchKpisInput {
   spaceId?: Id;
   query?: string;
+  offset?: number;
 }
 
 export interface WorkMapsSearchKpisResult {
   kpis: WorkMapKpi[];
+  hasMore: boolean;
 }
 
 export interface AddCompanyOwnersInput {
@@ -9705,6 +9720,25 @@ export default {
   },
 
   work_maps: {
+    getKpiPinsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/work_maps/get_kpi_pins"),
+    getKpiPinsQueryKey: (input: WorkMapsGetKpiPinsInput) =>
+      buildApiQueryKey(defaultApiClient, "/work_maps/get_kpi_pins", input),
+    getKpiPinsQueryOptions: (input: WorkMapsGetKpiPinsInput) =>
+      buildApiQueryOptions<WorkMapsGetKpiPinsInput, WorkMapsGetKpiPinsResult>(
+        defaultApiClient,
+        "/work_maps/get_kpi_pins",
+        input,
+      ),
+    getKpiPinsQuery: (input: WorkMapsGetKpiPinsInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<WorkMapsGetKpiPinsInput, WorkMapsGetKpiPinsResult>(
+          defaultApiClient,
+          "/work_maps/get_kpi_pins",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
     getSettingsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/work_maps/get_settings"),
     getSettingsQueryKey: (input: WorkMapsGetSettingsInput) =>
       buildApiQueryKey(defaultApiClient, "/work_maps/get_settings", input),

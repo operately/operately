@@ -30,6 +30,8 @@ import IconCalendar from "@tabler/icons-react/dist/esm/icons/IconCalendar.mjs";
 import IconCalendarEvent from "@tabler/icons-react/dist/esm/icons/IconCalendarEvent.mjs";
 import IconCalendarMinus from "@tabler/icons-react/dist/esm/icons/IconCalendarMinus.mjs";
 import IconCalendarPlus from "@tabler/icons-react/dist/esm/icons/IconCalendarPlus.mjs";
+import IconChartLine from "@tabler/icons-react/dist/esm/icons/IconChartLine.mjs";
+import IconPin from "@tabler/icons-react/dist/esm/icons/IconPin.mjs";
 import IconChartColumn from "@tabler/icons-react/dist/esm/icons/IconChartColumn.mjs";
 import IconCheck from "@tabler/icons-react/dist/esm/icons/IconCheck.mjs";
 import IconChecklist from "@tabler/icons-react/dist/esm/icons/IconChecklist.mjs";
@@ -200,6 +202,8 @@ export {
   IconCalendarMinus,
   IconCalendarPlus,
   IconChartColumn,
+  IconChartLine,
+  IconPin,
   IconCheck,
   IconChecklist,
   IconChecks,

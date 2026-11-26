@@ -4,9 +4,9 @@ import Api, {
   type WorkMapsGetSettingsResult,
   type WorkMapsGetSettingsInput,
 } from "@/api";
-import { queryClient, useLoadedQuery } from "@/api/queryClient";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-import { loadCompanyWorkMap, loadSpaceWorkMap } from "@/models/workMap/loadHierarchy";
+import { loadCompanyWorkMap, loadSpaceWorkMap, loadWorkMapSettings } from "@/models/workMap/loadHierarchy";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { assertPresent } from "@/utils/assertions";
 import { legacyWorkMapPath } from "./routing";
@@ -24,20 +24,19 @@ export async function loader({ params, request }: { params: { id?: string }; req
 }
 
 export async function preload({ params }: { params: { id?: string } }) {
-  const settingsInput = params.id ? { spaceId: params.id } : {};
-  const [inputs] = await Promise.all([
+  const [inputs, settingsQueryInput] = await Promise.all([
     params.id ? loadSpaceWorkMap(params.id, true) : loadCompanyWorkMap(),
-    queryClient.fetchQuery(Api.work_maps.getSettingsQueryOptions(settingsInput)),
+    loadWorkMapSettings(params.id),
   ]);
-  return { ...inputs, settingsInput };
+  return { ...inputs, settingsQueryInput };
 }
 
 type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
 export function useLoadedData(): LoadedData | null {
-  const { workMapInput, spaceInput, settingsInput } = Pages.useLoadedData<LoaderResult>();
+  const { workMapInput, spaceInput, settingsQueryInput } = Pages.useLoadedData<LoaderResult>();
   const workMapQuery = useLoadedQuery(Api.companies.getWorkMapQueryOptions(workMapInput));
-  const settingsQuery = useLoadedQuery(Api.work_maps.getSettingsQueryOptions(settingsInput));
+  const settingsQuery = useLoadedQuery(Api.work_maps.getSettingsQueryOptions(settingsQueryInput));
   const spaceQuery = useLoadedQuery({
     ...Api.spaces.getQueryOptions(spaceInput ?? { id: "" }),
     enabled: spaceInput !== null,
@@ -51,5 +50,7 @@ export function useLoadedData(): LoadedData | null {
   if (spaceInput) assertPresent(spaceData?.space, `Work Map space is unavailable for space "${spaceInput.id}"`);
 
   assertPresent(settingsQuery.data, "Work Map settings unavailable");
+  const settingsInput = settingsQueryInput.spaceId ? { spaceId: settingsQueryInput.spaceId } : {};
+
   return { settingsInput, settings: settingsQuery.data, workMap: workMapData.workMap, space: spaceData?.space };
 }

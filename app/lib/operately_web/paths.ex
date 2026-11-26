@@ -523,7 +523,7 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(target_id)
   end
 
-  def kpi_id(%Operately.Kpis.Kpi{id: id, name: name}) do
+  def kpi_id(%{id: id, name: name}) do
     id = Operately.ShortUuid.encode!(id)
     OperatelyWeb.Api.Helpers.id_with_comments(name, id)
   end

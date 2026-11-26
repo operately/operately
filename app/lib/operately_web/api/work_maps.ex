@@ -1,5 +1,7 @@
 defmodule OperatelyWeb.Api.WorkMaps do
   alias Operately.WorkMaps.MapKpis
+  alias Operately.WorkMaps.WorkMapKpi
+  alias OperatelyWeb.Api.Serializer
   alias OperatelyWeb.Api.WorkMaps
   alias OperatelyWeb.Paths
 
@@ -9,6 +11,7 @@ defmodule OperatelyWeb.Api.WorkMaps do
 
     inputs do
       field? :space_id, :id, null: false
+      field? :include_pinned_kpis, :boolean, null: false
     end
 
     outputs do
@@ -22,7 +25,7 @@ defmodule OperatelyWeb.Api.WorkMaps do
 
     def call(conn, inputs) do
       with {:ok, scope} <- WorkMaps.Scope.resolve(conn, inputs[:space_id]) do
-        settings = WorkMaps.Settings.read(scope)
+        settings = WorkMaps.Settings.read(scope, Map.get(inputs, :include_pinned_kpis, true))
         permissions = WorkMaps.ItemPermissions.read(scope, OperatelyWeb.Api.Helpers.company_read_only(conn))
 
         {:ok,
@@ -32,7 +35,7 @@ defmodule OperatelyWeb.Api.WorkMaps do
            reviewer_editable_item_ids: permissions.reviewer_editable,
            default_view: settings.default_view,
            ordered_item_ids: Enum.map(settings.ordered_items, &WorkMaps.item_id/1),
-           pinned_kpis: Enum.map(settings.pinned_kpis, &WorkMaps.kpi_summary/1)
+           pinned_kpis: Serializer.serialize(WorkMapKpi.from_kpi(settings.pinned_kpis))
          }}
       end
     end
@@ -72,6 +75,34 @@ defmodule OperatelyWeb.Api.WorkMaps do
     end
   end
 
+  defmodule GetKpiPins do
+    @moduledoc "Reads the visible pins, available slots, and first-use state independently of the work hierarchy."
+    use TurboConnect.Query
+
+    inputs do
+      field? :space_id, :id, null: false
+    end
+
+    outputs do
+      field :kpis, list_of(:work_map_kpi), null: false
+      field :has_kpis, :boolean, null: false
+      field :pin_limit, :integer, null: false
+    end
+
+    def call(conn, inputs) do
+      with {:ok, scope} <- WorkMaps.Scope.resolve(conn, inputs[:space_id]) do
+        {pins, limit} = WorkMaps.Settings.read_pins(scope)
+
+        {:ok,
+         %{
+           kpis: Serializer.serialize(WorkMapKpi.from_kpi(pins)),
+           pin_limit: limit,
+           has_kpis: pins != [] or MapKpis.any?(scope)
+         }}
+      end
+    end
+  end
+
   defmodule SearchKpis do
     @moduledoc "Searches visible KPIs for the Work Map pin picker."
     use TurboConnect.Query
@@ -79,31 +110,25 @@ defmodule OperatelyWeb.Api.WorkMaps do
     inputs do
       field? :space_id, :id, null: false
       field? :query, :string, null: false
+      field? :offset, :integer, null: false
     end
 
     outputs do
       field :kpis, list_of(:work_map_kpi), null: false
+      field :has_more, :boolean, null: false
     end
 
     def call(conn, inputs) do
       with {:ok, scope} <- WorkMaps.Scope.resolve(conn, inputs[:space_id]) do
-        kpis = MapKpis.search(scope, String.trim(Map.get(inputs, :query, "")))
-        {:ok, %{kpis: Enum.map(kpis, &WorkMaps.kpi_summary/1)}}
+        {kpis, has_more} = MapKpis.search(scope, String.trim(Map.get(inputs, :query, "")), max(Map.get(inputs, :offset, 0), 0))
+
+        {:ok,
+         %{
+           kpis: Serializer.serialize(WorkMapKpi.from_kpi(kpis)),
+           has_more: has_more
+         }}
       end
     end
-  end
-
-  def kpi_summary(kpi) do
-    %{
-      id: Paths.kpi_id(kpi),
-      name: kpi.name,
-      unit: kpi.unit,
-      cadence: kpi.cadence,
-      space_id: Paths.space_id(kpi.space),
-      space_name: kpi.space.name,
-      period: kpi.latest_entry && kpi.latest_entry.period,
-      value: kpi.latest_entry && kpi.latest_entry.value
-    }
   end
 
   def item_id(%Operately.Goals.Goal{} = goal), do: Paths.goal_id(goal)
