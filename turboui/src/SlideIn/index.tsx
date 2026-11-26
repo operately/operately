@@ -16,6 +16,7 @@ export interface SlideInProps {
   width?: string;
   closeOnBackdropClick?: boolean;
   contentClassName?: string;
+  overlayClassName?: string;
   header?: React.ReactNode;
   testId?: string;
   showCloseButton?: boolean;
@@ -28,6 +29,7 @@ export function SlideIn({
   width = "60%",
   closeOnBackdropClick = true,
   contentClassName = "",
+  overlayClassName = "",
   header,
   testId,
   showCloseButton = true,
@@ -102,7 +104,7 @@ export function SlideIn({
     <div
       className={`fixed inset-0 z-50 flex justify-end ${
         isAnimating ? "bg-black/30" : "bg-black/0"
-      } transition-colors duration-300 ease-in-out`}
+      } transition-colors duration-300 ease-in-out ${overlayClassName}`}
       onClick={handleBackdropClick}
       aria-modal="true"
       aria-label={title}

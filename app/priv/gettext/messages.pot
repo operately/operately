@@ -3066,6 +3066,11 @@ msgid "%{name} invited you to join"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:69
+msgid "%{name} space"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:420
 msgid "%{name} · %{date} · Done"
 msgstr ""
@@ -5385,6 +5390,11 @@ msgstr ""
 #: assets/js/features/activities/GoalRetrospectiveAcknowledged/index.tsx:74
 #: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:67
 msgid "Acknowledged retrospective"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:69
+msgid "Across spaces"
 msgstr ""
 
 #.frontend
@@ -8880,8 +8890,19 @@ msgid "Couldn't update task item"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:74
+#: ../turboui/src/WorkMapV2/PinManager.tsx:138
+msgid "Couldn’t load KPIs"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/InfiniteScroll/index.tsx:114
 msgid "Couldn’t load more activities."
+msgstr ""
+
+#.frontend
+#: assets/js/pages/WorkMapV2Page/useKpiStrip.ts:47
+msgid "Couldn’t save KPI pins"
 msgstr ""
 
 #.frontend
@@ -8964,6 +8985,11 @@ msgstr ""
 #: ../turboui/src/TaskCreationModal/index.tsx:111
 #: ../turboui/src/TaskCreationModal/index.tsx:285
 msgid "Create Task"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:109
+msgid "Create a KPI"
 msgstr ""
 
 #.frontend
@@ -10129,6 +10155,11 @@ msgstr ""
 #: assets/js/pages/DiscussionDraftsPage/index.tsx:38
 #: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
 msgid "Drafts"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:87
+msgid "Drag pinned KPIs into the order you want on the Work Map."
 msgstr ""
 
 #.frontend
@@ -11819,6 +11850,11 @@ msgid "Finalizing Import"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:127
+msgid "Find a KPI to pin…"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/WorkMapV2/FilterMenu.tsx:139
 #: ../turboui/src/WorkMapV2/FilterMenu.tsx:140
 msgid "Find a filter…"
@@ -13076,6 +13112,8 @@ msgstr ""
 #: ../turboui/src/SpaceKpisPage/index.tsx:231
 #: ../turboui/src/SpaceKpisPage/index.tsx:234
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:70
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:48
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:55
 msgid "KPIs"
 msgstr ""
 
@@ -13546,6 +13584,12 @@ msgid "Loading..."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:81
+#: ../turboui/src/WorkMapV2/PinManager.tsx:145
+msgid "Loading…"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:152
 msgid "Log Out"
 msgstr ""
@@ -13679,6 +13723,12 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountSecurityPage/index.tsx:27
 msgid "Manage how you sign in and grant access to Operately."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:104
+#: ../turboui/src/WorkMapV2/PinManager.tsx:66
+msgid "Manage pins"
 msgstr ""
 
 #.frontend
@@ -14519,6 +14569,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:97
+#: ../turboui/src/WorkMapV2/PinManager.tsx:174
 #: ../turboui/src/WorkMapV2/Timeline.tsx:248
 #: ../turboui/src/WorkMapV2/Timeline.tsx:249
 msgid "Next"
@@ -14571,8 +14622,18 @@ msgid "No Companies Found"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:94
+msgid "No KPIs pinned to this map."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:104
 msgid "No KPIs yet"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:95
+msgid "No KPIs yet. Track a number over time, like weekly active teams."
 msgstr ""
 
 #.frontend
@@ -14722,6 +14783,8 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:89
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:93
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:150
+#: ../turboui/src/WorkMapV2/PinManager.tsx:250
 msgid "No data"
 msgstr ""
 
@@ -14830,6 +14893,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/InlineComments/CommentsPanel.tsx:83
 msgid "No inline comments yet."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:167
+msgid "No matching KPIs"
 msgstr ""
 
 #.frontend
@@ -16179,6 +16247,21 @@ msgid "Pick who will do it..."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:271
+msgid "Pin %{name}"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:104
+msgid "Pin KPIs"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:112
+msgid "Pinned to Work Map · %{used} of %{limit}"
+msgstr ""
+
+#.frontend
 #: assets/js/features/SpaceTools/Discussions/ZeroState.tsx:37
 msgid "Pitch Ideas"
 msgstr ""
@@ -16326,6 +16409,7 @@ msgstr ""
 #: assets/js/pages/SpacePage/page.tsx:179
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:51
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:73
+#: assets/js/pages/WorkMapV2Page/useKpiStrip.ts:47
 #: assets/js/pages/WorkMapV2Page/useOrganization.ts:37
 #: assets/js/pages/WorkMapV2Page/useReviewerEditing.ts:33
 #: assets/js/pages/WorkMapV2Page/useReviewerEditing.ts:46
@@ -16470,6 +16554,7 @@ msgid "Preview: %{size}"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:171
 #: ../turboui/src/WorkMapV2/Timeline.tsx:245
 #: ../turboui/src/WorkMapV2/Timeline.tsx:246
 msgid "Previous"
@@ -17629,6 +17714,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:340
+#: ../turboui/src/WorkMapV2/PinManager.tsx:217
 msgid "Reorder %{name}"
 msgstr ""
 
@@ -18468,6 +18554,12 @@ msgstr ""
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:414
 msgid "Search Index"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:126
+#: ../turboui/src/WorkMapV2/PinManager.tsx:127
+msgid "Search KPIs"
 msgstr ""
 
 #.frontend
@@ -22095,6 +22187,8 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/InfiniteScroll/index.tsx:117
+#: ../turboui/src/WorkMapV2/KpiStrip.tsx:76
+#: ../turboui/src/WorkMapV2/PinManager.tsx:140
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:46
 #: assets/js/pages/InviteLinkFullPage/index.tsx:45
 #: assets/js/pages/SpaceWorkMapPage/page.tsx:49
@@ -22419,6 +22513,11 @@ msgstr ""
 #.elixir
 #: lib/operately/md/workmap.ex:92
 msgid "Unnamed"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:271
+msgid "Unpin %{name}"
 msgstr ""
 
 #.frontend
@@ -23132,6 +23231,13 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:294
 msgid "View all"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMapV2/PinManager.tsx:66
+#: ../turboui/src/WorkMapV2/PinManager.tsx:91
+#: ../turboui/src/WorkMapV2/PinManager.tsx:103
+msgid "View all KPIs"
 msgstr ""
 
 #.elixir

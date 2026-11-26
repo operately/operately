@@ -13,14 +13,24 @@ defmodule OperatelyWeb.Api.WorkMaps.Settings do
   @layout_fields [:default_view, :ordered_item_ids, :pinned_kpi_ids]
   @max_pinned_kpis 3
 
-  def read(scope) do
+  def read(scope, include_pins \\ true) do
     settings = Repo.get_by(MapSettings, owner_key(scope)) || %MapSettings{}
 
     %{
       default_view: DefaultView.for_read(settings.default_view, scope),
       ordered_items: ordered_visible_items(scope, settings.ordered_item_ids),
-      pinned_kpis: MapKpis.pinned(scope, settings.pinned_kpi_ids)
+      pinned_kpis: if(include_pins, do: MapKpis.pinned(scope, settings.pinned_kpi_ids), else: [])
     }
+  end
+
+  def read_pins(scope) do
+    settings = Repo.get_by(MapSettings, owner_key(scope))
+    ids = if settings, do: settings.pinned_kpi_ids, else: []
+
+    pins = MapKpis.pinned(scope, ids)
+    hidden = if length(pins) == length(ids), do: 0, else: length(MapKpis.existing_ids(scope, ids)) - length(pins)
+
+    {pins, @max_pinned_kpis - hidden}
   end
 
   def save(%{can_edit: false}, _attrs, _apply_moves), do: {:error, :forbidden}
