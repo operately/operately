@@ -6,6 +6,8 @@ import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { createKpiDemoFixtures, useKpiDemo } from "../demos";
 import { showErrorToast } from "../Toasts";
 import { SpaceKpisPage } from "./index";
+import type { GoalField } from "../GoalField";
+import { storyPath } from "../utils/storybook/storypath";
 
 const kpisLink = "/spaces/space-growth/kpis";
 const referenceDate = new Date("2026-07-31T12:00:00Z");
@@ -33,7 +35,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<HarnessArgs>;
 
+const sampleGoal = { id: "grow-revenue", name: "Grow recurring revenue", link: storyPath("Pages/GoalPage", "Default") };
+
 function Harness(args: HarnessArgs) {
+  const [goals, setGoals] = React.useState<Record<string, GoalField.Goal | null>>({ "kpi-mrr": sampleGoal });
   const [fixtures] = React.useState(() =>
     createKpiDemoFixtures({ referenceDate, kpisLink, scenario: args.emptySpace ? "empty" : "populated" }),
   );
@@ -52,6 +57,20 @@ function Harness(args: HarnessArgs) {
       kpisLink={demo.kpisLink}
       kpis={demo.kpis}
       selectedKpi={selectedKpi}
+      goalLink={
+        kpiId
+          ? {
+              goal: goals[kpiId] ?? null,
+              setGoal: (goal) => setGoals((previous) => ({ ...previous, [kpiId]: goal })),
+              searchGoals: async ({ query }) =>
+                [sampleGoal].filter((goal) => goal.name.toLowerCase().includes(query.toLowerCase())),
+              readonly: args.canManage === false,
+              loading: false,
+              error: false,
+              retry: () => {},
+            }
+          : false
+      }
       currentUser={demo.currentUser}
       championSearch={
         args.unorderedChampionCandidates

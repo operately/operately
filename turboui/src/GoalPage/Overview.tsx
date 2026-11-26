@@ -8,6 +8,7 @@ import { Checklists } from "./Checklists";
 import { Contributors } from "./Contributors";
 import { RelatedWork } from "./RelatedWork";
 import { Sidebar } from "./Sidebar";
+import { KpiGoalLinks } from "../KpiGoalLinks";
 import { Targets } from "./Targets";
 import { PageDescription } from "../PageDescription";
 import { mobileActionClassName } from "./mobileActionClassName";
@@ -40,6 +41,7 @@ function MainContent(props: GoalPage.State) {
       <Targets {...props} />
       <Checklists {...props} />
       <RelatedWork {...props} />
+      <KpiGoalLinks data={props.kpiLinks} />
       {props.docsAndFiles && (
         <div className="pt-8 mt-8 border-t border-surface-outline">
           <ResourcesSection {...props} />

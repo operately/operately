@@ -474,6 +474,14 @@ export interface ActivityContentKpiEntryLogged {
   period: string;
 }
 
+export interface ActivityContentKpiGoalLinkChanged {
+  __typename: "activity_content_kpi_goal_link_changed";
+  space: Space;
+  kpi: Kpi | null;
+  kpiName: string;
+  linked: boolean;
+}
+
 export interface ActivityContentMessageArchiving {
   __typename: "activity_content_message_archiving";
   companyId?: string | null;
@@ -1903,6 +1911,15 @@ export interface KpiEntryEdit {
   insertedAt?: string | null;
 }
 
+export interface KpiGoalLinkItem {
+  __typename: "kpi_goal_link_item";
+  id: Id;
+  name: string;
+  spaceId?: Id;
+  spaceName?: string;
+  canUnlink: boolean;
+}
+
 export interface McpGrant {
   __typename: "mcp_grant";
   id: Id;
@@ -3037,6 +3054,7 @@ export type ActivityContent =
   | ActivityContentKpiCreated
   | ActivityContentKpiDeleted
   | ActivityContentKpiEdited
+  | ActivityContentKpiGoalLinkChanged
   | ActivityContentKpiEntryLogged
   | ActivityContentKpiEntryCommented
   | ActivityContentKpiEntryEdited

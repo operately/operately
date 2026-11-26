@@ -101,6 +101,7 @@ export namespace GoalPage {
   }
 
   interface CommonProps {
+    kpiLinks: import("../KpiGoalLinks").KpiGoalLinksProps | false;
     preview?: boolean;
     closeLink: string;
     reopenLink: string;

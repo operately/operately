@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 
-export function useAsyncSearch<T>(
-  search: (params: { query: string }) => Promise<T[]>,
-  query: string,
-  enabled: boolean,
-) {
-  const [results, setResults] = useState<T[]>([]);
+type Search<T> = (params: { query: string }) => Promise<T[]>;
+const emptyResults: never[] = [];
+
+export function useAsyncSearch<T>(search: Search<T>, query: string, enabled: boolean) {
+  return useAsyncSearchResults(search, query, enabled) ?? emptyResults;
+}
+
+// A null result means the current search is loading.
+export function useAsyncSearchResults<T>(search: Search<T>, query: string, enabled: boolean) {
+  const [results, setResults] = useState<T[] | null>(null);
 
   useEffect(() => {
     let current = true;
-    setResults([]);
+    setResults(enabled ? null : []);
 
     if (enabled) {
       search({ query }).then(

@@ -438,6 +438,15 @@ defmodule OperatelyWeb.Api do
 
       query(:get_theme, OperatelyWeb.Api.Queries.GetTheme)
 
+      namespace :kpi_goal_links do
+        query :for_goal, OperatelyWeb.Api.KpiGoalLinks.ForGoal
+        query :for_kpi, OperatelyWeb.Api.KpiGoalLinks.ForKpi
+        query :search_kpis, OperatelyWeb.Api.KpiGoalLinks.SearchKpis
+        query :search_goals, OperatelyWeb.Api.KpiGoalLinks.SearchGoals
+
+        mutation :set_link, OperatelyWeb.Api.KpiGoalLinks.SetLink
+      end
+
       namespace(:work_maps) do
         query(:get_settings, OperatelyWeb.Api.WorkMaps.GetSettings)
         query(:get_kpi_pins, OperatelyWeb.Api.WorkMaps.GetKpiPins)

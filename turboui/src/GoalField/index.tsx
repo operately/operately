@@ -1,11 +1,12 @@
 import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
-import { useAsyncSearch } from "../utils/useAsyncSearch";
+import { useAsyncSearchResults } from "../utils/useAsyncSearch";
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
 import { IconCircleX, IconExternalLink, IconSearch } from "../icons";
 import { IconGoal } from "../icons";
+import { UnstyledButton } from "../Button/UnstalyedButton";
 import { DivLink } from "../Link";
 import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
@@ -15,6 +16,7 @@ export namespace GoalField {
     id: string;
     name: string;
     link: string;
+    spaceName?: string | null;
   }
 
   export type SearchGoalFn = (params: { query: string }) => Promise<Goal[]>;
@@ -26,6 +28,7 @@ export namespace GoalField {
     isOpen?: boolean;
     iconSize?: number;
     readonly?: boolean;
+    allowReplace?: boolean;
 
     emptyStateMessage?: string;
     emptyStateReadOnlyMessage?: string;
@@ -50,7 +53,7 @@ export namespace GoalField {
 
     searchQuery: string;
     setSearchQuery: (query: string) => void;
-    searchResults: Goal[];
+    searchResults: Goal[] | null;
   }
 }
 
@@ -70,6 +73,7 @@ const DefaultProps = {
   isOpen: false,
   iconSize: 20,
   readonly: false,
+  allowReplace: true,
   get emptyStateMessage() {
     return i18n.t("Select a goal");
   },
@@ -92,7 +96,7 @@ export function useGoalFieldState(p: GoalField.Props): GoalField.State {
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
 
   const [searchQuery, setSearchQuery] = React.useState("");
-  const searchResults = useAsyncSearch(props.searchGoals, searchQuery, isOpen && dialogMode === "search");
+  const searchResults = useAsyncSearchResults(props.searchGoals, searchQuery, isOpen && dialogMode === "search");
 
   React.useEffect(() => {
     if (!isOpen) {
@@ -157,7 +161,7 @@ function Trigger({ state }: { state: GoalField.State }) {
     }
   } else {
     return (
-      <Popover.Trigger className={triggerClass}>
+      <Popover.Trigger className={triggerClass} disabled={state.readonly} data-test-id={`${state.testId}-empty`}>
         <div className="truncate">
           <div className="text-sm font-medium text-content-dimmed">
             {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
@@ -199,12 +203,14 @@ function DialogMenu({ state }: { state: GoalField.State }) {
         linkTo={state.goal?.link || "#"}
       />
 
-      <DialogMenuOption
-        testId={`${state.testId}-search`}
-        icon={IconSearch}
-        label={t("Choose another goal")}
-        onClick={() => state.setDialogMode("search")}
-      />
+      {state.allowReplace && (
+        <DialogMenuOption
+          testId={`${state.testId}-search`}
+          icon={IconSearch}
+          label={t("Choose another goal")}
+          onClick={() => state.setDialogMode("search")}
+        />
+      )}
 
       {state.extraDialogMenuOptions.map((option, index) => (
         <DialogMenuOption
@@ -241,7 +247,8 @@ interface DialogMenuOptionProps {
 }
 
 function DialogMenuOption({ icon, label, linkTo, onClick, testId }: DialogMenuOptionProps) {
-  const wrapperClass = "flex items-center gap-2 px-1 py-1 rounded hover:bg-surface-dimmed cursor-pointer";
+  const wrapperClass =
+    "flex w-full items-center gap-2 px-1 py-1 text-left rounded hover:bg-surface-dimmed cursor-pointer";
   const Icon = icon;
 
   const content = (
@@ -254,7 +261,11 @@ function DialogMenuOption({ icon, label, linkTo, onClick, testId }: DialogMenuOp
   if (linkTo) {
     return <DivLink className={wrapperClass} to={linkTo} children={content} testId={testId} />;
   } else if (onClick) {
-    return <div className={wrapperClass} onClick={onClick} children={content} data-test-id={testId} />;
+    return (
+      <UnstyledButton className={wrapperClass} onClick={onClick} testId={testId}>
+        {content}
+      </UnstyledButton>
+    );
   } else {
     throw new Error("Either linkTo or onClick must be provided");
   }
@@ -279,10 +290,15 @@ function DialogSearch({ state }: { state: GoalField.State }) {
         style={{ maxHeight: SEARCH_RESULTS_MAX_HEIGHT }}
         data-test-id={`${state.testId}-search-results`}
       >
-        {state.searchResults.map((goal) => (
-          <div
+        {(!state.searchResults || state.searchResults.length === 0) && (
+          <p role="status" className="p-2 text-sm text-content-dimmed">
+            {state.searchResults ? t("No options") : t("Loading…")}
+          </p>
+        )}
+        {state.searchResults?.map((goal) => (
+          <UnstyledButton
             key={goal.id}
-            className="flex items-start gap-2 px-1.5 py-1.5 rounded hover:bg-surface-dimmed cursor-pointer"
+            className="flex w-full items-start gap-2 px-1.5 py-1.5 text-left rounded hover:bg-surface-dimmed cursor-pointer"
             onClick={() => {
               state.setGoal(goal);
               state.setIsOpen(false);
@@ -296,8 +312,9 @@ function DialogSearch({ state }: { state: GoalField.State }) {
               >
                 {goal.name}
               </div>
+              {goal.spaceName && <div className="text-xs text-content-dimmed">{goal.spaceName}</div>}
             </div>
-          </div>
+          </UnstyledButton>
         ))}
       </div>
     </div>

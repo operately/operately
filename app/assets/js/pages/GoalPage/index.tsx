@@ -1,3 +1,4 @@
+import { useKpiGoalLinks } from "@/models/kpis/useKpiGoalLinks";
 import i18n from "@/i18n";
 import { useSpaceSearch } from "@/models/spaces";
 import { useParentGoalSearch } from "@/models/goals/useParentGoalSearch";
@@ -52,6 +53,7 @@ function Page() {
     await Promise.all([docs.refresh(), refresh()]);
   }, [docs.refresh, refresh]);
   const currentUser = useMe();
+  const kpiLinks = useKpiGoalLinks(goal.id);
 
   const updateName = Goals.useUpdateGoalName();
   const updateDescription = Goals.useUpdateGoalDescription();
@@ -215,6 +217,7 @@ function Page() {
 
   const props: GoalPage.Props = {
     ...spaceProps,
+    kpiLinks,
     closeLink: paths.goalClosePath(goal.id),
     reopenLink: paths.goalReopenPath(goal.id),
     newCheckInLink: paths.goalCheckInNewPath(goal.id),

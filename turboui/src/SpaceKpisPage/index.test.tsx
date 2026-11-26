@@ -97,6 +97,7 @@ function pageProps(overrides: Partial<SpaceKpisPageNS.Props> = {}): SpaceKpisPag
     navigation: [{ to: `/spaces/${mockSpace.id}`, label: mockSpace.name }],
     kpisLink,
     kpis: mockKpis,
+    goalLink: false,
     currentUser: mockCurrentUser,
     championSearch: mockChampionSearch,
     onCreateKpi: async () => ({ success: true }),

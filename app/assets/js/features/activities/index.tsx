@@ -69,6 +69,7 @@ export const DISPLAYED_IN_FEED = [
   "kpi_deleted",
   "kpi_entry_logged",
   "kpi_edited",
+  "kpi_goal_link_changed",
   "kpi_entry_commented",
   "kpi_entry_edited",
   "kpi_entry_deleted",
@@ -229,6 +230,7 @@ import KpiCreated from "@/features/activities/KpiCreated";
 import KpiDeleted from "@/features/activities/KpiDeleted";
 import KpiEntryLogged from "@/features/activities/KpiEntryLogged";
 import KpiEdited from "@/features/activities/KpiEdited";
+import KpiGoalLinkChanged from "@/features/activities/KpiGoalLinkChanged";
 import KpiEntryCommented from "@/features/activities/KpiEntryCommented";
 import KpiEntryEdited from "@/features/activities/KpiEntryEdited";
 import KpiEntryDeleted from "@/features/activities/KpiEntryDeleted";
@@ -363,6 +365,7 @@ function handler(activity: Activity) {
     .with("kpi_deleted", () => KpiDeleted)
     .with("kpi_entry_logged", () => KpiEntryLogged)
     .with("kpi_edited", () => KpiEdited)
+    .with("kpi_goal_link_changed", () => KpiGoalLinkChanged)
     .with("kpi_entry_commented", () => KpiEntryCommented)
     .with("kpi_entry_edited", () => KpiEntryEdited)
     .with("kpi_entry_deleted", () => KpiEntryDeleted)

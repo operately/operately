@@ -7,6 +7,7 @@ defmodule Operately.Kpis do
   @kpi_actions [
     "kpi_created",
     "kpi_edited",
+    "kpi_goal_link_changed",
     "kpi_deleted",
     "kpi_entry_logged",
     "kpi_entry_edited",

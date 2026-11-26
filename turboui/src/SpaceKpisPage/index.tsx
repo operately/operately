@@ -285,6 +285,7 @@ function KpisContent(props: KpisContentProps) {
       <KpiDetail
         kpi={selectedKpi}
         fields={openKpi}
+        goalLink={props.goalLink}
         canManage={props.canManage}
         canComment={props.canComment}
         championSearch={props.championSearch}
