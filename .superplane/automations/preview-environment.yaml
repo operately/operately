@@ -2,28 +2,25 @@ apiVersion: v2
 kind: Automation
 name: Preview Environment
 icon: rocket
-runs_on_task: true
-skip_repository_checkout: false
-skip_setup_commands: false
+triggers:
+- use: pull_request_updated
 agent:
   harness: codex
   credentials:
     source: subscription
-triggers:
-  - use: pull_request_updated
 steps:
-  - name: Deploy
-    bash: |-
-      # set up SSH keys
-      install -d -m 700 ~/.ssh
-      printenv PREVIEW_SSH_KEY > ~/.ssh/id_ed25519
-      chmod 600 ~/.ssh/id_ed25519
+- name: Deploy
+  bash: |-
+    # set up SSH keys
+    install -d -m 700 ~/.ssh
+    printenv PREVIEW_SSH_KEY > ~/.ssh/id_ed25519
+    chmod 600 ~/.ssh/id_ed25519
 
-      bash ./scripts/preview-up --pr "$PR_NUMBER" --output preview.json
-      cat preview.json
-      URL=$(jq -r '.url' preview.json)
+    bash ./scripts/preview-up --pr "$PR_NUMBER" --output preview.json
+    cat preview.json
+    URL=$(jq -r '.url' preview.json)
 
-      # add link to task
-      superplane task artifact add-link --url "$URL" --name "Preview Environment" --key preview-env
-    secrets:
-      - preview-env-ssh-keys
+    # add link to task
+    superplane task artifact add-link --url "$URL" --name "Preview Environment" --key preview-env
+  secrets:
+  - preview-env-ssh-keys
