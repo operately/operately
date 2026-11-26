@@ -1,0 +1,73 @@
+apiVersion: v2
+kind: Factory
+name: Operately
+stages:
+  - key: backlog
+    name: Backlog
+    automations:
+      - id: task-analysis
+        name: Backlog
+        uses: '@superplane/task-analysis'
+        with:
+          agents:
+            refine-task:
+              model: gpt-6-astra
+              thinking_level: high
+      - id: aef2c0abc2150725
+        name: CloudFlare Security Audit
+        uses: automations/cloudflare-security-audit.yaml
+      - id: af98b0e5719a73d7
+        name: Comment on Github Issue
+        uses: automations/comment-on-github-issue.yaml
+      - id: intake-dependabot-alerts
+        name: Dependabot alerts
+        uses: '@superplane/intake/dependabot-alerts'
+      - id: intake-github-issues
+        name: GitHub issues
+        uses: '@superplane/intake/github-issues'
+      - id: 428fd364f8f60ab3
+        name: N+1 Solver
+        uses: automations/n-1-solver.yaml
+      - id: intake-sentry-exceptions
+        name: Sentry exceptions
+        uses: '@superplane/intake/sentry-exceptions'
+  - key: phase-0
+    name: Implement
+    run: implement
+    automations:
+      - id: implement
+        name: Implement
+        uses: '@superplane/implement'
+        with:
+          agents:
+            implementation-agent-no-issue:
+              model: gpt-6-sol
+              thinking_level: high
+              execution_timeout_seconds: 5400
+  - key: verify
+    name: Verify
+    automations:
+      - id: pr-discussion
+        name: Address PR feedback
+        uses: '@superplane/pr-discussion'
+      - id: a83181c1ae1e81ec
+        name: Assign reviewers
+        uses: automations/assign-reviewers.yaml
+      - id: pr-checks
+        name: Fix pull request checks
+        uses: '@superplane/pr-checks'
+      - id: merge-confidence
+        name: Merge confidence
+        uses: '@superplane/merge-confidence'
+      - id: 01c03daa57a1e475
+        name: Preview Environment
+        uses: automations/preview-environment.yaml
+      - id: 67e1414e15fa5cbf
+        name: Resolve Merge Conflicts
+        uses: automations/resolve-merge-conflicts.yaml
+  - key: done
+    name: Done
+    automations:
+      - id: pr-closure
+        name: PR Closure
+        uses: '@superplane/pr-closure'
