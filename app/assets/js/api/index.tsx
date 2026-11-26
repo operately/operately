@@ -4722,6 +4722,7 @@ export interface WorkMapsGetKpiPinsInput {
 
 export interface WorkMapsGetKpiPinsResult {
   kpis: WorkMapKpi[];
+  latestKpis: WorkMapKpi[];
   hasKpis: boolean;
   pinLimit: number;
 }

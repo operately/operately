@@ -12,7 +12,7 @@ import { PinManager } from "./PinManager";
 
 export interface WorkMapKpiStrip {
   pins: WorkMapKpi[];
-  hasKpis: boolean;
+  latestKpis: WorkMapKpi[];
   limit: number;
   loading: boolean;
   error: boolean;
@@ -40,6 +40,7 @@ export function KpiStrip({
   preferences: FormattedTimePreferences;
 }) {
   const { t } = useTranslation();
+  const displayedKpis = [...data.pins, ...data.latestKpis];
   const [panel, setPanel] = React.useState<"manage" | "browse" | null>(null);
   const close = React.useCallback(() => setPanel(null), []);
   const title = (
@@ -85,20 +86,18 @@ export function KpiStrip({
           </span>
         ) : (
           <>
-            {data.pins.length ? (
+            {displayedKpis.length > 0 ? (
               <div className="order-last flex w-full min-w-0 overflow-x-auto sm:order-none sm:min-h-[73px] sm:w-auto sm:flex-1 sm:items-center">
-                {data.pins.map((kpi) => (
-                  <PinnedKpi key={kpi.id} kpi={kpi} href={data.detailPath(kpi)} />
+                {displayedKpis.map((kpi) => (
+                  <KpiSummary key={kpi.id} kpi={kpi} href={data.detailPath(kpi)} />
                 ))}
               </div>
             ) : (
               <div className="order-last w-full text-sm text-content-dimmed sm:order-none sm:w-auto sm:min-w-0 sm:flex-1 sm:px-4">
-                {data.hasKpis
-                  ? t("No KPIs pinned to this map.")
-                  : t("No KPIs yet. Track a number over time, like weekly active teams.")}
+                {t("No KPIs yet. Track a number over time, like weekly active teams.")}
               </div>
             )}
-            {data.hasKpis && data.save && (
+            {displayedKpis.length > 0 && data.save && (
               <DimmedActionLink
                 testId="manage-work-map-pins"
                 onClick={() => setPanel("manage")}
@@ -108,7 +107,7 @@ export function KpiStrip({
                 {data.pins.length ? t("Manage pins") : t("Pin KPIs")} <IconChevronRight size={15} />
               </DimmedActionLink>
             )}
-            {!data.hasKpis && data.createPath && (
+            {displayedKpis.length === 0 && data.createPath && (
               <DimmedLink to={data.createPath} underline="never" className={actionClass}>
                 {t("Create a KPI")} <IconChevronRight size={15} aria-hidden="true" />
               </DimmedLink>
@@ -129,12 +128,12 @@ export function KpiStrip({
   );
 }
 
-function PinnedKpi({ kpi, href }: { kpi: WorkMapKpi; href: string }) {
+function KpiSummary({ kpi, href }: { kpi: WorkMapKpi; href: string }) {
   const { t } = useTranslation();
   const { formatNumber } = useKpiFormatting();
   return (
     <BlackLink
-      testId={`pinned-kpi-${kpi.id}`}
+      testId={`work-map-kpi-${kpi.id}`}
       to={href}
       underline="hover"
       className="flex min-h-12 shrink-0 items-center gap-2 border-r border-surface-outline px-3 first:pl-0 last:border-0 sm:min-h-[61px] sm:gap-2 sm:px-4 sm:first:pl-4"

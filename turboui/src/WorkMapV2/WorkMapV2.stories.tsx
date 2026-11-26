@@ -186,7 +186,7 @@ function useStoryKpis(state: KpiState, spaceId?: string): WorkMapKpiStrip {
   return {
     pins: ids.flatMap((id) => available.filter((k) => k.id === id)),
     limit: 3,
-    hasKpis: available.length > 0,
+    latestKpis: available.filter((kpi) => !ids.includes(kpi.id)).slice(0, 3 - ids.length),
     loading: false,
     error,
     retry: () => setError(false),

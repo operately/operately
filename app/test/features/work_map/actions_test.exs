@@ -2,11 +2,11 @@ defmodule Operately.Features.WorkMap.ActionsTest do
   use Operately.FeatureCase
   alias Operately.Support.Features.{CompaniesSteps, WorkMapSteps}
 
-  feature "a KPI pinned on an empty space map persists on a fresh visit", ctx do
+  feature "a pinned KPI appears before an unpinned KPI on a fresh visit", ctx do
     ctx
     |> WorkMapSteps.setup_empty_space_work_map()
     |> Factory.enable_feature("work_map_v2")
-    |> WorkMapSteps.add_space_kpi()
+    |> WorkMapSteps.add_space_kpis()
     |> WorkMapSteps.visit_space_work_map(:space)
     |> WorkMapSteps.pin_kpi()
     |> WorkMapSteps.visit_space_work_map(:space)
