@@ -1,5 +1,5 @@
 import type { WorkMapRow } from "./filterWorkMap";
-import { move } from "./organization";
+import { move, openRows } from "./organization";
 
 function goal(id: string, children: WorkMapRow[] = []): WorkMapRow {
   return {
@@ -44,6 +44,27 @@ it("allows scope editors to reorder view-only siblings without changing their pa
   const moved = move(draft, "a", "b", "after", false);
   expect(moved.rows.map((r) => r.item.id)).toEqual(["b", "a"]);
   expect(moved.parentChanges).toEqual([]);
+});
+
+it("shows open descendants without exposing closed work or moving work into a hidden goal", () => {
+  const paused = goal("paused");
+  paused.item = { ...paused.item, type: "project", state: "paused" };
+  const closedGoal = goal("closed goal", [paused, goal("active")]);
+  closedGoal.item.state = "closed";
+  const closedProject = goal("closed project");
+  closedProject.item = { ...closedProject.item, type: "project", state: "closed" };
+  const context = { ...goal("other space", [closedProject]), contextOnly: true };
+  const draft = { rows: [context, closedGoal, goal("outside")], parentChanges: [] };
+
+  expect(openRows(draft.rows).map((row) => row.item.id)).toEqual(["paused", "active", "outside"]);
+  expect(move(draft, "outside", "active", "before", true)).toBe(draft);
+  const reordered = move(draft, "active", "paused", "before", false);
+  expect(reordered.rows[1]?.children.map((row) => row.item.id)).toEqual(["active", "paused"]);
+  expect(reordered.parentChanges).toEqual([]);
+  expect(move(draft, "active", "outside", "before", true)).toBe(draft);
+  expect(move(draft, "active", null, "inside", false)).toBe(draft);
+  const detached = move(draft, "active", null, "inside", true);
+  expect(detached.parentChanges).toEqual([{ type: "goal", itemId: "active", parentId: null }]);
 });
 
 it("lets an editable child leave a cross-space parent by dropping beside that parent", () => {
