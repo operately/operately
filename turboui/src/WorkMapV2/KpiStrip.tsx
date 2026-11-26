@@ -55,9 +55,9 @@ export function KpiStrip({
     <KpiFormattingProvider value={preferences}>
       <section
         aria-label={t("KPIs")}
-        className="flex flex-wrap items-center gap-y-2 border-b border-surface-outline bg-surface-dimmed px-4 py-3 sm:flex-nowrap sm:px-7 dark:bg-[#222329]"
+        className="flex flex-wrap items-center gap-y-2 border-b border-surface-outline bg-surface-dimmed px-4 py-3 sm:min-h-[60px] sm:flex-nowrap sm:px-7 sm:py-2 dark:bg-[#212329]"
       >
-        <div className="shrink-0 border-r border-surface-outline pr-5">
+        <div className="shrink-0 border-r border-surface-outline pr-5 sm:min-w-[102px]">
           {data.allPath ? (
             <Link to={data.allPath} className={labelClass}>
               {title}
@@ -86,7 +86,7 @@ export function KpiStrip({
         ) : (
           <>
             {data.pins.length ? (
-              <div className="order-last flex w-full min-w-0 overflow-x-auto sm:order-none sm:w-auto sm:flex-1">
+              <div className="order-last flex w-full min-w-0 overflow-x-auto sm:order-none sm:min-h-[73px] sm:w-auto sm:flex-1 sm:items-center">
                 {data.pins.map((kpi) => (
                   <PinnedKpi key={kpi.id} kpi={kpi} href={data.detailPath(kpi)} />
                 ))}
@@ -137,10 +137,10 @@ function PinnedKpi({ kpi, href }: { kpi: WorkMapKpi; href: string }) {
       testId={`pinned-kpi-${kpi.id}`}
       to={href}
       underline="hover"
-      className="flex min-h-12 shrink-0 items-center gap-2 border-r border-surface-outline px-3 first:pl-0 last:border-0 sm:gap-3 sm:px-4 sm:first:pl-4"
+      className="flex min-h-12 shrink-0 items-center gap-2 border-r border-surface-outline px-3 first:pl-0 last:border-0 sm:min-h-[61px] sm:gap-2 sm:px-4 sm:first:pl-4"
     >
       <div>
-        <div className="max-w-52 truncate text-sm font-medium">{kpi.name}</div>
+        <div className="max-w-52 truncate text-[13px] font-medium">{kpi.name}</div>
         <div className="text-xs text-content-dimmed">
           {kpi.spaceName}
           {kpi.period && (

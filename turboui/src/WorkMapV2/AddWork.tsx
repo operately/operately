@@ -48,19 +48,21 @@ export function useAddWork(creation: WorkMapCreation | undefined, scopeName: str
     space?: SpaceField.Space;
     parent?: WorkMapV2Item;
     templateId?: string;
+    opener?: HTMLButtonElement;
   } | null>(null);
+  const addWorkButton = React.useRef<HTMLButtonElement>(null);
   const [choosing, setChoosing] = React.useState(false);
 
   if (!creation) return {};
 
-  function open(type: AddItemModal.ItemType) {
-    setForm({ type, space: creation?.defaultSpace });
+  function open(type: AddItemModal.ItemType, opener?: HTMLButtonElement) {
+    setForm({ type, space: creation?.defaultSpace, opener });
   }
   const { templates, templateLibraryPath } = creation;
 
   return {
-    addGoal: () => open("goal"),
-    addProject: () => open("project"),
+    addGoal: (event: React.MouseEvent<HTMLButtonElement>) => open("goal", event.currentTarget),
+    addProject: (event: React.MouseEvent<HTMLButtonElement>) => open("project", event.currentTarget),
     quickAdd: (item: WorkMapV2Item) => {
       const space = creation.spaces.find((s) => compareIds(s.id, item.space?.id));
       if (item.type !== "goal" || !space) return null;
@@ -69,7 +71,7 @@ export function useAddWork(creation: WorkMapCreation | undefined, scopeName: str
           size="xxs"
           testId="add-subitem"
           className="opacity-0 group-hover/row:opacity-100 focus:opacity-100"
-          onClick={() => setForm({ type: "goal", parent: item, space })}
+          onClick={(event) => setForm({ type: "goal", parent: item, space, opener: event.currentTarget })}
         >
           {t("Add")}
         </SecondaryButton>
@@ -77,12 +79,16 @@ export function useAddWork(creation: WorkMapCreation | undefined, scopeName: str
     },
     menu: (
       <Menu
+        triggerRef={addWorkButton}
+        onCloseAutoFocus={(event) => {
+          if (choosing || form) event.preventDefault();
+        }}
         testId="work-map-add-work"
         align="end"
         triggerLabel={t("Add work")}
         triggerIcon={IconPlus}
         showTriggerChevron
-        triggerClassName={`h-8 !rounded-md !px-2.5 !text-[13px] !text-white-1 ${primaryActionClass}`}
+        triggerClassName={`h-8 shrink-0 !rounded-md !px-2.5 !text-[13px] !text-white-1 ${primaryActionClass}`}
         contentProps={{
           className:
             "w-[259px] !rounded-[10px] !p-[7px] dark:bg-[#2b2d34] dark:ring-[#50535f] [&>[role=separator]]:mx-0.5 [&>[role=separator]]:my-1.5",
@@ -129,7 +135,10 @@ export function useAddWork(creation: WorkMapCreation | undefined, scopeName: str
             scopeName={scopeName}
             templates={templates.filter((tpl) => !spaceId || compareIds(tpl.spaceId, spaceId))}
             templateLibraryPath={templateLibraryPath}
-            onClose={() => setChoosing(false)}
+            onClose={() => {
+              setChoosing(false);
+              addWorkButton.current?.focus();
+            }}
             onBlank={() => {
               setChoosing(false);
               open("project");
@@ -147,7 +156,10 @@ export function useAddWork(creation: WorkMapCreation | undefined, scopeName: str
         {form && (
           <AddItemModal
             isOpen
-            close={() => setForm(null)}
+            close={() => {
+              setForm(null);
+              (form.opener?.isConnected ? form.opener : addWorkButton.current)?.focus();
+            }}
             parentGoal={form.parent ?? null}
             initialItemType={form.type}
             initialTemplateId={form.templateId}
@@ -187,6 +199,7 @@ function TemplatePicker({
 
   return (
     <Modal
+      trapFocus
       isOpen
       onClose={onClose}
       title={

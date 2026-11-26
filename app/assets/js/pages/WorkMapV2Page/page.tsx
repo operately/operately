@@ -27,10 +27,11 @@ function ReadyPage({ data }: { data: NonNullable<ReturnType<typeof useLoadedData
   const { company } = useCompanyLoaderData();
   const [search, setSearch] = useSearchParams();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const defaultView = useSaveWorkMapDefaultView();
 
   const { workMap, space, settings, settingsInput } = data;
 
+  const scopeName = space?.name ?? company.name;
+  const defaultView = useSaveWorkMapDefaultView(scopeName);
   const organization = useOrganization(settings, settingsInput);
   const reviewerEditing = useReviewerEditing(settings.reviewerEditableItemIds);
   const creation = useCreation(workMap, company, space);
@@ -57,7 +58,7 @@ function ReadyPage({ data }: { data: NonNullable<ReturnType<typeof useLoadedData
       }}
       adjusted={writeView(new URLSearchParams(), view, defaults).size > 0}
       onReset={() => setSearch(clearViewParams(search))}
-      scopeName={space?.name ?? company.name}
+      scopeName={scopeName}
       orderedItemIds={settings.orderedItemIds}
       saving={defaultView.saving}
       onSaveDefault={settings.canEdit ? () => defaultView.save(settingsInput, view) : undefined}

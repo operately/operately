@@ -70,7 +70,7 @@ export function Table({
             <col key={c} style={{ width: widths[c] }} />
           ))}
         </colgroup>
-        <thead className="h-9 border-b border-surface-outline bg-surface-dimmed text-xs text-content-dimmed">
+        <thead className="h-9 border-b border-surface-outline bg-surface-dimmed text-xs text-content-dimmed dark:bg-[#282b32]">
           <tr>
             {columns.map((c) => (
               <th key={c} scope="col" className="px-3 font-medium first:pl-7">
@@ -84,12 +84,12 @@ export function Table({
             <tr
               key={row.item.id}
               {...organize?.rowProps(row)}
-              className={`group/row h-[46px] border-b border-surface-outline ${row.contextOnly ? "bg-surface-dimmed text-content-dimmed" : ""}`}
+              className={`group/row h-[46px] border-b border-surface-outline ${row.item.type === "goal" ? "bg-surface-dimmed dark:bg-[#25272d]" : ""}`}
             >
               <th
                 scope="row"
                 colSpan={row.contextOnly ? columns.length : 1}
-                className="px-3 pl-7 text-left font-normal"
+                className="px-3 py-0 pl-7 text-left font-normal"
               >
                 <div className="flex items-center gap-1">
                   {organize?.controls(row)}
@@ -122,6 +122,7 @@ export function RowName({ row, onToggle }: { row: VisibleRow; onToggle: (id: str
   const { item, children, contextOnly, expanded, depth } = row;
   const ItemIcon = item.type === "goal" ? IconGoal : IconProject;
   const Chevron = expanded ? IconChevronDown : IconChevronRight;
+
   return (
     <div className="flex min-w-0 items-center gap-2" style={{ paddingInlineStart: depth * 25 }}>
       {children.length ? (
@@ -137,12 +138,7 @@ export function RowName({ row, onToggle }: { row: VisibleRow; onToggle: (id: str
         <span className="w-4 shrink-0" />
       )}
       <ItemIcon size={23} className="shrink-0" />
-      <BlackLink
-        to={item.itemPath}
-        underline="hover"
-        title={item.name}
-        className={`truncate ${item.type === "goal" ? "font-semibold" : ""}`}
-      >
+      <BlackLink to={item.itemPath} underline="hover" title={item.name} className="truncate">
         {item.name}
       </BlackLink>
       {contextOnly && <span className="shrink-0 text-[11px] text-content-dimmed">{t("Parent goal")}</span>}
@@ -167,7 +163,7 @@ function Detail({
     case "status":
       return (
         <td className="px-3">
-          <StatusBadge status={status} />
+          <StatusBadge status={status} className="border-transparent shadow-none dark:border-transparent" />
         </td>
       );
     case "progress":
@@ -176,12 +172,8 @@ function Detail({
           {item.progress === null ? (
             "—"
           ) : (
-            <div className="flex max-w-24 items-center gap-1.5 text-xs">
-              <ProgressBar
-                progress={item.progress}
-                status={item.status === "outdated" ? undefined : item.status}
-                size="sm"
-              />
+            <div className="flex max-w-24 items-center gap-2 text-xs text-content-dimmed">
+              <ProgressBar progress={item.progress} size="sm" />
               {formatNumber(item.progress / 100, preferences.locale, { style: "percent" })}
             </div>
           )}
@@ -189,7 +181,7 @@ function Detail({
       );
     case "due_date":
       return (
-        <td className="px-3 text-xs">
+        <td className="px-3 text-[13px] text-content-dimmed">
           <DateDisplay
             date={dueDate && calendarDate ? { ...dueDate, date: calendarDate } : null}
             locale={preferences.locale}
@@ -199,7 +191,7 @@ function Detail({
       );
     case "space":
       return (
-        <td className="truncate px-3 text-xs">
+        <td className="truncate px-3 text-[13px] text-content-dimmed">
           {item.space && item.spacePath ? (
             <BlackLink to={item.spacePath} underline="hover">
               {item.space.name}
@@ -221,7 +213,7 @@ function Detail({
     }
     case "next_step":
       return (
-        <td className="truncate px-3 text-xs" title={item.nextStep}>
+        <td className="truncate px-3 text-[13px] text-content-dimmed" title={item.nextStep}>
           {item.nextStep || "—"}
         </td>
       );
