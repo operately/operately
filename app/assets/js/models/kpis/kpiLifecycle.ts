@@ -5,6 +5,8 @@ export async function invalidateKpiQueries(queryClient: QueryClient): Promise<vo
   await Promise.all([
     queryClient.invalidateQueries({ queryKey: Api.kpis.getKpiQueryKeyPrefix() }),
     queryClient.invalidateQueries({ queryKey: Api.kpis.listKpisQueryKeyPrefix() }),
+    queryClient.invalidateQueries({ queryKey: Api.work_maps.getKpiPinsQueryKeyPrefix() }),
+    queryClient.invalidateQueries({ queryKey: Api.work_maps.searchKpisQueryKeyPrefix() }),
   ]);
 }
 

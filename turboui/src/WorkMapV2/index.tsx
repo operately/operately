@@ -9,6 +9,7 @@ import { PageNew } from "../Page";
 import { filterWorkMap, visibleRows, type WorkMapViewState, type WorkMapV2Item } from "./filterWorkMap";
 import { EmptyWork } from "./EmptyWork";
 import { Timeline } from "./Timeline";
+import { KpiStrip, type WorkMapKpiStrip } from "./KpiStrip";
 import { Table } from "./Table";
 import { Organize, type Organization } from "./Organize";
 import { useAddWork, type WorkMapCreation } from "./AddWork";
@@ -22,6 +23,7 @@ export interface WorkMapV2PageProps {
   space?: { id: string; name: string; href: string };
   organization?: Organization;
   creation?: WorkMapCreation;
+  kpis?: WorkMapKpiStrip;
   reviewerEditing?: ReviewerEditing;
   items: WorkMapV2Item[];
   view: WorkMapViewState;
@@ -39,6 +41,7 @@ export function WorkMapV2Page({
   title,
   organization,
   creation,
+  kpis,
   reviewerEditing,
   space,
   items,
@@ -135,6 +138,9 @@ export function WorkMapV2Page({
               onSave={onSaveDefault}
               saving={saving}
             />
+          )}
+          {view.showKpis && kpis && (
+            <KpiStrip data={kpis} spaceName={space?.name} preferences={formattedTimePreferences} />
           )}
           {!items.length ? (
             addWork.onboarding || <EmptyWork onAddProject={addWork.addProject} onAddGoal={addWork.addGoal} />

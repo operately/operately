@@ -73,7 +73,7 @@ it.each([
 
       await router.navigate("/acme");
       await router.navigate(mapPath);
-      expect(settingsRequests()).toHaveLength(2);
+      expect(settingsRequests()).toHaveLength(1);
       expect(mapRequests()).toHaveLength(1);
     } finally {
       router.dispose();

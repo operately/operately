@@ -6,6 +6,7 @@ import { builtInWorkMapView, mapColumns, ContentListSkeleton, WorkMapV2Page } fr
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useSaveWorkMapDefaultView } from "@/models/workMap";
 import { useOrganization } from "./useOrganization";
+import { useKpiStrip } from "./useKpiStrip";
 import { useCreation } from "./useCreation";
 import { useReviewerEditing } from "./useReviewerEditing";
 import { usePaths } from "@/routes/paths";
@@ -38,11 +39,14 @@ function ReadyPage({ data }: { data: NonNullable<ReturnType<typeof useLoadedData
   defaults.columns = mapColumns.filter((c) => c === "name" || defaults.columns.includes(c));
   const view = readView(search, defaults, readFilters(search));
 
+  const kpis = useKpiStrip(company, space, settings.canEdit, view.showKpis);
+
   return (
     <WorkMapV2Page
       title={space ? t("Work Map") : t("{{company}} Work Map", { company: company.name })}
       space={space ? { id: space.id, name: space.name, href: paths.spacePath(space.id) } : undefined}
       items={workMap}
+      kpis={kpis}
       creation={creation}
       reviewerEditing={reviewerEditing}
       organization={organization}

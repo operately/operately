@@ -2995,6 +2995,8 @@ export interface WorkMapItem {
 }
 
 export interface WorkMapKpi {
+  __typename: "work_map_kpi";
+  recentValues: number[];
   id: Id;
   name: string;
   spaceId: Id;

@@ -5,7 +5,7 @@ import type { SpaceKpisPage } from "./types";
 
 interface KpiSparklineProps {
   // Entries ordered oldest -> newest, as stored on a KPI.
-  entries: SpaceKpisPage.KpiEntry[];
+  entries: Pick<SpaceKpisPage.KpiEntry, "value">[];
   width?: number;
   height?: number;
   testId?: string;

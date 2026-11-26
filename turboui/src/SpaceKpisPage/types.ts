@@ -140,6 +140,8 @@ export namespace SpaceKpisPage {
   export type MutationResult = { success: boolean; id?: string; error?: string };
 
   export interface Props {
+    showCreateForm?: boolean;
+    onCloseCreateForm?: () => void;
     formattedTimePreferences: FormattedTimePreferences;
     space: Space;
 

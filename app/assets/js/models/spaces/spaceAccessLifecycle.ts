@@ -20,6 +20,8 @@ export async function invalidateSpaceAccessQueries(client: QueryClient, spaceId:
     client.invalidateQueries({ queryKey: Api.spaces.searchQueryKeyPrefix() }),
     client.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix() }),
     client.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix() }),
+    client.invalidateQueries({ queryKey: Api.work_maps.getKpiPinsQueryKeyPrefix() }),
+    client.invalidateQueries({ queryKey: Api.work_maps.searchKpisQueryKeyPrefix() }),
     client.invalidateQueries({ queryKey: Api.companies.listActivitiesQueryKeyPrefix() }),
   ]);
 }

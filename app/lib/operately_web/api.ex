@@ -440,6 +440,7 @@ defmodule OperatelyWeb.Api do
 
       namespace(:work_maps) do
         query(:get_settings, OperatelyWeb.Api.WorkMaps.GetSettings)
+        query(:get_kpi_pins, OperatelyWeb.Api.WorkMaps.GetKpiPins)
         query(:search_kpis, OperatelyWeb.Api.WorkMaps.SearchKpis)
         mutation(:save_layout_and_hierarchy, OperatelyWeb.Api.WorkMaps.SaveLayoutAndHierarchy)
       end
