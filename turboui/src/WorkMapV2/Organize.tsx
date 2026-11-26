@@ -5,7 +5,7 @@ import { IconGripVertical } from "../icons";
 import type { WorkMapParentChange } from "../ApiTypes";
 import { Table } from "./Table";
 import { visibleRows, type VisibleRow, type WorkMapRow } from "./filterWorkMap";
-import { move, moveDestination, type Placement, type OrganizationDraft } from "./organization";
+import { move, moveDestination, openRows, type Placement, type OrganizationDraft } from "./organization";
 
 export interface Organization {
   canReparent: (id: string) => boolean;
@@ -32,15 +32,16 @@ export function Organize({
   const [saving, setSaving] = React.useState(false);
   const [dragged, setDragged] = React.useState<string | null>(null);
   const [drop, setDrop] = React.useState<{ id: string; placement: Placement } | null>(null);
-  const all = React.useMemo(() => visibleRows(draft.rows, new Set()), [draft.rows]);
+  const rows = React.useMemo(() => openRows(draft.rows), [draft.rows]);
 
-  function apply(id: string, target: string, placement: Placement) {
+  function apply(id: string, target: string | null, placement: Placement) {
     setDraft((current) => move(current, id, target, placement, organization.canReparent(id)));
-    if (placement === "inside") setCollapsed((prev) => new Set([...prev].filter((key) => key !== target)));
+    if (target && placement === "inside") setCollapsed((prev) => new Set([...prev].filter((key) => key !== target)));
   }
   async function save() {
     setSaving(true);
     try {
+      const all = visibleRows(draft.rows, new Set());
       if (
         await organization.save(
           all.filter((r) => !r.contextOnly).map((r) => r.item.id),
@@ -120,9 +121,24 @@ export function Organize({
     <>
       <div className="flex min-h-[57px] flex-wrap items-center gap-3 border-y border-surface-outline bg-surface-accent px-4 py-3 sm:px-7 dark:border-[#47536e] dark:bg-[#293144]">
         <strong>{t("Organize Work Map")}</strong>
-        <span className="text-sm text-content-dimmed">
-          {t("Drag to reorder. Drop on a goal to change its parent.")}
-        </span>
+        {dragged && moveDestination(draft, dragged, null, "inside", organization.canReparent(dragged)) ? (
+          <span
+            className="rounded border border-dashed border-content-dimmed px-3 py-1 text-sm"
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={(event) => {
+              event.preventDefault();
+              apply(dragged, null, "inside");
+              setDragged(null);
+              setDrop(null);
+            }}
+          >
+            {t("No parent goal")}
+          </span>
+        ) : (
+          <span className="text-sm text-content-dimmed">
+            {t("Drag to reorder. Drop on a goal to change its parent.")}
+          </span>
+        )}
         <SecondaryButton testId="cancel-organize" className="ml-auto" size="xs" disabled={saving} onClick={onClose}>
           {t("Cancel")}
         </SecondaryButton>
@@ -132,7 +148,7 @@ export function Organize({
       </div>
 
       <Table
-        rows={visibleRows(draft.rows, collapsed)}
+        rows={visibleRows(rows, collapsed)}
         columns={columns}
         formattedTimePreferences={formattedTimePreferences}
         onToggle={(id) =>

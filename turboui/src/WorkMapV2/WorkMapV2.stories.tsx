@@ -248,8 +248,7 @@ function StoryPage({
             parentChanges: [],
           };
           for (const change of changes) {
-            const target = change.parentId ?? draft.rows[0]?.item.id;
-            if (target) draft = move(draft, change.itemId, target, change.parentId ? "inside" : "after", true);
+            draft = move(draft, change.itemId, change.parentId ?? null, "inside", true);
           }
           setItems(draft.rows.map(toItem));
           setOrder(ids);
@@ -362,7 +361,8 @@ export const OrganizeMap: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", { name: "Organize" }));
-    await expect(canvas.getByRole("link", { name: "Pilot onboarding guide" })).toBeVisible();
+    await expect(canvas.getByRole("link", { name: "Design partner program" })).toBeVisible();
+    await expect(canvas.queryByRole("link", { name: "Pilot onboarding guide" })).not.toBeInTheDocument();
   },
 };
 
