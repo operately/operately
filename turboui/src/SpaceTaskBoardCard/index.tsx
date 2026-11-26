@@ -17,18 +17,28 @@ export function SpaceTaskBoardCard({ board, tasks, to }: { board: TaskBoardSumma
         <ZeroState name={board.name} />
       ) : (
         <div className="flex flex-col h-full">
-          <div className="font-bold text-base text-center py-2 truncate px-3">{board.name}</div>
-          <div className="bg-surface-dimmed rounded mx-2 flex-1">
+          <div data-test-id="task-board-title" className="shrink-0 font-bold text-base text-center py-2 truncate px-3">
+            {board.name}
+          </div>
+          <div
+            data-test-id="task-board-preview"
+            className="min-h-0 overflow-hidden bg-surface-dimmed rounded mx-2 flex-1"
+          >
             {tasks.slice(0, 7).map((task) => (
               <div
                 key={task.id}
+                data-test-id="task-board-row"
                 className="flex items-center justify-between gap-2 py-2 px-2 border-b border-stroke-base last:border-b-0"
               >
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex flex-1 items-center gap-2 min-w-0">
                   <TaskStatus task={task} />
-                  <span className="font-bold truncate">{task.name}</span>
+                  <span data-test-id="task-board-task-name" className="min-w-0 flex-1 font-bold truncate">
+                    {task.name}
+                  </span>
                 </div>
-                <AvatarList people={task.assignees ?? []} size={26} maxElements={3} />
+                <div data-test-id="task-board-assignees" className="shrink-0">
+                  <AvatarList people={task.assignees ?? []} size={26} maxElements={3} wrap={false} />
+                </div>
               </div>
             ))}
           </div>
