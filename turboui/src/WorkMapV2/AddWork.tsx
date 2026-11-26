@@ -3,8 +3,18 @@ import { useTranslation } from "react-i18next";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { UnstyledButton } from "../Button/UnstalyedButton";
 import { Textfield } from "../FormElements/Textfield";
-import { IconPlus, IconGoal, IconProject } from "../icons";
-import { BlackLink } from "../Link";
+import {
+  IconArrowUpRight,
+  IconBook,
+  IconBuilding,
+  IconCheck,
+  IconChevronRight,
+  IconFileText,
+  IconPlus,
+  IconSearch,
+  IconTarget,
+} from "../icons";
+import { Link } from "../Link";
 import { Menu, MenuActionItem, MenuLinkItem, MenuSeparator } from "../Menu";
 import { Modal } from "../Modal";
 import { tn } from "../i18n";
@@ -14,6 +24,10 @@ import { ZeroState } from "../WorkMap/components/ZeroState";
 import type { ProjectTemplateSelection } from "../ProjectTemplateSelection";
 import type { WorkMapV2Item } from "./filterWorkMap";
 import { compareIds } from "../utils/ids";
+
+const menuItemClass =
+  "min-h-[35px] rounded-md !gap-2 !px-2.5 !text-[13px] !font-normal !text-content-base [&_svg]:size-3.5 [&_svg]:text-content-dimmed dark:data-[highlighted]:bg-[#3b4050]";
+const primaryActionClass = "!bg-[#4265ce] !border-transparent hover:!bg-blue-700";
 
 export interface WorkMapCreation {
   defaultSpace?: SpaceField.Space;
@@ -67,24 +81,34 @@ export function useAddWork(creation: WorkMapCreation | undefined, scopeName: str
         align="end"
         triggerLabel={t("Add work")}
         triggerIcon={IconPlus}
-        triggerClassName="!rounded-md !bg-brand-1 !px-3 !text-white-1 hover:!bg-blue-600"
+        showTriggerChevron
+        triggerClassName={`h-8 !rounded-md !px-2.5 !text-[13px] !text-white-1 ${primaryActionClass}`}
+        contentProps={{
+          className:
+            "w-[259px] !rounded-[10px] !p-[7px] dark:bg-[#2b2d34] dark:ring-[#50535f] [&>[role=separator]]:mx-0.5 [&>[role=separator]]:my-1.5",
+        }}
       >
-        <MenuActionItem icon={IconGoal} onClick={() => open("goal")}>
+        <MenuActionItem className={menuItemClass} icon={IconTarget} onClick={() => open("goal")}>
           {t("Goal")}
         </MenuActionItem>
-        <MenuActionItem icon={IconProject} onClick={() => open("project")}>
+        <MenuActionItem className={menuItemClass} icon={IconFileText} onClick={() => open("project")}>
           {t("Project")}
         </MenuActionItem>
         <MenuActionItem
           testId="work-map-template-picker"
-          onClick={() => {
-            setChoosing(true);
-          }}
+          className={menuItemClass}
+          icon={IconBook}
+          onClick={() => setChoosing(true)}
         >
           {t("Project from template…")}
         </MenuActionItem>
         <MenuSeparator />
-        <MenuLinkItem to={templateLibraryPath}>{t("Open template library")}</MenuLinkItem>
+        <MenuLinkItem to={templateLibraryPath} className={menuItemClass} icon={IconBook}>
+          <span className="flex items-center justify-between gap-2">
+            {t("Open template library")}
+            <IconChevronRight size={14} aria-hidden />
+          </span>
+        </MenuLinkItem>
       </Menu>
     ),
     onboarding: creation.onFirstItemCreated && creation.defaultSpace && (
@@ -162,44 +186,99 @@ function TemplatePicker({
   const selected = results.find((tpl) => tpl.id === selectedId) ?? results[0];
 
   return (
-    <Modal isOpen onClose={onClose} title={t("Choose a project template")} size="small">
-      <div className="mb-3 flex justify-between text-sm">
-        <strong>{scopeName}</strong>
-        <BlackLink to={templateLibraryPath}>{t("Open template library")}</BlackLink>
-      </div>
-      <Textfield
-        autoFocus
-        aria-label={t("Search templates")}
-        placeholder={t("Search {{name}} templates…", { name: scopeName })}
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-
-      <div className="my-3 max-h-80 overflow-y-auto">
-        {results.map((tpl) => (
-          <UnstyledButton
-            key={tpl.id}
-            testId={`choose-template-${tpl.id}`}
-            aria-pressed={selected?.id === tpl.id}
-            className={`flex w-full flex-col items-start rounded px-2 py-2 text-left hover:bg-surface-highlight ${selected?.id === tpl.id ? "bg-surface-accent ring-1 ring-inset ring-brand-1" : ""}`}
-            onClick={() => setSelectedId(tpl.id)}
+    <Modal
+      isOpen
+      onClose={onClose}
+      title={
+        <span className="flex items-center gap-2.5 text-[19px] leading-6">
+          <IconBook size={19} aria-hidden className="shrink-0 text-link-base dark:text-[#a7bcff]" />
+          {t("Choose a project template")}
+        </span>
+      }
+      contentClassName="!max-w-[592px] !rounded-xl border border-surface-outline dark:border-[#545763] dark:bg-[#2a2c33]"
+      headerClassName="gap-2 !border-0 !pb-2 !pt-5 [&>button]:text-content-dimmed"
+      contentPadding=""
+    >
+      <div className="px-6">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-2 text-[13px]">
+          <span className="flex min-w-0 items-center gap-2 text-content-dimmed">
+            <IconBuilding size={14} aria-hidden className="shrink-0" />
+            <span className="break-words min-w-0">{scopeName}</span>
+          </span>
+          <Link
+            to={templateLibraryPath}
+            target="_blank"
+            underline="hover"
+            className="inline-flex items-center gap-1 text-xs font-medium dark:text-[#a7bcff]"
           >
-            <strong>{tpl.name}</strong>
-            <span className="text-xs text-content-dimmed">
-              {tn("1 milestone", "{{count}} milestones", tpl.milestoneCount)} ·{" "}
-              {tn("1 task", "{{count}} tasks", tpl.taskCount)}
-            </span>
-          </UnstyledButton>
-        ))}
-        {!results.length && <p className="p-2 text-sm text-content-dimmed">{t("No templates found")}</p>}
+            {t("Open template library")} <IconArrowUpRight size={13} aria-hidden />
+          </Link>
+        </div>
+
+        <div className="relative">
+          <IconSearch
+            size={14}
+            aria-hidden
+            className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-content-dimmed"
+          />
+          <Textfield
+            autoFocus
+            aria-label={t("Search templates")}
+            placeholder={t("Search {{name}} templates…", { name: scopeName })}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="[&>div]:rounded-md [&>div]:outline-1 dark:[&>div]:bg-[#202126] dark:[&>div]:border-[#525765] dark:[&>div]:outline-[#829be4]"
+            inputClassName="h-8 min-w-0 !pl-8 text-xs"
+          />
+        </div>
       </div>
 
-      <div className="flex justify-between gap-2">
-        <SecondaryButton size="sm" onClick={onBlank}>
+      <div className="mt-5 max-h-80 space-y-1.5 overflow-y-auto px-6 pb-2">
+        {results.map((tpl) => {
+          const isSelected = selected?.id === tpl.id;
+          return (
+            <UnstyledButton
+              key={tpl.id}
+              testId={`choose-template-${tpl.id}`}
+              aria-pressed={isSelected}
+              className={`flex min-h-[66px] w-full items-center gap-3 rounded-lg border px-3.5 py-2 text-left focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-link-base ${
+                isSelected
+                  ? "border-blue-500 bg-blue-50 dark:border-[#829be4] dark:bg-[#30394d]"
+                  : "border-surface-outline hover:bg-surface-highlight dark:border-[#3a3c45] dark:bg-[#292b33] dark:hover:bg-[#343741]"
+              }`}
+              onClick={() => setSelectedId(tpl.id)}
+            >
+              <IconBook
+                size={20}
+                aria-hidden
+                className={isSelected ? "shrink-0 text-link-base dark:text-[#a7bcff]" : "shrink-0 text-content-dimmed"}
+              />
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="break-words text-sm font-semibold">{tpl.name}</span>
+                <span className="text-xs text-content-dimmed dark:text-[#c2c4ce]">
+                  {tn("1 milestone", "{{count}} milestones", tpl.milestoneCount)} ·{" "}
+                  {tn("1 task", "{{count}} tasks", tpl.taskCount)}
+                </span>
+              </span>
+              {isSelected && (
+                <IconCheck size={17} aria-hidden className="shrink-0 text-link-base dark:text-[#a7bcff]" />
+              )}
+            </UnstyledButton>
+          );
+        })}
+        {!results.length && <p className="py-2 text-sm text-content-dimmed">{t("No templates found")}</p>}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-surface-outline px-6 py-3.5 dark:border-[#3a3c45]">
+        <UnstyledButton
+          className="py-1 text-left text-xs font-medium text-content-dimmed hover:text-content-base hover:underline focus-visible:underline dark:text-[#c2c4ce]"
+          onClick={onBlank}
+        >
           {t("Start with a blank project")}
-        </SecondaryButton>
+        </UnstyledButton>
         <PrimaryButton
           size="sm"
+          className={`!px-2.5 !text-[13px] ${primaryActionClass}`}
           testId="use-template"
           disabled={!selected}
           onClick={() => selected && onSelect(selected)}

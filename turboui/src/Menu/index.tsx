@@ -15,6 +15,7 @@ type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxl
 interface MenuProps extends TestableElement {
   triggerIcon?: React.ComponentType<{ size: number }>;
   triggerLabel?: string;
+  showTriggerChevron?: boolean;
   triggerClassName?: string;
   triggerRef?: React.Ref<HTMLButtonElement>;
   ariaLabel?: string;
@@ -35,6 +36,7 @@ interface MenuProps extends TestableElement {
 interface MenuItemProps extends TestableElement {
   children: React.ReactNode;
   icon?: React.ComponentType<{ size: any }>;
+  className?: string;
   danger?: boolean;
   hidden?: boolean;
 }
@@ -52,7 +54,6 @@ interface MenuActionItemProps extends MenuItemProps {
   onClick: () => void;
   keepOpen?: boolean;
   disabled?: boolean;
-  className?: string;
 }
 
 interface SubMenuProps {
@@ -78,7 +79,7 @@ export function Menu(props: MenuProps) {
         <DropdownMenu.Portal>
           <DropdownMenu.Content
             {...props.contentProps}
-            className={menuContentClass}
+            className={classNames(menuContentClass, props.contentProps?.className)}
             style={menuContentStyle(props.size)}
             align={props.align}
             onCloseAutoFocus={props.onCloseAutoFocus}
@@ -148,7 +149,7 @@ function Trigger(props: MenuProps) {
           <>
             {props.triggerIcon && <TriggerIcon size={14} />}
             {props.triggerLabel}
-            {!props.triggerIcon && <IconChevronDown size={16} />}
+            {(!props.triggerIcon || props.showTriggerChevron) && <IconChevronDown size={props.triggerIcon ? 12 : 16} />}
           </>
         ) : (
           <TriggerIcon size={20} />
@@ -225,7 +226,7 @@ export function MenuActionItem(props: MenuActionItemProps) {
 
   return (
     <DropdownMenu.Item
-      className={classNames(menuItemClassNames(props), props.className)}
+      className={menuItemClassNames(props)}
       disabled={props.disabled}
       onPointerEnter={props.onPointerEnter}
       onPointerLeave={props.onPointerLeave}
@@ -324,7 +325,7 @@ function MenuItemIconAndTitle({ icon, children }: any) {
 }
 
 function menuItemClassNames(props: MenuItemProps) {
-  return classNames(menuItemClass, {
+  return classNames(menuItemClass, props.className, {
     "hover:text-content-base": !props.danger,
     "hover:text-content-error": props.danger,
   });
