@@ -1,4 +1,5 @@
 import Api, { type WorkMapsGetSettingsInput } from "@/api";
+import { queryClient } from "@/api/queryClient";
 
 // Both route versions use these inputs so preloading the usual URL also warms the pilot.
 export async function loadCompanyWorkMap() {
@@ -18,9 +19,9 @@ export async function loadSpaceWorkMap(id: string, includeCrossSpaceParents = fa
   return { workMapInput, spaceInput };
 }
 
-// The pin strip loads measurements on its own, so this read skips them. Callers must reuse the returned input.
+// Editing permissions can change while the user is away from the map.
 export async function loadWorkMapSettings(spaceId?: string): Promise<WorkMapsGetSettingsInput> {
   const settingsInput = { ...(spaceId && { spaceId }), includePinnedKpis: false };
-  await Api.work_maps.getSettingsQuery(settingsInput);
+  await queryClient.fetchQuery(Api.work_maps.getSettingsQueryOptions(settingsInput));
   return settingsInput;
 }
