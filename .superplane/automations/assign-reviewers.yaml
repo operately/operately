@@ -2,27 +2,27 @@ apiVersion: v2
 kind: Automation
 name: Assign reviewers
 icon: eye
-triggers:
-- use: pull_request_updated
 agent:
   harness: codex
   credentials:
     source: subscription
+triggers:
+  - use: pull_request_updated
 steps:
-- name: Assign Reviewers
-  prompt: |-
-    Assign GitHub reviewers based on PR risk and complexity:
+  - name: Assign Reviewers
+    prompt: |-
+      Assign GitHub reviewers based on PR risk and complexity:
 
-    0 reviewers for UI-only, business logic-only, or trivial changes.
+      0 reviewers for UI-only, business logic-only, or trivial changes.
 
-    1–2+ reviewers for authorization, security, database migrations, or other high-risk changes.
+      1–2+ reviewers for authorization, security, database migrations, or other high-risk changes.
 
-    1–2 reviewers for other non-trivial changes.
+      1–2 reviewers for other non-trivial changes.
 
-    Prioritize CODEOWNERS (if available), changed files, expertise, and recent contributors. Exclude the PR author, Superplane task author, existing reviewers, direct PR contributors, and inactive users. Only assign users with review access.
+      Prioritize CODEOWNERS (if available), changed files, expertise, and recent contributors. Exclude the PR author, Superplane task author, existing reviewers, direct PR contributors, and inactive users. Only assign users with review access.
 
-    Keep it fast: Use the PR title, description, changed file paths, and diff summary to assess risk. Avoid deep code analysis or reading full diffs unless necessary. Make a quick, best-effort decision and avoid unnecessary reviews.
+      Keep it fast: Use the PR title, description, changed file paths, and diff summary to assess risk. Avoid deep code analysis or reading full diffs unless necessary. Make a quick, best-effort decision and avoid unnecessary reviews.
 
-    Add a line to the bottom of the PR description with the name of the assignees and why they were assigned. Keep it short and to the point. Example:
+      Add a line to the bottom of the PR description with the name of the assignees and why they were assigned. Keep it short and to the point. Example:
 
-    Assigned @pedro because he was the last one who made changes in this part of the system.
+      Assigned @pedro because he was the last one who made changes in this part of the system.
