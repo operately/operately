@@ -11,6 +11,7 @@ import IconArrowBackUp from "@tabler/icons-react/dist/esm/icons/IconArrowBackUp.
 import IconArrowForwardUp from "@tabler/icons-react/dist/esm/icons/IconArrowForwardUp.mjs";
 import IconArrowLeft from "@tabler/icons-react/dist/esm/icons/IconArrowLeft.mjs";
 import IconArrowRight from "@tabler/icons-react/dist/esm/icons/IconArrowRight.mjs";
+import IconArrowUpRight from "@tabler/icons-react/dist/esm/icons/IconArrowUpRight.mjs";
 import IconArrowsMaximize from "@tabler/icons-react/dist/esm/icons/IconArrowsMaximize.mjs";
 import IconArrowsMinimize from "@tabler/icons-react/dist/esm/icons/IconArrowsMinimize.mjs";
 import IconBell from "@tabler/icons-react/dist/esm/icons/IconBell.mjs";
@@ -18,6 +19,7 @@ import IconBellOff from "@tabler/icons-react/dist/esm/icons/IconBellOff.mjs";
 import IconBinaryTree2 from "@tabler/icons-react/dist/esm/icons/IconBinaryTree2.mjs";
 import IconBlockquote from "@tabler/icons-react/dist/esm/icons/IconBlockquote.mjs";
 import IconBold from "@tabler/icons-react/dist/esm/icons/IconBold.mjs";
+import IconBook from "@tabler/icons-react/dist/esm/icons/IconBook.mjs";
 import IconBrandDiscordFilled from "@tabler/icons-react/dist/esm/icons/IconBrandDiscordFilled.mjs";
 import IconBrandGithub from "@tabler/icons-react/dist/esm/icons/IconBrandGithub.mjs";
 import IconBrandSlack from "@tabler/icons-react/dist/esm/icons/IconBrandSlack.mjs";
@@ -182,6 +184,7 @@ export {
   IconArrowForwardUp,
   IconArrowLeft,
   IconArrowRight,
+  IconArrowUpRight,
   IconArrowsMaximize,
   IconArrowsMinimize,
   IconBell,
@@ -189,6 +192,7 @@ export {
   IconBinaryTree2,
   IconBlockquote,
   IconBold,
+  IconBook,
   IconBrandDiscordFilled,
   IconBrandGithub,
   IconBrandSlack,

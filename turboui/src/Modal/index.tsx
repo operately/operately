@@ -20,7 +20,8 @@ export interface ModalProps {
   /**
    * Title to display in the modal header
    */
-  title?: string;
+  title?: React.ReactNode;
+  headerClassName?: string;
 
   /**
    * Content to render inside the modal
@@ -57,6 +58,7 @@ export function Modal({
   isOpen,
   onClose,
   title,
+  headerClassName = "",
   children,
   size = "medium",
   closeOnBackdropClick = true,
@@ -133,7 +135,9 @@ export function Modal({
         className={`bg-surface-base rounded-lg shadow-xl w-full max-h-[95vh] overflow-auto ${sizeClasses} ${contentClassName}`}
       >
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-surface-outline">
+          <div
+            className={`flex items-center justify-between px-6 py-4 border-b border-surface-outline ${headerClassName}`}
+          >
             <h2 id={titleId} className="text-lg font-semibold text-content-accent">
               {title}
             </h2>
