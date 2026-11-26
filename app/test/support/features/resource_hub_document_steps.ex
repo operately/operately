@@ -2,6 +2,8 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
   use Operately.FeatureCase
 
   alias Operately.ResourceHubs.{Document, DocumentVersion, ResourceHub, Node}
+  alias Operately.Notifications.SubscriptionList
+  alias Operately.Operations.SubscriptionsListEditing
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.ResourceHubSteps, as: Steps
@@ -191,6 +193,24 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.assert_has(testid: UI.testid(["subscriber", Paths.person_id(ctx.john)]))
     |> UI.refute_has(testid: UI.testid(["subscriber", Paths.person_id(ctx.jane)]))
     |> UI.refute_has(testid: UI.testid(["subscriber", Paths.person_id(ctx.fred)]))
+  end
+
+  step :subscribe_other_user, ctx do
+    {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.document.id, opts: [preload: :subscriptions])
+
+    {:ok, _} =
+      SubscriptionsListEditing.run(list, %{
+        send_notifications_to_everyone: false,
+        subscriber_ids: [ctx.creator.id, ctx.other_user.id]
+      })
+
+    UI.visit(ctx, Paths.document_path(ctx.company, ctx.document))
+  end
+
+  step :assert_author_and_other_user_subscribed, ctx do
+    ctx
+    |> UI.assert_has(testid: UI.testid(["subscriber", Paths.person_id(ctx.creator)]))
+    |> UI.assert_has(testid: UI.testid(["subscriber", Paths.person_id(ctx.other_user)]))
   end
 
   step :edit_document, ctx, attrs do
