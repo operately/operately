@@ -2,7 +2,13 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { PrimaryButton, SecondaryButton } from "../Button";
 
-export function EmptyWork({ onAddProject, onAddGoal }: { onAddProject?: () => void; onAddGoal?: () => void }) {
+export function EmptyWork({
+  onAddProject,
+  onAddGoal,
+}: {
+  onAddProject?: React.MouseEventHandler<HTMLButtonElement>;
+  onAddGoal?: React.MouseEventHandler<HTMLButtonElement>;
+}) {
   const { t } = useTranslation();
   return (
     <section className="px-4 pb-12 pt-16 text-center sm:pt-[104px]">

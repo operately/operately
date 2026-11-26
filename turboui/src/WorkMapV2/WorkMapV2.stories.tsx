@@ -404,6 +404,14 @@ export const ProjectTemplates: Story = {
     await userEvent.click(within(canvasElement).getByRole("button", { name: "Add work" }));
     await userEvent.click(await body.findByRole("menuitem", { name: "Project from template…" }));
     await expect(body.getByRole("button", { name: /Release checklist/, pressed: true })).toBeVisible();
+    body.getByRole("button", { name: "Use template" }).focus();
+    await userEvent.tab();
+    await expect(body.getByRole("button", { name: "Close" })).toHaveFocus();
+    await userEvent.keyboard("{Escape}");
+    const addWork = within(canvasElement).getByRole("button", { name: "Add work" });
+    await expect(addWork).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    await userEvent.click(await body.findByRole("menuitem", { name: "Project from template…" }));
   },
 };
 

@@ -2815,7 +2815,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:55
-#: assets/js/pages/WorkMapV2Page/page.tsx:46
+#: assets/js/pages/WorkMapV2Page/page.tsx:47
 msgid "%{company} Work Map"
 msgstr ""
 
@@ -3073,6 +3073,11 @@ msgstr ""
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:69
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:95
 msgid "%{name} invited you to join"
+msgstr ""
+
+#.frontend
+#: assets/js/models/workMap/useSaveWorkMapDefaultView.ts:15
+msgid "%{name} now opens with this view."
 msgstr ""
 
 #.frontend
@@ -4499,7 +4504,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:176
+#: ../turboui/src/WorkMapV2/index.tsx:178
 msgid "1 goal without dates"
 msgid_plural "%{count} goals without dates"
 msgstr[0] ""
@@ -4544,7 +4549,7 @@ msgstr[1] ""
 
 #.frontend
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:100
-#: ../turboui/src/WorkMapV2/AddWork.tsx:259
+#: ../turboui/src/WorkMapV2/AddWork.tsx:272
 msgid "1 milestone"
 msgid_plural "%{count} milestones"
 msgstr[0] ""
@@ -4734,7 +4739,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:178
+#: ../turboui/src/WorkMapV2/index.tsx:180
 msgid "1 project without dates"
 msgid_plural "%{count} projects without dates"
 msgstr[0] ""
@@ -4779,7 +4784,7 @@ msgstr[1] ""
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:63
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:100
 #: ../turboui/src/TaskBoard/components/CompletedMilestonesSection.tsx:98
-#: ../turboui/src/WorkMapV2/AddWork.tsx:260
+#: ../turboui/src/WorkMapV2/AddWork.tsx:273
 msgid "1 task"
 msgid_plural "%{count} tasks"
 msgstr[0] ""
@@ -5539,7 +5544,7 @@ msgstr ""
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 #: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
 #: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:216
-#: ../turboui/src/WorkMapV2/AddWork.tsx:74
+#: ../turboui/src/WorkMapV2/AddWork.tsx:76
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:102
 msgid "Add"
 msgstr ""
@@ -5634,7 +5639,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:80
-#: ../turboui/src/WorkMapV2/EmptyWork.tsx:34
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:40
 msgid "Add a goal"
 msgstr ""
 
@@ -5651,7 +5656,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:87
-#: ../turboui/src/WorkMapV2/EmptyWork.tsx:24
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:30
 msgid "Add a project"
 msgstr ""
 
@@ -5662,7 +5667,7 @@ msgid "Add a project description..."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/EmptyWork.tsx:12
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:18
 msgid "Add a project your team is working on, or a goal it wants to reach."
 msgstr ""
 
@@ -5926,7 +5931,7 @@ msgid "Add the server configuration"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/AddWork.tsx:82
+#: ../turboui/src/WorkMapV2/AddWork.tsx:88
 msgid "Add work"
 msgstr ""
 
@@ -7722,7 +7727,7 @@ msgid "Choose a plan with more member capacity."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/AddWork.tsx:195
+#: ../turboui/src/WorkMapV2/AddWork.tsx:208
 msgid "Choose a project template"
 msgstr ""
 
@@ -7825,7 +7830,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:274
-#: ../turboui/src/WorkMapV2/index.tsx:193
+#: ../turboui/src/WorkMapV2/index.tsx:195
 msgid "Clear filters"
 msgstr ""
 
@@ -7904,11 +7909,11 @@ msgstr ""
 #: ../turboui/src/AccountApiTokensPage/index.tsx:197
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:63
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
-#: ../turboui/src/Modal/index.tsx:147
+#: ../turboui/src/Modal/index.tsx:151
 #: ../turboui/src/Reactions/index.tsx:958
 #: ../turboui/src/RichEditor/components/MarkdownHelp.tsx:93
-#: ../turboui/src/SlideIn/index.tsx:128
-#: ../turboui/src/SlideIn/index.tsx:130
+#: ../turboui/src/SlideIn/index.tsx:129
+#: ../turboui/src/SlideIn/index.tsx:131
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:134
 #: ../turboui/src/TaskBoard/KanbanView/DeleteStatusModal.tsx:55
 msgid "Close"
@@ -7931,7 +7936,7 @@ msgid "Close image preview"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Toasts/index.tsx:72
+#: ../turboui/src/Toasts/index.tsx:73
 msgid "Close notification"
 msgstr ""
 
@@ -8016,7 +8021,7 @@ msgid "Collapse"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Table.tsx:131
+#: ../turboui/src/WorkMapV2/Table.tsx:148
 msgid "Collapse %{name}"
 msgstr ""
 
@@ -8916,7 +8921,7 @@ msgid "Couldn’t save KPI pins"
 msgstr ""
 
 #.frontend
-#: assets/js/models/workMap/useSaveWorkMapDefaultView.ts:15
+#: assets/js/models/workMap/useSaveWorkMapDefaultView.ts:18
 msgid "Couldn’t save the default view"
 msgstr ""
 
@@ -8926,7 +8931,7 @@ msgid "Couldn’t save the map order"
 msgstr ""
 
 #.frontend
-#: assets/js/models/kpis/useKpiGoalLinks.ts:22
+#: assets/js/models/kpis/useKpiGoalLinks.ts:23
 msgid "Couldn’t update the KPI link."
 msgstr ""
 
@@ -9113,7 +9118,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:97
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:180
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:185
 msgid "Create project"
 msgstr ""
 
@@ -9428,11 +9433,6 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceToolsConfigurationPage/ToolManagement.tsx:247
 msgid "Default"
-msgstr ""
-
-#.frontend
-#: assets/js/models/workMap/useSaveWorkMapDefaultView.ts:14
-msgid "Default view saved"
 msgstr ""
 
 #.frontend
@@ -10206,7 +10206,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/WorkMap/utils/timeline.ts:104
-#: ../turboui/src/WorkMapV2/Timeline.tsx:389
+#: ../turboui/src/WorkMapV2/Timeline.tsx:393
 msgid "Due %{date}"
 msgstr ""
 
@@ -10891,8 +10891,8 @@ msgstr ""
 #: assets/js/models/comments/useOptimisticComments.tsx:133
 #: assets/js/models/goals/useGoalTargets.ts:65
 #: assets/js/models/goals/useGoalTargets.ts:89
-#: assets/js/models/kpis/useKpiGoalLinks.ts:22
-#: assets/js/models/kpis/useKpiGoalLinks.ts:87
+#: assets/js/models/kpis/useKpiGoalLinks.ts:23
+#: assets/js/models/kpis/useKpiGoalLinks.ts:88
 #: assets/js/models/milestones/useMilestoneCompletion.ts:33
 #: assets/js/models/milestones/useMilestoneCompletion.ts:73
 #: assets/js/models/projects/useProjectMilestoneOrdering.ts:132
@@ -11214,7 +11214,7 @@ msgid "Expand"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/Table.tsx:131
+#: ../turboui/src/WorkMapV2/Table.tsx:148
 msgid "Expand %{name}"
 msgstr ""
 
@@ -12154,7 +12154,7 @@ msgstr ""
 #: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:155
 #: ../turboui/src/SearchPage/index.tsx:317
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:100
-#: ../turboui/src/WorkMapV2/AddWork.tsx:92
+#: ../turboui/src/WorkMapV2/AddWork.tsx:98
 #: assets/js/pages/GoalAccessAddPage/index.tsx:38
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:32
 #: assets/js/pages/GoalEditAccessLevelsPage/index.tsx:25
@@ -14920,7 +14920,7 @@ msgid "No goal selected"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/EmptyWork.tsx:9
+#: ../turboui/src/WorkMapV2/EmptyWork.tsx:15
 msgid "No goals or projects yet"
 msgstr ""
 
@@ -14966,7 +14966,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/RichEditor/extensions/MentionResources/ResourceList.tsx:122
-#: ../turboui/src/WorkMapV2/index.tsx:189
+#: ../turboui/src/WorkMapV2/index.tsx:191
 msgid "No matching work."
 msgstr ""
 
@@ -15146,7 +15146,7 @@ msgid "No projects found."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:189
+#: ../turboui/src/WorkMapV2/index.tsx:191
 msgid "No projects match these filters"
 msgstr ""
 
@@ -15232,7 +15232,7 @@ msgid "No template"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/AddWork.tsx:269
+#: ../turboui/src/WorkMapV2/AddWork.tsx:282
 msgid "No templates found"
 msgstr ""
 
@@ -15719,8 +15719,8 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:161
-#: ../turboui/src/WorkMapV2/AddWork.tsx:108
-#: ../turboui/src/WorkMapV2/AddWork.tsx:214
+#: ../turboui/src/WorkMapV2/AddWork.tsx:114
+#: ../turboui/src/WorkMapV2/AddWork.tsx:227
 msgid "Open template library"
 msgstr ""
 
@@ -16011,12 +16011,12 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:122
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:117
-#: ../turboui/src/WorkMapV2/Table.tsx:148
+#: ../turboui/src/WorkMapV2/Table.tsx:165
 msgid "Parent goal"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:172
+#: ../turboui/src/WorkMapV2/index.tsx:174
 msgid "Parent goals shown for context"
 msgstr ""
 
@@ -16444,7 +16444,7 @@ msgstr ""
 #: ../turboui/src/Reactions/index.tsx:59
 #: ../turboui/src/Reactions/index.tsx:205
 #: assets/js/models/people/usePeopleSearchError.ts:7
-#: assets/js/models/workMap/useSaveWorkMapDefaultView.ts:15
+#: assets/js/models/workMap/useSaveWorkMapDefaultView.ts:18
 #: assets/js/pages/AccountApiTokensPage/index.tsx:61
 #: assets/js/pages/AccountApiTokensPage/index.tsx:84
 #: assets/js/pages/AccountApiTokensPage/index.tsx:113
@@ -16830,7 +16830,7 @@ msgstr ""
 #: ../turboui/src/TaskPage/MoveModal.tsx:113
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:105
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:222
-#: ../turboui/src/WorkMapV2/AddWork.tsx:95
+#: ../turboui/src/WorkMapV2/AddWork.tsx:101
 #: assets/js/features/activities/ProjectContributorsAddition/index.tsx:87
 #: lib/operately/md/milestone.ex:20
 #: lib/operately/md/task.ex:105
@@ -16918,7 +16918,7 @@ msgid "Project duration"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/AddWork.tsx:103
+#: ../turboui/src/WorkMapV2/AddWork.tsx:109
 msgid "Project from template…"
 msgstr ""
 
@@ -18596,7 +18596,7 @@ msgid "Search"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/AddWork.tsx:227
+#: ../turboui/src/WorkMapV2/AddWork.tsx:240
 msgid "Search %{name} templates…"
 msgstr ""
 
@@ -18738,7 +18738,7 @@ msgid "Search spaces..."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/AddWork.tsx:226
+#: ../turboui/src/WorkMapV2/AddWork.tsx:239
 msgid "Search templates"
 msgstr ""
 
@@ -19568,7 +19568,7 @@ msgstr ""
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:72
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:61
 #: ../turboui/src/TitleSetupPrompt/index.tsx:90
-#: assets/js/models/kpis/useKpiGoalLinks.ts:87
+#: assets/js/models/kpis/useKpiGoalLinks.ts:88
 #: assets/js/models/projects/useProjectContributorActions.tsx:91
 #: assets/js/models/projects/useProjectContributorActions.tsx:102
 #: assets/js/models/projects/useProjectContributorActions.tsx:150
@@ -19861,13 +19861,13 @@ msgid "Start search index maintenance?"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/AddWork.tsx:277
+#: ../turboui/src/WorkMapV2/AddWork.tsx:290
 msgid "Start with a blank project"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:163
-msgid "Start with something already in motion. You can add tasks, milestones, and teammates next."
+msgid "Start with something your team is already working on."
 msgstr ""
 
 #.frontend
@@ -22220,7 +22220,7 @@ msgid "Track the numbers this space cares about and log updates on a weekly or m
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMap/components/ZeroState.tsx:186
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:191
 msgid "Tracking an outcome instead? <goal>Add a goal</goal>."
 msgstr ""
 
@@ -22258,7 +22258,7 @@ msgid "Try again later"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/index.tsx:191
+#: ../turboui/src/WorkMapV2/index.tsx:193
 msgid "Try another filter or clear them to see more work."
 msgstr ""
 
@@ -22992,7 +22992,7 @@ msgid "Use for backlog or paused work"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/WorkMapV2/AddWork.tsx:286
+#: ../turboui/src/WorkMapV2/AddWork.tsx:299
 msgid "Use template"
 msgstr ""
 
@@ -23778,7 +23778,7 @@ msgstr ""
 #: ../turboui/src/GoalPage/PageHeader.tsx:19
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:98
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:112
-#: ../turboui/src/WorkMapV2/index.tsx:103
+#: ../turboui/src/WorkMapV2/index.tsx:104
 #: assets/js/features/goals/GoalSubpageNavigation/index.tsx:15
 #: assets/js/features/goals/GoalSubpageNavigation/index.tsx:17
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:59
@@ -23801,7 +23801,7 @@ msgstr ""
 #: assets/js/pages/ProjectDiscussionPage/page.tsx:109
 #: assets/js/pages/ProjectDiscussionPage/page.tsx:111
 #: assets/js/pages/SpaceWorkMapPage/page.tsx:81
-#: assets/js/pages/WorkMapV2Page/page.tsx:46
+#: assets/js/pages/WorkMapV2Page/page.tsx:47
 msgid "Work Map"
 msgstr ""
 

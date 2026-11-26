@@ -3,7 +3,7 @@ import { showErrorToast, showSuccessToast, type WorkMapViewState } from "turboui
 import type { WorkMapsGetSettingsInput } from "@/api";
 import { useSaveWorkMapSettings } from "./workMapSettingsLifecycle";
 
-export function useSaveWorkMapDefaultView() {
+export function useSaveWorkMapDefaultView(scopeName: string) {
   const { t } = useTranslation();
   const { mutate, isPending } = useSaveWorkMapSettings();
 
@@ -11,7 +11,7 @@ export function useSaveWorkMapDefaultView() {
     mutate(
       { ...scope, defaultView },
       {
-        onSuccess: () => showSuccessToast(t("Default view saved"), ""),
+        onSuccess: () => showSuccessToast(t("{{name}} now opens with this view.", { name: scopeName }), ""),
         onError: () => showErrorToast(t("Couldn’t save the default view"), t("Please try again.")),
       },
     );

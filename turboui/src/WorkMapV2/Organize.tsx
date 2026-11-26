@@ -118,7 +118,7 @@ export function Organize({
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-3 border-y border-surface-outline px-7 py-3">
+      <div className="flex min-h-[57px] flex-wrap items-center gap-3 border-y border-surface-outline bg-surface-accent px-4 py-3 sm:px-7 dark:border-[#47536e] dark:bg-[#293144]">
         <strong>{t("Organize Work Map")}</strong>
         <span className="text-sm text-content-dimmed">
           {t("Drag to reorder. Drop on a goal to change its parent.")}
