@@ -1,0 +1,28 @@
+apiVersion: v2
+kind: Automation
+name: Comment on Github Issue
+icon: sparkles
+triggers:
+- use: task_enters_stage
+agent:
+  harness: codex
+  credentials:
+    source: subscription
+steps:
+- name: Comment
+  prompt: |-
+    When a task enters Backlog in SuperPlane, check whether it is directly linked to a GitHub issue.
+    If a linked GitHub issue exists, post a comment using the following Markdown format:
+
+    SuperPlane has received and reviewed this issue.
+    OPER-123: Fix authentication timeout
+
+    Replace the example task ID, title, and URL with the actual SuperPlane task details.
+
+    Rules:
+
+    1/ Only comment on the directly linked GitHub issue.
+    2/ Use the actual task ID, title, and URL.
+    3/ Do not post duplicate comments for the same task.
+    4/ If no GitHub issue is linked, do nothing.
+    5/ Do not modify any other GitHub issue properties.
