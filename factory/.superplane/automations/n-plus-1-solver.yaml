@@ -1,0 +1,47 @@
+apiVersion: v2
+kind: Automation
+name: N+1 Solver
+icon: boxes
+triggers:
+- use: schedule
+  config:
+    cron: 0 9 * * *
+    utc_offset: 1
+- use: manual
+agent:
+  harness: codex
+  credentials:
+    source: subscription
+steps:
+- name: N+1 Lookup
+  prompt: |-
+    # Find One N+1 Query Pattern in Elixir
+
+    Review the Elixir codebase and identify **one high-confidence N+1 query or HTTP request pattern**.
+
+    An N+1 pattern occurs when code fetches a collection of N records, then executes an additional query or request for each record, resulting in N+1 operations instead of a small, bounded number.
+
+    ### What to look for
+    - Ecto queries inside `Enum.map`, `Enum.each`, `for`, or other loops.
+    - Associations loaded individually instead of using `Repo.preload/2` or joins.
+    - HTTP/API calls executed once per item instead of batching.
+    - Repeated queries in Phoenix controllers, contexts, or Absinthe resolvers.
+
+    ### Instructions
+    1. Find **exactly one** N+1 pattern. Verify that it performs repeated database queries or HTTP requests and isn't already batched or cached.
+    2. Identify the file, function, line numbers, and explain how the number of requests scales.
+    3. Suggest a concrete fix using Ecto preloading, joins, or batch requests.
+    4. Check for an existing task if the available tools support it.
+    5. **Use the Superplane tool to create exactly one task** containing:
+       - **Title:** `[Performance] Fix N+1 in <function name>`
+       - **Location:** File, function, and line numbers.
+       - **Problem:** Why this is an N+1 pattern, with code evidence.
+       - **Impact:** Expected query/request growth and performance implications.
+       - **Suggested fix:** Concrete implementation approach.
+       - **Acceptance criteria:** Eliminate repeated requests, preserve behavior, and add a regression test.
+
+    **Constraints:** Do not modify code. Do not create duplicate tasks. Stop after finding one verified issue. If no convincing issue exists, don't create a task.
+
+    After creating the task, return a short summary and the Superplane task link. Never claim a task was created unless the tool confirms it.
+
+    Prefix the task title with [N+1].
