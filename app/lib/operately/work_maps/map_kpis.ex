@@ -7,7 +7,17 @@ defmodule Operately.WorkMaps.MapKpis do
 
   @page_size 50
 
-  def any?(scope), do: Repo.exists?(visible(scope))
+  def latest_unpinned(_scope, _pinned_ids, 0), do: []
+
+  def latest_unpinned(scope, pinned_ids, limit) do
+    visible(scope)
+    |> where([k], k.id not in ^pinned_ids)
+    |> order_by([k], desc: k.inserted_at, desc: k.id)
+    |> limit(^limit)
+    |> preload([space: s], space: s)
+    |> Repo.all()
+    |> Kpis.load_recent_entries()
+  end
 
   def search(scope, search, offset) do
     rows =

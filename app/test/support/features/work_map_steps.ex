@@ -137,20 +137,28 @@ defmodule Operately.Support.Features.WorkMapSteps do
     UI.visit(ctx, Paths.work_map_path(ctx.company))
   end
 
-  step :add_space_kpi, ctx do
+  step :add_space_kpis, ctx do
     kpi = Operately.KpisFixtures.kpi_fixture(ctx.creator, %{space_id: ctx.space.id})
-    Map.put(ctx, :kpi, kpi)
+    other = Operately.KpisFixtures.kpi_fixture(ctx.creator, %{space_id: ctx.space.id, name: "Active teams"})
+    Map.merge(ctx, %{kpi: kpi, unpinned_kpi: other})
   end
 
   step :pin_kpi, ctx do
     ctx
+    |> UI.assert_has(testid: "work-map-kpi-#{Paths.kpi_id(ctx.kpi)}")
     |> UI.click(testid: "manage-work-map-pins")
     |> UI.click(testid: "pin-#{Paths.kpi_id(ctx.kpi)}")
     |> UI.assert_has(testid: "unpin-#{Paths.kpi_id(ctx.kpi)}")
   end
 
   step :assert_kpi_pinned, ctx do
-    UI.assert_has(ctx, testid: "pinned-kpi-#{Paths.kpi_id(ctx.kpi)}")
+    pinned = "[data-test-id='work-map-kpi-#{Paths.kpi_id(ctx.kpi)}']"
+    unpinned = "[data-test-id='work-map-kpi-#{Paths.kpi_id(ctx.unpinned_kpi)}']"
+
+    ctx
+    |> UI.assert_has(css: pinned <> " + " <> unpinned)
+    |> UI.click(testid: "manage-work-map-pins")
+    |> UI.assert_has(testid: "unpin-#{Paths.kpi_id(ctx.kpi)}")
   end
 
   step :assign_project_reviewer, ctx do

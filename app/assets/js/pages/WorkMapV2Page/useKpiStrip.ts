@@ -24,10 +24,10 @@ export function useKpiStrip(
 
   return {
     pins: pins.data?.kpis ?? [],
+    latestKpis: pins.data?.latestKpis ?? [],
     loading: pins.isPending,
     error: pins.isError,
     retry: () => void pins.refetch(),
-    hasKpis: pins.data?.hasKpis ?? false,
     limit: pins.data?.pinLimit ?? 3,
     detailPath: (kpi) => paths.spaceKpiPath(kpi.spaceId, kpi.id),
     allPath: space ? paths.spaceKpisPath(space.id) : undefined,

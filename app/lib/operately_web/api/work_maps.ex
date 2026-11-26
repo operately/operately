@@ -76,7 +76,7 @@ defmodule OperatelyWeb.Api.WorkMaps do
   end
 
   defmodule GetKpiPins do
-    @moduledoc "Reads the visible pins, available slots, and first-use state independently of the work hierarchy."
+    @moduledoc "Reads visible KPI pins in saved order and fills remaining slots with the newest visible unpinned KPIs."
     use TurboConnect.Query
 
     inputs do
@@ -85,19 +85,21 @@ defmodule OperatelyWeb.Api.WorkMaps do
 
     outputs do
       field :kpis, list_of(:work_map_kpi), null: false
+      field :latest_kpis, list_of(:work_map_kpi), null: false
       field :has_kpis, :boolean, null: false
       field :pin_limit, :integer, null: false
     end
 
     def call(conn, inputs) do
       with {:ok, scope} <- WorkMaps.Scope.resolve(conn, inputs[:space_id]) do
-        {pins, limit} = WorkMaps.Settings.read_pins(scope)
+        %{pins: pins, latest: latest, pin_limit: limit} = WorkMaps.Settings.read_pins(scope)
 
         {:ok,
          %{
            kpis: Serializer.serialize(WorkMapKpi.from_kpi(pins)),
+           latest_kpis: Serializer.serialize(WorkMapKpi.from_kpi(latest)),
            pin_limit: limit,
-           has_kpis: pins != [] or MapKpis.any?(scope)
+           has_kpis: pins != [] or latest != []
          }}
       end
     end

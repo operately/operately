@@ -30,7 +30,8 @@ defmodule OperatelyWeb.Api.WorkMaps.Settings do
     pins = MapKpis.pinned(scope, ids)
     hidden = if length(pins) == length(ids), do: 0, else: length(MapKpis.existing_ids(scope, ids)) - length(pins)
 
-    {pins, @max_pinned_kpis - hidden}
+    latest = MapKpis.latest_unpinned(scope, ids, @max_pinned_kpis - length(pins))
+    %{pins: pins, latest: latest, pin_limit: @max_pinned_kpis - hidden}
   end
 
   def save(%{can_edit: false}, _attrs, _apply_moves), do: {:error, :forbidden}
