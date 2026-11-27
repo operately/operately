@@ -57,6 +57,20 @@ defmodule OperatelyWeb.Api.Spaces.GetDiscussionTest do
     end
   end
 
+  test "a project discussion is outside the space endpoint even for its author", ctx do
+    ctx =
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space, champion: :creator)
+      |> Factory.log_in_person(:creator)
+
+    message = message_fixture(ctx.creator.id, nil, project_id: ctx.project.id)
+
+    assert {:ok, _} = Operately.Messages.Message.get(ctx.creator, id: message.id)
+    assert {404, _} = query(ctx.conn, [:spaces, :get_discussion], %{id: Paths.message_id(message)})
+  end
+
   describe "unpublished discussions" do
     setup ctx do
       ctx

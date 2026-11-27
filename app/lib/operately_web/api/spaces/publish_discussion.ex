@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.Spaces.PublishDiscussion do
   def call(conn, inputs) do
     with(
       {:ok, me} <- find_me(conn),
-      {:ok, discussion} <- Message.get(me, id: inputs.id, opts: [preload: :space]),
+      {:ok, discussion} <- Message.get(me, id: inputs.id, opts: [getter_profile: :space_discussion, preload: :space]),
       {:ok, :allowed} <- authorize(me, discussion),
       {:ok, discussion} <- publish(me, discussion)
     ) do

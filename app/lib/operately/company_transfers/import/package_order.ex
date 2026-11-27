@@ -5,8 +5,7 @@ defmodule Operately.CompanyTransfers.Import.PackageOrder do
   Export order is based on the full foreign-key graph, but import only needs hard ordering
   for references that must already exist at insert time. Most nullable and self-referencing
   foreign keys are excluded because `RelationalImporter` restores them in a deferred-update pass.
-  Task board and Work Map owner references must be ordered even though they are individually nullable:
-  the ownership check constraint requires one owner at insertion.
+  Tables with an exactly-one-owner constraint require their owner at insertion.
   """
 
   alias Operately.CompanyTransfers.Export.Relational.SchemaSnapshot
@@ -56,6 +55,7 @@ defmodule Operately.CompanyTransfers.Import.PackageOrder do
       (owner_reference?(table, fk) or not nullable_column?(schema, table, fk.column))
   end
 
+  defp owner_reference?("messages", %{column: column}) when column in ["messages_board_id", "project_id", "goal_id"], do: true
   defp owner_reference?("task_boards", %{column: column}) when column in ["space_id", "project_id"], do: true
   defp owner_reference?("work_map_settings", %{column: column}) when column in ["space_id", "company_id"], do: true
   defp owner_reference?(_table, _fk), do: false

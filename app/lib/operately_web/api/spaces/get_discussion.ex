@@ -47,6 +47,7 @@ defmodule OperatelyWeb.Api.Spaces.GetDiscussion do
 
   defp load(ctx, inputs, company_read_only) do
     Message.get(ctx.me, id: inputs.id, opts: [
+      getter_profile: :space_discussion,
       preload: preload(inputs),
       after_load: after_load(inputs, ctx.me, company_read_only),
     ])
