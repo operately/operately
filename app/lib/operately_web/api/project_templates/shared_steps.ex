@@ -619,10 +619,15 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   end
 
   defp rebuild_all_kanban!(template) do
-    rebuild_board_kanban!(template)
+    tasks = all_tasks_for(template.id)
+    tasks_by_milestone = Enum.group_by(tasks, & &1.project_template_milestone_id)
+    milestones = Repo.all(from m in Milestone, where: m.project_template_id == ^template.id)
 
-    Repo.all(from m in Milestone, where: m.project_template_id == ^template.id)
-    |> Enum.each(&rebuild_container!(template, &1.id))
+    persist_board_kanban!(template, tasks)
+
+    Enum.each(milestones, fn milestone ->
+      persist_milestone_kanban!(milestone, Map.get(tasks_by_milestone, milestone.id, []), template.task_statuses)
+    end)
 
     template
   end
@@ -630,6 +635,10 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp rebuild_board_kanban!(template) do
     template = Repo.reload!(template)
     tasks = all_tasks_for(template.id)
+    persist_board_kanban!(template, tasks)
+  end
+
+  defp persist_board_kanban!(template, tasks) do
     state = TemplateHelpers.normalize_kanban(template.tasks_kanban_state, tasks, template.task_statuses)
     persist!(ProjectTemplate.changeset(template, %{tasks_kanban_state: state}))
   end
@@ -639,8 +648,12 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp rebuild_container!(template, milestone_id) do
     milestone = Repo.get_by!(Milestone, id: milestone_id, project_template_id: template.id)
     tasks = tasks_for(template.id, milestone_id)
+    persist_milestone_kanban!(milestone, tasks, template.task_statuses)
+  end
+
+  defp persist_milestone_kanban!(milestone, tasks, statuses) do
     ordering = TemplateHelpers.normalize_ordering(milestone.tasks_ordering_state, Enum.map(tasks, &Paths.project_template_task_id/1))
-    kanban = TemplateHelpers.normalize_kanban(milestone.tasks_kanban_state, tasks, template.task_statuses)
+    kanban = TemplateHelpers.normalize_kanban(milestone.tasks_kanban_state, tasks, statuses)
     persist!(Milestone.changeset(milestone, %{tasks_ordering_state: ordering, tasks_kanban_state: kanban}))
   end
 
