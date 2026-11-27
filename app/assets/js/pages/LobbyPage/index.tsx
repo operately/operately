@@ -2,7 +2,7 @@ import { loader, useLoadedData } from "./loader";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { LobbyPage } from "turboui";
+import { ContentListSkeleton, LobbyPage } from "turboui";
 
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
@@ -10,7 +10,10 @@ import { PageModule } from "@/routes/types";
 export default { name: "LobbyPage", loader, Page } as PageModule;
 
 function Page() {
-  const { account, companies } = useLoadedData();
+  const data = useLoadedData();
+  if (!data) return <ContentListSkeleton />;
+
+  const { account, companies } = data;
 
   const firstName = People.firstName({ fullName: account.fullName });
 
