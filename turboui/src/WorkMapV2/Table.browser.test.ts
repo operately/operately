@@ -64,6 +64,20 @@ test("phone filters stay in one toolbar row as selections change", async () => {
   await page.locator('[data-test-id="cancel-organize"]').waitFor();
 });
 
+test("Work Map child rows use the previous map's 20 px indent", async () => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const url = new URL("iframe.html?id=pages-work-map-v2--active-work&viewMode=story", process.env.TARGET_URL);
+  await page.goto(url.href);
+
+  const names = page.getByRole("table").getByRole("rowheader");
+  await names.first().getByRole("button", { expanded: true }).waitFor();
+  const parent = await names.first().getByRole("link").boundingBox();
+  const child = await names.nth(1).getByRole("link").boundingBox();
+
+  assert.ok(parent && child);
+  assert.equal(child.x - parent.x, 20);
+});
+
 test("the Work Map table fits the viewport and keeps progress tracks aligned", async () => {
   const url = new URL("iframe.html?id=pages-work-map-v2--active-work&viewMode=story", process.env.TARGET_URL);
   await page.goto(url.href);
@@ -90,5 +104,12 @@ test("the Work Map table fits the viewport and keeps progress tracks aligned", a
       .evaluateAll((bars) => bars.map((bar) => bar.getBoundingClientRect().width));
     assert.ok(trackWidths.length > 1);
     assert.deepEqual([...new Set(trackWidths)], [70]);
+
+    const percentageLabels = table.getByText(/^\d+%$/);
+    const labelWidths = await percentageLabels.evaluateAll((labels) =>
+      labels.map((label) => label.getBoundingClientRect().width),
+    );
+    assert.equal(labelWidths.length, trackWidths.length);
+    assert.ok(labelWidths.every((width) => width <= 1));
   }
 });
