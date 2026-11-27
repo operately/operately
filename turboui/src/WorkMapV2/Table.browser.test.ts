@@ -106,8 +106,10 @@ test("the Work Map table fits the viewport and keeps progress tracks aligned", a
     assert.deepEqual([...new Set(trackWidths)], [70]);
 
     const percentageLabels = table.getByText(/^\d+%$/);
-    assert.ok(
-      await percentageLabels.evaluateAll((labels) => labels.every((label) => label.getBoundingClientRect().width <= 1)),
+    const labelWidths = await percentageLabels.evaluateAll((labels) =>
+      labels.map((label) => label.getBoundingClientRect().width),
     );
+    assert.equal(labelWidths.length, trackWidths.length);
+    assert.ok(labelWidths.every((width) => width <= 1));
   }
 });
