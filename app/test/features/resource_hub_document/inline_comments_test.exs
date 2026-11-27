@@ -19,4 +19,17 @@ defmodule Operately.Features.ResourceHubDocument.InlineCommentsTest do
     |> Steps.setup_email_link(false)
     |> Steps.follow_email_link(1440)
   end
+
+  feature "table selection keeps an inline comment available after closing and reloading", ctx do
+    ctx
+    |> Steps.given_table_content()
+    |> Steps.visit_document()
+    |> Steps.capture_browser_errors()
+    |> Steps.select_table_passage()
+    |> Steps.post_thread()
+    |> Steps.close_thread()
+    |> Steps.drag_across_table()
+    |> Steps.assert_table_selection_and_highlight()
+    |> Steps.reload_and_reopen_table_thread()
+  end
 end

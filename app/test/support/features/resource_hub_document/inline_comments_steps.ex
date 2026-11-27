@@ -15,6 +15,90 @@ defmodule Operately.Support.Features.ResourceHubDocument.InlineCommentsSteps do
     |> UI.refute_has(testid: "inline-comments-floating")
   end
 
+  step :given_table_content, ctx do
+    content = "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!() |> Enum.at(0) |> Map.fetch!("document")
+    document = ctx.document |> Ecto.Changeset.change(content: content) |> Repo.update!()
+    %{ctx | document: document}
+  end
+
+  step :capture_browser_errors, ctx do
+    UI.execute("capture_browser_errors", ctx, fn session ->
+      Wallaby.Browser.execute_script(session, """
+      window.tableSelectionErrors = [];
+      window.addEventListener('error', event => window.tableSelectionErrors.push(event.message));
+      window.addEventListener('unhandledrejection', event => window.tableSelectionErrors.push(String(event.reason)));
+      """)
+    end)
+  end
+
+  step :select_table_passage, ctx do
+    UI.execute("select_table_passage", ctx, fn session ->
+      Wallaby.Browser.execute_script(session, """
+      const editor = document.querySelector('[data-test-id="resource-hub-document-page"] .ProseMirror[contenteditable="false"]');
+      const text = document.createTreeWalker(editor.querySelector('table tr:nth-child(2) td:first-child p'), NodeFilter.SHOW_TEXT).nextNode();
+      editor.focus();
+      const range = document.createRange();
+      range.setStart(text, 0);
+      range.setEnd(text, 4);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      """)
+    end)
+    |> UI.click(testid: "inline-add-selection")
+    |> UI.assert_has(testid: "inline-new-thread")
+  end
+
+  step :close_thread, ctx do
+    ctx
+    |> UI.click(css: "[data-test-id='resource-hub-document-page'] table tr:nth-child(3) td:last-child")
+    |> UI.assert_has(testid: "inline-select-#{ctx.thread_id}")
+  end
+
+  step :drag_across_table, ctx do
+    UI.execute("drag_across_table", ctx, fn session ->
+      session
+      |> Wallaby.Browser.hover(Wallaby.Query.css("[data-test-id='resource-hub-document-page'] table tr:nth-child(2) td:first-child"))
+      |> Wallaby.Browser.button_down()
+      |> Wallaby.Browser.hover(Wallaby.Query.css("[data-test-id='resource-hub-document-page'] table tr:nth-child(3) td:last-child"))
+      |> Wallaby.Browser.button_up()
+    end)
+  end
+
+  step :assert_table_selection_and_highlight, ctx do
+    ctx = UI.assert_has(ctx, Wallaby.Query.css("[data-test-id='resource-hub-document-page'] td.selectedCell", count: 4))
+
+    UI.execute("assert_table_selection_and_highlight", ctx, fn session ->
+      Wallaby.Browser.execute_script(
+        session,
+        """
+        return {
+          errors: window.tableSelectionErrors,
+          highlight: document.querySelector('[data-test-id="resource-hub-document-page"] table [data-inline-thread="#{ctx.thread_id}"]')?.textContent
+        };
+        """,
+        fn result ->
+          assert result["errors"] == []
+          assert result["highlight"] == "Bold"
+        end
+      )
+
+      session
+    end)
+    |> then(fn ctx ->
+      assert Repo.reload!(ctx.document).content == ctx.document.content
+      ctx
+    end)
+  end
+
+  step :reload_and_reopen_table_thread, ctx do
+    ctx
+    |> UI.visit(Paths.document_path(ctx.company, ctx.document))
+    |> UI.assert_has(css: "[data-test-id='resource-hub-document-page'] table [data-inline-thread='#{ctx.thread_id}']")
+    |> UI.click(testid: "inline-select-#{ctx.thread_id}")
+    |> UI.assert_has(css: "[data-test-id='inline-thread-#{ctx.thread_id}'] div[data-test-id^='comment-'][id]")
+  end
+
   step :select_passage, ctx do
     UI.execute("select_document_passage", ctx, fn session ->
       Wallaby.Browser.execute_script(session, """

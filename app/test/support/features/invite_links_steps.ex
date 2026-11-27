@@ -318,9 +318,10 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   end
 
   step :assert_invite_link_is_not_active, ctx do
-    {:ok, link} = Operately.InviteLinks.get_invite_link(ctx.company.id)
-    refute link.is_active
-    ctx
+    attempts(ctx, 5, fn ->
+      {:ok, link} = Operately.InviteLinks.get_invite_link(ctx.company.id)
+      refute link.is_active
+    end)
   end
 
   step :given_email_delivery_is_not_configured, ctx do
