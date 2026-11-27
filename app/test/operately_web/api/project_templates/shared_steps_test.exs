@@ -140,6 +140,126 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
     refute Map.has_key?(template.tasks_kanban_state, old_status.value)
   end
 
+  test "workflow rebuild reads do not grow with populated or empty milestones", ctx do
+    small = add_workflow_fixture(ctx, :template, :small, 1, 1)
+
+    large =
+      ctx
+      |> Factory.add_project_template(:large_template, :space)
+      |> add_workflow_fixture(:large_template, :large, 3, 2)
+
+    {small_result, small_reads} = count_template_selects(fn -> replace_first_status(small.template) end)
+    {large_result, large_reads} = count_template_selects(fn -> replace_first_status(large.large_template) end)
+
+    assert {:ok, _template} = small_result
+    assert {:ok, _template} = large_result
+    assert small_reads == large_reads
+    assert Map.fetch!(small_reads, "project_template_milestones") > 0
+    assert Map.fetch!(small_reads, "project_template_tasks") > 0
+  end
+
+  test "workflow rebuild preserves ordering and scopes board and milestone tasks", ctx do
+    [deleted_status, replacement_status | remaining_statuses] = ctx.template.task_statuses
+    deleted = Map.from_struct(deleted_status)
+    replacement = Map.from_struct(replacement_status)
+
+    ctx =
+      ctx
+      |> Factory.add_project_template_milestone(:first_milestone, :template)
+      |> Factory.add_project_template_milestone(:second_milestone, :template)
+      |> Factory.add_project_template_milestone(:empty_milestone, :template)
+      |> Factory.add_project_template_task(:first_a, :template, milestone: :first_milestone, task_status: deleted)
+      |> Factory.add_project_template_task(:first_b, :template, milestone: :first_milestone, task_status: replacement)
+      |> Factory.add_project_template_task(:first_c, :template, milestone: :first_milestone, task_status: deleted)
+      |> Factory.add_project_template_task(:second_task, :template, milestone: :second_milestone, task_status: deleted)
+      |> Factory.add_project_template_task(:root_task, :template, task_status: replacement)
+      |> Factory.add_project_template(:other_template, :space)
+      |> Factory.add_project_template_task(:other_task, :other_template)
+
+    same_time = ~N[2024-01-01 00:00:00]
+    Repo.update!(Ecto.Changeset.change(ctx.first_a, inserted_at: same_time))
+    Repo.update!(Ecto.Changeset.change(ctx.first_c, inserted_at: same_time))
+
+    first_a_id = Paths.project_template_task_id(ctx.first_a)
+    first_b_id = Paths.project_template_task_id(ctx.first_b)
+    first_c_id = Paths.project_template_task_id(ctx.first_c)
+    second_id = Paths.project_template_task_id(ctx.second_task)
+    root_id = Paths.project_template_task_id(ctx.root_task)
+
+    Repo.update!(
+      Milestone.changeset(ctx.first_milestone, %{
+        tasks_ordering_state: [first_b_id],
+        tasks_kanban_state: %{replacement_status.value => [first_b_id], deleted_status.value => [first_a_id, first_c_id]}
+      })
+    )
+
+    Repo.update!(
+      ProjectTemplate.changeset(ctx.template, %{
+        tasks_kanban_state: %{replacement_status.value => [first_b_id, root_id], deleted_status.value => [first_a_id, first_c_id, second_id]}
+      })
+    )
+
+    other_before = Repo.reload!(ctx.other_template)
+    other_task_before = Repo.reload!(ctx.other_task)
+
+    assert {:ok, template} = replace_first_status(Repo.reload!(ctx.template))
+
+    first = Repo.reload!(ctx.first_milestone)
+    second = Repo.reload!(ctx.second_milestone)
+    empty = Repo.reload!(ctx.empty_milestone)
+    appended_ids = [ctx.first_a, ctx.first_c] |> Enum.sort_by(& &1.id) |> Enum.map(&Paths.project_template_task_id/1)
+    expected_statuses = Enum.map([replacement_status | remaining_statuses], & &1.value)
+
+    assert first.tasks_ordering_state == [first_b_id | appended_ids]
+    assert first.tasks_kanban_state[replacement_status.value] == [first_b_id | appended_ids]
+    assert second.tasks_ordering_state == [second_id]
+    assert second.tasks_kanban_state[replacement_status.value] == [second_id]
+    assert empty.tasks_ordering_state == []
+    assert Enum.all?(Map.values(empty.tasks_kanban_state), &(&1 == []))
+    assert template.tasks_kanban_state[replacement_status.value] == [first_b_id, root_id | appended_ids] ++ [second_id]
+
+    for state <- [template.tasks_kanban_state, first.tasks_kanban_state, second.tasks_kanban_state, empty.tasks_kanban_state] do
+      assert Map.keys(state) |> Enum.sort() == Enum.sort(expected_statuses)
+      assert Enum.all?(remaining_statuses, &(state[&1.value] == []))
+    end
+
+    for task <- [ctx.first_a, ctx.first_b, ctx.first_c, ctx.second_task, ctx.root_task] do
+      assert Repo.reload!(task).task_status.id == replacement_status.id
+    end
+
+    assert Repo.reload!(ctx.other_template).tasks_kanban_state == other_before.tasks_kanban_state
+    assert Repo.reload!(ctx.other_task).task_status == other_task_before.task_status
+  end
+
+  test "rolls back status replacement and rebuilt states after invalid explicit board state", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project_template_milestone(:milestone, :template)
+      |> Factory.add_project_template_task(:task, :template, milestone: :milestone)
+
+    template_before = Repo.reload!(ctx.template)
+    milestone_before = Repo.reload!(ctx.milestone)
+    task_before = Repo.reload!(ctx.task)
+    [deleted_status, replacement_status | remaining_statuses] = template_before.task_statuses
+
+    assert {:error, {:validation, "Kanban state contains an unknown status"}} =
+             update_template(template_before, %{
+               task_statuses: Enum.map([replacement_status | remaining_statuses], &Map.from_struct/1),
+               deleted_status_replacements: [%{deleted_status_id: deleted_status.id, replacement_status_id: replacement_status.id}],
+               tasks_kanban_state: %{"unknown" => []}
+             })
+
+    template_after = Repo.reload!(ctx.template)
+    milestone_after = Repo.reload!(ctx.milestone)
+    task_after = Repo.reload!(ctx.task)
+
+    assert template_after.task_statuses == template_before.task_statuses
+    assert template_after.tasks_kanban_state == template_before.tasks_kanban_state
+    assert milestone_after.tasks_ordering_state == milestone_before.tasks_ordering_state
+    assert milestone_after.tasks_kanban_state == milestone_before.tasks_kanban_state
+    assert task_after.task_status == task_before.task_status
+  end
+
   test "rolls back the workflow update when a deleted status has no replacement", ctx do
     [deleted_status | remaining_statuses] = ctx.template.task_statuses
 
@@ -218,6 +338,60 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
       Operately.Search.Entry
     ]
     |> Map.new(&{&1, Repo.aggregate(&1, :count)})
+  end
+
+  defp add_workflow_fixture(ctx, template_key, prefix, populated_count, empty_count) do
+    Enum.reduce(1..(populated_count + empty_count), ctx, fn index, ctx ->
+      milestone_key = :"#{prefix}_milestone_#{index}"
+      ctx = Factory.add_project_template_milestone(ctx, milestone_key, template_key)
+
+      if index <= populated_count do
+        Factory.add_project_template_task(ctx, :"#{prefix}_task_#{index}", template_key, milestone: milestone_key)
+      else
+        ctx
+      end
+    end)
+  end
+
+  defp replace_first_status(template) do
+    [deleted_status, replacement_status | remaining_statuses] = template.task_statuses
+
+    update_template(template, %{
+      task_statuses: Enum.map([replacement_status | remaining_statuses], &Map.from_struct/1),
+      deleted_status_replacements: [%{deleted_status_id: deleted_status.id, replacement_status_id: replacement_status.id}]
+    })
+  end
+
+  defp count_template_selects(fun) do
+    handler_id = {__MODULE__, make_ref()}
+    caller = self()
+    sources = ["project_template_milestones", "project_template_tasks"]
+
+    :telemetry.attach(
+      handler_id,
+      [:operately, :repo, :query],
+      fn _, _, metadata, _ ->
+        if self() == caller and metadata.source in sources and String.starts_with?(metadata.query, "SELECT") do
+          send(caller, {:template_select, handler_id, metadata.source})
+        end
+      end,
+      nil
+    )
+
+    try do
+      result = fun.()
+      {result, collect_template_selects(handler_id) |> Enum.frequencies()}
+    after
+      :telemetry.detach(handler_id)
+    end
+  end
+
+  defp collect_template_selects(handler_id) do
+    receive do
+      {:template_select, ^handler_id, source} -> [source | collect_template_selects(handler_id)]
+    after
+      0 -> []
+    end
   end
 
   defp update_template(template, attrs), do: run_step(template, &Steps.update_template(&1, attrs), :updated_template)
