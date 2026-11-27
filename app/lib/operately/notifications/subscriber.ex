@@ -81,17 +81,14 @@ defmodule Operately.Notifications.Subscriber do
     merge_subs_and_potential_subs(subs, potential_subs)
   end
 
-  def from_message(%Message{} = message) do
+  def from_message(%Message{} = message, candidates) do
     subs =
       exclude_canceled_subscriptions(message.subscription_list)
       |> Enum.into(%{}, fn s ->
         {s.person.id, from_subscription(s)}
       end)
 
-    potential_subs =
-      Enum.into(message.space.members, %{}, fn p ->
-        {p.id, from_person(p)}
-      end)
+    potential_subs = Map.new(candidates, &{&1.person.id, &1})
 
     merge_subs_and_potential_subs(subs, potential_subs)
   end

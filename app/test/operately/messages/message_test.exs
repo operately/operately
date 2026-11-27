@@ -32,6 +32,25 @@ defmodule Operately.Messages.MessageTest do
       end
     end
 
+    test "the visibility query includes shared space drafts and restricts project and goal drafts to their author", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:member, :product_space)
+        |> Factory.add_project(:project, :product_space)
+        |> Factory.add_goal(:goal, :product_space, space_access: Binding.edit_access())
+
+      board_draft = MessagesFixtures.message_fixture(ctx.creator.id, ctx.message_board.id, state: :draft)
+      project_draft = MessagesFixtures.message_fixture(ctx.creator.id, nil, project_id: ctx.project.id, state: :draft)
+      scheduled_goal = MessagesFixtures.message_fixture(ctx.creator.id, nil, goal_id: ctx.goal.id, state: :scheduled)
+      published = MessagesFixtures.message_fixture(ctx.creator.id, nil, project_id: ctx.project.id, state: :published)
+
+      ids = [board_draft.id, project_draft.id, scheduled_goal.id, published.id]
+      query = from m in Message, where: m.id in ^ids, select: m.id
+
+      assert MapSet.new(Repo.all(Message.visible_to(query, ctx.creator))) == MapSet.new(ids)
+      assert MapSet.new(Repo.all(Message.visible_to(query, ctx.member))) == MapSet.new([board_draft.id, published.id])
+    end
+
     test "access follows the owning board, project, or goal", ctx do
       ctx =
         ctx

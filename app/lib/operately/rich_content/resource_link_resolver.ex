@@ -45,7 +45,8 @@ defmodule Operately.RichContent.ResourceLinkResolver do
         ids = Enum.map(refs, & &1.decoded_id)
         {schema, field, matchers} = resource_schema(type, company)
 
-        schema.list(person, matchers ++ [opts: [ids: ids]])
+        opts = if type == :discussion, do: [ids: ids, getter_profile: :space_discussion], else: [ids: ids]
+        schema.list(person, matchers ++ [opts: opts])
         |> Enum.filter(&visible?(&1, person))
         |> Enum.flat_map(fn resource ->
           case Map.get(resource, field) do
@@ -87,7 +88,6 @@ defmodule Operately.RichContent.ResourceLinkResolver do
   defp resource_schema(:folder, _company), do: {Folder, :name, []}
   defp resource_schema(:discussion, _company), do: {Message, :title, []}
 
-  defp visible?(%Message{messages_board_id: nil}, _person), do: false
   defp visible?(%Message{} = message, person), do: Helpers.check_draft_access(message, person) == {:ok, :allowed}
   defp visible?(_resource, _person), do: true
 end

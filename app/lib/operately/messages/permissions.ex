@@ -6,6 +6,11 @@ defmodule Operately.Messages.Permissions do
     :can_archive_message,
   ]
 
+  def can_publish?(person, message) do
+    message.state in [:draft, :scheduled] and message.author_id == person.id and
+      (not is_nil(message.messages_board_id) or message.request_info.access_level >= Binding.edit_access())
+  end
+
   def calculate(person, message, company_read_only: company_read_only) do
     access_level = message.request_info.access_level
 

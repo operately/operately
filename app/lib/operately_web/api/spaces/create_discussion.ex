@@ -45,32 +45,24 @@ defmodule OperatelyWeb.Api.Spaces.CreateDiscussion do
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :operation, %{error: :scheduled_at_must_be_in_the_future}} ->
         {:error, :bad_request, gettext("Scheduled time must be in the future")}
+      {:error, :operation, %{error: :not_found}} -> {:error, :not_found}
+      {:error, :operation, %{error: :invalid_schedule}} -> {:error, :bad_request}
+      {:error, :operation, %{error: %Ecto.Changeset{}}} -> {:error, :bad_request}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
   end
 
   defp parse_inputs(inputs) do
-    board_id = fetch_board_id(inputs.space_id)
-
     {:ok,
      %{
-       messages_board_id: board_id,
        space_id: inputs.space_id,
        title: inputs.title,
        content: inputs.body,
        post_as_draft: inputs[:post_as_draft],
        send_to_everyone: inputs[:send_notifications_to_everyone],
-       subscription_parent_type: :message,
        subscriber_ids: inputs[:subscriber_ids],
        scheduled_at: inputs[:scheduled_at]
      }}
-  end
-
-  # This is a temporary function.
-  # Once the Space Tools and Messages Boards are fully implemented,
-  # the messages_board_id will come from the frontend
-  defp fetch_board_id(space_id) do
-    from(b in Operately.Messages.MessagesBoard, where: b.space_id == ^space_id, select: b.id) |> Repo.one!()
   end
 end
