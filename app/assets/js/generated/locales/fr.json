@@ -1654,6 +1654,7 @@
   "Files not uploaded": "Fichiers non ajoutés",
   "Fill out all the required fields": "Remplissez tous les champs obligatoires",
   "Filter": "Filtrer",
+  "Filter ({{activeCount}})": "Filtrer ({{activeCount}})",
   "Finalizing Import": "Finalisation de l’import",
   "Find a KPI to pin…": "Rechercher un KPI à épingler…",
   "Find a filter…": "Rechercher un filtre…",

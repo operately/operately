@@ -12414,9 +12414,14 @@ msgstr "Preencha todos os campos obrigatórios"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:374
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:130
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:136
 msgid "Filter"
 msgstr "Filtro"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:135
+msgid "Filter (%{activeCount})"
+msgstr "Filtro (%{activeCount})"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:425

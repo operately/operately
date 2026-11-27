@@ -1727,6 +1727,7 @@
   "Files not uploaded": "Файлы не загружены",
   "Fill out all the required fields": "Заполните все необходимые поля",
   "Filter": "Фильтр",
+  "Filter ({{activeCount}})": "Фильтр ({{activeCount}})",
   "Finalizing Import": "Завершение импорта",
   "Find a KPI to pin…": "Найти KPI для закрепления…",
   "Find a filter…": "Найти фильтр…",
