@@ -1,0 +1,13 @@
+apiVersion: v2
+kind: Automation
+name: Resolve Merge Conflicts
+icon: sparkles
+triggers:
+- use: manual
+agent:
+  harness: codex
+  credentials:
+    source: subscription
+steps:
+- name: Resolve Conflicts
+  prompt: Resolve the merge conflicts between the main branch and this PR. When ready, push the changes back to the PR on GitHub.

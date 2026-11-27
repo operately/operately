@@ -1,0 +1,61 @@
+apiVersion: v2
+kind: Factory
+name: Operately
+stages:
+- key: backlog
+  name: Backlog
+  automations:
+  - id: 7a99db83-0cf0-4068-a390-c123cb2f94c4
+    name: Comment on Github Issue
+    uses: automations/comment-on-github-issue.yaml
+  - id: cb884226-b27b-4f5a-ba47-023fb290ce16
+    name: CloudFlare Security Audit
+    uses: automations/cloudflare-security-audit.yaml
+  - id: ebbb4593-a58c-4278-ae3b-1f7acadc4b4a
+    name: N+1 Solver
+    uses: automations/n-plus-1-solver.yaml
+  - id: 50c232fb-513e-43e7-88a6-87a13ce3bf0d
+    name: Backlog
+    uses: '@superplane/task-analysis'
+  - id: 00067ea1-6751-4220-8a4b-92bbb3386623
+    name: Dependabot alerts
+    uses: '@superplane/intake/dependabot-alerts'
+  - id: 367d6193-414b-4fa1-b0ca-d8133ccb2810
+    name: GitHub issues
+    uses: '@superplane/intake/github-issues'
+  - id: ae5920b6-0fd0-458b-bb89-b36f75d2affa
+    name: Sentry exceptions
+    uses: '@superplane/intake/sentry-exceptions'
+- key: phase-0
+  name: Implement
+  automations:
+  - id: f4da4afb-30cd-401d-8427-55457c359109
+    name: Implement
+    uses: '@superplane/implement'
+- key: verify
+  name: Verify
+  automations:
+  - id: 4153c2a8-3322-445e-bb3e-f6bd0dbd52ea
+    name: Preview Environment
+    uses: automations/preview-environment.yaml
+  - id: 4806ea56-dc2c-47ea-a3cf-cc78fd5955d8
+    name: Assign reviewers
+    uses: automations/assign-reviewers.yaml
+  - id: c3b099b9-b67c-4b70-a175-5a1bff2d8d1a
+    name: Resolve Merge Conflicts
+    uses: automations/resolve-merge-conflicts.yaml
+  - id: a124f53b-c71c-4e7d-9ff4-5cafc93090b6
+    name: Address PR feedback
+    uses: '@superplane/pr-discussion'
+  - id: b95d5a17-5159-4bf6-be4a-c8b0fccceeb1
+    name: Fix pull request checks
+    uses: '@superplane/pr-checks'
+  - id: eb54f953-777c-44d0-8ffc-d0cef7afe6c8
+    name: Merge confidence
+    uses: '@superplane/merge-confidence'
+- key: done
+  name: Done
+  automations:
+  - id: 087c703f-cece-434a-8ff5-979d9ca77dad
+    name: PR Closure
+    uses: '@superplane/pr-closure'
