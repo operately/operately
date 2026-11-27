@@ -45,6 +45,7 @@ export interface CompanyNavigationProps {
   isSiteAdmin: boolean;
   me: CompanyNavigationPerson;
   links: CompanyNavigationLinks;
+  workMapV2Enabled?: boolean;
   canViewCompanyDirectory: boolean;
   canAddGoal: boolean;
   canAddProject: boolean;

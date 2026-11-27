@@ -27,6 +27,10 @@ export const Default: Story = {
   args: defaultProps,
 };
 
+export const WorkMapPilot: Story = {
+  args: { ...defaultProps, workMapV2Enabled: true },
+};
+
 export const ZeroCounts: Story = {
   args: {
     ...defaultProps,
