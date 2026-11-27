@@ -87,24 +87,5 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishing do
     end
   end
 
-  def run("message", id) do
-    message = Repo.get(Operately.Messages.Message, id) |> Repo.preload(messages_board: :space)
-    if message && message.state == :scheduled do
-      Multi.new()
-      |> Multi.update(:message, Operately.Messages.Message.changeset(message, %{state: :published, scheduled_at: nil}))
-      |> Activities.insert_sync(message.author_id, :discussion_posting, fn changes ->
-        %{
-          company_id: message.messages_board.space.company_id,
-          space_id: message.messages_board.space.id,
-          discussion_id: changes.message.id,
-          title: changes.message.title
-        }
-      end)
-      |> IndexUpdates.enqueue(:search_discussion, "discussion", message.id)
-      |> Repo.transaction()
-      |> Repo.extract_result(:message)
-    else
-      {:ok, :skipped}
-    end
-  end
+  def run("message", id), do: Operately.Operations.DiscussionPublishing.run(:system, id)
 end

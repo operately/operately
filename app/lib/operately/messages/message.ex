@@ -70,6 +70,14 @@ defmodule Operately.Messages.Message do
   def getter_profile(:space_discussion), do: %Profile{scope: &board_owned/1}
   def getter_profile(_), do: nil
 
+  @doc "Filters discussions by publication state and authorship. Callers must also check access to the owning resource."
+  def visible_to(query, :system), do: query
+  def visible_to(query, %{id: person_id}), do: visible_to(query, person_id)
+
+  def visible_to(query, person_id) when is_binary(person_id) do
+    from(m in query, where: not is_nil(m.messages_board_id) or m.state == :published or m.author_id == ^person_id)
+  end
+
   defp board_owned(query), do: from(m in query, where: not is_nil(m.messages_board_id))
 
   defp validate_owner(changeset) do
@@ -109,12 +117,7 @@ defmodule Operately.Messages.Message do
   end
 
   def set_potential_subscribers(message = %__MODULE__{}) do
-    subs =
-      message
-      |> Notifications.SubscribersLoader.preload_subscriptions()
-      |> Notifications.Subscriber.from_message()
-
-    %{message | potential_subscribers: subs}
+    %{message | potential_subscribers: Operately.Messages.Notifications.potential_subscribers(message)}
   end
 
   def set_permissions(message = %__MODULE__{}, company_read_only \\ false) do

@@ -1,61 +1,49 @@
 defmodule Operately.Operations.DiscussionPosting do
   alias Ecto.Multi
+  alias Operately.Messages.{Message, Owner}
+  alias Operately.Operations.Discussions.SharedSteps
   alias Operately.Repo
-  alias Operately.Activities
-  alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
   alias Operately.Search.IndexUpdates
+  alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
-  def run(creator, space, attrs) do
-    with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
+  def run(creator, owner, attrs) do
+    with :ok <- validate_schedule(attrs),
+         :ok <- authorize_owner(creator, owner),
+         {:ok, owner_fields} <- Owner.fields(owner, attrs) do
       Multi.new()
-      |> SubscriptionList.insert(attrs)
+      |> SubscriptionList.insert(Map.put(attrs, :subscription_parent_type, :message))
       |> Subscription.insert(creator, attrs)
       |> Multi.insert(:message, fn changes ->
-        Operately.Messages.Message.changeset(%{
+        owner_fields
+        |> Map.merge(%{
           author_id: creator.id,
-          messages_board_id: attrs.messages_board_id,
           title: attrs.title,
           body: attrs.content,
           state: state(attrs),
           scheduled_at: attrs[:scheduled_at],
           subscription_list_id: changes.subscription_list.id
         })
+        |> Message.changeset()
       end)
       |> SubscriptionList.update(:message)
-      |> record_activity(creator, space, attrs)
-      |> maybe_enqueue_oban_job(attrs)
-      |> IndexUpdates.enqueue(:search_discussion, "discussion", fn changes -> changes.message.id end)
+      |> SharedSteps.update_schedule(attrs[:scheduled_at])
+      |> SharedSteps.record_activity()
+      |> IndexUpdates.enqueue(:search_discussion, "discussion", fn %{message: message} -> message.id end)
       |> Repo.transaction()
-      |> Repo.extract_result(:message)
+      |> SharedSteps.result()
     end
   end
 
-  defp record_activity(multi, _creator, _space, %{post_as_draft: true}), do: multi
-  defp record_activity(multi, _creator, _space, %{scheduled_at: scheduled_at}) when not is_nil(scheduled_at), do: multi
+  defp authorize_owner(_creator, %Operately.Groups.Group{}), do: :ok
 
-  defp record_activity(multi, creator, space, attrs) do
-    Activities.insert_sync(multi, creator.id, :discussion_posting, fn changes ->
-      %{
-        company_id: space.company_id,
-        space_id: space.id,
-        discussion_id: changes.message.id,
-        title: attrs.title
-      }
-    end)
+  defp authorize_owner(creator, %module{id: id}) do
+    with {:ok, _} <- module.get(creator, id: id, opts: [required_access_level: Operately.Access.Binding.edit_access()]), do: :ok
   end
+
+  defp validate_schedule(%{post_as_draft: true, scheduled_at: time}) when not is_nil(time), do: {:error, :invalid_schedule}
+  defp validate_schedule(attrs), do: Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at])
 
   defp state(%{post_as_draft: true}), do: :draft
-  defp state(%{scheduled_at: scheduled_at}) when not is_nil(scheduled_at), do: :scheduled
+  defp state(%{scheduled_at: time}) when not is_nil(time), do: :scheduled
   defp state(_attrs), do: :published
-
-  defp maybe_enqueue_oban_job(multi, %{scheduled_at: scheduled_at}) when not is_nil(scheduled_at) do
-    Multi.insert(multi, :oban_job, fn changes ->
-      Operately.AsyncPublishing.Worker.new(
-        %{"type" => "message", "id" => changes.message.id},
-        scheduled_at: scheduled_at
-      )
-    end)
-  end
-
-  defp maybe_enqueue_oban_job(multi, _attrs), do: multi
 end

@@ -1,113 +1,59 @@
 defmodule Operately.Operations.DiscussionEditing do
   alias Ecto.Multi
+  alias Operately.Access.Binding
+  alias Operately.Messages.{Message, Permissions}
+  alias Operately.Operations.Discussions.SharedSteps
   alias Operately.Repo
-  alias Operately.Activities
-  alias Operately.Messages.Message
-  alias Operately.Notifications.SubscriptionList
   alias Operately.Search.IndexUpdates
+  alias Operately.Notifications.SubscriptionList
+  alias Operately.Operations.Notifications.Subscription
 
-  def run(creator, message, attrs) do
-    with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
-      update_attrs = %{
-        title: attrs[:title] || message.title,
-        body: attrs[:body] || message.body,
-        state: state(message, attrs),
-        scheduled_at: scheduled_at(message, attrs)
-      }
+  def run(editor, message, attrs) do
+    Multi.new()
+    |> SharedSteps.lock_message(editor, message.id)
+    |> Multi.run(:attributes, fn _, %{current: current} -> edit_attributes(editor, message, current, attrs) end)
+    |> Multi.update(:message, fn %{current: current, attributes: attrs} -> Message.changeset(current, attrs) end)
+    |> update_mentions(attrs[:body])
+    |> SharedSteps.update_schedule(attrs[:scheduled_at])
+    |> SharedSteps.record_activity(editor.id)
+    |> IndexUpdates.enqueue(:search_discussion, "discussion", message.id)
+    |> Repo.transaction()
+    |> SharedSteps.result()
+  end
 
-      Multi.new()
-      |> Multi.update(:message, Message.changeset(message, update_attrs))
-      |> Multi.run(:subscription_list, fn _, changes ->
-        SubscriptionList.get(:system,
-          parent_id: changes.message.id,
-          opts: [
-            preload: :subscriptions
-          ]
-        )
-      end)
-      |> Operately.Operations.Notifications.Subscription.update_mentioned_people(update_attrs.body)
-      |> record_activity(creator, message, update_attrs)
-      |> handle_oban_jobs(message, attrs)
-      |> IndexUpdates.enqueue(:search_discussion, "discussion", fn changes -> changes.message.id end)
-      |> Repo.transaction()
-      |> Repo.extract_result(:message)
+  defp edit_attributes(editor, original, current, attrs) do
+    state = attrs[:state] || if(attrs[:scheduled_at], do: :scheduled, else: current.state)
+    time = if state == :scheduled, do: attrs[:scheduled_at] || current.scheduled_at
+
+    with :ok <- authorize(editor, current, state),
+         :ok <- validate_schedule(state, time, attrs),
+         :ok <- check_publication(original, current, attrs[:state]) do
+      {:ok, %{state: state, scheduled_at: time, title: attrs[:title] || current.title, body: attrs[:body] || current.body}}
     end
   end
 
-  defp record_activity(multi, creator, message, attrs) do
+  defp authorize(editor, current, state) do
     cond do
-      message.state in [:draft, :scheduled] && attrs[:state] == :published ->
-        Activities.insert_sync(multi, creator.id, :discussion_posting, fn _ ->
-          %{
-            company_id: creator.company_id,
-            space_id: message.space.id,
-            discussion_id: message.id,
-            title: message.title
-          }
-        end)
-
-      message.state not in [:draft, :scheduled] ->
-        Activities.insert_sync(multi, creator.id, :discussion_editing, fn _ ->
-          %{
-            company_id: creator.company_id,
-            space_id: message.space.id,
-            discussion_id: message.id
-          }
-        end)
-
-      true ->
-        # it is a draft/scheduled and it is not being published, do nothing
-        multi
+      current.request_info.access_level < Binding.edit_access() -> {:error, :forbidden}
+      current.state != :published and state == :published and not Permissions.can_publish?(editor, current) -> {:error, :forbidden}
+      true -> :ok
     end
   end
 
-  defp state(message, attrs) do
-    cond do
-      not is_nil(attrs[:state]) -> attrs[:state]
-      not is_nil(attrs[:scheduled_at]) -> :scheduled
-      true -> message.state
-    end
+  # If the worker published while this request was waiting, do not turn
+  # the attempted publication into an unrelated edit of the published post.
+  defp check_publication(%{state: before}, %{state: :published}, :published) when before != :published, do: {:error, :forbidden}
+  defp check_publication(_, _, _), do: :ok
+
+  defp validate_schedule(:scheduled, nil, _), do: {:error, :invalid_schedule}
+  defp validate_schedule(state, _, %{scheduled_at: time}) when not is_nil(time) and state != :scheduled, do: {:error, :invalid_schedule}
+  defp validate_schedule(_, _, attrs), do: Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at])
+
+  defp update_mentions(multi, nil), do: multi
+
+  defp update_mentions(multi, body) do
+    multi
+    |> Multi.run(:subscription_list, fn _, %{message: message} -> SubscriptionList.get(:system, id: message.subscription_list_id, opts: [preload: :subscriptions]) end)
+    |> Subscription.update_mentioned_people(body)
   end
-
-  defp scheduled_at(message, attrs) do
-    cond do
-      not is_nil(attrs[:scheduled_at]) -> attrs[:scheduled_at]
-      attrs[:state] in [:draft, :published] -> nil
-      true -> message.scheduled_at
-    end
-  end
-
-  defp handle_oban_jobs(multi, message, attrs) do
-    new_state = state(message, attrs)
-    new_time = scheduled_at(message, attrs)
-
-    if scheduled?(message.state) or scheduled?(new_state) do
-      multi
-      |> Multi.delete_all(:delete_oban_job, fn _ ->
-        import Ecto.Query
-
-        from j in Oban.Job,
-          where: j.worker == "Operately.AsyncPublishing.Worker",
-          where: fragment("args->>'type' = ?", "message"),
-          where: fragment("args->>'id' = ?", ^message.id)
-      end)
-      |> Multi.run(:insert_oban_job, fn _repo, changes ->
-        if scheduled?(new_state) and not is_nil(new_time) do
-          Operately.AsyncPublishing.Worker.new(
-            %{"type" => "message", "id" => changes.message.id},
-            scheduled_at: new_time
-          )
-          |> Oban.insert()
-        else
-          {:ok, nil}
-        end
-      end)
-    else
-      multi
-    end
-  end
-
-  # Widen to atom() so Dialyzer accepts :scheduled before call sites create those values.
-  @spec scheduled?(atom()) :: boolean()
-  defp scheduled?(state), do: state == :scheduled
 end

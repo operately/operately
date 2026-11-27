@@ -8,6 +8,10 @@ defmodule Operately.Activities.Notifications.ProjectDiscussionSubmitted do
 
   alias Operately.Projects.Notifications
 
+  def dispatch(%{comment_thread_id: nil, content: %{"discussion_id" => id}} = activity) when is_binary(id) do
+    Operately.Activities.Notifications.DiscussionPosting.dispatch(activity)
+  end
+
   def dispatch(activity) do
     subscriber_ids = Notifications.get_discussion_subscribers(
       activity.content["discussion_id"],

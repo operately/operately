@@ -1,37 +1,37 @@
 defmodule Operately.Operations.DiscussionPublishing do
+  import Ecto.Query
   alias Ecto.Multi
+  alias Operately.Messages.{Message, Permissions}
+  alias Operately.Operations.Discussions.SharedSteps
   alias Operately.Repo
-  alias Operately.Activities
-  alias Operately.Messages.Message
   alias Operately.Search.IndexUpdates
 
-  def run(creator, discussion) do
+  def run(author, %Message{id: id}), do: run(author, id)
+
+  def run(requester, id) when is_binary(id) do
     Multi.new()
-    |> Multi.update(:message, Message.changeset(discussion, %{state: :published, scheduled_at: nil}))
-    |> maybe_cancel_oban_job(discussion)
-    |> Activities.insert_sync(creator.id, :discussion_posting, fn _changes -> %{
-      company_id: creator.company_id,
-      space_id: discussion.space.id,
-      discussion_id: discussion.id,
-      title: discussion.title,
-    } end)
-    |> IndexUpdates.enqueue(:search_discussion, "discussion", discussion.id)
+    |> SharedSteps.lock_message(requester, id)
+    |> Multi.run(:publish, fn _, %{current: current} -> check_publication(requester, current) end)
+    |> Multi.update(:message, fn %{current: current} -> Message.changeset(current, %{state: :published, scheduled_at: nil}) end)
+    |> SharedSteps.update_schedule(nil)
+    |> SharedSteps.record_activity()
+    |> IndexUpdates.enqueue(:search_discussion, "discussion", id)
     |> Repo.transaction()
-    |> Repo.extract_result(:message)
+    |> case do
+      {:error, :current, :not_found, _} when requester == :system -> {:ok, :skipped}
+      {:error, :publish, :not_due, _} -> {:ok, :skipped}
+      result -> SharedSteps.result(result)
+    end
   end
 
-  defp maybe_cancel_oban_job(multi, discussion) do
-    if discussion.state == :scheduled do
-      Multi.delete_all(multi, :delete_oban_job, fn _ ->
-        import Ecto.Query
+  defp check_publication(:system, %{state: :scheduled} = message) do
+    later_job = where(SharedSteps.pending_jobs(message.id), [j], j.scheduled_at > ^DateTime.utc_now())
+    if Repo.exists?(later_job), do: {:error, :not_due}, else: {:ok, :due}
+  end
 
-        from j in Oban.Job,
-          where: j.worker == "Operately.AsyncPublishing.Worker",
-          where: fragment("args->>'type' = ?", "message"),
-          where: fragment("args->>'id' = ?", ^discussion.id)
-      end)
-    else
-      multi
-    end
+  defp check_publication(:system, _message), do: {:error, :not_due}
+
+  defp check_publication(author, message) do
+    if Permissions.can_publish?(author, message), do: {:ok, :allowed}, else: {:error, :forbidden}
   end
 end
