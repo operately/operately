@@ -1,6 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import { CellSelection } from "@tiptap/pm/tables";
 import { act, renderHook, waitFor } from "@testing-library/react";
+import { assertPresent } from "../utils/assertions";
 import { useEditor } from "./useEditor";
 import { inlineCommentsKey } from "./extensions/InlineComments";
 
@@ -53,11 +54,15 @@ it.each([true, false])("keeps table selection and inline highlights working when
   editor.state.doc.descendants((node, position) => {
     if (node.type.name === "tableCell") cells.push(position);
   });
+  const firstCell = cells[0];
+  const lastCell = cells[3];
+  assertPresent(firstCell, "Expected the first table cell");
+  assertPresent(lastCell, "Expected the fourth table cell");
 
   expect(editor.view.dom.querySelector('[data-inline-thread="thread"]')?.textContent).toBe("Commented");
   rerender({ threadOpen: false });
   act(() => {
-    editor.view.dispatch(editor.state.tr.setSelection(CellSelection.create(editor.state.doc, cells[0], cells[3])));
+    editor.view.dispatch(editor.state.tr.setSelection(CellSelection.create(editor.state.doc, firstCell, lastCell)));
   });
 
   expect(editor.state.selection).toBeInstanceOf(CellSelection);
