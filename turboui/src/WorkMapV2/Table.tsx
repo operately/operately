@@ -65,7 +65,7 @@ export function Table({
   const widths = {
     name: "auto",
     status: phone ? "96px" : "124px",
-    progress: phone ? "80px" : "144px",
+    progress: phone ? "80px" : "94px",
     due_date: "110px",
     space: "12%",
     champion: "10%",
@@ -83,7 +83,7 @@ export function Table({
         <thead className="h-9 border-b border-surface-outline bg-surface-dimmed text-xs text-content-dimmed dark:bg-[#282b32]">
           <tr>
             {visibleColumns.map((c) => (
-              <th key={c} scope="col" className="px-1 font-medium first:pl-2 sm:px-3 sm:first:pl-7">
+              <th key={c} scope="col" className="px-1 font-medium first:pl-2 sm:px-3 md:first:pl-4">
                 {labels[c]}
               </th>
             ))}
@@ -99,7 +99,7 @@ export function Table({
               <th
                 scope="row"
                 colSpan={row.contextOnly ? visibleColumns.length : 1}
-                className="px-1 py-1 pl-2 text-left font-normal sm:px-3 sm:pl-7"
+                className="px-1 py-1 pl-2 text-left font-normal sm:pr-3 md:pl-4"
               >
                 <div className="flex items-center gap-1">
                   {organize?.controls(row)}
@@ -144,13 +144,14 @@ export function RowName({
 }) {
   const { t } = useTranslation();
   const { item, children, contextOnly, expanded, depth } = row;
+  const indentation = depth * 20;
   const ItemIcon = item.type === "goal" ? IconGoal : IconProject;
   const Chevron = expanded ? IconChevronDown : IconChevronRight;
 
   return (
     <div
       className={`flex min-w-0 items-center ${compact ? "gap-1" : "gap-2"}`}
-      style={{ paddingInlineStart: compact ? `min(${depth * 25}px, 25%)` : depth * 25 }}
+      style={{ paddingInlineStart: compact ? `min(${indentation}px, 25%)` : indentation }}
     >
       {children.length ? (
         <UnstyledButton
@@ -206,15 +207,13 @@ function Detail({
           {item.progress === null ? (
             "—"
           ) : (
-            <div className="flex items-center gap-2 text-xs text-content-dimmed">
-              <div className="w-[70px] shrink-0">
-                <ProgressBar
-                  progress={item.progress}
-                  size="sm"
-                  status={item.status === "outdated" ? undefined : item.status}
-                />
-              </div>
-              <span className={phone ? "sr-only" : "w-10 shrink-0 text-right tabular-nums"}>
+            <div className="w-[70px]">
+              <ProgressBar
+                progress={item.progress}
+                size="sm"
+                status={item.status === "outdated" ? undefined : item.status}
+              />
+              <span className="sr-only">
                 {formatNumber(item.progress / 100, preferences.locale, { style: "percent" })}
               </span>
             </div>
