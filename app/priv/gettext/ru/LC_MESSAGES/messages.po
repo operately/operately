@@ -12304,9 +12304,14 @@ msgstr "Заполните все необходимые поля"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:374
-#: ../turboui/src/WorkMapV2/FilterMenu.tsx:130
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:136
 msgid "Filter"
 msgstr "Фильтр"
+
+#.frontend
+#: ../turboui/src/WorkMapV2/FilterMenu.tsx:135
+msgid "Filter (%{activeCount})"
+msgstr "Фильтр (%{activeCount})"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:425

@@ -46,8 +46,8 @@ test("phone filters stay in one toolbar row as selections change", async () => {
   await actions.click();
   await page.getByRole("menuitemcheckbox", { name: "Show KPIs" }).waitFor();
   assert.equal(await page.getByRole("group", { name: "Columns" }).count(), 0);
-  await page.getByRole("menuitem", { name: "Organize" }).click();
-  await page.getByRole("button", { name: "Cancel", exact: true }).waitFor();
+  await page.locator('[data-test-id="work-map-organize"]').click();
+  await page.locator('[data-test-id="cancel-organize"]').waitFor();
 });
 
 test("the Work Map table fits the viewport and keeps progress tracks aligned", async () => {

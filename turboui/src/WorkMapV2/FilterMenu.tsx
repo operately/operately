@@ -131,7 +131,9 @@ export function FilterMenu({
       <Menu
         triggerRef={trigger}
         triggerLabel={
-          compact && filters.length ? `${t("Filter")} (${formatNumber(filters.length, i18n.language)})` : t("Filter")
+          compact && filters.length
+            ? t("Filter ({{activeCount}})", { activeCount: formatNumber(filters.length, i18n.language) })
+            : t("Filter")
         }
         triggerClassName={compact ? "ml-auto min-h-10 whitespace-nowrap" : undefined}
         triggerIcon={IconFilter}
