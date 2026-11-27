@@ -35,6 +35,7 @@ export function invalidateTaskListQueries(client: QueryClient, type: RichTextRes
       Api.documents.getQueryKeyPrefix(),
       Api.documents.listVersionsQueryKeyPrefix(),
       Api.inline_threads.listQueryKeyPrefix(),
+      Api.inline_threads.getQueryKeyPrefix(),
       ...resources,
     ],
     file: [Api.files.getQueryKeyPrefix(), ...resources],

@@ -31,8 +31,8 @@ export async function loader({ params }) {
 
   assertPresent(document.resourceHub, "Document resource hub is unavailable");
 
-  // Load threads before rendering so the document starts with the correct layout.
-  await prefetchDocumentInlineThreads(document);
+  // The review margin can finish loading after the document opens.
+  void prefetchDocumentInlineThreads(document);
 
   return { documentInput, subscriptionInput };
 }

@@ -68,9 +68,11 @@ const thread: InlineThread = {
     status: "attached",
   },
   messages: [{ __typename: "comment", id: "message" }],
+  earlierReplyCount: 0,
 };
 let client: QueryClient;
 let fetchThreads: jest.Mock;
+let fetchThread: jest.Mock;
 function Wrapper({ children }: { children: React.ReactNode }) {
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }
@@ -86,6 +88,11 @@ beforeEach(() => {
   jest
     .spyOn(Api.inline_threads, "listQueryOptions")
     .mockImplementation((input) => ({ ...options(input), queryFn: fetchThreads }));
+  fetchThread = jest.fn();
+  const getOptions = Api.inline_threads.getQueryOptions;
+  jest
+    .spyOn(Api.inline_threads, "getQueryOptions")
+    .mockImplementation((input) => ({ ...getOptions(input), queryFn: () => fetchThread(input) }));
 });
 afterEach(() => {
   client.clear();
@@ -112,6 +119,45 @@ it.each(["signed-out", "draft", "published"])(
     }
   },
 );
+
+it("fetches earlier replies only after a request and keeps them in conversation order", async () => {
+  const messages = Array.from({ length: 101 }, (_, index) => ({
+    __typename: "comment" as const,
+    id: `message-${index}`,
+  }));
+  const preview = { ...thread, earlierReplyCount: 98, messages: [messages[0], ...messages.slice(-2)] };
+  fetchThreads.mockResolvedValue({ threads: [preview] });
+  fetchThread.mockResolvedValue({ thread: { ...thread, messages } });
+  mockLocation = { ...mockLocation, hash: "" };
+
+  const { result } = renderHook(() => useDocumentInlineComments(document), {
+    wrapper: Wrapper,
+    initialProps: undefined,
+  });
+  await waitFor(() => expect(result.current?.threads).toEqual([preview]));
+  expect(fetchThread).not.toHaveBeenCalled();
+
+  act(() => result.current?.onShowEarlierReplies(thread.id));
+  await waitFor(() => expect(result.current?.threads[0]?.messages).toEqual(messages));
+  expect(result.current?.threads[0]?.earlierReplyCount).toBe(0);
+  expect(fetchThread).toHaveBeenCalledTimes(1);
+  expect(fetchThread).toHaveBeenCalledWith({ resourceId: document.id, threadId: thread.id });
+});
+
+it("fetches a linked earlier reply so the reader can navigate directly to it", async () => {
+  const earlierReply = { __typename: "comment" as const, id: "earlier" };
+  const messages = [thread.messages[0], earlierReply];
+  fetchThreads.mockResolvedValue({ threads: [{ ...thread, earlierReplyCount: 2 }] });
+  fetchThread.mockResolvedValue({ thread: { ...thread, messages } });
+  mockLocation = { ...mockLocation, hash: "#earlier" };
+
+  const { result } = renderHook(() => useDocumentInlineComments(document), {
+    wrapper: Wrapper,
+    initialProps: undefined,
+  });
+  await waitFor(() => expect(result.current?.threads[0]?.messages).toEqual(messages));
+  expect(fetchThread).toHaveBeenCalledWith({ resourceId: document.id, threadId: thread.id });
+});
 
 it("returns a version conflict and refreshes the document without navigating", async () => {
   const mutationFn = jest.fn(async () => {
@@ -228,7 +274,11 @@ describe.each(["create", "delete"] as const)("pending %s navigation", (action) =
             search: action === "create" ? "inlineThread=new-thread" : "",
             hash: "#message",
           },
-          { replace: true, preventScrollReset: true },
+          {
+            replace: true,
+            preventScrollReset: true,
+            state: { selectedInlineThread: action === "create" ? "new-thread" : null },
+          },
         );
       } else {
         expect(mockNavigate).not.toHaveBeenCalled();

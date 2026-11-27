@@ -80,8 +80,24 @@ defmodule OperatelyWeb.Api.InlineThreads.ListTest do
       refute comment.id == hd(thread.messages).id
     end
 
+    test "includes every reply through two, then previews only the opening and latest two", ctx do
+      for number <- 1..2, do: Support.add_reply(ctx, number)
+
+      assert {200, %{threads: [short]}} = query(ctx.conn, [:inline_threads, :list], inputs(ctx))
+      assert short.earlier_reply_count == 0
+      assert Enum.map(short.messages, &Jason.decode!(&1.content)) ==
+               Enum.map(["Review this", "Reply 1", "Reply 2"], &RichText.rich_text/1)
+
+      Support.add_reply(ctx, 3)
+      assert {200, %{threads: [long]}} = query(ctx.conn, [:inline_threads, :list], inputs(ctx))
+      assert long.earlier_reply_count == 1
+      assert Enum.map(long.messages, &Jason.decode!(&1.content)) ==
+               Enum.map(["Review this", "Reply 2", "Reply 3"], &RichText.rich_text/1)
+    end
+
     test "inline endpoints are internal only" do
       refute Map.has_key?(OperatelyWeb.Api.External.__queries__(), "inline_threads/list")
+      refute Map.has_key?(OperatelyWeb.Api.External.__queries__(), "inline_threads/get")
 
       for action <- ~w(create reply update_message delete_message resolve reopen) do
         refute Map.has_key?(OperatelyWeb.Api.External.__mutations__(), "inline_threads/" <> action)

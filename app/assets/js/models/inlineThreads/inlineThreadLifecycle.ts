@@ -2,7 +2,10 @@ import Api from "@/api";
 import { useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
 
 export function invalidateInlineThreadQueries(client: QueryClient) {
-  return client.invalidateQueries({ queryKey: Api.inline_threads.listQueryKeyPrefix() });
+  return Promise.all([
+    client.invalidateQueries({ queryKey: Api.inline_threads.listQueryKeyPrefix() }),
+    client.invalidateQueries({ queryKey: Api.inline_threads.getQueryKeyPrefix() }),
+  ]);
 }
 
 export function useInlineThreadMutations() {

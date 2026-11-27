@@ -286,7 +286,96 @@ test("opens resolved thread links directly", async () => {
   assert.equal((await page.locator('[data-inline-thread="resolved"]').count()) > 0, true);
 });
 
-test("outside clicks collapse a thread only after its reply input is closed", async () => {
+test("posted replies stay visible when a desktop thread is activated and dismissed", async () => {
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await visit("with-replies");
+  const card = page.locator('[data-test-id="inline-thread-checklist"]');
+  const preview = card.locator('[data-test-id="inline-select-checklist"]');
+  const replyField = card.locator('[data-test-id="add-comment"]');
+  const editor = card.locator('[contenteditable="true"]');
+  const highlight = page.locator('[data-inline-thread="checklist"]').first();
+  const restingColor = await highlight.evaluate((element) => getComputedStyle(element).backgroundColor);
+  const messages = [
+    ["Sam Rivera", "Could we add a named owner for the support handoff?"],
+    ["Maya Chen", "I can own the handoff."],
+    ["Sam Rivera", "Thanks, Maya."],
+  ].flat();
+  const assertConversationVisible = async () => {
+    const conversation = await card.innerText();
+    let previous = -1;
+    for (const message of messages) {
+      const position = conversation.indexOf(message, previous + 1);
+      assert.ok(position > previous, `Expected "${message}" in the conversation`);
+      previous = position;
+    }
+  };
+  const assertDismissed = async () => {
+    await replyField.waitFor({ state: "detached" });
+    await preview.waitFor();
+    assert.equal(await editor.count(), 0);
+    assert.equal(await card.getAttribute("data-resolved"), "false");
+    assert.equal(await highlight.evaluate((element) => getComputedStyle(element).backgroundColor), restingColor);
+    assert.equal(new URL(page.url()).searchParams.has("inlineThread"), false);
+    await assertConversationVisible();
+  };
+
+  await assertConversationVisible();
+  assert.equal(await replyField.count(), 0);
+  assert.equal(await card.locator('[data-test-id="inline-show-earlier-replies"]').count(), 0);
+  const timestamps = preview.locator("time[datetime]");
+  assert.equal(await timestamps.count(), messages.length / 2);
+  for (const timestamp of await timestamps.all()) assert.ok((await timestamp.innerText()).trim());
+  await preview.click();
+  await replyField.waitFor();
+  assert.equal(await editor.count(), 0);
+  assert.notEqual(await highlight.evaluate((element) => getComputedStyle(element).backgroundColor), restingColor);
+  await assertConversationVisible();
+
+  await page.getByText("We are preparing the workspace rollout", { exact: false }).click();
+  await assertDismissed();
+
+  await highlight.click();
+  await replyField.waitFor();
+  await highlight.click();
+  await replyField.waitFor();
+  await replyField.click();
+  await editor.waitFor();
+  const paper = await page.locator('[data-test-id="document-page"]').boundingBox();
+  const replyBounds = await editor.boundingBox();
+  assert.ok(paper && replyBounds);
+  await page.mouse.click(paper.x / 2, replyBounds.y + 5);
+  await assertDismissed();
+});
+
+test("reveals earlier replies in order when requested from a long thread", async () => {
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await visit("long-thread");
+  const card = page.locator('[data-test-id="inline-thread-checklist"]');
+  const disclosure = card.locator('[data-test-id="inline-show-earlier-replies"]');
+  await card.getByText("I've updated the checklist.", { exact: true }).waitFor();
+  await card.getByText("Thanks, Maya.", { exact: true }).waitFor();
+  assert.equal(await card.getByText("I can own the handoff.", { exact: true }).count(), 0);
+  assert.equal(await disclosure.textContent(), "Show 1 earlier reply");
+  assert.equal(await disclosure.evaluate((element) => getComputedStyle(element).textDecorationLine), "underline");
+
+  await card.locator('[data-test-id="inline-select-checklist"]').click();
+  await card.locator('[data-test-id="add-comment"]').waitFor();
+  assert.equal(await card.getByText("I can own the handoff.", { exact: true }).count(), 0);
+  await page.getByText("We are preparing the workspace rollout", { exact: false }).click();
+  await card.locator('[data-test-id="inline-select-checklist"]').waitFor();
+
+  await disclosure.press("Enter");
+  await card.getByText("I can own the handoff.", { exact: true }).waitFor();
+  assert.equal(await disclosure.count(), 0);
+  assert.equal(await card.locator('[data-test-id="add-comment"]').count(), 0);
+  await card.locator('[data-test-id="inline-select-checklist"]').click();
+  const replies = await card
+    .locator('[id^="checklist-reply-"]')
+    .evaluateAll((replies) => replies.map((reply) => reply.id));
+  assert.deepEqual([...replies], ["checklist-reply-1", "checklist-reply-2", "checklist-reply-3"]);
+});
+
+test("outside clicks keep a reply with a draft open", async () => {
   await page.setViewportSize({ width: 1600, height: 1000 });
   await visit();
   const card = page.locator('[data-test-id="inline-thread-checklist"]');
@@ -294,6 +383,7 @@ test("outside clicks collapse a thread only after its reply input is closed", as
   const editor = card.locator('[contenteditable="true"]');
   const outside = page.locator('[data-test-id="document-page"]');
   await preview.click();
+  await card.locator('[data-test-id="add-comment"]').click();
   await editor.fill("Keep this reply open.");
   await outside.click({ position: { x: 20, y: 20 } });
   assert.equal(await editor.textContent(), "Keep this reply open.");
@@ -308,7 +398,8 @@ test("outside clicks collapse a thread only after its reply input is closed", as
   assert.equal(new URL(page.url()).searchParams.has("inlineThread"), false);
 
   await preview.click();
-  await editor.waitFor();
+  await card.locator('[data-test-id="add-comment"]').waitFor();
+  assert.equal(await editor.count(), 0);
 });
 
 test("mobile panel preserves the draft on close and contains keyboard focus", async () => {
@@ -361,12 +452,18 @@ test("cards float beside their passages, activate on click, and remain read-only
   if (process.env.SCREENSHOT_DIR)
     await page.screenshot({ path: `${process.env.SCREENSHOT_DIR}/inline-floating-preview.png` });
   await page.locator('[data-test-id="inline-select-checklist"]').click();
-  await card.locator('[contenteditable="true"]').waitFor();
+  await card.locator('[data-test-id="add-comment"]').waitFor();
   const expanded = await card.boundingBox();
-  const following = await page.locator('[data-test-id="inline-thread-deadline"]').boundingBox();
+  const nextCard = page.locator('[data-test-id="inline-thread-deadline"]');
+  const following = await nextCard.boundingBox();
   assert.ok(expanded && following && following.y >= expanded.y + expanded.height);
   if (process.env.SCREENSHOT_DIR)
     await page.screenshot({ path: `${process.env.SCREENSHOT_DIR}/inline-floating-active.png` });
+  await nextCard.locator('[data-test-id="inline-select-deadline"]').click({
+    position: { x: 32, y: following.height - 12 },
+  });
+  await nextCard.locator('[data-test-id="add-comment"]').waitFor();
+  assert.equal(await card.locator('[data-test-id="add-comment"]').count(), 0);
   await visit("read-only");
   await page.locator('[data-test-id="inline-select-checklist"]').click();
   await card.locator('div[data-test-id^="comment-"][id]').waitFor();

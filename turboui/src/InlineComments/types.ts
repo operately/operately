@@ -22,6 +22,8 @@ export interface DocumentInlineCommentsProps {
   getProfileLink: (personId: string) => string;
   getThreadLink: (threadId: string, messageId?: string) => string;
   onSelectThread: (threadId: string | null) => void;
+  onShowEarlierReplies: (threadId: string) => void;
+  earlierRepliesStatus?: ReadonlyMap<string, "loading" | "error">;
   onReload: () => Promise<unknown>;
   onCreate: (selection: InlineCommentTarget, content: JSONContent) => Promise<"ok" | "conflict" | "error">;
   onReply: (threadId: string, content: JSONContent) => Promise<boolean>;

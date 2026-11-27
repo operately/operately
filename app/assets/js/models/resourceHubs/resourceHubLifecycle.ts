@@ -92,6 +92,7 @@ export async function invalidateResourceHubQueries(
     invalidate(Api.documents.getQueryKeyPrefix(), "id", [documentId], true),
     invalidate(Api.documents.listVersionsQueryKeyPrefix(), "documentId", [documentId], true),
     invalidate(Api.inline_threads.listQueryKeyPrefix(), "resourceId", [documentId], true),
+    invalidate(Api.inline_threads.getQueryKeyPrefix(), "resourceId", [documentId], true),
     invalidate(Api.files.getQueryKeyPrefix(), "id", [fileId], true),
     invalidate(Api.links.getQueryKeyPrefix(), "id", [linkId], true),
     invalidateCollectionDetails(Api.resource_hubs.getFolderQueryKeyPrefix(), "folder"),

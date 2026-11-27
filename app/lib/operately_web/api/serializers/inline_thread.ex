@@ -11,7 +11,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Comments.InlineThread do
       resolved_by: Serializer.serialize(thread.resolved_by),
       inserted_at: Serializer.serialize(thread.inserted_at),
       anchor: Serializer.serialize(thread.anchor),
-      messages: Serializer.serialize(thread.messages)
+      messages: Serializer.serialize(thread.messages),
+      earlier_reply_count: thread.earlier_reply_count
     }
   end
 end

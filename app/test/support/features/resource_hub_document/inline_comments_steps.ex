@@ -102,4 +102,23 @@ defmodule Operately.Support.Features.ResourceHubDocument.InlineCommentsSteps do
       session
     end)
   end
+
+  step :add_newer_replies, ctx do
+    reply = Repo.get!(Operately.Updates.Comment, Operately.ShortUuid.decode!(ctx.reply_id))
+    [opening] = ctx.thread.messages
+    opening |> Ecto.Changeset.change(inserted_at: NaiveDateTime.add(reply.inserted_at, -1)) |> Repo.update!()
+
+    for number <- 1..2 do
+      Operately.Updates.Comment.changeset(%{
+        entity_id: ctx.thread.id,
+        entity_type: :inline_thread,
+        author_id: ctx.creator.id,
+        content: Operately.Support.RichText.rich_text("Newer reply #{number}")
+      })
+      |> Ecto.Changeset.put_change(:inserted_at, NaiveDateTime.add(reply.inserted_at, number))
+      |> Repo.insert!()
+    end
+
+    ctx
+  end
 end

@@ -12,12 +12,14 @@ beforeEach(() => {
 it.each(["thread", "document", "checkbox"])("refreshes thread data after %s changes", async (action) => {
   const client = new QueryClient();
   const threads = Api.inline_threads.listQueryKey({ resourceType: "resource_hub_document", resourceId: "doc-1" });
+  const earlierReplies = Api.inline_threads.getQueryKey({ resourceId: "doc-1", threadId: "thread-1" });
   const unrelated = Api.projects.getQueryKey({ id: "project-1" });
-  [threads, unrelated].forEach((key) => client.setQueryData(key, {}));
+  [threads, earlierReplies, unrelated].forEach((key) => client.setQueryData(key, {}));
   if (action === "thread") await invalidateInlineThreadQueries(client);
   if (action === "document") await invalidateResourceHubQueries(client, { documentId: "doc-1" });
   if (action === "checkbox") await invalidateTaskListQueries(client, "document");
   expect(client.getQueryState(threads)?.isInvalidated).toBe(true);
+  expect(client.getQueryState(earlierReplies)?.isInvalidated).toBe(true);
   expect(client.getQueryState(unrelated)?.isInvalidated).toBe(false);
   client.clear();
 });
