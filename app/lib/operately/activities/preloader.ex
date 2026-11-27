@@ -245,19 +245,34 @@ defmodule Operately.Activities.Preloader do
   end
 
   defp preload_sub_activities(activities) do
-    activities
-    |> preload(Operately.Activities.Activity)
-    |> map_fields(fn _k, v ->
-      case v do
-        %Activity{} ->
-          v
-          |> Operately.Activities.cast_content()
-          |> Operately.Repo.preload([:author, comment_thread: [comments: :author, reactions: :person]])
-          |> preload()
+    activities = preload(activities, Activity)
+    referenced = immediate_activity_references(activities) |> Enum.uniq_by(& &1.id)
 
-        _ ->
-          v
-      end
+    case referenced do
+      [] ->
+        activities
+
+      referenced ->
+        loaded_by_id =
+          referenced
+          |> Enum.map(&Operately.Activities.cast_content/1)
+          |> Repo.preload([:author, comment_thread: [comments: :author, reactions: :person]])
+          |> preload()
+          |> Map.new(&{&1.id, &1})
+
+        map_fields(activities, fn
+          _key, %Activity{id: id} -> Map.fetch!(loaded_by_id, id)
+          _key, value -> value
+        end)
+    end
+  end
+
+  defp immediate_activity_references(activities) do
+    Enum.flat_map(activities, fn activity ->
+      activity.content
+      |> Map.from_struct()
+      |> Map.values()
+      |> Enum.filter(&match?(%Activity{}, &1))
     end)
   end
 
