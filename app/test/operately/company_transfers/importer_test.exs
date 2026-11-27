@@ -811,6 +811,31 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert imported_activity.content["new_champion_id"] == missing_champion_id
   end
 
+  test "imports legacy project discussion threads and their creation activity", ctx do
+    ctx = ctx |> Factory.add_space(:space) |> Factory.add_project(:project, :space)
+    id = Ecto.UUID.generate()
+    list = Repo.insert!(SubscriptionList.changeset(%{parent_id: id, parent_type: :comment_thread}))
+    thread = %Operately.Comments.CommentThread{id: id}
+      |> Operately.Comments.CommentThread.changeset(%{parent_id: ctx.project.id, parent_type: :project, author_id: ctx.creator.id,
+        subscription_list_id: list.id, title: "Imported legacy discussion", message: Operately.Support.RichText.rich_text("Original")})
+      |> Repo.insert!()
+    activity = create_transfer_activity!(ctx.creator, :project_discussion_submitted, %{
+      company_id: ctx.company.id, space_id: ctx.space.id, project_id: ctx.project.id, discussion_id: id, title: thread.title
+    })
+    Repo.update!(Ecto.Changeset.change(activity, comment_thread_id: id))
+
+    assert {:ok, run} = export_and_stage_import(ctx)
+    assert {:ok, run} = CompanyTransfers.mark_import_run_running(run)
+    assert {:ok, completed} = Importer.run(run)
+    project = Repo.get_by!(Project, company_id: completed.company_id, name: ctx.project.name)
+    message = Repo.get_by!(Operately.Messages.Message, project_id: project.id, title: thread.title)
+    creation = Repo.one!(from a in Activity, where: a.action == "project_discussion_submitted" and a.content["project_id"] == ^project.id)
+    assert creation.content["discussion_id"] == message.id
+    assert is_nil(creation.comment_thread_id)
+    assert Repo.get!(SubscriptionList, message.subscription_list_id).parent_id == message.id
+    assert Repo.get!(Operately.Comments.CommentThread, id).id == id
+  end
+
   test "run/1 imports messages with their translated board, project, and goal owners", ctx do
     alias Operately.Messages.{Message, MessagesBoard}
     alias Operately.MessagesFixtures

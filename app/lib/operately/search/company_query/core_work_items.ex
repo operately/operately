@@ -12,7 +12,6 @@ defmodule Operately.Search.CompanyQuery.CoreWorkItems do
   alias Operately.Companies.Company
   alias Operately.Goals.{Goal, Update}
   alias Operately.Groups.Group
-  alias Operately.Messages.Message
   alias Operately.People.Person
   alias Operately.Projects.{CheckIn, Milestone, Project, Retrospective}
   alias Operately.Tasks.Task
@@ -206,12 +205,8 @@ defmodule Operately.Search.CompanyQuery.CoreWorkItems do
   end
 
   defp discussion_query(company_id) do
-    from(message in Message,
-      join: board in assoc(message, :messages_board),
-      join: space in assoc(board, :space),
-      join: context in assoc(space, :access_context),
-      where: space.company_id == ^company_id,
-      where: message.state == :published and is_nil(space.deleted_at),
+    from([message, project: project, space: space, context: context] in Operately.Search.DiscussionQuery.with_owner(),
+      where: space.company_id == ^company_id and message.state == :published,
       select: %{
         source_type: type(^"discussion", :string),
         source_id: message.id,
@@ -221,10 +216,10 @@ defmodule Operately.Search.CompanyQuery.CoreWorkItems do
         company_id: space.company_id,
         access_context_id: context.id,
         space_id: space.id,
-        project_id: type(^nil, :binary_id),
-        goal_id: type(^nil, :binary_id),
-        owner_name: space.name,
-        expected_state: type(^nil, :string)
+        project_id: message.project_id,
+        goal_id: project.goal_id,
+        owner_name: coalesce(project.name, space.name),
+        expected_state: type(fragment("CASE WHEN ? IS NOT NULL THEN 'archived' WHEN ? IS NOT NULL OR ? = 'closed' THEN 'closed' WHEN ? = 'paused' THEN 'paused' END", message.deleted_at, project.closed_at, project.status, project.status), :string)
       }
     )
   end

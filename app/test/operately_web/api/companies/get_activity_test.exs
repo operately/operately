@@ -16,6 +16,24 @@ defmodule OperatelyWeb.Api.Companies.GetActivityTest do
     end
   end
 
+  test "project discussion reply activities expose the project to contributors who cannot view the space", ctx do
+    ctx =
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_contributor(:contributor, :project, :as_person)
+      |> Factory.add_project_discussion(:discussion, :project)
+      |> Factory.add_comment(:reply, :discussion)
+      |> Factory.log_in_person(:contributor)
+
+    assert {:error, :not_found} = Groups.Group.get(ctx.contributor, id: ctx.space.id)
+    reply = Repo.one!(from a in Operately.Activities.Activity, where: a.action == "discussion_comment_submitted" and a.content["comment_id"] == ^ctx.reply.id)
+    assert {200, %{activity: %{content: content}}} = query(ctx.conn, [:companies, :get_activity], %{id: Paths.activity_id(reply)})
+    assert content.project.id == Paths.project_id(ctx.project)
+    refute content[:space]
+  end
+
   describe "permissions" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
@@ -201,10 +219,15 @@ defmodule OperatelyWeb.Api.Companies.GetActivityTest do
         from(a in Operately.Activities.Activity, where: a.action == "project_discussion_submitted")
         |> Repo.one!()
 
-      assert {200, _res} = query(ctx.conn, [:companies, :get_activity], %{
+      assert {200, %{activity: %{comment_thread: thread}}} = query(ctx.conn, [:companies, :get_activity], %{
         id: Paths.activity_id(activity),
         include_potential_subscribers: true,
+        include_subscriptions_list: true,
       })
+      assert thread.id == Operately.ShortUuid.encode!(ctx.discussion.id)
+      assert thread.reactions == []
+      assert thread.subscription_list
+      assert is_list(thread.potential_subscribers)
     end
   end
 

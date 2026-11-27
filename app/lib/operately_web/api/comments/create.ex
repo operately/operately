@@ -20,7 +20,6 @@ defmodule OperatelyWeb.Api.Comments.Create do
   alias Operately.Projects.{CheckIn, Retrospective, Milestone}
   alias Operately.Tasks.Task
   alias Operately.Operations.CommentAdding
-  alias Operately.Comments.CommentThread
 
   inputs do
     field :entity_id, :id, null: false
@@ -33,6 +32,8 @@ defmodule OperatelyWeb.Api.Comments.Create do
   end
 
   def call(conn, inputs) do
+    inputs = OperatelyWeb.Api.Wrappers.LegacyProjectDiscussions.normalize(conn, inputs)
+
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:parent, fn ctx -> fetch_parent(ctx.me, inputs.entity_id, inputs.entity_type) end)
@@ -57,9 +58,9 @@ defmodule OperatelyWeb.Api.Comments.Create do
     case type do
       :project_check_in -> CheckIn.get(person, id: id, opts: [preload: :project])
       :project_retrospective -> Retrospective.get(person, id: id, opts: [preload: :project])
-      :project_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
+      :project_discussion -> Message.get(person, id: id, opts: [getter_profile: :project_discussion, preload: :project])
+      type when type in [:comment_thread, :goal_discussion] -> Operately.Comments.get_activity_thread(person, id)
       :goal_update -> Update.get(person, id: id, opts: [preload: :goal])
-      :goal_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
       :message -> Message.get(person, id: id, opts: [getter_profile: :space_discussion, preload: :space])
       :resource_hub_document -> Document.get(person, id: id, opts: [preload: [:resource_hub, :node]])
       :resource_hub_file -> File.get(person, id: id, opts: [preload: [:resource_hub, :node]])
@@ -75,7 +76,7 @@ defmodule OperatelyWeb.Api.Comments.Create do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
       :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
-      :project_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread, company_read_only: company_read_only)
+      type when type in [:project_discussion, :comment_thread] -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread, company_read_only: company_read_only)
       :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment, company_read_only: company_read_only)
       :goal_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread, company_read_only: company_read_only)
       :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
@@ -104,7 +105,7 @@ defmodule OperatelyWeb.Api.Comments.Create do
     end
   end
 
-  defp normalize_entity_type(:project_discussion), do: :comment_thread
+  defp normalize_entity_type(:project_discussion), do: :message
   defp normalize_entity_type(:goal_discussion), do: :comment_thread
   defp normalize_entity_type(entity_type), do: entity_type
 end

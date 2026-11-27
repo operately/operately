@@ -311,44 +311,10 @@ defmodule Operately.Support.Factory.Projects do
     message = RichText.rich_text(Keyword.get(opts, :message, "Hello"))
     author = Keyword.get(opts, :author, ctx.creator)
 
-    alias Operately.Operations.Notifications.SubscriptionList
-    alias Operately.Operations.Notifications.Subscription
-    alias Operately.Comments.CommentThread
-    alias Operately.Activities
-
-    contribs = Operately.Repo.preload(project, contributors: :person).contributors
-    subscriber_ids = Enum.map(contribs, & &1.person_id)
-
-    {:ok, res} =
-      Ecto.Multi.new()
-      |> SubscriptionList.insert(%{send_to_everyone: true, subscription_parent_type: :comment_thread})
-      |> Subscription.insert(author, %{content: message, subscriber_ids: subscriber_ids})
-      |> Ecto.Multi.insert(:thread, fn changes ->
-        CommentThread.changeset(%{
-          author_id: author.id,
-          parent_id: project.id,
-          parent_type: :project,
-          message: message,
-          title: title,
-          has_title: true,
-          subscription_list_id: changes.subscription_list.id
-        })
-      end)
-      |> SubscriptionList.update(:thread)
-      |> Ecto.Multi.merge(fn changes ->
-        Activities.insert_sync(Ecto.Multi.new(), author.id, :project_discussion_submitted, fn _ ->
-          %{
-            company_id: project.company_id,
-            space_id: project.group_id,
-            project_id: project.id,
-            discussion_id: changes.thread.id,
-            title: changes.thread.title
-          }
-        end, [comment_thread_id: changes.thread.id])
-      end)
-      |> Operately.Repo.transaction()
-
-    Map.put(ctx, testid, res.thread)
+    contributors = Operately.Repo.preload(project, :contributors).contributors
+    attrs = %{title: title, content: message, send_to_everyone: true, subscriber_ids: Enum.map(contributors, & &1.person_id)}
+    {:ok, discussion} = Operately.Operations.DiscussionPosting.run(author, project, attrs)
+    Map.put(ctx, testid, discussion)
   end
 
   def add_project_task(ctx, testid, milestone_name, opts \\ []) do

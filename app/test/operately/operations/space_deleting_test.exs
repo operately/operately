@@ -18,6 +18,20 @@ defmodule Operately.Operations.SpaceDeletingTest do
     |> Factory.add_inline_thread(:other_thread, :other_document, from: 1, to: 6, quote: "Hello")
   end
 
+  test "removes comments and reactions on project discussions when their space is deleted", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project_discussion(:discussion, :project)
+      |> Factory.add_comment(:reply, :discussion)
+      |> Factory.add_reactions(:on_discussion, :discussion)
+      |> Factory.add_reactions(:on_reply, :reply)
+
+    assert {:ok, _} = SpaceDeleting.run(Repo.preload(ctx.space, :company))
+    refute Repo.get(Comment, ctx.reply.id)
+    refute Repo.get(Reaction, ctx.on_discussion.id)
+    refute Repo.get(Reaction, ctx.on_reply.id)
+  end
+
   @table [
     %{parent: :space, deleted_document: false},
     %{parent: :space, deleted_document: true},

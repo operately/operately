@@ -4,6 +4,7 @@ defmodule Operately.Activities.Content.CommentAdded do
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
     belongs_to :comment_thread, Operately.Comments.CommentThread
+    belongs_to :discussion, Operately.Messages.Message
     belongs_to :comment, Operately.Updates.Comment
 
     belongs_to :project, Operately.Projects.Project

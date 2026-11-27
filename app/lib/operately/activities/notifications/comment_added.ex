@@ -13,6 +13,10 @@ defmodule Operately.Activities.Notifications.CommentAdded do
     |> Operately.Notifications.bulk_create()
   end
 
+  defp get_subscribers(%{content: %{"discussion_id" => id}} = activity) when is_binary(id) do
+    Operately.Messages.Notifications.get_subscribers(id, ignore: [activity.author_id])
+  end
+
   defp get_subscribers(activity) do
     cond do
       activity.content["goal_id"] -> get_goal_subscribers(activity)

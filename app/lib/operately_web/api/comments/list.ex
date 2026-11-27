@@ -27,6 +27,8 @@ defmodule OperatelyWeb.Api.Comments.List do
   end
 
   def call(conn, inputs) do
+    inputs = OperatelyWeb.Api.Wrappers.LegacyProjectDiscussions.normalize(conn, inputs)
+
     comments = load(inputs.entity_id, inputs.entity_type, me(conn))
 
     {:ok, %{comments: Serializer.serialize(comments, level: :full)}}
@@ -101,7 +103,30 @@ defmodule OperatelyWeb.Api.Comments.List do
     |> load_notifications(person, action: "discussion_comment_submitted")
   end
 
-  defp load(id, :project_discussion, person), do: load_comment_thread(id, person)
+  defp load(id, :project_discussion, person) do
+    from(c in Comment,
+      join: m in Operately.Messages.Message, on: m.id == c.entity_id,
+      join: p in assoc(m, :project), as: :project,
+      where: c.entity_id == ^id and c.entity_type == :message and m.state == :published and is_nil(m.deleted_at)
+    )
+    |> preload_resources()
+    |> filter_by_view_access(person.id, named_binding: :project)
+    |> Repo.all()
+    |> load_notifications(person, actions: ["discussion_comment_submitted", "comment_added"])
+  end
+
+  defp load(id, :comment_thread, person) do
+    from(c in Comment,
+      join: t in CommentThread, on: t.id == c.entity_id,
+      join: a in assoc(t, :activity), as: :activity,
+      where: c.entity_id == ^id and c.entity_type == :comment_thread and t.parent_type == :activity and t.parent_id == a.id
+    )
+    |> preload_resources()
+    |> filter_by_view_access(person.id, named_binding: :activity)
+    |> Repo.all()
+    |> load_notifications(person, action: "comment_added")
+  end
+
   defp load(id, :goal_discussion, person), do: load_comment_thread(id, person)
 
   defp load(id, :resource_hub_document, person) do

@@ -44,6 +44,11 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     ctx |> UI.visit(OperatelyWeb.Paths.project_discussion_path(ctx.company, ctx.discussion))
   end
 
+  step :visit_discussion_activity_reply, ctx do
+    activity = Operately.Repo.one!(from a in Operately.Activities.Activity, where: a.action == "project_discussion_submitted" and a.content["discussion_id"] == ^ctx.discussion.id)
+    UI.visit(ctx, Paths.project_activity_path(ctx.company, activity) <> "#" <> ctx.reply.id)
+  end
+
   step :assert_discussion_listed, ctx do
     ctx
     |> UI.assert_text("Discussion 1")
@@ -101,7 +106,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
 
   step :assert_discussion_created, ctx, title do
     attempts(ctx, 5, fn ->
-      record = Operately.Repo.one(from d in Operately.Comments.CommentThread, where: d.title == ^title)
+      record = Operately.Repo.one(from d in Operately.Messages.Message, where: d.title == ^title)
       assert record != nil
 
       ctx
@@ -119,9 +124,9 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
 
   step :assert_discussion_updated, ctx, content do
     attempts(ctx, 5, fn ->
-      record = Operately.Repo.get(Operately.Comments.CommentThread, ctx.discussion.id)
+      record = Operately.Repo.get(Operately.Messages.Message, ctx.discussion.id)
       assert record != nil
-      assert record.message == RichText.rich_text(content)
+      assert record.body == RichText.rich_text(content)
 
       ctx
     end)
@@ -320,8 +325,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
   #
 
   defp last_comment(ctx) do
-    record = Operately.Repo.get(Operately.Comments.CommentThread, ctx.discussion.id)
-    Operately.Updates.list_comments(record.id, :comment_thread) |> Enum.at(-1)
+    Operately.Updates.list_comments(ctx.discussion.id, :message) |> Enum.at(-1)
   end
 
   def login_as_reviewer(ctx) do

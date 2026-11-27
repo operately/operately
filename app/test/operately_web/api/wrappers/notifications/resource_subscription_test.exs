@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.Wrappers.Notifications.ResourceSubscriptionTest do
       |> Factory.add_messages_board(:board, :space)
       |> Factory.add_message(:message, :board)
 
-    for {type, resource} <- [project_check_in: ctx.check_in, project_retrospective: ctx.retrospective, comment_thread: ctx.discussion, goal_update: ctx.update, message: ctx.message] do
+    for {type, resource} <- [project_check_in: ctx.check_in, project_retrospective: ctx.retrospective, project_discussion: ctx.discussion, goal_update: ctx.update, message: ctx.message] do
       assert {:ok, resource.subscription_list_id} == ResourceSubscription.resolve(ctx.creator, %{resource_id: resource.id, resource_type: type})
     end
   end

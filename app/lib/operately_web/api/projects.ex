@@ -631,8 +631,8 @@ defmodule OperatelyWeb.Api.Projects do
     def count_discussions(multi) do
       Ecto.Multi.run(multi, :discussions_count, fn _repo, %{project: project} ->
         count =
-          from(ct in Operately.Comments.CommentThread,
-            where: ct.parent_type == :project and ct.parent_id == ^project.id
+          from(m in Operately.Messages.Message,
+            where: m.state == :published and m.project_id == ^project.id
           )
           |> Repo.aggregate(:count)
 

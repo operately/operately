@@ -27,6 +27,15 @@ defmodule OperatelyWeb.Mcp.Tools.Comments.UpdateTest do
     assert ToolConnHelper.reload(ctx.comment) |> Map.get(:content) |> ToolConnHelper.rich_text_to_string() == "Updated MCP comment"
   end
 
+  test "older clients can edit a reply on a project activity using its comment ID" do
+    ctx = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:project, :space) |> Factory.pause_project(:project)
+    pause = Repo.get_by!(Operately.Activities.Activity, action: "project_pausing", author_id: ctx.creator.id) |> Repo.preload(:comment_thread)
+    ctx = ctx |> Map.put(:thread, pause.comment_thread) |> Factory.add_comment(:reply, :thread)
+
+    assert {:ok, _} = Update.call(ToolConnHelper.conn(ctx), %{"comment_id" => Paths.comment_id(ctx.reply), "parent_type" => "project_discussion", "content" => "Edited reply"})
+    assert ToolConnHelper.rich_text_to_string(Repo.reload!(ctx.reply).content) == "Edited reply"
+  end
+
   test "returns invalid_arguments for malformed ids and unsupported parent types" do
     ctx = Factory.setup(%{})
 

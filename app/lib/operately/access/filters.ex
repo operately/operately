@@ -65,6 +65,8 @@ defmodule Operately.Access.Filters do
     from item in query, where: exists(subquery(permissions))
   end
 
+  defp join_context(query, existing_context: true), do: query
+
   defp join_context(query, join_parent: parent, named_binding: name) do
     from([{^name, item}] in query,
       join: p in assoc(item, ^parent),

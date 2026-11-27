@@ -3,6 +3,7 @@ defmodule Operately.Activities.Content.DiscussionCommentSubmitted do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
+    belongs_to :project, Operately.Projects.Project
     belongs_to :space, Operately.Groups.Group
     belongs_to :discussion, Operately.Messages.Message
     belongs_to :comment, Operately.Updates.Comment
@@ -11,7 +12,7 @@ defmodule Operately.Activities.Content.DiscussionCommentSubmitted do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> validate_required([:company_id, :space_id, :discussion_id, :comment_id])
   end
 
   def build(params) do

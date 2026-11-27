@@ -12,6 +12,8 @@ defmodule OperatelyWeb.Api.Wrappers.Notifications.Subscribe do
   end
 
   def call(conn, inputs) do
+    inputs = OperatelyWeb.Api.Wrappers.LegacyProjectDiscussions.normalize(conn, inputs)
+
     with {:ok, me} <- find_me(conn),
          {:ok, list_id} <- ResourceSubscription.resolve(me, inputs) do
       OperatelyWeb.Api.Notifications.Subscribe.call(conn, %{subscription_list_id: list_id, type: inputs.resource_type})

@@ -39,7 +39,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     {"discussion_editing", %{resource: :message, resource_id: {:content, "discussion_id"}}},
     {"goal_check_in", %{resource: :goal_update, resource_id: {:content, "update_id"}}},
     {"project_check_in_submitted", %{resource: :project_check_in, resource_id: {:content, "check_in_id"}}},
-    {"project_discussion_submitted", %{resource: :comment_thread, resource_id: {:content, "discussion_id"}}},
+    {"project_discussion_submitted", %{resource: :message, resource_id: {:content, "discussion_id"}}},
     {"goal_closing", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},
     {"goal_discussion_creation", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},
     {"goal_reopening", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},

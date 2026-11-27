@@ -120,11 +120,8 @@ defmodule Operately.Projects do
   end
 
   def delete_project_discussions(project_id) do
-    from(t in Operately.Comments.CommentThread,
-      where: t.parent_type == :project,
-      where: t.parent_id == ^project_id
-    )
-    |> Repo.delete_all()
+    from(m in Operately.Messages.Message, where: m.project_id == ^project_id, select: m.id)
+    |> Repo.delete_all(with_deleted: true)
   end
 
   def get_milestones(ids) do

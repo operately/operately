@@ -34,6 +34,8 @@ defmodule OperatelyWeb.Api.Reactions.Create do
   end
 
   def call(conn, inputs) do
+    inputs = OperatelyWeb.Api.Wrappers.LegacyProjectDiscussions.normalize(conn, inputs)
+
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:parent, fn ctx -> fetch_parent(inputs.entity_id, ctx.me, inputs.entity_type, inputs[:parent_type]) end)
@@ -58,7 +60,8 @@ defmodule OperatelyWeb.Api.Reactions.Create do
     case type do
       :project_check_in -> Projects.get_check_in_with_access_level(id, person.id)
       :project_retrospective -> Retrospective.get(person, id: id)
-      :project_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
+      :project_discussion -> Message.get(person, id: id, opts: [getter_profile: :project_discussion])
+      :comment_thread -> Operately.Comments.get_activity_thread(person, id)
       :goal_update -> Update.get(person, id: id)
       :goal_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
       :message -> Message.get(person, id: id, opts: [getter_profile: :space_discussion])
@@ -73,7 +76,7 @@ defmodule OperatelyWeb.Api.Reactions.Create do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment, company_read_only: company_read_only)
       :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
-      :project_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread, company_read_only: company_read_only)
+      type when type in [:project_discussion, :comment_thread] -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread, company_read_only: company_read_only)
       :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment, company_read_only: company_read_only)
       :goal_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread, company_read_only: company_read_only)
       :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
@@ -88,7 +91,7 @@ defmodule OperatelyWeb.Api.Reactions.Create do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment, company_read_only: company_read_only)
       :project_retrospective -> Projects.Permissions.check(parent.requester_access_level, :can_comment, company_read_only: company_read_only)
-      :project_discussion -> Activities.Permissions.check(parent.requester_access_level, :can_comment_on_thread, company_read_only: company_read_only)
+      type when type in [:project_discussion, :comment_thread] -> Activities.Permissions.check(parent.requester_access_level, :can_comment_on_thread, company_read_only: company_read_only)
       :goal_update -> Goals.Update.Permissions.check(parent.requester_access_level, parent.entity_id, me.id, :can_comment, company_read_only: company_read_only)
       :goal_discussion -> Activities.Permissions.check(parent.requester_access_level, :can_comment_on_thread, company_read_only: company_read_only)
       :message -> Groups.Permissions.check(parent.requester_access_level, :can_comment, company_read_only: company_read_only)
@@ -103,11 +106,11 @@ defmodule OperatelyWeb.Api.Reactions.Create do
   end
 
   defp execute(ctx, inputs) do
-    entity_type =  normalize_entity_type(inputs.entity_type)
+    entity_type = normalize_entity_type(inputs.entity_type)
     ReactionAdding.run(ctx.me, inputs.entity_id, entity_type, inputs.emoji)
   end
 
-  defp normalize_entity_type(:project_discussion), do: :comment_thread
+  defp normalize_entity_type(:project_discussion), do: :message
   defp normalize_entity_type(:goal_discussion), do: :comment_thread
   defp normalize_entity_type(entity_type), do: entity_type
 end

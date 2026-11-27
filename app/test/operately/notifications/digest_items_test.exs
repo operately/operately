@@ -137,7 +137,7 @@ defmodule Operately.Notifications.DigestItemsTest do
   end
 
   defp localized_activity(ctx, action, overrides \\ %{}) do
-    discussion_id = if action == "project_discussion_submitted", do: ctx.project_discussion.id, else: ctx.discussion.id
+    discussion_id = if action in ["project_discussion_submitted", "comment_added"], do: ctx.project_discussion.id, else: ctx.discussion.id
     thread = if action == "comment_added", do: ctx.project_discussion, else: ctx.goal_discussion
     retrospective_id = if action == "goal_retrospective_acknowledged", do: ctx.goal_closing.id, else: ctx.retrospective.id
     content = %{
@@ -151,6 +151,7 @@ defmodule Operately.Notifications.DigestItemsTest do
       "new_description" => Operately.Support.RichText.rich_text("Literal content")
     }
     content = if action == "comment_added", do: Map.delete(content, "goal_id"), else: content
+    content = if action == "discussion_comment_submitted", do: Map.delete(content, "project_id"), else: content
     thread_id = if action == "comment_added", do: nil, else: thread.id
     activity_fixture(author_id: ctx.creator.id, action: action, content: Map.merge(content, overrides), comment_thread_id: thread_id)
   end

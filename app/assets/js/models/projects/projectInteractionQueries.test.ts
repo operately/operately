@@ -14,7 +14,6 @@ it.each(["project_check_in", "project_discussion", "project_retrospective"] as c
   "invalidates %s variants and related project data, leaving other resources intact",
   async (resourceType) => {
     const client = new QueryClient();
-    const subscriptionType = resourceType === "project_discussion" ? "comment_thread" : resourceType;
     const resourceKeys =
       resourceType === "project_check_in"
         ? [
@@ -35,7 +34,7 @@ it.each(["project_check_in", "project_discussion", "project_retrospective"] as c
     const affected = [
       ...resourceKeys,
       Api.comments.listQueryKey({ entityId: "old-resource1", entityType: resourceType }),
-      Api.notifications.isSubscribedQueryKey({ resourceId: "old-resource1", resourceType: subscriptionType }),
+      Api.notifications.isSubscribedQueryKey({ resourceId: "old-resource1", resourceType }),
       Api.projects.getQueryKey({ id: "old-project1" }),
       Api.companies.listActivitiesQueryKey({ actions: [], scopeType: "space", scopeId: "space1" }),
       Api.companies.getActivityQueryKey({ id: "old-activity1" }),
@@ -45,7 +44,7 @@ it.each(["project_check_in", "project_discussion", "project_retrospective"] as c
     const unrelated = [
       Api.comments.listQueryKey({ entityId: "resource2", entityType: resourceType }),
       Api.comments.listQueryKey({ entityId: "resource1", entityType: "project_task" }),
-      Api.notifications.isSubscribedQueryKey({ resourceId: "resource2", resourceType: subscriptionType }),
+      Api.notifications.isSubscribedQueryKey({ resourceId: "resource2", resourceType }),
       Api.projects.getQueryKey({ id: "project2" }),
       Api.projects.getCheckInQueryKey({ id: "resource2" }),
       Api.projects.getDiscussionQueryKey({ id: "resource2" }),
@@ -149,7 +148,7 @@ it("matches activity threads and honors none versus active refetch modes", async
   const queryFn = jest.fn(async () => data);
   const observer = new QueryObserver(client, { queryKey, queryFn, staleTime: Infinity });
   const unsubscribe = observer.subscribe(() => {});
-  const context = { projectId: "project1", resourceId: "resource1", resourceType: "project_discussion" as const };
+  const context = { projectId: "project1", resourceId: "resource1", resourceType: "comment_thread" as const };
 
   await invalidateProjectInteractionQueries(client, context, "none");
   expect(queryFn).not.toHaveBeenCalled();

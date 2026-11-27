@@ -5,7 +5,7 @@ defmodule Operately.Activities.Content.ProjectDiscussionSubmitted do
     belongs_to :company, Operately.Companies.Company
     belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
-    belongs_to :discussion, Operately.Comments.CommentThread
+    belongs_to :discussion, Operately.Messages.Message
 
     field :title, :string
   end

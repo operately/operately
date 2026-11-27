@@ -288,7 +288,7 @@ defmodule Operately.MD.Project do
     #{gettext("Author")}: #{discussion.author.full_name}
     #{gettext("Posted on")}: #{render_date(discussion.inserted_at)}
 
-    #{Operately.MD.RichText.render(discussion.message)}
+    #{Operately.MD.RichText.render(discussion.body)}
     """
   end
 

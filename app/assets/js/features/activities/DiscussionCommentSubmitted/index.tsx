@@ -6,7 +6,7 @@ import React from "react";
 import { Link, Summary } from "turboui";
 import { Trans } from "../i18n";
 import i18n from "@/i18n";
-import { activityAuthorName, commentPath, commentedLink } from "../feedItemLinks";
+import { activityAuthorName, commentPath, commentedLink, projectLink } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -16,13 +16,17 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { comment, discussion, space } = content(activity);
+    const { comment, discussion, space, project } = content(activity);
 
     if (!discussion) {
-      return paths.spacePath(space.id);
+      if (project) return paths.projectPath(project.id);
+      return space ? paths.spacePath(space.id) : paths.homePath();
     }
 
-    return commentPath(paths.discussionPath(discussion.id), comment);
+    return commentPath(
+      project ? paths.projectDiscussionPath(discussion.id) : paths.discussionPath(discussion.id),
+      comment,
+    );
   },
 
   PageTitle(_props: { activity: any }) {
@@ -38,15 +42,26 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
-    const { comment, discussion, space } = content(activity);
+    const { comment, discussion, space, project } = content(activity);
 
-    const discussionPath = discussion ? paths.discussionPath(discussion.id) : null;
+    const discussionPath =
+      discussion && (project ? paths.projectDiscussionPath(discussion.id) : paths.discussionPath(discussion.id));
     const action = discussionPath ? commentedLink(discussionPath, comment) : "commented";
     const activityLink = discussionPath && discussion ? <Link to={discussionPath}>{null}</Link> : <React.Fragment />;
-    const values = { author: activityAuthorName(activity), title: discussion?.title, spaceName: space.name };
+    const values = { author: activityAuthorName(activity), title: discussion?.title, spaceName: space?.name };
     const components = { action: typeof action === "string" ? <React.Fragment /> : action, discussion: activityLink };
 
-    if (page === "space") {
+    if (project && discussion && page !== "project") {
+      return (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on <discussion>{{title}}</discussion> in the <project>{{projectName}}</project> project"
+          values={{ ...values, projectName: project.name }}
+          components={{ ...components, project: projectLink(paths, project) }}
+        />
+      );
+    }
+
+    if (!space || page === "space") {
       return discussion ? (
         <Trans
           i18nKey="{{author}} <action>commented</action> on <discussion>{{title}}</discussion>"
@@ -100,7 +115,8 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).space.name;
+    const { project, space } = content(activity);
+    return project?.name ?? space?.name ?? null;
   },
 };
 

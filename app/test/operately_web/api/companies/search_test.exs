@@ -82,6 +82,30 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
     refute body_match.snippet =~ "__OPERATELY_SEARCH"
   end
 
+  test "project discussion results use the project URL and respect publication and project access", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space_member(:viewer, :space)
+      |> Factory.add_project(:project, :space, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+      |> Factory.add_project_discussion(:discussion, :project, title: "Heliograph published")
+      |> Factory.log_in_person(:creator)
+
+    {:ok, draft} = Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.project, %{
+      title: "Heliograph draft", content: RichText.rich_text("Draft"), subscriber_ids: [], send_to_everyone: false, post_as_draft: true
+    })
+    for message <- [ctx.discussion, draft], do: assert({:ok, _} = SourceIndexer.sync("discussion", message.id))
+
+    url = Paths.to_url(Paths.project_discussion_path(ctx.company, ctx.discussion))
+    project_id = Operately.ShortUuid.encode!(ctx.project.id)
+    assert {200, %{results: [%{url: ^url, navigation_target: %{project_id: ^project_id}}]}} = query(ctx.conn, [:companies, :search], query: "Heliograph")
+    assert {200, %{discussions: [%{url: ^url, project_id: ^project_id}]}} = query(ctx.conn, [:companies, :quick_search], query: "Heliograph")
+    assert {404, _} = query(ctx.conn, [:projects, :get_discussion], id: Paths.comment_thread_id(draft))
+
+    ctx = Factory.log_in_person(ctx, :viewer)
+    assert {200, %{results: []}} = query(ctx.conn, [:companies, :search], query: "Heliograph")
+    assert {200, %{discussions: []}} = query(ctx.conn, [:companies, :quick_search], query: "Heliograph")
+  end
+
   test "applies live permission grants and revocations", ctx do
     ctx =
       ctx

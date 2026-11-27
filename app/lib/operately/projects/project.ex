@@ -414,9 +414,12 @@ defmodule Operately.Projects.Project do
   end
 
   def list_discussions(project_id) do
-    project_id
-    |> Operately.Comments.CommentThread.list_for_project()
-    |> Operately.Repo.preload([:author])
-    |> Operately.Updates.Comment.load_comments_count()
+    from(m in Operately.Messages.Message,
+      where: m.project_id == ^project_id and m.state == :published,
+      order_by: [desc: m.inserted_at, desc: m.id],
+      preload: [:author]
+    )
+    |> Repo.all()
+    |> Operately.Messages.Message.load_comments_count()
   end
 end

@@ -68,16 +68,17 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemCheckedTest do
   for {type, field} <- @fields do
     @resource_type type
     @field field
+    @stored_field if(type == :project_discussion, do: :body, else: field)
 
     test "#{type} persists check/uncheck and rejects stale content", ctx do
       record = target(ctx, @resource_type)
       source = content()
-      record = record |> Ecto.Changeset.change(%{@field => source}) |> Repo.update!()
+      record = record |> Ecto.Changeset.change(%{@stored_field => source}) |> Repo.update!()
       inputs = inputs(record, @resource_type, @field, source)
 
       assert {200, %{success: true}} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs)
       assert preserved_fields(Repo.reload!(record)) == preserved_fields(record)
-      updated = Map.fetch!(Repo.reload!(record), @field)
+      updated = Map.fetch!(Repo.reload!(record), @stored_field)
       assert checked(updated)
       activity_count = Repo.aggregate(Operately.Activities.Activity, :count)
       assert {200, %{success: true}} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs)
@@ -87,14 +88,14 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemCheckedTest do
       stale = put_in(source, ["content", Access.at(0), "content", Access.at(0), "content", Access.at(0), "content", Access.at(0), "text"], "Outdated")
       assert {400, response} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], %{inputs | expected_content: Jason.encode!(stale)})
       assert (response.details[:reason] || response.details["reason"]) == "content_conflict"
-      assert Map.fetch!(Repo.reload!(record), @field) == updated
+      assert Map.fetch!(Repo.reload!(record), @stored_field) == updated
 
       assert {200, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], %{inputs | checked: false, expected_content: Jason.encode!(updated)})
-      assert Map.fetch!(Repo.reload!(record), @field) == source
+      assert Map.fetch!(Repo.reload!(record), @stored_field) == source
     end
 
     test "#{type} uses the existing edit permission", ctx do
-      record = target(ctx, @resource_type) |> Ecto.Changeset.change(%{@field => content()}) |> Repo.update!()
+      record = target(ctx, @resource_type) |> Ecto.Changeset.change(%{@stored_field => content()}) |> Repo.update!()
 
       ctx =
         ctx
@@ -109,7 +110,7 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemCheckedTest do
     end
 
     test "#{type} rejects viewers, another company, and read-only companies", ctx do
-      record = target(ctx, @resource_type) |> Ecto.Changeset.change(%{@field => content()}) |> Repo.update!()
+      record = target(ctx, @resource_type) |> Ecto.Changeset.change(%{@stored_field => content()}) |> Repo.update!()
       inputs = inputs(record, @resource_type, @field, content())
       viewer = ctx |> Factory.add_space_member(:viewer, :space, permissions: :view_access) |> Factory.log_in_person(:viewer)
       assert {code, _} = mutation(viewer.conn, [:rich_content, :set_task_item_checked], inputs)
@@ -124,7 +125,7 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemCheckedTest do
       |> Repo.insert!()
 
       assert {403, _} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs)
-      assert Map.fetch!(Repo.reload!(record), @field) == content()
+      assert Map.fetch!(Repo.reload!(record), @stored_field) == content()
     end
   end
 

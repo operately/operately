@@ -81,6 +81,23 @@ defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
     end
   end
 
+  test "project discussion replies and reactions keep their public identifiers and project context", ctx do
+    ctx = ctx |> Factory.add_project_discussion(:discussion, :project) |> Factory.log_in_person(:creator)
+    target = %{entity_id: Paths.comment_thread_id(ctx.discussion), entity_type: "project_discussion"}
+    assert {200, %{comment: %{id: reply_id}}} = mutation(ctx.conn, [:comments, :create], Map.put(target, :content, RichText.rich_text("Reply", :as_string)))
+    assert {200, _} = mutation(ctx.conn, [:reactions, :create], Map.put(target, :emoji, "👍"))
+    assert {200, _} = mutation(ctx.conn, [:reactions, :create], %{entity_type: "comment", entity_id: reply_id, parent_type: "project_discussion", emoji: "👍"})
+    assert {200, %{comments: [%{id: ^reply_id, reactions: [_]}]}} = query(ctx.conn, [:comments, :list], target)
+    assert {200, %{discussion: %{reactions: [_]}}} = query(ctx.conn, [:projects, :get_discussion], %{id: target.entity_id})
+
+    activity = get_activity(ctx.project.id, "discussion_comment_submitted")
+    assert activity.access_context_id == Repo.preload(ctx.project, :access_context).access_context.id
+
+    Repo.soft_delete!(ctx.discussion)
+    assert {200, %{comments: []}} = query(ctx.conn, [:comments, :list], target)
+    assert {404, _} = mutation(ctx.conn, [:reactions, :create], %{entity_type: "comment", entity_id: reply_id, parent_type: "project_discussion", emoji: "👍"})
+  end
+
   describe "list project discussions" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:projects, :list_discussions], %{})
@@ -151,6 +168,13 @@ defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
       assert res.message == "Project not found"
     end
 
+    test "it rejects a blank title", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      input = %{project_id: Paths.project_id(ctx.project), title: "", message: RichText.rich_text("Hello", :as_string)}
+
+      assert {400, _} = mutation(ctx.conn, [:projects, :create_discussion], input)
+    end
+
     test "it creates a project discussion", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
@@ -186,7 +210,7 @@ defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
 
       {_, discussion_id} = OperatelyWeb.Api.Helpers.decode_id(res.discussion.id)
       assert activity.content["discussion_id"] == discussion_id
-      assert activity.comment_thread_id == discussion_id
+      assert is_nil(activity.comment_thread_id)
     end
 
     test "it notifies subscribers when a discussion is created", ctx do
@@ -226,7 +250,7 @@ defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
       assert res.discussion.title == "Default Discussion"
 
       {:ok, discussion_id} = OperatelyWeb.Api.Helpers.decode_id(res.discussion.id)
-      discussion = Operately.Repo.get(Operately.Comments.CommentThread, discussion_id)
+      discussion = Operately.Repo.get(Operately.Messages.Message, discussion_id)
       {:ok, list} = SubscriptionList.get(:system, parent_id: discussion.id, opts: [preload: :subscriptions])
 
       refute list.send_to_everyone
@@ -262,6 +286,28 @@ defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
       assert res.message == "Discussion not found"
     end
 
+    test "clearing the title rejects the whole edit", ctx do
+      ctx = ctx |> Factory.log_in_person(:creator) |> Factory.add_project_discussion(:discussion, :project)
+      input = %{id: Paths.message_id(ctx.discussion), title: "  ", message: RichText.rich_text("Edited", :as_string)}
+
+      assert {400, _} = mutation(ctx.conn, [:projects, :update_discussion], input)
+      discussion = Repo.reload!(ctx.discussion)
+      assert discussion.title == ctx.discussion.title
+      assert discussion.body == ctx.discussion.body
+    end
+
+    test "a migrated untitled discussion can be opened and given a title", ctx do
+      ctx = ctx |> Factory.log_in_person(:creator) |> Factory.add_project_discussion(:discussion, :project)
+      message = ctx.discussion |> Ecto.Changeset.change(title: nil) |> Repo.update!()
+      id = Paths.comment_thread_id(message)
+
+      assert id == Paths.message_id(message)
+      assert {200, %{discussion: %{id: ^id}}} = query(ctx.conn, [:projects, :get_discussion], %{id: id})
+      assert {:ok, _} = Operately.Search.SourceIndexer.sync("discussion", message.id)
+      input = %{id: id, title: "Restored title", message: RichText.rich_text("Edited", :as_string)}
+      assert {200, %{discussion: %{title: "Restored title"}}} = mutation(ctx.conn, [:projects, :update_discussion], input)
+    end
+
     test "it updates the discussion", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
       ctx = Factory.add_project_discussion(ctx, :discussion, :project)
@@ -276,9 +322,9 @@ defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
       assert res.discussion.title == "Updated Discussion Title"
 
       # Verify the discussion was updated in the database
-      discussion = Operately.Repo.get(Operately.Comments.CommentThread, ctx.discussion.id)
+      discussion = Operately.Repo.get(Operately.Messages.Message, ctx.discussion.id)
       assert discussion.title == "Updated Discussion Title"
-      assert discussion.message == RichText.rich_text("Updated content")
+      assert discussion.body == RichText.rich_text("Updated content")
     end
   end
 
@@ -302,7 +348,7 @@ defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
 
   defp set_inserted_at(discussion, inserted_at) do
     Repo.update_all(
-      from(ct in Operately.Comments.CommentThread, where: ct.id == ^discussion.id),
+      from(ct in Operately.Messages.Message, where: ct.id == ^discussion.id),
       set: [inserted_at: inserted_at]
     )
   end

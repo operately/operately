@@ -19,6 +19,14 @@ defmodule Operately.Features.ProjectDiscussionTest do
     |> Steps.assert_discussion_page_displayed()
   end
 
+  feature "an old reply link opens the project discussion", ctx do
+    ctx
+    |> Steps.given_a_discussion_exists()
+    |> Factory.add_comment(:reply, :discussion)
+    |> Steps.visit_discussion_activity_reply()
+    |> Steps.assert_discussion_page_displayed()
+  end
+
   feature "commenting on a discussion", ctx do
     ctx
     |> Steps.given_a_discussion_exists()

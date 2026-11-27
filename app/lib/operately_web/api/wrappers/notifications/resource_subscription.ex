@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Wrappers.Notifications.ResourceSubscription do
     project_retrospective: Operately.Projects.Retrospective,
     goal_update: Operately.Goals.Update,
     message: Operately.Messages.Message,
+    project_discussion: Operately.Messages.Message,
     resource_hub_document: Operately.ResourceHubs.Document,
     resource_hub_file: Operately.ResourceHubs.File,
     resource_hub_link: Operately.ResourceHubs.Link,
@@ -18,10 +19,9 @@ defmodule OperatelyWeb.Api.Wrappers.Notifications.ResourceSubscription do
   def resource_types, do: Keyword.keys(@resource_modules)
 
   def resolve(me, %{resource_id: id, resource_type: type}) do
-    with {:ok, module} <- resource_module(type),
-         {:ok, resource} <- module.get(me, id: id, opts: load_options(type)),
+    with {:ok, resource} <- load_resource(me, id, type),
          %{id: list_id, parent_type: parent_type} <- resource.subscription_list,
-         true <- parent_type == subscription_parent_type(type) do
+         true <- parent_type == subscription_parent_type(type, resource) do
       {:ok, list_id}
     else
       {:error, _} = error -> error
@@ -29,6 +29,11 @@ defmodule OperatelyWeb.Api.Wrappers.Notifications.ResourceSubscription do
     end
   end
 
+  defp load_resource(me, id, type) do
+    with {:ok, module} <- resource_module(type), do: module.get(me, id: id, opts: load_options(type))
+  end
+
+  defp load_options(:project_discussion), do: [getter_profile: :project_discussion, preload: :subscription_list]
   defp load_options(:message), do: [getter_profile: :space_discussion, preload: :subscription_list]
   defp load_options(_type), do: [preload: :subscription_list]
 
@@ -39,6 +44,7 @@ defmodule OperatelyWeb.Api.Wrappers.Notifications.ResourceSubscription do
     end
   end
 
-  defp subscription_parent_type(:milestone), do: :project_milestone
-  defp subscription_parent_type(type), do: type
+  defp subscription_parent_type(:project_discussion, _), do: :message
+  defp subscription_parent_type(:milestone, _), do: :project_milestone
+  defp subscription_parent_type(type, _), do: type
 end

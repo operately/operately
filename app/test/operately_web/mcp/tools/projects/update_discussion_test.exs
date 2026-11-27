@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.UpdateDiscussionTest do
     discussion = ToolConnHelper.reload(ctx.discussion)
 
     assert discussion.title == "Updated project discussion"
-    assert ToolConnHelper.rich_text_to_string(discussion.message) == "Updated project discussion content"
+    assert ToolConnHelper.rich_text_to_string(discussion.body) == "Updated project discussion content"
   end
 
   test "accepts notify_person_ids and notify_everyone without error" do

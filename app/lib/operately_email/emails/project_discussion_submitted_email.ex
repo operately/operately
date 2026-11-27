@@ -2,7 +2,7 @@ defmodule OperatelyEmail.Emails.ProjectDiscussionSubmittedEmail do
   use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
-  alias Operately.Comments.CommentThread
+  alias Operately.Messages.Message
   alias Operately.Projects.Project
   alias Operately.Repo
   alias OperatelyWeb.Paths
@@ -12,10 +12,10 @@ defmodule OperatelyEmail.Emails.ProjectDiscussionSubmittedEmail do
     company = Repo.preload(author, :company).company
 
     {:ok, project} = Project.get(:system, id: activity.content["project_id"])
-    {:ok, discussion} = CommentThread.get(:system, id: activity.content["discussion_id"])
+    {:ok, discussion} = Message.get(:system, id: activity.content["discussion_id"])
 
     title = discussion.title
-    message = discussion.message
+    message = discussion.body
     link = Paths.project_discussion_path(company, discussion) |> Paths.to_url()
 
     company
@@ -33,10 +33,10 @@ defmodule OperatelyEmail.Emails.ProjectDiscussionSubmittedEmail do
 
   def buffered_item(_person, activity) do
     project = Operately.Projects.get_project!(activity.content["project_id"])
-    discussion = Operately.Comments.get_thread!(activity.content["discussion_id"])
+    discussion = Operately.Repo.get!(Message, activity.content["discussion_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
-    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(discussion.message)
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(discussion.body)
 
     %{
       parent_id: project.id,

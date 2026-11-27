@@ -610,6 +610,8 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(task.name, id)
   end
 
+  def message_id(%{project_id: id} = message) when not is_nil(id), do: comment_thread_id(message)
+
   def message_id(message) do
     id = Operately.ShortUuid.encode!(message.id)
     title = message.title

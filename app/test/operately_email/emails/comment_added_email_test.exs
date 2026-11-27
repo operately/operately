@@ -34,15 +34,16 @@ defmodule OperatelyEmail.Emails.CommentAddedEmailTest do
 
     for discussion <- [:goal_discussion, :project_discussion] do
       ctx = Factory.add_comment(ctx, :comment, discussion, content: Operately.Support.RichText.rich_text("Literal comment"))
-      activity = Repo.one!(from a in Operately.Activities.Activity, where: a.action == "comment_added" and a.content["comment_id"] == ^ctx.comment.id)
+      activity = Repo.one!(from a in Operately.Activities.Activity, where: a.content["comment_id"] == ^ctx.comment.id)
+      mailer = if discussion == :project_discussion, do: OperatelyEmail.Emails.DiscussionCommentSubmittedEmail, else: CommentAddedEmail
       title = Map.fetch!(ctx, discussion).title
       link = CommentAddedEmail.get_link(ctx.company, activity, ctx.comment)
 
       for {locale, expected} <- [{"en", "commented on:"}, {"pt_BR", "comentou em:"}, {"nl", "commented on:"}] do
         flush_emails()
         Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
-          CommentAddedEmail.send(ctx.creator, activity)
-          assert CommentAddedEmail.buffered_item(ctx.creator, activity).headline == "#{expected} #{title}"
+          mailer.send(ctx.creator, Operately.Activities.cast_content(activity))
+          assert mailer.buffered_item(ctx.creator, activity).headline == "#{expected} #{title}"
         end)
 
         assert_email_sent(fn email ->

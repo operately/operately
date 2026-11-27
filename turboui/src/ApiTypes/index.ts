@@ -130,9 +130,10 @@ export interface ActivityContentCompanyOwnersAddingPerson {
 
 export interface ActivityContentDiscussionCommentSubmitted {
   __typename: "activity_content_discussion_comment_submitted";
+  project?: Project;
   discussion: Discussion | null;
   comment: Comment | null;
-  space: Space;
+  space?: Space;
 }
 
 export interface ActivityContentDiscussionEditing {
@@ -2396,6 +2397,7 @@ export interface PublicDocument {
 }
 
 export interface QuickSearchDiscussion {
+  projectId?: string;
   id: string;
   title: string;
   context: string;
@@ -3199,6 +3201,7 @@ export type CommentListEntityType =
   | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
+  | "comment_thread"
   | "goal_update"
   | "goal_discussion"
   | "message"
@@ -3213,6 +3216,7 @@ export type CommentParentType =
   | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
+  | "comment_thread"
   | "goal_update"
   | "goal_discussion"
   | "message"
@@ -3300,6 +3304,7 @@ export type ReactionEntityType =
   | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
+  | "comment_thread"
   | "goal_update"
   | "goal_discussion"
   | "message"
@@ -3312,6 +3317,7 @@ export type ReactionParentType =
   | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
+  | "comment_thread"
   | "goal_update"
   | "goal_discussion"
   | "message"
@@ -3354,12 +3360,12 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
-  | "space_discussion"
   | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"
+  | "space_discussion"
+  | "kpi"
   | "goal_check_in"
   | "comment"
   | "person"
@@ -3401,6 +3407,7 @@ export type SubscriptionParentType =
   | "project_check_in"
   | "project_retrospective"
   | "goal_update"
+  | "project_discussion"
   | "message"
   | "resource_hub_document"
   | "resource_hub_file"

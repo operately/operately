@@ -17,6 +17,28 @@ defmodule OperatelyWeb.Api.Comments.CreateTest do
   alias Operately.Access.Binding
   alias Operately.Support.RichText
 
+  test "project activity comments and reactions use the activity thread", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:project, :space) |> Factory.pause_project(:project) |> Factory.log_in_person(:creator)
+    pause = Repo.one!(from a in Activity, where: a.action == "project_pausing" and a.content["project_id"] == ^ctx.project.id)
+    Repo.insert!(struct(Activity, Map.take(pause, [:author_id, :action, :content, :access_context_id, :comment_thread_id])))
+    target = %{entity_type: "comment_thread", entity_id: Operately.ShortUuid.encode!(pause.comment_thread_id)}
+    content = RichText.rich_text("Reply", :as_string)
+
+    assert {404, _} = mutation(ctx.conn, [:comments, :create], Map.merge(target, %{entity_type: "project_discussion", content: content}))
+    assert {200, %{comment: %{id: id}}} = mutation(ctx.conn, [:comments, :create], Map.put(target, :content, content))
+    reply_id = Operately.ShortUuid.decode!(id)
+    event = Repo.one!(from a in Activity, where: a.action == "comment_added" and a.content["comment_id"] == ^reply_id)
+    assert event.content["activity_id"] == pause.id
+    assert {200, %{comments: [%{id: ^id}]}} = query(ctx.conn, [:comments, :list], target)
+
+    ctx = Factory.add_api_token(ctx, :token, :creator, read_only: true)
+    assert {200, %{comments: [%{id: ^id}]}} = external_query(ctx.conn, ctx.token, "comments/list", %{target | entity_type: "project_discussion"})
+
+    assert {200, _} = mutation(ctx.conn, [:reactions, :create], Map.put(target, :emoji, "👍"))
+    assert {200, _} = mutation(ctx.conn, [:reactions, :create], %{entity_type: "comment", entity_id: id, parent_type: "comment_thread", emoji: "👍"})
+    assert {200, _} = mutation(ctx.conn, [:comments, :delete], %{comment_id: id, parent_type: "comment_thread"})
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:comments, :create], %{})

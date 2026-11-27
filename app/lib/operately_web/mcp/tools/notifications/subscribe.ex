@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Mcp.Tools.Notifications.Subscribe do
         JsonSchema.object(
           %{
             "resource_id" => JsonSchema.string("The resource identifier."),
-            "resource_type" => JsonSchema.string("Resource type. Use goal_update for goal check-ins, message for space discussions, and comment_thread for project discussions.", enum: @resource_types)
+            "resource_type" => JsonSchema.string("Resource type. Use goal_update for goal check-ins, message for space discussions, project_discussion for project discussions, and comment_thread for activity threads.", enum: @resource_types)
           },
           required: ["resource_id", "resource_type"]
         ),

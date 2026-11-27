@@ -17,6 +17,7 @@ defmodule OperatelyWeb.Mcp.Helpers do
     "project_check_in" => :project_check_in,
     "goal_discussion" => :goal_discussion,
     "project_discussion" => :project_discussion,
+    "comment_thread" => :comment_thread,
     "space_discussion" => :message,
     "milestone" => :milestone,
     "document" => :resource_hub_document,

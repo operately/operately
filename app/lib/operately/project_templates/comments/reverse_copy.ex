@@ -4,7 +4,7 @@ defmodule Operately.ProjectTemplates.Comments.ReverseCopy do
   alias Operately.ProjectTemplates.Comment
   alias Operately.Updates.Comment, as: RuntimeComment
 
-  @source_types [:comment_thread, :resource_hub_document, :resource_hub_file, :resource_hub_link]
+  @source_types [:message, :resource_hub_document, :resource_hub_file, :resource_hub_link]
 
   def run(_repo, _project_id, _template, parent_ids) when parent_ids == %{}, do: {:ok, []}
 
@@ -58,7 +58,7 @@ defmodule Operately.ProjectTemplates.Comments.ReverseCopy do
     |> repo.all()
   end
 
-  defp destination(%{entity_type: :comment_thread, entity_id: id}, parent_ids), do: lookup(parent_ids, :discussion, id)
+  defp destination(%{entity_type: :message, entity_id: id}, parent_ids), do: lookup(parent_ids, :discussion, id)
   defp destination(%{entity_type: :resource_hub_document, entity_id: id}, parent_ids), do: lookup(parent_ids, :document, id)
   defp destination(%{entity_type: :resource_hub_file, entity_id: id}, parent_ids), do: lookup(parent_ids, :file, id)
   defp destination(%{entity_type: :resource_hub_link, entity_id: id}, parent_ids), do: lookup(parent_ids, :link, id)
