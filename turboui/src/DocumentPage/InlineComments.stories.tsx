@@ -65,6 +65,7 @@ function makeThread(id: string, quote: string, message: string, resolved = false
     resolvedAt: resolved ? now : null,
     resolvedBy: resolved ? person : null,
     insertedAt: now,
+    earlierReplyCount: 0,
     anchor: {
       __typename: "inline_anchor",
       sourceVersion: 1,
@@ -113,6 +114,7 @@ function Example({
   conflict = false,
   mobile = false,
   ownComment = false,
+  replyCount = 0,
   inlineCommentsEnabled = true,
 }) {
   const { t } = useTranslation();
@@ -121,19 +123,38 @@ function Example({
       ? []
       : initialThreads
           .filter((thread) => !unattachedOnly || thread.anchor.status === "unattached")
-          .map((thread, index) =>
-            ownComment && index === 0
-              ? {
-                  ...thread,
-                  author: person,
-                  messages: thread.messages.map((message) => ({ ...message, author: person })),
-                }
-              : thread,
-          ),
+          .map((thread) => {
+            if (thread.id !== "checklist") return thread;
+            if (ownComment) {
+              return {
+                ...thread,
+                author: person,
+                messages: thread.messages.map((message) => ({ ...message, author: person })),
+              };
+            }
+            if (replyCount === 0) return thread;
+
+            const replies: InlineThread["messages"] = [
+              { author: person, text: "I can own the handoff.", insertedAt: "2026-11-01T12:00:00Z" },
+              { author: reviewer, text: "Thanks, Maya.", insertedAt: "2026-11-02T12:00:00Z" },
+              { author: person, text: "I've updated the checklist.", insertedAt: "2026-11-03T12:00:00Z" },
+            ]
+              .slice(0, replyCount)
+              .map(({ author, text, insertedAt }, index) => ({
+                __typename: "comment",
+                id: `checklist-reply-${index + 1}`,
+                author,
+                content: JSON.stringify(richText(text)),
+                insertedAt,
+                reactions: [],
+              }));
+            return { ...thread, messages: [...thread.messages, ...replies] };
+          }),
   );
   const [activeThreadId, setActive] = React.useState<string | null>(
     new URLSearchParams(window.location.search).get("inlineThread"),
   );
+  const [revealedThreadIds, setRevealedThreadIds] = React.useState<string[]>([]);
   const [version, setVersion] = React.useState(1);
   const [failed, setFailed] = React.useState(error);
   const firstAttempt = React.useRef(conflict);
@@ -148,7 +169,15 @@ function Example({
     window.history.replaceState(null, "", url);
   };
   const inlineComments: DocumentInlineCommentsProps = {
-    threads,
+    threads: threads.map((thread) =>
+      thread.messages.length > 3 && !revealedThreadIds.includes(thread.id)
+        ? {
+            ...thread,
+            messages: [...thread.messages.slice(0, 1), ...thread.messages.slice(-2)],
+            earlierReplyCount: thread.messages.length - 3,
+          }
+        : thread,
+    ),
     documentVersion: version,
     currentUser: { ...person, profileLink: "#" },
     canComment: !readOnly,
@@ -160,6 +189,7 @@ function Example({
     formattedTimePreferences: defaultFormattedTimePreferences,
     getProfileLink: () => "#",
     onSelectThread: select,
+    onShowEarlierReplies: (id) => setRevealedThreadIds((previous) => [...previous, id]),
     getThreadLink: (id, messageId) => {
       const url = new URL(window.location.href);
       url.searchParams.set("inlineThread", id);
@@ -273,6 +303,8 @@ function Example({
 }
 
 export const Review: Story = { render: () => <Example /> };
+export const WithReplies: Story = { render: () => <Example replyCount={2} /> };
+export const LongThread: Story = { render: () => <Example replyCount={3} /> };
 export const Scrollable: Story = {
   render: () => (
     <div className="flex flex-col h-screen">

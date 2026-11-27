@@ -7314,8 +7314,8 @@ msgstr "Darf nicht dieselbe Person wie der Champion sein"
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:151
 #: ../turboui/src/Checklist/index.tsx:349
 #: ../turboui/src/Checklist/index.tsx:407
-#: ../turboui/src/CommentSection/CommentInput.tsx:263
-#: ../turboui/src/CommentSection/CommentItem.tsx:400
+#: ../turboui/src/CommentSection/CommentInput.tsx:270
+#: ../turboui/src/CommentSection/CommentItem.tsx:404
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:37
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:46
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
@@ -8315,19 +8315,19 @@ msgid "Comment not deleted"
 msgstr "Kommentar nicht gelöscht"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:74
-#: ../turboui/src/CommentSection/CommentInput.tsx:91
-#: ../turboui/src/CommentSection/CommentInput.tsx:97
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:91
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:100
+#: ../turboui/src/CommentSection/CommentInput.tsx:75
+#: ../turboui/src/CommentSection/CommentInput.tsx:92
+#: ../turboui/src/CommentSection/CommentInput.tsx:98
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:99
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
 msgid "Comment not posted"
 msgstr "Kommentar nicht veröffentlicht"
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentItem.tsx:374
-#: ../turboui/src/InlineComments/Thread.tsx:57
+#: ../turboui/src/InlineComments/Thread.tsx:59
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:84
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:109
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:117
 msgid "Comment not updated"
 msgstr "Kommentar nicht aktualisiert"
 
@@ -8365,6 +8365,7 @@ msgstr "Kommentare und Aufgabenupdates erscheinen hier"
 
 #.frontend
 #: ../turboui/src/InlineComments/CommentsPanel.tsx:138
+#: ../turboui/src/InlineComments/Thread.tsx:263
 msgid "Comments could not be loaded."
 msgstr "Die Kommentare konnten nicht geladen werden."
 
@@ -10563,7 +10564,7 @@ msgstr "Frühere Version"
 #: ../turboui/src/Checklist/index.tsx:548
 #: ../turboui/src/CommentSection/CommentItem.tsx:271
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:68
-#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:256
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:287
 #: ../turboui/src/GoalTargetList/EditButton.tsx:24
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:109
@@ -12644,7 +12645,7 @@ msgid "Hide completed"
 msgstr "Abgeschlossene ausblenden"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:294
+#: ../turboui/src/CommentSection/CommentInput.tsx:301
 msgid "Hide list"
 msgstr "Liste ausblenden"
 
@@ -12670,7 +12671,7 @@ msgid "History"
 msgstr "Verlauf"
 
 #.frontend
-#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:262
+#: ../turboui/src/DocumentPage/InlineComments.stories.tsx:293
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:93
 #: assets/js/pages/ResourceHubDocumentPage/Options.tsx:60
 #: assets/js/pages/ResourceHubDocumentVersionComparisonPage/navigation.tsx:18
@@ -16792,9 +16793,9 @@ msgid "Please try again"
 msgstr "Versuche es erneut"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:91
+#: ../turboui/src/CommentSection/CommentInput.tsx:92
 #: ../turboui/src/CommentSection/CommentItem.tsx:226
-#: ../turboui/src/InlineComments/Thread.tsx:57
+#: ../turboui/src/InlineComments/Thread.tsx:59
 #: ../turboui/src/Reactions/index.tsx:59
 #: ../turboui/src/Reactions/index.tsx:205
 #: assets/js/models/people/usePeopleSearchError.ts:7
@@ -16833,7 +16834,7 @@ msgid "Please wait…"
 msgstr "Bitte warten …"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:259
+#: ../turboui/src/CommentSection/CommentInput.tsx:266
 #: assets/js/pages/DiscussionNewPage/index.tsx:56
 msgid "Post"
 msgstr "Veröffentlichen"
@@ -18107,7 +18108,7 @@ msgid "Renews"
 msgstr "Verlängert sich"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:256
+#: ../turboui/src/InlineComments/Thread.tsx:349
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:155
 #: ../turboui/src/MilestonePage/index.tsx:376
 msgid "Reopen"
@@ -18261,13 +18262,13 @@ msgid "Reset your password"
 msgstr "Setze dein Passwort zurück"
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:256
+#: ../turboui/src/InlineComments/Thread.tsx:349
 msgid "Resolve"
 msgstr "Erledigen"
 
 #.frontend
 #: ../turboui/src/InlineComments/CommentsPanel.tsx:93
-#: ../turboui/src/InlineComments/Thread.tsx:107
+#: ../turboui/src/InlineComments/Thread.tsx:126
 msgid "Resolved"
 msgstr "Erledigt"
 
@@ -18826,7 +18827,7 @@ msgstr "Speichern"
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:155
 #: ../turboui/src/AccountSettingsPage/index.tsx:89
-#: ../turboui/src/CommentSection/CommentItem.tsx:397
+#: ../turboui/src/CommentSection/CommentItem.tsx:401
 #: ../turboui/src/DocumentEditPage/index.tsx:84
 #: ../turboui/src/ProfileEditPage/index.tsx:142
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:446
@@ -19707,6 +19708,13 @@ msgstr "Tabellenblatt"
 #: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:72
 msgid "Short ID"
 msgstr "Kurz-ID"
+
+#.frontend
+#: ../turboui/src/InlineComments/Thread.tsx:259
+msgid "Show %{count} earlier reply"
+msgid_plural "Show %{count} earlier replies"
+msgstr[0] "%{count} frühere Antwort anzeigen"
+msgstr[1] "%{count} frühere Antworten anzeigen"
 
 #.frontend
 #: ../turboui/src/ActivityTaskList/index.tsx:50
@@ -21887,19 +21895,19 @@ msgstr "Dieser Code ist abgelaufen. Fordere einen neuen Code an, um fortzufahren
 #~ msgstr "Dieser Kommentarverlauf ist nicht mehr verfügbar."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:337
+#: ../turboui/src/CommentSection/CommentInput.tsx:344
 msgid "This comment will notify %{first} and %{second}"
 msgstr "Dieser Kommentar benachrichtigt %{first} und %{second}"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:349
+#: ../turboui/src/CommentSection/CommentInput.tsx:356
 msgid "This comment will notify %{first}, %{second}, and 1 other."
 msgid_plural "This comment will notify %{first}, %{second}, and %{count} others."
 msgstr[0] "Dieser Kommentar benachrichtigt %{first}, %{second} und 1 weitere Person."
 msgstr[1] "Dieser Kommentar benachrichtigt %{first}, %{second} und %{count} weitere Personen."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:328
+#: ../turboui/src/CommentSection/CommentInput.tsx:335
 msgid "This comment will notify %{name}"
 msgstr "Dieser Kommentar benachrichtigt %{name}"
 
@@ -22214,7 +22222,7 @@ msgid "This package was exported from Operately %{manifestVersion}, but this ins
 msgstr "Dieses Datenpaket wurde aus Operately %{manifestVersion} exportiert, aber diese Instanz verwendet %{currentVersion}. Der Importfehler könnte mit den Versionsunterschieden zusammenhängen."
 
 #.frontend
-#: ../turboui/src/InlineComments/Thread.tsx:109
+#: ../turboui/src/InlineComments/Thread.tsx:128
 msgid "This passage is no longer available."
 msgstr "Diese Textstelle ist nicht mehr verfügbar."
 
@@ -22496,17 +22504,17 @@ msgid "Timezone"
 msgstr "Zeitzone"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:320
+#: ../turboui/src/CommentSection/CommentInput.tsx:327
 msgid "Tip: @-mention someone to notify them about this milestone."
 msgstr "Tipp: Erwähne jemanden mit @, um diese Person über diesen Meilenstein zu benachrichtigen."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:319
+#: ../turboui/src/CommentSection/CommentInput.tsx:326
 msgid "Tip: @-mention someone to notify them about this task."
 msgstr "Tipp: Erwähne jemanden mit @, um diese Person über diese Aufgabe zu benachrichtigen."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:302
+#: ../turboui/src/CommentSection/CommentInput.tsx:309
 msgid "Tip: Subscribe if you want notifications too."
 msgstr "Tipp: Abonniere die Benachrichtigungen, wenn du sie auch erhalten möchtest."
 
@@ -23353,7 +23361,7 @@ msgid "Uploading files will be blocked once the storage limit is reached."
 msgstr "Das Hochladen von Dateien wird gesperrt, sobald das Speicherlimit erreicht ist."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:259
+#: ../turboui/src/CommentSection/CommentInput.tsx:266
 #: ../turboui/src/Forms/Submit.tsx:26
 msgid "Uploading..."
 msgstr "Wird hochgeladen …"
@@ -23776,7 +23784,7 @@ msgid "View access"
 msgstr "Lesezugriff"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:294
+#: ../turboui/src/CommentSection/CommentInput.tsx:301
 msgid "View all"
 msgstr "Alle ansehen"
 
@@ -24335,8 +24343,8 @@ msgid "Workflow not updated"
 msgstr "Arbeitsablauf nicht aktualisiert"
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:142
-#: ../turboui/src/CommentSection/CommentInput.tsx:172
+#: ../turboui/src/CommentSection/CommentInput.tsx:148
+#: ../turboui/src/CommentSection/CommentInput.tsx:178
 msgid "Write a comment here..."
 msgstr "Schreibe hier einen Kommentar …"
 
@@ -24842,12 +24850,12 @@ msgid "Your current email stays active until you confirm this code."
 msgstr "Deine aktuelle E-Mail-Adresse bleibt aktiv, bis du diesen Code bestätigst."
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:74
-#: ../turboui/src/CommentSection/CommentInput.tsx:97
+#: ../turboui/src/CommentSection/CommentInput.tsx:75
+#: ../turboui/src/CommentSection/CommentInput.tsx:98
 #: ../turboui/src/CommentSection/CommentItem.tsx:374
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:91
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:100
-#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:109
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:99
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:108
+#: assets/js/pages/ResourceHubDocumentPage/useInlineComments.ts:117
 msgid "Your draft has been kept for retry."
 msgstr "Dein Entwurf wurde für einen erneuten Versuch beibehalten."
 

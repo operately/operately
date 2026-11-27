@@ -1846,6 +1846,7 @@ export interface InlineThread {
   insertedAt: string;
   anchor: InlineAnchor;
   messages: Comment[];
+  earlierReplyCount: number;
 }
 
 export interface InviteLink {
@@ -3354,12 +3355,12 @@ export type RichTextResourceType =
   | "milestone"
   | "document"
   | "kpi"
+  | "space_discussion"
   | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"
   | "goal_check_in"
-  | "space_discussion"
   | "comment"
   | "person"
   | "project_template"

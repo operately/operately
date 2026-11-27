@@ -1,5 +1,7 @@
 defmodule Operately.Support.Api.InlineThreads do
+  alias Operately.Repo
   alias Operately.Support.{Factory, RichText}
+  alias Operately.Updates.Comment
 
   def setup(ctx) do
     ctx |> Factory.setup() |> add_document()
@@ -28,6 +30,19 @@ defmodule Operately.Support.Api.InlineThreads do
   def create(ctx) do
     {200, %{thread: thread}} = OperatelyWeb.TurboCase.mutation(ctx.conn, [:inline_threads, :create], inputs(ctx))
     Map.put(ctx, :thread, thread)
+  end
+
+  def add_reply(ctx, number) do
+    base_time = Repo.get!(Comment, Operately.ShortUuid.decode!(hd(ctx.thread.messages).id)).inserted_at
+
+    Comment.changeset(%{
+      entity_id: Operately.ShortUuid.decode!(ctx.thread.id),
+      entity_type: :inline_thread,
+      author_id: ctx.creator.id,
+      content: RichText.rich_text("Reply #{number}")
+    })
+    |> Ecto.Changeset.put_change(:inserted_at, NaiveDateTime.add(base_time, number))
+    |> Repo.insert!()
   end
 
   def as_member(ctx, level) do

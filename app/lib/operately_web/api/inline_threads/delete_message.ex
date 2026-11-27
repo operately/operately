@@ -25,7 +25,10 @@ defmodule OperatelyWeb.Api.InlineThreads.DeleteMessage do
       if ctx.message.author_id == ctx.me.id, do: {:ok, :allowed}, else: {:error, :forbidden}
     end)
     |> run(:operation, fn ctx -> InlineThreadMessageDeleting.run(ctx.me, ctx.thread, ctx.message) end)
-    |> run(:serialized, fn ctx -> {:ok, %{thread: Serializer.serialize(ctx.operation, level: :full)}} end)
+    |> run(:serialized, fn ctx ->
+      thread = InlineThread.preview_loaded_thread(ctx.operation)
+      {:ok, %{thread: Serializer.serialize(thread, level: :full)}}
+    end)
     |> respond()
   end
 

@@ -109,7 +109,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
     if (!showAll) contentRef.current?.focus();
   };
 
-  // Open a reply only for explicit selection, not after creation or following a link.
+  // Track explicit selection so the mobile panel can open its reply editor.
   const selectThread = (id: string | null) => {
     setReplyThreadId(id);
     props?.onSelectThread(id);

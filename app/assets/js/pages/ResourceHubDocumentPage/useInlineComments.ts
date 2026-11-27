@@ -32,8 +32,14 @@ export function useDocumentInlineComments(document: ResourceHubDocument): Docume
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "resource_hub", id: document.resourceHubId } });
   const formattedTimePreferences = useFormattedTimePreferences();
 
-  const { enabled, input, threads, loading, error, reload } = useDocumentInlineThreads(document);
   const activeThreadId = new URLSearchParams(location.search).get("inlineThread");
+  const messageId = location.hash.slice(1);
+  const linkedMessage =
+    activeThreadId && messageId && location.state?.selectedInlineThread !== activeThreadId
+      ? { threadId: activeThreadId, messageId }
+      : null;
+  const { enabled, input, threads, loading, error, reload, earlierRepliesStatus, showEarlierReplies } =
+    useDocumentInlineThreads(document, linkedMessage);
 
   const selectThread = (id: string | null) => {
     // Ignore callbacks captured before navigation or unmount, including a later visit to the same URL.
@@ -46,7 +52,7 @@ export function useDocumentInlineComments(document: ResourceHubDocument): Docume
     else search.delete("inlineThread");
     navigate(
       { pathname: location.pathname, search: search.toString(), hash: location.hash },
-      { replace: true, preventScrollReset: true },
+      { replace: true, preventScrollReset: true, state: { ...location.state, selectedInlineThread: id } },
     );
   };
   const getThreadLink = (id: string, messageId?: string) => {
@@ -73,6 +79,8 @@ export function useDocumentInlineComments(document: ResourceHubDocument): Docume
     getProfileLink: (personId) => paths.profilePath(personId),
     getThreadLink,
     onSelectThread: selectThread,
+    onShowEarlierReplies: showEarlierReplies,
+    earlierRepliesStatus,
     onReload: reload,
     onCreate: async (selection, content) => {
       try {

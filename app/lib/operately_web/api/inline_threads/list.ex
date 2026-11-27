@@ -22,7 +22,8 @@ defmodule OperatelyWeb.Api.InlineThreads.List do
     |> run(:published, fn ctx -> check_published(ctx.document) end)
     |> run(:permissions, fn ctx -> Permissions.check(ctx.document.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
     |> run(:threads, fn ctx ->
-      {:ok, InlineThread.list(ctx.me, resource_id: ctx.document.id, opts: [order_by: [asc: :inserted_at, asc: :id]] ++ InlineThread.read_options())}
+      threads = InlineThread.list(ctx.me, resource_id: ctx.document.id, opts: [order_by: [asc: :inserted_at, asc: :id]] ++ InlineThread.preview_options())
+      {:ok, InlineThread.load_previews(threads)}
     end)
     |> run(:serialized, fn ctx -> {:ok, %{threads: Serializer.serialize(ctx.threads, level: :full)}} end)
     |> respond()
