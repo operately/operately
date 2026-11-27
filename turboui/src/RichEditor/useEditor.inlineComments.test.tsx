@@ -2,6 +2,9 @@ import type { Editor } from "@tiptap/core";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { useEditor } from "./useEditor";
 import { inlineCommentsKey } from "./extensions/InlineComments";
+import { CellSelection } from "@tiptap/pm/tables";
+import { createRequire } from "node:module";
+import { assertPresent } from "../utils/assertions";
 
 const handlers = {
   mentionedPersonLookup: async () => null,
@@ -9,6 +12,65 @@ const handlers = {
   uploadFile: async () => ({ id: "file", url: "https://example.com/file" }),
 };
 const content = { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Hello world" }] }] };
+const tableContent = {
+  type: "doc",
+  content: [
+    {
+      type: "table",
+      content: [
+        {
+          type: "tableRow",
+          content: ["First cell", "Second cell"].map((text) => ({
+            type: "tableCell",
+            content: [{ type: "paragraph", content: [{ type: "text", text }] }],
+          })),
+        },
+      ],
+    },
+  ],
+};
+
+it("keeps table selection and comment decorations compatible through thread and editor updates", async () => {
+  const { result, rerender } = renderHook(
+    ({ ranges, activeThreadId }) =>
+      useEditor({ handlers, editable: false, content: tableContent, inlineComments: { ranges, activeThreadId } }),
+    {
+      initialProps: { ranges: [] as { id: string; from: number; to: number }[], activeThreadId: null as string | null },
+    },
+  );
+  await waitFor(() => expect(result.current.editor).not.toBeNull());
+  const editor: Editor = result.current.editor;
+  const original = editor.getJSON();
+  const cells: number[] = [];
+  editor.state.doc.descendants((node, pos) => {
+    if (node.type.name === "tableCell") cells.push(pos);
+  });
+  expect(cells).toHaveLength(2);
+  const first = cells[0];
+  const second = cells[1];
+  assertPresent(first);
+  assertPresent(second);
+  const ranges = [{ id: "table-thread", from: first + 2, to: first + 7 }];
+
+  act(() => editor.view.dispatch(editor.state.tr.setSelection(CellSelection.create(editor.state.doc, first, second))));
+  rerender({ ranges, activeThreadId: "table-thread" });
+  expect(inlineCommentsKey.getState(editor.state)?.ranges).toEqual(ranges);
+  expect(editor.view.dom.querySelector('[data-inline-thread="table-thread"]')?.className).toContain("bg-yellow-200");
+
+  rerender({ ranges: [...ranges], activeThreadId: null });
+  expect(editor.view.dom.querySelector('[data-inline-thread="table-thread"]')?.className).toContain("bg-yellow-100");
+  act(() => {
+    editor.commands.setTextSelection({ from: second + 2, to: second + 7 });
+    editor.setOptions({ editorProps: { attributes: { class: "updated-editor" } } });
+  });
+  expect(editor.state.selection).not.toBeInstanceOf(CellSelection);
+  expect(editor.view.dom.querySelectorAll("td")).toHaveLength(2);
+  expect(editor.getJSON()).toEqual(original);
+
+  const tableView = createRequire(require.resolve("prosemirror-tables"));
+  const editorView = createRequire(require.resolve("@tiptap/pm/view"));
+  expect(tableView.resolve("prosemirror-view")).toBe(editorView.resolve("prosemirror-view"));
+});
 
 it("external content and supplied ranges replace the baseline; callback and active changes preserve local mapping", async () => {
   const onSelectionChange = jest.fn();

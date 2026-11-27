@@ -52,6 +52,23 @@ const content = {
     },
   ],
 };
+const tableContent: JSONContent = {
+  type: "doc",
+  content: [
+    {
+      type: "table",
+      content: [
+        {
+          type: "tableRow",
+          content: ["Review the first cell", "Continue in the second cell"].map((text) => ({
+            type: "tableCell",
+            content: [{ type: "paragraph", content: [{ type: "text", text }] }],
+          })),
+        },
+      ],
+    },
+  ],
+};
 const paragraphStart = "Launch review".length + 3;
 const now = "2026-10-29T12:00:00Z";
 function makeThread(id: string, quote: string, message: string, resolved = false, unattached = false): InlineThread {
@@ -113,11 +130,12 @@ function Example({
   conflict = false,
   mobile = false,
   ownComment = false,
+  table = false,
   inlineCommentsEnabled = true,
 }) {
   const { t } = useTranslation();
   const [threads, setThreads] = React.useState(() =>
-    empty
+    empty || table
       ? []
       : initialThreads
           .filter((thread) => !unattachedOnly || thread.anchor.status === "unattached")
@@ -245,7 +263,7 @@ function Example({
         state="published"
         publishedAt={now}
         formattedTimePreferences={defaultFormattedTimePreferences}
-        content={JSON.stringify(content)}
+        content={JSON.stringify(table ? tableContent : content)}
         mentionedPersonLookup={handlers.mentionedPersonLookup}
         taskList={{ canEdit: false }}
         inlineComments={inlineCommentsEnabled ? inlineComments : undefined}
@@ -273,6 +291,7 @@ function Example({
 }
 
 export const Review: Story = { render: () => <Example /> };
+export const Table: Story = { render: () => <Example table /> };
 export const Scrollable: Story = {
   render: () => (
     <div className="flex flex-col h-screen">
