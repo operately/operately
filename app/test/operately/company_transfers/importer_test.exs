@@ -811,6 +811,34 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert imported_activity.content["new_champion_id"] == missing_champion_id
   end
 
+  test "run/1 imports messages with their translated board, project, and goal owners", ctx do
+    alias Operately.Messages.{Message, MessagesBoard}
+    alias Operately.MessagesFixtures
+
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_messages_board(:board, :space, name: "Team discussions")
+      |> Factory.add_message(:space_message, :board)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_goal(:goal, :space)
+
+    project_message = MessagesFixtures.message_fixture(ctx.creator.id, nil, project_id: ctx.project.id, title: "Project discussion")
+    goal_message = MessagesFixtures.message_fixture(ctx.creator.id, nil, goal_id: ctx.goal.id, title: "Goal discussion")
+
+    assert {:ok, import_run} = export_and_stage_import(ctx)
+    assert {:ok, imported} = Importer.run(import_run)
+
+    space = Repo.get_by!(Operately.Groups.Group, company_id: imported.company_id, name: ctx.space.name)
+    board = Repo.get_by!(MessagesBoard, space_id: space.id, name: ctx.board.name)
+    project = Repo.get_by!(Project, company_id: imported.company_id, name: ctx.project.name)
+    goal = Repo.get_by!(Goal, company_id: imported.company_id, name: ctx.goal.name)
+
+    assert Repo.get_by!(Message, messages_board_id: board.id).title == ctx.space_message.title
+    assert Repo.get_by!(Message, project_id: project.id).title == project_message.title
+    assert Repo.get_by!(Message, goal_id: goal.id).title == goal_message.title
+  end
+
   test "run/1 fails when a message author_id cannot be translated", ctx do
     ctx =
       ctx

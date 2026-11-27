@@ -29,7 +29,7 @@ defmodule OperatelyWeb.Api.RichContent.Resources do
     me = Api.Helpers.me(conn)
 
     with true <- field == expected_field,
-         {:ok, record} <- schema.get(me, id: id),
+         {:ok, record} <- schema.get(me, id: id, opts: [getter_profile: getter_profile(type)]),
          {:ok, _} <- check_permission(conn, type, record, permissions, permission),
          {:ok, _} <- check_draft(type, record, me),
          {:ok, record} <- prepare(type, record) do
@@ -123,6 +123,9 @@ defmodule OperatelyWeb.Api.RichContent.Resources do
   defp check_permission(conn, _type, record, permissions, permission) do
     permissions.check(record.request_info.access_level, permission, company_read_only: Api.Helpers.company_read_only(conn))
   end
+
+  defp getter_profile(:space_discussion), do: :space_discussion
+  defp getter_profile(_type), do: :default
 
   defp prepare(type, record) when type in [:project_discussion, :goal_discussion] do
     record = Repo.preload(record, :activity)

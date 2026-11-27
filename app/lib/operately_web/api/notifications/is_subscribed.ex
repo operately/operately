@@ -51,7 +51,7 @@ defmodule OperatelyWeb.Api.Notifications.IsSubscribed do
         Operately.Projects.Retrospective.get(ctx.me, id: resource_id)
 
       :message ->
-        Operately.Messages.Message.get(ctx.me, id: resource_id)
+        Operately.Messages.Message.get(ctx.me, id: resource_id, opts: [getter_profile: :space_discussion])
 
       :resource_hub_document ->
         Operately.ResourceHubs.Document.get(ctx.me, id: resource_id)

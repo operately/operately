@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Wrappers.Notifications.ResourceSubscription do
 
   def resolve(me, %{resource_id: id, resource_type: type}) do
     with {:ok, module} <- resource_module(type),
-         {:ok, resource} <- module.get(me, id: id, opts: [preload: :subscription_list]),
+         {:ok, resource} <- module.get(me, id: id, opts: load_options(type)),
          %{id: list_id, parent_type: parent_type} <- resource.subscription_list,
          true <- parent_type == subscription_parent_type(type) do
       {:ok, list_id}
@@ -28,6 +28,9 @@ defmodule OperatelyWeb.Api.Wrappers.Notifications.ResourceSubscription do
       _ -> {:error, :not_found}
     end
   end
+
+  defp load_options(:message), do: [getter_profile: :space_discussion, preload: :subscription_list]
+  defp load_options(_type), do: [preload: :subscription_list]
 
   defp resource_module(type) do
     case Keyword.fetch(@resource_modules, type) do

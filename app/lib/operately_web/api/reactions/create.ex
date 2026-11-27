@@ -61,7 +61,7 @@ defmodule OperatelyWeb.Api.Reactions.Create do
       :project_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
       :goal_update -> Update.get(person, id: id)
       :goal_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
-      :message -> Message.get(person, id: id)
+      :message -> Message.get(person, id: id, opts: [getter_profile: :space_discussion])
       :comment -> Updates.get_comment_with_access_level(id, person.id, parent_type)
       :resource_hub_document -> Document.get(person, id: id)
       :resource_hub_file -> File.get(person, id: id)
