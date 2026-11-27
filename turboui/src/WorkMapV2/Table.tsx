@@ -197,10 +197,7 @@ function Detail({
     case "status":
       return (
         <td className={phone ? "px-1" : "px-3"}>
-          <StatusBadge
-            status={status}
-            className="max-w-full !whitespace-normal border-transparent shadow-none dark:border-transparent"
-          />
+          <StatusBadge status={status} className="max-w-full !whitespace-normal" />
         </td>
       );
     case "progress":
