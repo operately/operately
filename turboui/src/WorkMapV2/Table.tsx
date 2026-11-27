@@ -196,7 +196,7 @@ function Detail({
   switch (column) {
     case "status":
       return (
-        <td className={phone ? "px-1" : "px-3"}>
+        <td data-test-id="work-map-status" className={phone ? "px-1" : "px-3"}>
           <StatusBadge status={status} className="max-w-full !whitespace-normal" />
         </td>
       );

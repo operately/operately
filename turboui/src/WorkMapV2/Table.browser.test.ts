@@ -7,10 +7,7 @@ test("Work Map status badges have a visible border", async () => {
   const url = new URL("iframe.html?id=pages-work-map-v2--active-work&viewMode=story", process.env.TARGET_URL);
   await page.goto(url.href);
 
-  const row = page.getByRole("row").filter({
-    has: page.getByRole("rowheader", { name: "Grow adoption among engineering teams" }),
-  });
-  const badge = row.getByRole("cell").first().locator("span").first();
+  const badge = page.locator('[data-test-id="work-map-status"] > span').first();
   const { color, width } = await badge.evaluate((element) => {
     const style = getComputedStyle(element);
     return { color: style.borderTopColor, width: style.borderTopWidth };
