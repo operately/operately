@@ -1,22 +1,19 @@
 import Api from "@/api";
 import { queryClient, useLoadedQuery } from "@/api/queryClient";
-import { hashKey, useQueryClient, type QueryKey } from "@tanstack/react-query";
+import { useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { assertPresent } from "@/utils/assertions";
 
-interface CompanyQueryContext {
-  basePath: string;
-  headers: Record<string, string>;
-}
+import {
+  captureCompanyQueryContext,
+  isCurrentContext,
+  scopeCompanyQuery,
+  type CompanyQueryContext,
+} from "./companyQueryContext";
 
 export function companyLayoutInputs() {
-  const context: CompanyQueryContext = {
-    basePath: Api.default.getBasePath(),
-    headers: { ...Api.default.getHeaders() },
-  };
-
   return {
-    context,
+    context: captureCompanyQueryContext(),
     companyInput: { includeOwners: true, includePermissions: true },
     spacesInput: { accessLevel: "edit_access" as const },
     siteMessagesInput: {},
@@ -26,34 +23,28 @@ export function companyLayoutInputs() {
 
 type CompanyLayoutInputs = ReturnType<typeof companyLayoutInputs>;
 
-function isCurrentContext(context: CompanyQueryContext) {
-  return (
-    context.basePath === Api.default.getBasePath() && hashKey([context.headers]) === hashKey([Api.default.getHeaders()])
-  );
-}
-
 /** Keep outgoing layout observers on their cached company until navigation commits. */
-function scopedOptions<T extends { queryKey: readonly unknown[] }>(options: T, context: CompanyQueryContext) {
+function layoutQueryOptions<T extends { queryKey: readonly unknown[] }>(options: T, context: CompanyQueryContext) {
   return {
-    ...options,
-    queryKey: [options.queryKey[0], context.basePath, context.headers, ...options.queryKey.slice(3)] as T["queryKey"],
+    ...scopeCompanyQuery(options, context),
     // The loader already fetched this key, including when the mounted layout changes company.
     staleTime: Infinity,
     refetchOnWindowFocus: "always" as const,
     refetchOnReconnect: "always" as const,
     retryOnMount: false,
-    // Evaluated at fetch time, including focus and invalidation before React rerenders.
-    enabled: () => isCurrentContext(context),
   };
 }
 
 function companyLayoutOptions(inputs: CompanyLayoutInputs) {
   return {
-    company: scopedOptions(Api.companies.getQueryOptions(inputs.companyInput), inputs.context),
-    spaces: scopedOptions(Api.spaces.countByAccessLevelQueryOptions(inputs.spacesInput), inputs.context),
-    siteMessages: scopedOptions(Api.site_messages.listActiveQueryOptions(inputs.siteMessagesInput), inputs.context),
+    company: layoutQueryOptions(Api.companies.getQueryOptions(inputs.companyInput), inputs.context),
+    spaces: layoutQueryOptions(Api.spaces.countByAccessLevelQueryOptions(inputs.spacesInput), inputs.context),
+    siteMessages: layoutQueryOptions(
+      Api.site_messages.listActiveQueryOptions(inputs.siteMessagesInput),
+      inputs.context,
+    ),
     billing: {
-      ...scopedOptions(Api.billing.getAccessStateQueryOptions(inputs.billingInput ?? {}), inputs.context),
+      ...layoutQueryOptions(Api.billing.getAccessStateQueryOptions(inputs.billingInput ?? {}), inputs.context),
       enabled: () => inputs.billingInput !== null && isCurrentContext(inputs.context),
     },
   };
@@ -115,7 +106,7 @@ export function useRefreshCompanyLayout(inputs: CompanyLayoutInputs) {
     if (inputs.billingInput !== null) {
       keys.push(options.billing.queryKey);
       // Router revalidation also refreshed the billing page on webhook updates.
-      keys.push(scopedOptions(Api.billing.getQueryOptions({}), inputs.context).queryKey);
+      keys.push(layoutQueryOptions(Api.billing.getQueryOptions({}), inputs.context).queryKey);
     }
 
     await Promise.all(
