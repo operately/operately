@@ -1,7 +1,11 @@
 import type { Editor } from "@tiptap/core";
-import { act, renderHook, waitFor } from "@testing-library/react";
+import React from "react";
+import { CellSelection } from "@tiptap/pm/tables";
+import { act, render, renderHook, waitFor } from "@testing-library/react";
 import { useEditor } from "./useEditor";
 import { inlineCommentsKey } from "./extensions/InlineComments";
+import { EditorContext, TipTapEditorContent } from "./EditorContext";
+import { assertPresent } from "../utils/assertions";
 
 const handlers = {
   mentionedPersonLookup: async () => null,
@@ -117,4 +121,57 @@ it.each([true, false])("exposes working inline comment commands (initially enabl
   rerender({ enabled: false });
   expect(editor.can().setInlineCommentRanges([])).toBe(false);
   expect(editor.can().setActiveInlineThread("a")).toBe(false);
+});
+
+it("keeps a table selection and inline highlight usable through content unmount", async () => {
+  const tableContent = {
+    type: "doc",
+    content: [
+      {
+        type: "table",
+        content: [
+          {
+            type: "tableRow",
+            content: ["First cell", "Second cell"].map((text) => ({
+              type: "tableCell",
+              content: [{ type: "paragraph", content: [{ type: "text", text }] }],
+            })),
+          },
+        ],
+      },
+    ],
+  };
+  const editorRef: { current: Editor | null } = { current: null };
+  function Reader() {
+    const state = useEditor({
+      handlers,
+      editable: false,
+      content: tableContent,
+      inlineComments: { ranges: [{ id: "thread", from: 4, to: 9 }] },
+    });
+    editorRef.current = state.editor;
+    return <EditorContext.Provider value={state}>{state.editor && <TipTapEditorContent />}</EditorContext.Provider>;
+  }
+
+  const view = render(<Reader />);
+  await waitFor(() => expect(view.container.querySelector(".ProseMirror")).not.toBeNull());
+  expect(view.container.querySelector('[data-inline-thread="thread"]')).not.toBeNull();
+
+  const cells: number[] = [];
+  assertPresent(editorRef.current);
+  const activeEditor = editorRef.current;
+  activeEditor.state.doc.descendants((node, pos) => {
+    if (node.type.name === "tableCell") cells.push(pos);
+  });
+  const firstCell = cells[0];
+  assertPresent(firstCell);
+  const savedContent = activeEditor.getJSON();
+  act(() => {
+    activeEditor.view.dispatch(
+      activeEditor.state.tr.setSelection(CellSelection.create(activeEditor.state.doc, firstCell, firstCell)),
+    );
+  });
+  expect(view.container.querySelector(".selectedCell")).not.toBeNull();
+  expect(activeEditor.getJSON()).toEqual(savedContent);
+  view.unmount();
 });

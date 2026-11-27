@@ -279,6 +279,51 @@ test("select, post, reply, resolve, and reopen using the actual editor", async (
   assert.ok(page.url().includes("inlineThread=new-1"));
 });
 
+test("table selections and inline comments survive posting, closing, and another cell click", async () => {
+  const errors: Error[] = [];
+  page.on("pageerror", (error) => errors.push(error));
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await visit("table-review");
+
+  const cells = page.locator('.ProseMirror[contenteditable="false"] td');
+  const first = await cells.first().boundingBox();
+  const second = await cells.nth(1).boundingBox();
+  assert.ok(first && second);
+  await page.mouse.move(first.x + first.width / 2, first.y + first.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(second.x + second.width / 2, second.y + second.height / 2, { steps: 8 });
+  await page.mouse.up();
+  await page.locator(".selectedCell").first().waitFor();
+
+  await cells.first().evaluate((cell) => {
+    const text = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT).nextNode();
+    if (!text) throw new Error("Missing table cell text");
+    const range = document.createRange();
+    range.setStart(text, 0);
+    range.setEnd(text, 6);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  });
+  await page.locator('[data-test-id="inline-add-selection"]').click();
+  const composer = page.locator('[data-test-id="inline-new-thread"]');
+  await composer.locator('[contenteditable="true"]').fill("Review this cell.");
+  await composer.locator('[data-test-id="post-comment"]').click();
+  await composer.waitFor({ state: "detached" });
+
+  const thread = page.locator('[data-test-id="inline-thread-new-1"]');
+  await thread.waitFor();
+  await page.locator('[data-inline-thread="new-1"]').first().waitFor();
+  await page.locator('[data-test-id="document-page"]').click({ position: { x: 20, y: 20 } });
+  await page.waitForFunction(() => !new URL(window.location.href).searchParams.has("inlineThread"));
+  await cells.nth(1).click();
+  assert.equal(await cells.nth(1).evaluate((cell) => cell.contains(window.getSelection()?.anchorNode ?? null)), true);
+  await page.locator('[data-inline-thread="new-1"]').first().click();
+  await thread.waitFor();
+  assert.ok(page.url().includes("inlineThread=new-1"));
+  assert.deepEqual(errors, []);
+});
+
 test("opens resolved thread links directly", async () => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await visit("review", "resolved");
