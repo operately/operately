@@ -38,7 +38,7 @@ export function useDocumentInlineComments(document: ResourceHubDocument): Docume
     activeThreadId && messageId && location.state?.selectedInlineThread !== activeThreadId
       ? { threadId: activeThreadId, messageId }
       : null;
-  const { enabled, input, threads, loading, error, reload, earlierRepliesStatus, showEarlierReplies } =
+  const { enabled, input, threads, loading, refreshing, error, reload, earlierRepliesStatus, showEarlierReplies } =
     useDocumentInlineThreads(document, linkedMessage);
 
   const selectThread = (id: string | null) => {
@@ -71,6 +71,7 @@ export function useDocumentInlineComments(document: ResourceHubDocument): Docume
     canComment: Boolean(document.currentVersion && document.permissions?.canCommentOnDocument),
     activeThreadId,
     loading,
+    refreshing,
     error,
     pending: Object.values(mutations).some((mutation) => mutation.isPending),
     draftKey: `inline-comments:${company.id}:${me.id}:${document.id}`,

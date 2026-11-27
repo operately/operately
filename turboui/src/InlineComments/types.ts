@@ -14,6 +14,7 @@ export interface DocumentInlineCommentsProps {
   canComment: boolean;
   activeThreadId: string | null;
   loading: boolean;
+  refreshing?: boolean;
   error: boolean;
   pending?: boolean;
   draftKey: string;

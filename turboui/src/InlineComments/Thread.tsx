@@ -76,11 +76,12 @@ export function Thread({
     ];
   });
   const firstMessage = comments[0];
+  const earlierRepliesStatus = props.earlierRepliesStatus?.get(thread.id);
   const earlierReplies =
-    thread.earlierReplyCount > 0 ? (
+    thread.earlierReplyCount > 0 || earlierRepliesStatus ? (
       <EarlierReplies
         count={thread.earlierReplyCount}
-        status={props.earlierRepliesStatus?.get(thread.id)}
+        status={earlierRepliesStatus}
         onShow={() => props.onShowEarlierReplies(thread.id)}
       />
     ) : null;
@@ -253,16 +254,17 @@ function EarlierReplies({
   onShow: () => void;
 }) {
   const { t } = useTranslation();
+  const showCount = count > 0 && status !== "error";
   return (
     <div aria-busy={status === "loading"}>
       <ActionLink
-        aria-expanded={false}
+        aria-expanded={showCount ? false : undefined}
         disabled={status === "loading"}
         onClick={onShow}
         testId="inline-show-earlier-replies"
         underline="always"
       >
-        {tn("Show {{count}} earlier reply", "Show {{count}} earlier replies", count)}
+        {showCount ? tn("Show {{count}} earlier reply", "Show {{count}} earlier replies", count) : t("Retry")}
       </ActionLink>
       {status === "error" && (
         <p className="mt-2 text-xs text-content-error" role="alert">

@@ -163,7 +163,7 @@ it("notifies once and clears a missing thread without leaving an inline status o
   delete (window as Partial<Window>).matchMedia;
 });
 
-it.each(["loading", "error", "pending"] as const)(
+it.each(["loading", "refreshing", "error", "pending"] as const)(
   "waits until %s clears before reporting a missing thread",
   (state) => {
     const value = props({ activeThreadId: "deleted", threads: [] });
@@ -181,6 +181,18 @@ it("does not report an available resolved thread as missing", () => {
     <Harness value={props({ activeThreadId: thread.id, threads: [{ ...thread, resolvedAt: thread.insertedAt }] })} />,
   );
   expect(showInfoToast).not.toHaveBeenCalled();
+});
+
+it("offers a retry when refreshing an expanded thread fails", () => {
+  const value = props({
+    activeThreadId: thread.id,
+    earlierRepliesStatus: new Map([[thread.id, "error"]]),
+  });
+  render(<Harness value={value} />);
+
+  expect(screen.getByRole("alert")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+  expect(value.onShowEarlierReplies).toHaveBeenCalledWith(thread.id);
 });
 
 it.each(["content", "outside"])(

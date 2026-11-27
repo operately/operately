@@ -159,6 +159,78 @@ it("fetches a linked earlier reply so the reader can navigate directly to it", a
   expect(fetchThread).toHaveBeenCalledWith({ resourceId: document.id, threadId: thread.id });
 });
 
+it("keeps a thread link pending while the cached list refreshes", async () => {
+  const options = Api.inline_threads.listQueryOptions({
+    resourceType: "resource_hub_document",
+    resourceId: document.id,
+  });
+  client.setQueryData(options.queryKey, () => ({ threads: [] }));
+  let finishRefresh = (_value: { threads: InlineThread[] }) => {};
+  fetchThreads.mockReturnValueOnce(
+    new Promise((resolve) => {
+      finishRefresh = resolve;
+    }),
+  );
+  const refresh = client.fetchQuery(options);
+
+  const { result } = renderHook(() => useDocumentInlineComments(document), {
+    wrapper: Wrapper,
+    initialProps: undefined,
+  });
+  expect(result.current?.activeThreadId).toBe(thread.id);
+  expect(result.current?.loading).toBe(false);
+  expect(result.current?.refreshing).toBe(true);
+  await act(async () => {
+    finishRefresh({ threads: [thread] });
+    await refresh;
+  });
+  await waitFor(() => expect(result.current?.refreshing).toBe(false));
+  expect(result.current?.threads).toEqual([thread]);
+  expect(mockNavigate).not.toHaveBeenCalled();
+});
+
+it("keeps cached earlier replies and fresh messages when a refresh fails, then retries", async () => {
+  const reply = (id: string, text = id) => ({
+    __typename: "comment" as const,
+    id,
+    content: JSON.stringify({ type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text }] }] }),
+  });
+  const opening = reply("opening");
+  const older = reply("earlier");
+  const firstRecent = reply("first");
+  const secondRecent = reply("second");
+  const newest = reply("newest");
+  const cached = { ...thread, messages: [opening, older, firstRecent, secondRecent] };
+  const preview = { ...thread, earlierReplyCount: 1, messages: [opening, firstRecent, secondRecent] };
+  const updatedRecent = reply(secondRecent.id, "Edited reply");
+  const updatedPreview = { ...thread, earlierReplyCount: 2, messages: [opening, updatedRecent, newest] };
+  const updatedFull = { ...thread, messages: [opening, older, firstRecent, updatedRecent, newest] };
+  mockLocation = { ...mockLocation, hash: "" };
+  fetchThreads.mockResolvedValueOnce({ threads: [preview] }).mockResolvedValueOnce({ threads: [updatedPreview] });
+  fetchThread.mockResolvedValueOnce({ thread: cached }).mockRejectedValueOnce(new Error("Offline"));
+
+  const { result } = renderHook(() => useDocumentInlineComments(document), {
+    wrapper: Wrapper,
+    initialProps: undefined,
+  });
+  await waitFor(() => expect(result.current?.threads).toEqual([preview]));
+  act(() => result.current?.onShowEarlierReplies(thread.id));
+  await waitFor(() => expect(result.current?.threads).toEqual([cached]));
+
+  await act(async () => {
+    await client.invalidateQueries({ queryKey: Api.inline_threads.listQueryKeyPrefix() });
+    await client.invalidateQueries({ queryKey: Api.inline_threads.getQueryKeyPrefix() });
+  });
+  await waitFor(() => expect(result.current?.earlierRepliesStatus?.get(thread.id)).toBe("error"));
+  expect(result.current?.threads).toEqual([updatedFull]);
+
+  fetchThread.mockResolvedValueOnce({ thread: updatedFull });
+  act(() => result.current?.onShowEarlierReplies(thread.id));
+  await waitFor(() => expect(result.current?.earlierRepliesStatus?.has(thread.id)).toBe(false));
+  expect(result.current?.threads).toEqual([updatedFull]);
+  expect(fetchThread).toHaveBeenCalledTimes(3);
+});
+
 it("returns a version conflict and refreshes the document without navigating", async () => {
   const mutationFn = jest.fn(async () => {
     throw { isAxiosError: true, response: { data: { details: { reason: "version_conflict" } } } };

@@ -77,7 +77,7 @@ export function useInlineComments(props?: DocumentInlineCommentsProps) {
       notifiedMissingThread.current = null;
       return;
     }
-    if (props.loading || props.error || props.pending) return;
+    if (props.loading || props.refreshing || props.error || props.pending) return;
     if (props.threads.some((thread) => thread.id === props.activeThreadId)) return;
 
     const key = `${props.draftKey}:${props.activeThreadId}`;

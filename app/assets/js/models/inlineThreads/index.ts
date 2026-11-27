@@ -32,7 +32,11 @@ export function useDocumentInlineThreads(document: ResourceHubDocument, linkedMe
   const input = { resourceType: "resource_hub_document" as const, resourceId: document.id };
   const query = useLoadedQuery({ ...Api.inline_threads.listQueryOptions(input), enabled, throwOnError: false });
   const previews = query.isError || !enabled ? [] : (query.data?.threads ?? []);
-  const earlierReplies = useEarlierReplies(document.id, previews, linkedMessage);
+  const earlierReplies = useEarlierReplies(
+    document.id,
+    { threads: previews, updatedAt: query.dataUpdatedAt },
+    linkedMessage,
+  );
 
   // A separately refreshed thread list may be ahead of the displayed document.
   useEffect(() => {
@@ -43,10 +47,22 @@ export function useDocumentInlineThreads(document: ResourceHubDocument, linkedMe
   const reload = () =>
     Promise.all([client.invalidateQueries({ queryKey: Api.documents.getQueryKeyPrefix() }), query.refetch()]);
 
-  return { enabled, input, loading: query.isPending, error: query.isError, reload, ...earlierReplies };
+  return {
+    enabled,
+    input,
+    loading: query.isPending,
+    refreshing: query.fetchStatus !== "idle",
+    error: query.isError,
+    reload,
+    ...earlierReplies,
+  };
 }
 
-function useEarlierReplies(resourceId: string, previews: InlineThread[], linkedMessage: LinkedMessage | null) {
+function useEarlierReplies(
+  resourceId: string,
+  { threads: previews, updatedAt }: { threads: InlineThread[]; updatedAt: number },
+  linkedMessage: LinkedMessage | null,
+) {
   const [revealed, setRevealed] = useState<{ resourceId: string; threadIds: string[] }>();
   const revealedIds = revealed?.resourceId === resourceId ? revealed.threadIds : [];
   const expanded = previews.filter((thread) => {
@@ -68,13 +84,14 @@ function useEarlierReplies(resourceId: string, previews: InlineThread[], linkedM
   const earlierRepliesStatus = new Map<string, "loading" | "error">();
   const threads = previews.map((preview) => {
     const query = expandedQueries.get(preview.id);
-    if (query?.data) {
-      return { ...preview, messages: query.data.thread.messages, earlierReplyCount: 0 };
-    }
+    if (!query) return preview;
+    if (query.isFetching && (!query.data || query.isError)) earlierRepliesStatus.set(preview.id, "loading");
+    else if (query.isError) earlierRepliesStatus.set(preview.id, "error");
+    if (!query.data) return preview;
 
-    if (query?.isFetching) earlierRepliesStatus.set(preview.id, "loading");
-    else if (query?.isError) earlierRepliesStatus.set(preview.id, "error");
-    return preview;
+    const { messages } = query.data.thread;
+    if (query.isError && updatedAt >= query.dataUpdatedAt) return mergeCachedReplies(preview, messages);
+    return { ...preview, messages, earlierReplyCount: 0 };
   });
 
   const showEarlierReplies = (threadId: string) => {
@@ -87,4 +104,23 @@ function useEarlierReplies(resourceId: string, previews: InlineThread[], linkedM
   };
 
   return { threads, earlierRepliesStatus, showEarlierReplies };
+}
+
+function mergeCachedReplies(preview: InlineThread, cached: InlineThread["messages"]): InlineThread {
+  const [opening, ...recent] = preview.messages;
+  if (!opening) return preview;
+
+  const openingIndex = cached.findIndex((message) => message.id === opening.id);
+  if (openingIndex < 0) return preview;
+
+  // The preview supplies the current opening and newest replies. Use the cache for the gap.
+  const recentIndex = cached.findIndex((message) => recent.some((reply) => reply.id === message.id));
+  const earlier = cached.slice(openingIndex + 1, recentIndex < 0 ? undefined : recentIndex);
+  if (earlier.length > preview.earlierReplyCount) return preview;
+
+  return {
+    ...preview,
+    messages: [opening, ...earlier, ...recent],
+    earlierReplyCount: preview.earlierReplyCount - earlier.length,
+  };
 }
