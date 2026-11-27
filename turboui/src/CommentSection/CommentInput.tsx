@@ -22,6 +22,7 @@ interface CommentInputActiveProps extends CommentInputProps {
 
 interface CommentInputInactiveProps {
   currentUser: Person;
+  compact?: boolean;
   onClick: () => void;
 }
 
@@ -122,6 +123,7 @@ export function CommentInput({
   return (
     <CommentInputInactive
       currentUser={currentUser}
+      compact={compact}
       onClick={() => {
         setScrollOnOpen(true);
         startComment();
@@ -130,15 +132,19 @@ export function CommentInput({
   );
 }
 
-function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProps) {
+function CommentInputInactive({ currentUser, compact, onClick }: CommentInputInactiveProps) {
   const { t } = useTranslation();
+  const layout = compact
+    ? "px-3 py-2 mt-2 rounded-lg border border-surface-outline text-content-dimmed"
+    : "py-4 sm:py-6 not-first:border-t border-stroke-base";
+
   return (
     <UnstyledButton
-      className="w-full text-left py-4 sm:py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
+      className={`w-full text-left cursor-pointer flex items-center gap-3 ${layout}`}
       testId="add-comment"
       onClick={onClick}
     >
-      <Avatar person={currentUser} size="normal" />
+      <Avatar person={currentUser} size={compact ? "small" : "normal"} />
       {t("Write a comment here...")}
     </UnstyledButton>
   );
@@ -240,6 +246,7 @@ function CommentInputActive({
       ref={composerRef}
       className="py-6 not-first:border-t border-stroke-base flex items-start gap-3"
       data-test-id="new-comment-form"
+      data-has-comment-draft={!editor.empty || undefined}
       aria-busy={pending}
     >
       <Avatar person={currentUser} size="normal" />

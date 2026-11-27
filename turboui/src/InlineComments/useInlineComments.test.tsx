@@ -72,6 +72,7 @@ const thread: InlineThread = {
   resolvedBy: null,
   insertedAt: "2026-10-29T12:00:00Z",
   messages: [],
+  earlierReplyCount: 0,
   anchor: {
     __typename: "inline_anchor",
     sourceVersion: 1,
@@ -101,6 +102,7 @@ function props(overrides: Partial<DocumentInlineCommentsProps> = {}): DocumentIn
     getProfileLink: () => "#",
     getThreadLink: () => "#",
     onSelectThread: jest.fn(),
+    onShowEarlierReplies: jest.fn(),
     onReload: jest.fn(),
     onCreate: jest.fn(async () => "ok" as const),
     onReply: jest.fn(),
@@ -161,7 +163,7 @@ it("notifies once and clears a missing thread without leaving an inline status o
   delete (window as Partial<Window>).matchMedia;
 });
 
-it.each(["loading", "error", "pending"] as const)(
+it.each(["loading", "refreshing", "error", "pending"] as const)(
   "waits until %s clears before reporting a missing thread",
   (state) => {
     const value = props({ activeThreadId: "deleted", threads: [] });
@@ -179,6 +181,18 @@ it("does not report an available resolved thread as missing", () => {
     <Harness value={props({ activeThreadId: thread.id, threads: [{ ...thread, resolvedAt: thread.insertedAt }] })} />,
   );
   expect(showInfoToast).not.toHaveBeenCalled();
+});
+
+it("offers a retry when refreshing an expanded thread fails", () => {
+  const value = props({
+    activeThreadId: thread.id,
+    earlierRepliesStatus: new Map([[thread.id, "error"]]),
+  });
+  render(<Harness value={value} />);
+
+  expect(screen.getByRole("alert")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+  expect(value.onShowEarlierReplies).toHaveBeenCalledWith(thread.id);
 });
 
 it.each(["content", "outside"])(
@@ -336,7 +350,7 @@ it("opens resolved deep links and exposes overlapping threads without choosing o
   expect(document.querySelector('[data-test-id="inline-select-resolved"]')).toBeVisible();
 });
 
-it("activates the reply input when clicking the highlight of a thread opened through a link", () => {
+it("keeps the reply editor closed when clicking a highlight after following a thread link", () => {
   const value = props({ activeThreadId: thread.id });
   render(<Harness value={value} />);
   expect(screen.queryByRole("textbox")).toBeNull();
@@ -344,7 +358,8 @@ it("activates the reply input when clicking the highlight of a thread opened thr
   act(() => review.editorOptions?.onThreadClick?.([thread.id]));
 
   expect(value.onSelectThread).toHaveBeenCalledWith(thread.id);
-  expect(screen.getByRole("textbox")).toBeVisible();
+  expect(document.querySelector('[data-test-id="inline-reply-button"]')).toBeVisible();
+  expect(screen.queryByRole("textbox")).toBeNull();
 });
 
 it("allows readers to open threads without mutation controls", () => {
@@ -369,12 +384,14 @@ it("shows comment cards without persistent toolbar buttons", () => {
   expect(screen.queryByRole("textbox")).toBeNull();
 });
 
-it("activates a card and immediately offers a reply to commenters", () => {
+it("offers a reply field when the card is selected and opens the editor when the field is clicked", () => {
   const value = props();
   const { rerender } = render(<Harness value={value} />);
   click("inline-select-one");
   expect(value.onSelectThread).toHaveBeenCalledWith("one");
   rerender(<Harness value={{ ...value, activeThreadId: "one" }} />);
+  expect(screen.queryByRole("textbox")).toBeNull();
+  click("inline-reply-button");
   expect(screen.getByRole("textbox")).toBeVisible();
 });
 

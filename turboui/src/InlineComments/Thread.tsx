@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import type { InlineThread } from "../ApiTypes";
 import { UnstyledButton } from "../Button/UnstalyedButton";
+import { ActionLink } from "../Link";
 import { Avatar } from "../Avatar";
 import { FormattedTime } from "../FormattedTime";
 import { parseContent, richContentToString } from "../RichContent/contentOps";
@@ -10,6 +11,7 @@ import { CommentMenu } from "../CommentSection/CommentItem";
 import { IconCheck, IconArrowBackUp } from "../icons";
 import { compareIds } from "../utils/ids";
 import { showErrorToast } from "../Toasts";
+import { tn } from "../i18n";
 import { attachedRange, type DocumentInlineCommentsProps } from "./types";
 
 export function Thread({
@@ -74,15 +76,33 @@ export function Thread({
     ];
   });
   const firstMessage = comments[0];
+  const earlierRepliesStatus = props.earlierRepliesStatus?.get(thread.id);
+  const earlierReplies =
+    thread.earlierReplyCount > 0 || earlierRepliesStatus ? (
+      <EarlierReplies
+        count={thread.earlierReplyCount}
+        status={earlierRepliesStatus}
+        onShow={() => props.onShowEarlierReplies(thread.id)}
+      />
+    ) : null;
 
   return (
     <section
       ref={cardRef}
       className={`group/thread relative rounded-xl text-sm bg-surface-base ${showMessages ? "shadow-lg border border-stroke-base p-4" : ""}`}
+      data-inline-comment-card
       data-test-id={`inline-thread-${thread.id}`}
       data-resolved={Boolean(thread.resolvedAt)}
     >
-      {!showMessages && <ThreadPreview thread={thread} props={props} firstMessage={firstMessage} onSelect={onSelect} />}
+      {!showMessages && (
+        <ThreadPreview
+          thread={thread}
+          props={props}
+          comments={comments}
+          earlierReplies={earlierReplies}
+          onSelect={onSelect}
+        />
+      )}
 
       {props.canComment && (
         <div className="absolute top-4 right-4 flex items-center opacity-0 pointer-events-none group-hover/thread:opacity-100 group-hover/thread:pointer-events-auto group-focus-within/thread:opacity-100 group-focus-within/thread:pointer-events-auto [&:has([data-state=open])]:opacity-100 [&:has([data-state=open])]:pointer-events-auto [@media(hover:none)]:opacity-100 [@media(hover:none)]:pointer-events-auto">
@@ -115,6 +135,7 @@ export function Thread({
           thread={thread}
           props={props}
           comments={comments}
+          earlierReplies={earlierReplies}
           form={form}
           editingFirstMessage={editingFirstMessage}
           initiallyActiveReply={initiallyActiveReply}
@@ -131,9 +152,15 @@ function useThreadDismissal(active: boolean, onSelectThread: DocumentInlineComme
 
     const deactivateOutside = (event: PointerEvent) => {
       const card = cardRef.current;
-      if (!card || !(event.target instanceof Node) || card.contains(event.target)) return;
-      // Keep replies, message edits, and portalled menu actions open until finished.
-      if (card.querySelector('[contenteditable="true"], [aria-busy="true"], [aria-haspopup="menu"][data-state="open"]'))
+      const target = event.target;
+      if (event.button !== 0 || !card || !(target instanceof Element)) return;
+      // Let cards and passages handle selection before changing the margin layout.
+      if (target.closest("[data-inline-comment-card], [data-inline-thread]")) return;
+      if (
+        card.querySelector(
+          '[data-has-comment-draft], [data-editing-comment], [aria-haspopup="menu"][data-state="open"]',
+        )
+      )
         return;
       onSelectThread(null);
     };
@@ -148,34 +175,103 @@ function useThreadDismissal(active: boolean, onSelectThread: DocumentInlineComme
 interface ThreadPreviewProps {
   thread: InlineThread;
   props: DocumentInlineCommentsProps;
-  firstMessage?: Comment;
+  comments: Comment[];
+  earlierReplies: React.ReactNode;
   onSelect: () => void;
 }
 
-function ThreadPreview({ thread, props, firstMessage, onSelect }: ThreadPreviewProps) {
+function ThreadPreview({ thread, props, comments, earlierReplies, onSelect }: ThreadPreviewProps) {
+  const messages = comments.length ? comments : [undefined];
+  const selectClass = "w-full text-left rounded-xl focus-visible:ring-2 focus-visible:ring-brand-1";
+
   return (
-    <UnstyledButton
-      onClick={onSelect}
-      className="w-full text-left p-4 rounded-xl focus-visible:ring-2 focus-visible:ring-brand-1"
-      testId={`inline-select-${thread.id}`}
-    >
-      <span className={`flex items-center gap-3 mb-3 ${props.canComment ? "pr-16" : ""}`}>
-        {firstMessage?.author && <Avatar person={firstMessage.author} size="small" />}
-        <span className="min-w-0">
-          <span className="block font-semibold text-content-accent">{firstMessage?.author?.fullName}</span>
-          <span className="block text-xs text-content-dimmed">
-            <FormattedTime
-              {...props.formattedTimePreferences}
-              time={firstMessage?.insertedAt ?? thread.insertedAt}
-              format="relative"
-            />
+    <div>
+      <UnstyledButton onClick={onSelect} className={`${selectClass} p-4`} testId={`inline-select-${thread.id}`}>
+        <PreviewMessages
+          thread={thread}
+          props={props}
+          messages={earlierReplies ? messages.slice(0, 1) : messages}
+          reserveActionSpace={props.canComment}
+        />
+      </UnstyledButton>
+      {earlierReplies && <div className="px-4">{earlierReplies}</div>}
+      {earlierReplies && messages.length > 1 && (
+        <UnstyledButton onClick={onSelect} className={`${selectClass} p-4`}>
+          <PreviewMessages thread={thread} props={props} messages={messages.slice(1)} />
+        </UnstyledButton>
+      )}
+    </div>
+  );
+}
+
+function PreviewMessages({
+  thread,
+  props,
+  messages,
+  reserveActionSpace,
+}: {
+  thread: InlineThread;
+  props: DocumentInlineCommentsProps;
+  messages: (Comment | undefined)[];
+  reserveActionSpace?: boolean;
+}) {
+  return (
+    <>
+      {messages.map((message, index) => {
+        const author = message?.author ?? thread.author;
+        const timestamp = message?.insertedAt ?? thread.insertedAt;
+        return (
+          <span
+            key={message?.id ?? thread.id}
+            className="block not-first:border-t border-stroke-base not-first:mt-3 not-first:pt-3"
+          >
+            <span className={`flex items-center gap-3 mb-2 ${reserveActionSpace && index === 0 ? "pr-16" : ""}`}>
+              {author && <Avatar person={author} size="small" />}
+              <span className="min-w-0">
+                <span className="block font-semibold text-content-accent">{author?.fullName}</span>
+                <time className="block text-xs text-content-dimmed" dateTime={timestamp}>
+                  <FormattedTime {...props.formattedTimePreferences} time={timestamp} format="relative" />
+                </time>
+              </span>
+            </span>
+            <span className="block text-content-dimmed whitespace-pre-wrap break-words">
+              {message ? richContentToString(parseContent(message.content)) : thread.anchor.quote}
+            </span>
           </span>
-        </span>
-      </span>
-      <span className="block text-content-dimmed whitespace-pre-wrap break-words line-clamp-4">
-        {firstMessage?.content ? richContentToString(parseContent(firstMessage.content)) : thread.anchor.quote}
-      </span>
-    </UnstyledButton>
+        );
+      })}
+    </>
+  );
+}
+
+function EarlierReplies({
+  count,
+  status,
+  onShow,
+}: {
+  count: number;
+  status?: "loading" | "error";
+  onShow: () => void;
+}) {
+  const { t } = useTranslation();
+  const showCount = count > 0 && status !== "error";
+  return (
+    <div aria-busy={status === "loading"}>
+      <ActionLink
+        aria-expanded={showCount ? false : undefined}
+        disabled={status === "loading"}
+        onClick={onShow}
+        testId="inline-show-earlier-replies"
+        underline="always"
+      >
+        {showCount ? tn("Show {{count}} earlier reply", "Show {{count}} earlier replies", count) : t("Retry")}
+      </ActionLink>
+      {status === "error" && (
+        <p className="mt-2 text-xs text-content-error" role="alert">
+          {t("Comments could not be loaded.")}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -183,6 +279,7 @@ interface ThreadMessagesProps {
   thread: InlineThread;
   props: DocumentInlineCommentsProps;
   comments: Comment[];
+  earlierReplies: React.ReactNode;
   form: CommentFormState;
   editingFirstMessage: boolean;
   initiallyActiveReply: boolean;
@@ -192,6 +289,7 @@ function ThreadMessages({
   thread,
   props,
   comments,
+  earlierReplies,
   form,
   editingFirstMessage,
   initiallyActiveReply,
@@ -211,21 +309,24 @@ function ThreadMessages({
       </blockquote>
       {comments.map((comment, index) => {
         return (
-          <CommentItem
-            key={comment.id}
-            comment={comment}
-            form={form}
-            currentUserId={props.currentUser.id}
-            canComment={props.canComment}
-            editDisabled={Boolean(thread.resolvedAt)}
-            commentParentType="inline_thread"
-            richTextHandlers={richTextHandlers}
-            formattedTimePreferences={props.formattedTimePreferences}
-            appearance="inline"
-            initiallyEditing={index === 0 && editingFirstMessage}
-          />
+          <React.Fragment key={comment.id}>
+            {index === 1 && earlierReplies}
+            <CommentItem
+              comment={comment}
+              form={form}
+              currentUserId={props.currentUser.id}
+              canComment={props.canComment}
+              editDisabled={Boolean(thread.resolvedAt)}
+              commentParentType="inline_thread"
+              richTextHandlers={richTextHandlers}
+              formattedTimePreferences={props.formattedTimePreferences}
+              appearance="inline"
+              initiallyEditing={index === 0 && editingFirstMessage}
+            />
+          </React.Fragment>
         );
       })}
+      {comments.length < 2 && earlierReplies}
       {props.canComment && !thread.resolvedAt && (
         <CommentInput
           compact

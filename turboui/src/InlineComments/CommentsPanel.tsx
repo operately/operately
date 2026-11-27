@@ -44,7 +44,7 @@ export function CommentsPanel({
         props={props}
         active={thread.id === props.activeThreadId}
         expanded={showAll}
-        initiallyActiveReply={thread.id === replyThreadId}
+        initiallyActiveReply={mobile && thread.id === replyThreadId}
         onSelect={() => onSelectThread(thread.id)}
       />
     ),

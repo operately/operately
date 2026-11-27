@@ -76,6 +76,14 @@ defmodule OperatelyWeb.Api.InlineThreads.ReplyTest do
       assert {400, _} = mutation(ctx.conn, [:inline_threads, :reply], %{inputs(ctx) | content: "{}"})
       assert Repo.aggregate(Operately.Updates.Comment, :count) == 1
     end
+
+    test "returns a preview when replying to a long thread", ctx do
+      for number <- 1..2, do: Support.add_reply(ctx, number)
+
+      assert {200, %{thread: thread}} = mutation(ctx.conn, [:inline_threads, :reply], inputs(ctx))
+      assert thread.earlier_reply_count == 1
+      assert length(thread.messages) == 3
+    end
   end
 
   defp inputs(ctx), do: %{thread_id: ctx.thread.id, content: Jason.encode!(RichText.rich_text("Reply"))}

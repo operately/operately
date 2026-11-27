@@ -1941,6 +1941,7 @@ defmodule OperatelyWeb.Api.Types do
     field :inserted_at, :string, null: false
     field :anchor, :inline_anchor, null: false
     field :messages, list_of(:comment), null: false
+    field :earlier_reply_count, :integer, null: false
   end
 
   object :document_version, for: Operately.ResourceHubs.DocumentVersion do

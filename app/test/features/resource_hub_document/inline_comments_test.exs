@@ -14,9 +14,10 @@ defmodule Operately.Features.ResourceHubDocument.InlineCommentsTest do
     |> Steps.follow_thread_link()
   end
 
-  feature "email links open the message in an open thread on desktop", ctx do
+  feature "email links open an earlier reply omitted from a long thread preview", ctx do
     ctx
     |> Steps.setup_email_link(false)
+    |> Steps.add_newer_replies()
     |> Steps.follow_email_link(1440)
   end
 end
