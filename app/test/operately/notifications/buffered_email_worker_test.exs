@@ -46,13 +46,13 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
 
     for {person, subject, headline} <- [
-          {ctx.portuguese, "Você tem 2 novas atualizações", "arquivou o projeto"},
-          {ctx.german, "Du hast 2 neue Updates", "hat das Projekt archiviert"},
-          {ctx.russian, "У вас 2 новых обновления", "проект архивирован"},
-          {ctx.french, "Vous avez 2 nouvelles mises à jour", "a archivé le projet"},
-          {ctx.spanish, "Tienes 2 nuevas actualizaciones", "archivó el proyecto"},
-          {ctx.creator, "You have 2 new updates", "archived the project"},
-          {ctx.portuguese, "Você tem 2 novas atualizações", "arquivou o projeto"}
+          {ctx.portuguese, "2 atualizações em Project <literal>", "arquivou o projeto"},
+          {ctx.german, "2 Updates in Project <literal>", "hat das Projekt archiviert"},
+          {ctx.russian, "2 обновления в «Project <literal>»", "проект архивирован"},
+          {ctx.french, "2 mises à jour dans Project <literal>", "a archivé le projet"},
+          {ctx.spanish, "2 actualizaciones en Project <literal>", "archivó el proyecto"},
+          {ctx.creator, "2 updates in Project <literal>", "archived the project"},
+          {ctx.portuguese, "2 atualizações em Project <literal>", "arquivou o projeto"}
         ] do
       deliver_localized_batch(person, activities, subject, headline)
       assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
@@ -457,6 +457,28 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     refute Notifications.get_notification!(skipped.id).email_sent
   end
 
+  test "summarizes a batch of task creations in the same project", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project(:project, :space, name: "Website launch")
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:first_task, :milestone, name: "Write the script")
+      |> Factory.add_project_task(:second_task, :milestone, name: "Record the video")
+
+    for task <- [ctx.first_task, ctx.second_task], do: task_adding_notification(ctx, task)
+
+    assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+
+    assert_email_sent(fn email ->
+      assert email.subject == "2 tasks created in Website launch"
+      assert email.html_body =~ email.subject
+      assert String.starts_with?(email.text_body, email.subject <> "\n")
+      assert email.html_body =~ "Write the script"
+      assert email.text_body =~ "Record the video"
+      true
+    end)
+  end
+
   for type <- [:project, :goal] do
     for count <- [1, 2] do
       test "skips a batch containing #{count} deleted #{type} check-in comment notifications", ctx do
@@ -548,8 +570,13 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
 
     assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
 
+    subject = "#{Operately.People.Person.short_name(ctx.creator)} commented on “#{ctx.document.name}”"
+
     assert_email_sent(fn email ->
       assert email.to == [{"", ctx.creator.email}]
+      assert email.subject == subject
+      assert email.html_body =~ subject
+      assert String.starts_with?(email.text_body, subject <> "\n")
       assert email.html_body =~ "Remaining comment"
       assert email.text_body =~ "Remaining comment"
       refute email.html_body =~ "Deleted comment"
@@ -563,6 +590,27 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     assert is_nil(batch.error)
     assert Notifications.get_notification!(sent.id).email_sent
     refute Notifications.get_notification!(skipped.id).email_sent
+  end
+
+  test "summarizes comments on one document and keeps the excerpts in the digest", ctx do
+    ctx =
+      ctx
+      |> setup_document_comment()
+      |> Factory.add_comment(:second_comment, :document, content: Operately.Support.RichText.rich_text("Second excerpt"))
+      |> Factory.add_comment(:third_comment, :document, content: Operately.Support.RichText.rich_text("Third excerpt"))
+
+    for comment <- [ctx.comment, ctx.second_comment, ctx.third_comment], do: document_comment_notification(ctx, comment)
+
+    assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+
+    assert_email_sent(fn email ->
+      assert email.subject == "3 new comments on “#{ctx.document.name}”"
+      assert email.html_body =~ email.subject
+      assert String.starts_with?(email.text_body, email.subject <> "\n")
+      assert email.html_body =~ "Second excerpt"
+      assert email.text_body =~ "Third excerpt"
+      true
+    end)
   end
 
   test "delivers an individual project task comment email", ctx do

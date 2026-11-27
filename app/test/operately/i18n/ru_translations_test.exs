@@ -21,19 +21,19 @@ defmodule Operately.I18n.RuTranslationsTest do
       end
 
       for {count, ending} <- [
-            {0, "новых обновлений"},
-            {1, "новое обновление"},
-            {2, "новых обновления"},
-            {5, "новых обновлений"},
-            {11, "новых обновлений"},
-            {21, "новое обновление"},
-            {22, "новых обновления"},
-            {25, "новых обновлений"},
-            {101, "новое обновление"},
-            {111, "новых обновлений"},
-            {1_000_000, "новых обновлений"}
+            {0, "обновлений"},
+            {1, "обновление"},
+            {2, "обновления"},
+            {5, "обновлений"},
+            {11, "обновлений"},
+            {21, "обновление"},
+            {22, "обновления"},
+            {25, "обновлений"},
+            {101, "обновление"},
+            {111, "обновлений"},
+            {1_000_000, "обновлений"}
           ] do
-        assert Gettext.dngettext(@backend, "messages", "You have 1 new update", "You have %{count} new updates", count) == "У вас #{count} #{ending}"
+        assert Gettext.dngettext(@backend, "messages", "%{count} update in %{place}", "%{count} updates in %{place}", count, place: "Launch") == "#{count} #{ending} в «Launch»"
       end
 
       assert Gettext.dgettext(@backend, "messages", "Not a cataloged message") == "Not a cataloged message"
