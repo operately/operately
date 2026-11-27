@@ -1,17 +1,46 @@
 import { assertPresent } from "@/utils/assertions";
 import Api from "@/api";
-import { useLoadedQuery } from "@/api/queryClient";
+import { queryClient, useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import { Paths } from "@/routes/paths";
-import { useMemo } from "react";
+import { hashKey } from "@tanstack/react-query";
 import { redirect } from "react-router";
 
+function currentContext() {
+  return { basePath: Api.default.getBasePath(), headers: { ...Api.default.getHeaders() } };
+}
+
+type RequestContext = ReturnType<typeof currentContext>;
+
+function isCurrentContext(context: RequestContext) {
+  return (
+    context.basePath === Api.default.getBasePath() && hashKey([context.headers]) === hashKey([Api.default.getHeaders()])
+  );
+}
+
+function scopedOptions<T extends { queryKey: readonly unknown[] }>(options: T, context: RequestContext) {
+  return {
+    ...options,
+    queryKey: [options.queryKey[0], context.basePath, context.headers, ...options.queryKey.slice(3)] as T["queryKey"],
+    enabled: () => isCurrentContext(context),
+  };
+}
+
+function accountOptions(context: RequestContext, input: object) {
+  return scopedOptions(Api.people.getAccountQueryOptions(input), context);
+}
+
+function companiesOptions(context: RequestContext, input: { includeMemberCount: boolean }) {
+  return scopedOptions(Api.companies.listQueryOptions(input), context);
+}
+
 export async function loader() {
+  const context = currentContext();
   const accountInput = {};
   const companiesInput = { includeMemberCount: true };
   const [, { companies }] = await Promise.all([
-    Api.people.getAccountQuery(accountInput),
-    Api.companies.listQuery(companiesInput),
+    queryClient.fetchQuery({ ...accountOptions(context, accountInput), staleTime: Infinity }),
+    queryClient.fetchQuery({ ...companiesOptions(context, companiesInput), staleTime: Infinity }),
   ]);
 
   const [company] = companies;
@@ -19,21 +48,20 @@ export async function loader() {
     return redirect(Paths.companyHomePath(company.id));
   }
 
-  return { accountInput, companiesInput };
+  return { context, accountInput, companiesInput };
 }
 
 type LoaderResult = Exclude<Awaited<ReturnType<typeof loader>>, Response>;
 
 export function useLoadedData() {
-  const { accountInput, companiesInput } = Pages.useLoadedData<LoaderResult>();
+  const { context, accountInput, companiesInput } = Pages.useLoadedData<LoaderResult>();
 
-  // Keep the prefetched keys: the destination loader changes company headers before this page unmounts.
-  const accountOptions = useMemo(() => Api.people.getAccountQueryOptions(accountInput), [accountInput]);
-  const companiesOptions = useMemo(() => Api.companies.listQueryOptions(companiesInput), [companiesInput]);
-  const { data: accountData } = useLoadedQuery(accountOptions);
-  const { data: companiesData } = useLoadedQuery(companiesOptions);
+  const account = useLoadedQuery(accountOptions(context, accountInput));
+  const companies = useLoadedQuery(companiesOptions(context, companiesInput));
+  if (account.isPending || companies.isPending) return null;
 
-  assertPresent(accountData?.account, "Account is unavailable");
+  assertPresent(account.data?.account, "Account is unavailable");
+  assertPresent(companies.data?.companies, "Company list is unavailable");
 
-  return { account: accountData.account, companies: companiesData?.companies ?? [] };
+  return { account: account.data.account, companies: companies.data.companies };
 }
