@@ -1,5 +1,8 @@
 defmodule Operately.Messages.MessageTest do
   use Operately.DataCase
+  alias Operately.Access.Binding
+  alias Operately.Messages.Message
+  alias Operately.MessagesFixtures
   alias Operately.Support.RichText
 
   setup ctx do
@@ -7,6 +10,48 @@ defmodule Operately.Messages.MessageTest do
     |> Factory.setup()
     |> Factory.add_space(:product_space)
     |> Factory.add_messages_board(:message_board, :product_space)
+  end
+
+  describe "ownership" do
+    test "a message must have exactly one owner, including on update", ctx do
+      message = MessagesFixtures.message_fixture(ctx.creator.id, ctx.message_board.id)
+
+      for attrs <- [%{messages_board_id: nil}, %{project_id: Ecto.UUID.generate()}] do
+        refute Message.changeset(message, attrs).valid?
+      end
+    end
+
+    test "the database rejects missing or multiple owners when bypassing changeset validation", ctx do
+      ctx = Factory.add_goal(ctx, :goal, :product_space)
+      message = MessagesFixtures.message_fixture(ctx.creator.id, ctx.message_board.id)
+
+      for attrs <- [%{messages_board_id: nil}, %{goal_id: ctx.goal.id}] do
+        assert_raise Ecto.ConstraintError, ~r/messages_exactly_one_owner/, fn ->
+          Repo.update!(change(message, attrs), mode: :savepoint)
+        end
+      end
+    end
+
+    test "access follows the owning board, project, or goal", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_viewer, :product_space, permissions: :view_access)
+        |> Factory.add_project(:project, :product_space, company_access_level: Binding.no_access(), space_access_level: Binding.no_access(), champion: :creator)
+        |> Factory.add_goal(:goal, :product_space, company_access: Binding.no_access(), space_access: Binding.no_access())
+
+      board_message = MessagesFixtures.message_fixture(ctx.creator.id, ctx.message_board.id)
+      project_message = MessagesFixtures.message_fixture(ctx.creator.id, nil, project_id: ctx.project.id)
+      goal_message = MessagesFixtures.message_fixture(ctx.creator.id, nil, goal_id: ctx.goal.id)
+
+      assert {:ok, _} = Message.get(ctx.space_viewer, id: board_message.id)
+
+      for message <- [project_message, goal_message] do
+        assert {:ok, _} = Message.get(ctx.creator, id: message.id)
+        assert {:error, :not_found} = Message.get(ctx.space_viewer, id: message.id)
+      end
+
+      assert Enum.map(Message.list(ctx.space_viewer), & &1.id) == [board_message.id]
+    end
   end
 
   describe "creating a message" do

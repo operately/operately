@@ -4,6 +4,19 @@ defmodule Operately.CompanyTransfers.Import.PackageOrderTest do
   alias Operately.CompanyTransfers.Export.Relational.SchemaSnapshot
   alias Operately.CompanyTransfers.Import.{Package, PackageOrder}
 
+  test "all message owners are available when messages are inserted" do
+    package = package(Enum.map(~w(messages messages_boards projects goals), &table/1))
+
+    schema =
+      schema_snapshot(
+        %{"messages" => Enum.map(~w(messages_board_id project_id goal_id), &column(&1, "uuid", true))},
+        %{"messages" => [fk("messages_board_id", "messages_boards"), fk("project_id", "projects"), fk("goal_id", "goals")]}
+      )
+
+    ordered = PackageOrder.reorder_for_insert(package, schema)
+    assert List.last(ordered.tables)["name"] == "messages"
+  end
+
   test "orders board owners before boards even when another table requires boards first" do
     # Force traversal into boards before the owner tables, independent of their alphabetical order.
     package = package(Enum.map(["board_references", "task_boards", "groups", "projects"], &table/1))

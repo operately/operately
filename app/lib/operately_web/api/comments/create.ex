@@ -60,7 +60,7 @@ defmodule OperatelyWeb.Api.Comments.Create do
       :project_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
       :goal_update -> Update.get(person, id: id, opts: [preload: :goal])
       :goal_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
-      :message -> Message.get(person, id: id, opts: [preload: :space])
+      :message -> Message.get(person, id: id, opts: [getter_profile: :space_discussion, preload: :space])
       :resource_hub_document -> Document.get(person, id: id, opts: [preload: [:resource_hub, :node]])
       :resource_hub_file -> File.get(person, id: id, opts: [preload: [:resource_hub, :node]])
       :resource_hub_link -> Link.get(person, id: id, opts: [preload: [:resource_hub, :node]])

@@ -87,6 +87,7 @@ defmodule Operately.RichContent.ResourceLinkResolver do
   defp resource_schema(:folder, _company), do: {Folder, :name, []}
   defp resource_schema(:discussion, _company), do: {Message, :title, []}
 
+  defp visible?(%Message{messages_board_id: nil}, _person), do: false
   defp visible?(%Message{} = message, person), do: Helpers.check_draft_access(message, person) == {:ok, :allowed}
   defp visible?(_resource, _person), do: true
 end
