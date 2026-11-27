@@ -6,6 +6,7 @@ import { Item, RadioGroup, RadioItem } from "../Embedding/DropdownMenu";
 import { Textfield } from "../FormElements/Textfield";
 import { IconFilter } from "../icons";
 import { Menu, MenuActionItem, MenuSeparator } from "../Menu";
+import { formatNumber } from "../utils/formatting";
 import { compareIds } from "../utils/ids";
 import { referenceId, type WorkMapV2Item } from "./filterWorkMap";
 
@@ -78,17 +79,19 @@ function useFields(items: WorkMapV2Item[], spaceId?: string) {
 }
 
 export function FilterMenu({
+  compact,
   items,
   spaceId,
   filters,
   onChange,
 }: {
+  compact: boolean;
   items: WorkMapV2Item[];
   spaceId?: string;
   filters: WorkMapFilter[];
   onChange: (filters: WorkMapFilter[]) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { labels, operators, choices } = useFields(items, spaceId);
   const [search, setSearch] = React.useState("");
   const trigger = React.useRef<HTMLButtonElement>(null);
@@ -127,7 +130,10 @@ export function FilterMenu({
     <>
       <Menu
         triggerRef={trigger}
-        triggerLabel={t("Filter")}
+        triggerLabel={
+          compact && filters.length ? `${t("Filter")} (${formatNumber(filters.length, i18n.language)})` : t("Filter")
+        }
+        triggerClassName={compact ? "ml-auto min-h-10 whitespace-nowrap" : undefined}
         triggerIcon={IconFilter}
         align="start"
         size="small"
@@ -154,11 +160,12 @@ export function FilterMenu({
             ))}
         </div>
       </Menu>
-      {filters.map((f) => (
-        <AppliedFilter key={f.field} label={chip(f)} filterButton={trigger}>
-          {edit(f.field)}
-        </AppliedFilter>
-      ))}
+      {!compact &&
+        filters.map((f) => (
+          <AppliedFilter key={f.field} label={chip(f)} filterButton={trigger}>
+            {edit(f.field)}
+          </AppliedFilter>
+        ))}
     </>
   );
 }
@@ -270,7 +277,11 @@ function FilterEditor({
             label={text}
             checked={values.includes(value)}
             onChange={() => {
-              if (values.includes(value)) update(operator, values.filter((v) => v !== value));
+              if (values.includes(value))
+                update(
+                  operator,
+                  values.filter((v) => v !== value),
+                );
               else if (date) update(value === "past" ? "before" : operator, [value]);
               else update(operator, [...values, value]);
             }}
