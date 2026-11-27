@@ -3,6 +3,20 @@ import type { Page } from "playwright";
 
 declare const page: Page;
 
+test("Work Map status badges have a visible border", async () => {
+  const url = new URL("iframe.html?id=pages-work-map-v2--active-work&viewMode=story", process.env.TARGET_URL);
+  await page.goto(url.href);
+
+  const badge = page.locator('[data-test-id="work-map-status"] > span').first();
+  const { color, width } = await badge.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { color: style.borderTopColor, width: style.borderTopWidth };
+  });
+
+  assert.ok(parseFloat(width) > 0);
+  assert.notEqual(color, "rgba(0, 0, 0, 0)");
+});
+
 test("phone filters stay in one toolbar row as selections change", async () => {
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto(new URL("iframe.html?id=pages-work-map-v2--active-work&viewMode=story", process.env.TARGET_URL).href);
