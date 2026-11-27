@@ -20,9 +20,8 @@ defmodule OperatelyWeb.Api.Spaces.PublishDiscussion do
   def call(conn, inputs) do
     with(
       {:ok, me} <- find_me(conn),
-      {:ok, discussion} <- Message.get(me, id: inputs.id, opts: [getter_profile: :space_discussion, preload: :space]),
-      {:ok, :allowed} <- authorize(me, discussion),
-      {:ok, discussion} <- publish(me, discussion)
+      {:ok, discussion} <- Message.get(me, id: inputs.id, opts: [getter_profile: :space_discussion]),
+      {:ok, discussion} <- DiscussionPublishing.run(me, discussion)
     ) do
       {:ok, %{discussion: Serializer.serialize(discussion, level: :essential)}}
     else
@@ -31,17 +30,4 @@ defmodule OperatelyWeb.Api.Spaces.PublishDiscussion do
       _ -> {:error, :internal_server_error}
     end
   end
-
-  defp authorize(me, discussion) do
-    cond do
-      discussion.state not in [:draft, :scheduled] -> {:error, :forbidden}
-      discussion.author_id != me.id -> {:error, :forbidden}
-      true -> {:ok, :allowed}
-    end
-  end
-
-  defp publish(me, discussion) do
-    DiscussionPublishing.run(me, discussion)
-  end
-
 end

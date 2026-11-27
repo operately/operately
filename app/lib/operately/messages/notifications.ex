@@ -1,22 +1,31 @@
 defmodule Operately.Messages.Notifications do
-  import Ecto.Query, only: [from: 2]
-
+  alias Operately.Access.BindedPeopleLoader
+  alias Operately.Messages.{Message, Owner}
+  alias Operately.Notifications.{Subscriber, SubscribersLoader}
   alias Operately.Repo
-  alias Operately.Notifications.SubscribersLoader
 
   def get_subscribers(message_id, opts \\ []) do
-    ignore = Keyword.get(opts, :ignore, [])
+    message = Repo.get!(Message, message_id)
+    message = Repo.preload(message, Owner.subscriber_preloads(message))
+    {context, candidates} = eligible_subscribers(message)
 
-    message =
-      from(message in Operately.Messages.Message,
-        join: c in assoc(message, :access_context), as: :context,
-        join: s in assoc(message, :space),
-        join: m in assoc(s, :members),
-        preload: [space: {s, members: m}, access_context: c],
-        where: message.id == ^message_id
-      )
-      |> Repo.one()
+    SubscribersLoader.load_for_notifications(%{message | access_context: context}, Enum.map(candidates, & &1.person), Keyword.get(opts, :ignore, []))
+  end
 
-    SubscribersLoader.load_for_notifications(message, message.space.members, ignore)
+  def potential_subscribers(message) do
+    {context, candidates} = eligible_subscribers(message)
+    message = SubscribersLoader.preload_subscriptions(%{message | access_context: context})
+    Subscriber.from_message(message, candidates)
+  end
+
+  defp eligible_subscribers(message) do
+    {context, candidates} = Owner.subscribers(message)
+
+    if message.messages_board_id do
+      {context, candidates}
+    else
+      allowed = MapSet.new(BindedPeopleLoader.load(context.id), & &1.id)
+      {context, Enum.filter(candidates, &MapSet.member?(allowed, &1.person.id))}
+    end
   end
 end

@@ -1,6 +1,10 @@
 defmodule Operately.Activities.Notifications.GoalDiscussionCreation do
   alias Operately.Goals.Notifications
 
+  def dispatch(%{comment_thread_id: nil, content: %{"discussion_id" => id}} = activity) when is_binary(id) do
+    Operately.Activities.Notifications.DiscussionPosting.dispatch(activity)
+  end
+
   def dispatch(activity) do
     goal_id = activity.content["goal_id"]
 
