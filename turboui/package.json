@@ -71,6 +71,7 @@
     "vite": "8.3.8",
     "wait-on": "^8.0.3",
     "postcss-import": "^15.1.0",
+    "prosemirror-view": "1.42.3",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0"
   },

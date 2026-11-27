@@ -279,6 +279,40 @@ test("select, post, reply, resolve, and reopen using the actual editor", async (
   assert.ok(page.url().includes("inlineThread=new-1"));
 });
 
+test("table selections and inline comment highlights stay usable after posting and closing a thread", async () => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await visit("table");
+
+  const cells = page.locator('.ProseMirror[contenteditable="false"] td');
+  await cells.first().click();
+  await cells.nth(1).click({ modifiers: ["Shift"] });
+  assert.equal(await page.locator("td.selectedCell").count(), 2);
+
+  await selectPassage();
+  const composer = page.locator('[data-test-id="inline-new-thread"]');
+  await composer.locator('[contenteditable="true"]').fill("Please check this cell.");
+  await composer.locator('[data-test-id="post-comment"]').click();
+  await page.locator('[data-test-id="inline-thread-new-1"]').waitFor();
+  const highlight = cells.first().locator('[data-inline-thread="new-1"]');
+  await highlight.waitFor();
+  assert.equal(await highlight.textContent(), "Review");
+  assert.ok((await highlight.getAttribute("class"))?.includes("bg-yellow-200"));
+
+  await cells.nth(1).click();
+  assert.equal(new URL(page.url()).searchParams.has("inlineThread"), false);
+  assert.ok((await highlight.getAttribute("class"))?.includes("bg-yellow-100"));
+  await highlight.click();
+  assert.equal(new URL(page.url()).searchParams.get("inlineThread"), "new-1");
+  await cells.nth(1).click();
+  assert.equal(await cells.count(), 2);
+  assert.deepEqual(
+    errors.filter((message) => /localsInner|reading 'eq'/.test(message)),
+    [],
+  );
+});
+
 test("opens resolved thread links directly", async () => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await visit("review", "resolved");
