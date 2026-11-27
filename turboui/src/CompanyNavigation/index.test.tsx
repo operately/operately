@@ -28,6 +28,17 @@ function getByTestId(testId: string): HTMLElement {
 }
 
 describe("CompanyNavigation", () => {
+  it.each([
+    { workMapV2Enabled: false, label: "Company" },
+    { workMapV2Enabled: true, label: "Work Map" },
+  ])("shows the $label link for the company map", ({ workMapV2Enabled, label }) => {
+    renderNav({ workMapV2Enabled });
+
+    const link = getByTestId("company-work-map-link");
+    expect(link).toHaveAccessibleName(label);
+    expect(link).toHaveAttribute("href", defaultProps.links.workMap);
+  });
+
   it("shows review and notification counts", () => {
     renderNav();
 

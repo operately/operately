@@ -10,6 +10,18 @@ function storyUrl(story: string) {
   return url.href;
 }
 
+test("the pilot navbar shows the Work Map link with a hierarchy icon on desktop and mobile", async () => {
+  await page.setViewportSize({ width: 1440, height: 805 });
+  await page.goto(storyUrl("work-map-pilot"));
+
+  const workMapIcon = page.getByRole("link", { name: "Work Map", exact: true }).locator("svg.tabler-icon-sitemap");
+  await workMapIcon.waitFor();
+
+  await page.setViewportSize({ width: 374, height: 812 });
+  await page.getByRole("button", { name: "Navigation menu", exact: true }).click();
+  await workMapIcon.waitFor();
+});
+
 async function assertExpanded(trigger: Locator, expanded: boolean) {
   await trigger
     .page()

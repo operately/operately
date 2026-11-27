@@ -15,6 +15,7 @@ import {
   IconMenu2,
   IconPlus,
   IconShieldLock,
+  IconSitemap,
   IconSwitch,
   IconUser,
   IconUserCircle,
@@ -54,7 +55,14 @@ export function CompanyNavigation(props: CompanyNavigation.Props) {
   return <DesktopNavigation {...props} />;
 }
 
-function MobileNavigation({ companyName, companyCount, isSiteAdmin, links, onLogOut }: CompanyNavigation.Props) {
+function MobileNavigation({
+  companyName,
+  companyCount,
+  isSiteAdmin,
+  links,
+  onLogOut,
+  workMapV2Enabled,
+}: CompanyNavigation.Props) {
   const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
   const headerRef = React.useRef<HTMLDivElement>(null);
@@ -107,8 +115,8 @@ function MobileNavigation({ companyName, companyCount, isSiteAdmin, links, onLog
             {t("Home")}
           </MobileSectionLink>
 
-          <MobileSectionLink to={links.workMap} icon={IconBuildingEstate}>
-            {t("Company", { context: "navigation" })}
+          <MobileSectionLink to={links.workMap} icon={workMapV2Enabled ? IconSitemap : IconBuildingEstate}>
+            {workMapV2Enabled ? t("Work Map") : t("Company", { context: "navigation" })}
           </MobileSectionLink>
 
           <MobileSectionLink to={links.profile} icon={IconBriefcase}>
@@ -191,7 +199,7 @@ function MobileSectionAction({
 
 function DesktopNavigation(props: CompanyNavigationProps) {
   const { t } = useTranslation();
-  const { companyName, links, canAddGoal, canAddProject, canAddSpace, canInvitePeople } = props;
+  const { companyName, links, canAddGoal, canAddProject, canAddSpace, canInvitePeople, workMapV2Enabled } = props;
 
   return (
     <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
@@ -218,8 +226,12 @@ function DesktopNavigation(props: CompanyNavigationProps) {
               {t("Home")}
             </SectionLink>
 
-            <SectionLink to={links.workMap} icon={IconBuildingEstate} testId="company-work-map-link">
-              {t("Company", { context: "navigation" })}
+            <SectionLink
+              to={links.workMap}
+              icon={workMapV2Enabled ? IconSitemap : IconBuildingEstate}
+              testId="company-work-map-link"
+            >
+              {workMapV2Enabled ? t("Work Map") : t("Company", { context: "navigation" })}
             </SectionLink>
 
             <SectionLink to={links.profile} icon={IconBriefcase}>

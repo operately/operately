@@ -5619,7 +5619,7 @@ msgstr "Режим доступа для нового токена"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/User.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:131
+#: ../turboui/src/CompanyNavigation/index.tsx:139
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:311
 msgid "Account"
 msgstr "Учётная запись"
@@ -8569,7 +8569,7 @@ msgstr "Компания"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:62
-#: ../turboui/src/CompanyNavigation/index.tsx:135
+#: ../turboui/src/CompanyNavigation/index.tsx:143
 msgid "Company Admin"
 msgstr "Управление компанией"
 
@@ -9364,7 +9364,7 @@ msgstr "Создать API-токен"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:68
-#: ../turboui/src/CompanyNavigation/index.tsx:142
+#: ../turboui/src/CompanyNavigation/index.tsx:150
 #: ../turboui/src/LobbyPage/index.tsx:117
 #: assets/js/pages/NewCompanyPage/index.tsx:85
 msgid "Create Company"
@@ -12881,8 +12881,8 @@ msgstr "С этой ссылкой что-то не так. Проверьте �
 #: ../turboui/src/AccountSecurityPage/index.tsx:21
 #: ../turboui/src/AccountSettingsPage/index.tsx:45
 #: ../turboui/src/CompanyAdminPage/index.tsx:53
-#: ../turboui/src/CompanyNavigation/index.tsx:107
-#: ../turboui/src/CompanyNavigation/index.tsx:218
+#: ../turboui/src/CompanyNavigation/index.tsx:115
+#: ../turboui/src/CompanyNavigation/index.tsx:226
 #: ../turboui/src/HomePage/index.tsx:20
 #: ../turboui/src/ProfileEditPage/index.tsx:81
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
@@ -14146,7 +14146,7 @@ msgstr "Загрузка…"
 #~ msgstr "Выбор компании"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:152
+#: ../turboui/src/CompanyNavigation/index.tsx:160
 msgid "Log Out"
 msgstr "Выйти"
 
@@ -14815,8 +14815,8 @@ msgid "My upcoming work"
 msgstr "Мои предстоящие дела"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:115
-#: ../turboui/src/CompanyNavigation/index.tsx:226
+#: ../turboui/src/CompanyNavigation/index.tsx:123
+#: ../turboui/src/CompanyNavigation/index.tsx:238
 msgid "My work"
 msgstr "Моя работа"
 
@@ -14910,7 +14910,7 @@ msgid "Navbar update badge"
 msgstr "Уведомление о новой версии в навигации"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:92
+#: ../turboui/src/CompanyNavigation/index.tsx:100
 msgid "Navigation menu"
 msgstr "Меню навигации"
 
@@ -15957,7 +15957,7 @@ msgstr "Параметры уведомлений"
 #: ../turboui/src/AccountPage/index.tsx:61
 #: ../turboui/src/CompanyNavigation/Bell.tsx:26
 #: ../turboui/src/CompanyNavigation/User.tsx:56
-#: ../turboui/src/CompanyNavigation/index.tsx:127
+#: ../turboui/src/CompanyNavigation/index.tsx:135
 #: ../turboui/src/SidebarSection/index.tsx:34
 #: assets/js/pages/NotificationsPage/index.tsx:38
 #: assets/js/pages/NotificationsPage/index.tsx:41
@@ -18732,7 +18732,7 @@ msgstr "Восстановлена прежняя дата начала рабо
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/Review.tsx:18
-#: ../turboui/src/CompanyNavigation/index.tsx:119
+#: ../turboui/src/CompanyNavigation/index.tsx:127
 #: ../turboui/src/ReviewPage/index.tsx:83
 #: ../turboui/src/ReviewPage/index.tsx:132
 msgid "Review"
@@ -18981,7 +18981,7 @@ msgstr "Сб"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:74
-#: ../turboui/src/CompanyNavigation/index.tsx:147
+#: ../turboui/src/CompanyNavigation/index.tsx:155
 #: ee/assets/js/layouts/SaasAdminLayout.tsx:37
 msgid "Saas Admin Panel"
 msgstr "Управление системой"
@@ -20795,7 +20795,7 @@ msgstr "Деактивированные учётные записи нельз�
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:68
-#: ../turboui/src/CompanyNavigation/index.tsx:142
+#: ../turboui/src/CompanyNavigation/index.tsx:150
 msgid "Switch Company"
 msgstr "Сменить компанию"
 
@@ -24495,6 +24495,8 @@ msgid "Work Email"
 msgstr "Рабочая почта"
 
 #.frontend
+#: ../turboui/src/CompanyNavigation/index.tsx:119
+#: ../turboui/src/CompanyNavigation/index.tsx:234
 #: ../turboui/src/GoalPage/PageHeader.tsx:19
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:98
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:112
@@ -27334,15 +27336,15 @@ msgid "Title"
 msgstr "Заголовок"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/index.tsx:111
-#: ../turboui/src/CompanyNavigation/index.tsx:222
+#: ../turboui/src/CompanyNavigation/index.tsx:119
+#: ../turboui/src/CompanyNavigation/index.tsx:234
 msgctxt "navigation"
 msgid "Company"
 msgstr "Компания"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:45
-#: ../turboui/src/CompanyNavigation/index.tsx:123
+#: ../turboui/src/CompanyNavigation/index.tsx:131
 #: assets/js/pages/PeoplePage/page.tsx:14
 msgctxt "navigation"
 msgid "People"

@@ -30,8 +30,13 @@ jest.mock("@/models/people", () => ({ useGetAccount: () => ({ data: { account: {
 jest.mock("@/models/productReleases/useProductRelease", () => ({
   useProductRelease: () => ({ productRelease: null, canAnnounce: false }),
 }));
+let mockEnabledExperimentalFeatures: string[] | undefined;
 jest.mock("@/routes/useCompanyLoaderData", () => ({
-  useCompanyLoaderData: () => ({ company: { id: "company-1", name: "Acme" }, canAddGoal: false, canAddProject: false }),
+  useCompanyLoaderData: () => ({
+    company: { id: "company-1", name: "Acme", enabledExperimentalFeatures: mockEnabledExperimentalFeatures },
+    canAddGoal: false,
+    canAddProject: false,
+  }),
   useRefreshCompanyLoader: () => jest.fn(),
 }));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: () => ({ id: "person-1" }) }));
@@ -41,19 +46,38 @@ jest.mock("@/routes/paths", () => ({
   usePaths: () => new Proxy({}, { get: () => () => "/path" }),
 }));
 
-it("wires the existing company navigation logout control to shared teardown and redirect", () => {
+function renderNavigation() {
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
   window.appConfig = { ...window.appConfig, releaseVersion: "1.0.0" };
   const root = createRoot(document.createElement("div"));
   try {
     act(() => root.render(<CompanyLayout />));
-    expect(jest.mocked(CompanyNavigation).mock.calls[0]?.[0].onLogOut).toBe(logOutAndRedirect);
-    expect(jest.mocked(CompanyNavigation).mock.calls[0]?.[0]).toMatchObject({
-      companyCount: 1,
-      isSiteAdmin: true,
-      links: { adminPanel: "/admin", newCompany: "/new" },
-    });
+    return jest.mocked(CompanyNavigation).mock.lastCall?.[0];
   } finally {
     act(() => root.unmount());
   }
+}
+
+beforeEach(() => {
+  mockEnabledExperimentalFeatures = undefined;
+});
+
+it("wires the existing company navigation logout control to shared teardown and redirect", () => {
+  const navigation = renderNavigation();
+  expect(navigation?.onLogOut).toBe(logOutAndRedirect);
+  expect(navigation).toMatchObject({
+    companyCount: 1,
+    isSiteAdmin: true,
+    links: { adminPanel: "/admin", newCompany: "/new" },
+  });
+});
+
+it.each([
+  { flags: undefined, enabled: false },
+  { flags: ["other_feature"], enabled: false },
+  { flags: ["work_map_v2"], enabled: true },
+])("sets the navbar pilot flag to $enabled for company flags $flags", ({ flags, enabled }) => {
+  mockEnabledExperimentalFeatures = flags;
+
+  expect(renderNavigation()?.workMapV2Enabled).toBe(enabled);
 });
