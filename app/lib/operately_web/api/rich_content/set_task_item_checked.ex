@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemChecked do
   defp update(conn, inputs) do
     with {:ok, record} <- Resources.load(conn, inputs.resource_type, inputs.resource_id, inputs.field),
          {:ok, locked} <- Repo.Locking.lock_for_update(Repo, record),
-         {:ok, content} <- TaskItems.set_checked(Map.fetch!(locked, inputs.field), inputs.expected_content, inputs.item_path, inputs.checked),
+         {:ok, content} <- TaskItems.set_checked(read_content(locked, inputs), inputs.expected_content, inputs.item_path, inputs.checked),
          {:ok, _} <- save_if_changed(conn, inputs, locked, content) do
       %{success: true}
     else
@@ -40,8 +40,11 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemChecked do
     end
   end
 
+  defp read_content(record, %{resource_type: :project_discussion, field: :message}), do: record.body
+  defp read_content(record, inputs), do: Map.fetch!(record, inputs.field)
+
   defp save_if_changed(conn, inputs, record, content) do
-    if Map.fetch!(record, inputs.field) == content do
+    if read_content(record, inputs) == content do
       {:ok, record}
     else
       Resources.save(conn, inputs.resource_type, record, content)

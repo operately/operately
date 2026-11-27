@@ -6,7 +6,7 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
   alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
-  alias Operately.Comments.CommentThread
+  alias Operately.Messages.Message
   alias Operately.ContextualDates.Timeframe
   alias Operately.Blobs.Blob
   alias Operately.Notifications.{Subscription, SubscriptionList}
@@ -253,7 +253,7 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
 
     assert {:ok, project} = materialize(ctx, ~D[2028-01-01])
 
-    discussion = Repo.get_by!(CommentThread, parent_id: project.id, parent_type: :project)
+    discussion = Repo.get_by!(Message, project_id: project.id)
     milestone = Repo.get_by!(Milestone, project_id: project.id)
     task = Repo.get_by!(Task, project_id: project.id)
     hub = Repo.preload(project, :resource_hub).resource_hub
@@ -267,12 +267,22 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert Enum.count(comments) == 5
     assert MapSet.disjoint?(MapSet.new(comments, & &1.id), template_ids)
     refute Repo.exists?(from c in RuntimeComment, where: c.entity_id in ^[milestone.id, task.id])
-    assert Enum.any?(comments, &(&1.entity_type == :comment_thread and &1.entity_id == discussion.id and &1.author_id == ctx.creator.id and &1.content == ctx.unavailable_author_comment.content))
+    assert Enum.any?(comments, &(&1.entity_type == :message and &1.entity_id == discussion.id and &1.author_id == ctx.creator.id and &1.content == ctx.unavailable_author_comment.content))
     assert Repo.aggregate(from(a in Activity, where: a.content["project_id"] == ^project.id and a.action != "project_created"), :count) == 0
 
     ctx.discussion_comment |> Comment.changeset(%{content: %{"type" => "doc", "content" => []}}) |> Repo.update!()
     copied_discussion_comment = Enum.find(comments, &(&1.entity_id == discussion.id and &1.author_id == ctx.creator.id and &1.content == %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}))
     assert Repo.reload!(copied_discussion_comment).content == %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}
+
+    copy = %Operately.Operations.ProjectTemplateCreationFromProject{
+      project_id: project.id, creator_id: ctx.creator.id, name: "Copied template", include_comments: true
+    }
+    assert {:ok, copied_template} = Operately.Operations.ProjectTemplateCreationFromProject.run(copy)
+    [copied_discussion] = Repo.preload(copied_template, :discussions).discussions
+    copied_comments = Repo.all(from c in Comment, where: c.parent_type == :discussion and c.parent_id == ^copied_discussion.id)
+    assert copied_discussion.body == discussion.body
+    assert Enum.sort(Enum.map(copied_comments, & &1.content)) == Enum.sort(Enum.map(Enum.filter(comments, &(&1.entity_id == discussion.id)), & &1.content))
+
   end
 
   test "uses creation access baselines and creates only normal runtime side effects", ctx do
@@ -318,7 +328,7 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
 
     assert {:ok, project} = materialize(ctx, ~D[2028-01-01])
 
-    discussions = Repo.all(from d in CommentThread, where: d.parent_type == :project and d.parent_id == ^project.id, order_by: [desc: d.inserted_at])
+    discussions = Repo.all(from d in Message, where: d.project_id == ^project.id, order_by: [desc: d.inserted_at])
 
     assert Enum.map(discussions, & &1.title) == ["Newest", "Older"]
     assert Enum.all?(discussions, &(&1.id not in [ctx.newest.id, ctx.older.id]))

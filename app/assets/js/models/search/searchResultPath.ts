@@ -28,7 +28,11 @@ export function searchResultPath(paths: Paths, result: SearchResult): string | n
     case "person":
       return target.personId ? paths.profilePath(target.personId) : null;
     case "discussion":
-      return target.discussionId ? paths.discussionPath(target.discussionId) : null;
+      if (!target.discussionId) return null;
+
+      return target.projectId
+        ? paths.projectDiscussionPath(target.discussionId)
+        : paths.discussionPath(target.discussionId);
     case "project_check_in":
       return target.projectCheckInId ? paths.projectCheckInPath(target.projectCheckInId) : null;
     case "goal_check_in":

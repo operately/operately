@@ -18,6 +18,8 @@ defmodule OperatelyWeb.Api.Comments.Delete do
   end
 
   def call(conn, inputs) do
+    inputs = OperatelyWeb.Api.Wrappers.LegacyProjectDiscussions.normalize(conn, inputs)
+
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:comment, fn ctx ->

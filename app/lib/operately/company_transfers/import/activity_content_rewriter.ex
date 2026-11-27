@@ -9,6 +9,8 @@ defmodule Operately.CompanyTransfers.Import.ActivityContentRewriter do
   alias Operately.CompanyTransfers.Import.TranslationPlan
 
   @override_registry %{
+    # Before project discussions moved to messages, the discussion_id belonged to a thread.
+    "project_discussion_submitted" => [%{path: ["discussion_id"], table: "comment_threads"}],
     "company_admin_added" => [
       %{path: ["people", :all, "id"], table: "people"}
     ],

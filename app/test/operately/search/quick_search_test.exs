@@ -37,7 +37,7 @@ defmodule Operately.Search.QuickSearchTest do
     assert Enum.map(results.people, & &1.id) == [ctx.person.id]
 
     assert results.discussions == [
-             %{id: ctx.discussion.id, title: "Searchable Discussion", context: "Searchable Space"}
+             %{id: ctx.discussion.id, title: "Searchable Discussion", context: "Searchable Space", project_id: nil}
            ]
 
     assert Enum.map(results.folders, & &1.id) == [ctx.searchable_folder.id]

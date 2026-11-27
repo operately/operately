@@ -21,12 +21,14 @@ defmodule Operately.Search.CoreWorkIndexUpdates do
 
       {:ok,
        %{
+         discussions: ids_for(repo, Operately.Messages.Message, :project_id, project_id),
          check_ins: ids_for(repo, CheckIn, :project_id, project_id),
          retrospectives: ids_for(repo, Retrospective, :project_id, project_id),
          milestones: ids_for(repo, Milestone, :project_id, project_id),
          tasks: ids_for(repo, Task, :project_id, project_id)
        }}
     end)
+    |> IndexUpdates.enqueue(:search_project_discussions, "discussion", & &1.project_child_search_ids.discussions)
     |> IndexUpdates.enqueue(:search_project_check_ins, "project_check_in", fn changes ->
       changes.project_child_search_ids.check_ins
     end)

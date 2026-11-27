@@ -8,6 +8,10 @@ defmodule OperatelyEmail.Emails.DiscussionCommentSubmittedEmail do
   alias Operately.Messages.Message
 
   def send(person, activity) do
+    if activity.content["project_id"], do: OperatelyEmail.Emails.CommentAddedEmail.send(person, activity), else: send_space_email(person, activity)
+  end
+
+  defp send_space_email(person, activity) do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
@@ -29,7 +33,11 @@ defmodule OperatelyEmail.Emails.DiscussionCommentSubmittedEmail do
     |> render("discussion_comment_submitted")
   end
 
-  def buffered_item(_person, activity) do
+  def buffered_item(person, activity) do
+    if activity.content["project_id"], do: OperatelyEmail.Emails.CommentAddedEmail.buffered_item(person, activity), else: space_digest_item(activity)
+  end
+
+  defp space_digest_item(activity) do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     {:ok, %{title: title} = message} = Message.get(:system, id: activity.content["discussion_id"])

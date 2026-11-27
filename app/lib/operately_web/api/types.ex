@@ -718,6 +718,7 @@ defmodule OperatelyWeb.Api.Types do
       :project_check_in,
       :project_retrospective,
       :project_discussion,
+      :comment_thread,
       :goal_update,
       :goal_discussion,
       :message,
@@ -733,6 +734,7 @@ defmodule OperatelyWeb.Api.Types do
       :project_check_in,
       :project_retrospective,
       :project_discussion,
+      :comment_thread,
       :goal_update,
       :goal_discussion,
       :message,
@@ -2085,6 +2087,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :quick_search_discussion do
+    field? :project_id, :string
     field :id, :string, null: false
     field :title, :string, null: false
     field :context, :string, null: false
@@ -2477,9 +2480,10 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_discussion_comment_submitted, for: Operately.Activities.Content.DiscussionCommentSubmitted do
+    field? :project, :project
     field :discussion, :discussion, null: true
     field :comment, :comment, null: true
-    field :space, :space, null: false
+    field? :space, :space, null: false
   end
 
   object :update_content_project_created do
@@ -3029,6 +3033,7 @@ defmodule OperatelyWeb.Api.Types do
       :project_check_in,
       :project_retrospective,
       :goal_update,
+      :project_discussion,
       :message,
       :resource_hub_document,
       :resource_hub_file,

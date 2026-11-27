@@ -5,21 +5,6 @@ defmodule OperatelyWeb.Mcp.Tools.Comments.Create do
   alias Operately.RichContent.FromMarkdown
   alias OperatelyWeb.Mcp.Helpers
 
-  @parent_types %{
-    "goal_check_in" => :goal_update,
-    "project_check_in" => :project_check_in,
-    "goal_discussion" => :goal_discussion,
-    "project_discussion" => :project_discussion,
-    "space_discussion" => :message,
-    "milestone" => :milestone,
-    "document" => :resource_hub_document,
-    "file" => :resource_hub_file,
-    "link" => :resource_hub_link,
-    "project_task" => :project_task,
-    "space_task" => :space_task,
-    "kpi_update" => :kpi_entry
-  }
-
   @impl true
   def definition do
     Definition.new!(
@@ -50,7 +35,7 @@ defmodule OperatelyWeb.Mcp.Tools.Comments.Create do
             "parent_type" =>
               JsonSchema.string(
                 "The type of resource identified by resource_id.",
-                enum: Map.keys(@parent_types)
+                enum: Helpers.comment_parent_type_values()
               ),
             "content" => JsonSchema.string("Plain text or simple markdown content for the comment.")
           },
@@ -69,7 +54,7 @@ defmodule OperatelyWeb.Mcp.Tools.Comments.Create do
   @impl true
   def call(conn, %{"resource_id" => resource_id, "parent_type" => parent_type, "content" => content}) do
     with {:ok, rich_content} <- FromMarkdown.to_rich_text(content),
-         {:ok, entity_type} <- decode_parent_type(parent_type),
+         {:ok, entity_type} <- Helpers.decode_comment_parent_type(parent_type),
          {:ok, entity_id} <- Helpers.decode_id(resource_id) do
       case CommentCreate.call(conn, %{
              entity_id: entity_id,
@@ -81,13 +66,4 @@ defmodule OperatelyWeb.Mcp.Tools.Comments.Create do
       end
     end
   end
-
-  defp decode_parent_type(parent_type) when is_binary(parent_type) do
-    case Map.fetch(@parent_types, parent_type) do
-      {:ok, entity_type} -> {:ok, entity_type}
-      :error -> {:error, :invalid_arguments}
-    end
-  end
-
-  defp decode_parent_type(_parent_type), do: {:error, :invalid_arguments}
 end

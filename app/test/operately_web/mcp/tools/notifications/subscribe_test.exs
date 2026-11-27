@@ -15,6 +15,17 @@ defmodule OperatelyWeb.Mcp.Tools.Notifications.SubscribeTest do
              OperatelyWeb.Api.Notifications.IsSubscribed.call(conn, %{resource_id: ctx.document.id, resource_type: :resource_hub_document})
   end
 
+  test "accepts the published project discussion identifier and its legacy subscription type" do
+    ctx = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:project, :space) |> Factory.add_project_discussion(:discussion, :project)
+    conn = ToolConnHelper.conn(ctx)
+    id = OperatelyWeb.Paths.message_id(ctx.discussion)
+
+    for type <- ["project_discussion", "comment_thread"] do
+      assert {:ok, _} = Tool.call(conn, %{"resource_id" => id, "resource_type" => type})
+      assert {:ok, %{subscribed: true}} = OperatelyWeb.Api.Notifications.IsSubscribed.call(conn, %{resource_id: ctx.discussion.id, resource_type: :project_discussion})
+    end
+  end
+
   test "rejects malformed identifiers and unsupported resource types" do
     conn = ToolConnHelper.conn(Factory.setup(%{}))
     assert {:error, :invalid_arguments} = Tool.call(conn, %{"resource_id" => "invalid-%%", "resource_type" => "project"})

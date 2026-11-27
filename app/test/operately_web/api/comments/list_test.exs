@@ -223,7 +223,7 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
                })
 
       assert res.message ==
-               "Invalid value for enum comment_list_entity_type: milestone. Allowed values: project_check_in, project_retrospective, project_discussion, goal_update, goal_discussion, message, resource_hub_document, resource_hub_file, resource_hub_link, space_task, project_task, kpi_entry"
+               "Invalid value for enum comment_list_entity_type: milestone. Allowed values: project_check_in, project_retrospective, project_discussion, comment_thread, goal_update, goal_discussion, message, resource_hub_document, resource_hub_file, resource_hub_link, space_task, project_task, kpi_entry"
     end
   end
 

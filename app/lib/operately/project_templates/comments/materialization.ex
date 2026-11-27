@@ -3,7 +3,7 @@ defmodule Operately.ProjectTemplates.Comments.Materialization do
   alias Operately.Updates.Comment, as: RuntimeComment
 
   @runtime_types %{
-    discussion: :comment_thread,
+    discussion: :message,
     document: :resource_hub_document,
     file: :resource_hub_file,
     link: :resource_hub_link

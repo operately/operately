@@ -59,12 +59,13 @@ defmodule OperatelyWeb.Api.Companies.QuickSearch do
   defp serialize_discussion(discussion, company) do
     message = %Message{id: discussion.id, title: discussion.title}
 
-    %{
-      id: Paths.message_id(message),
-      title: discussion.title,
-      context: discussion.context,
-      url: Paths.to_url(Paths.message_path(company, message))
-    }
+    result = %{id: Paths.message_id(message), title: discussion.title, context: discussion.context}
+
+    if discussion.project_id do
+      Map.merge(result, %{project_id: Operately.ShortUuid.encode!(discussion.project_id), url: Paths.to_url(Paths.project_discussion_path(company, message))})
+    else
+      Map.put(result, :url, Paths.to_url(Paths.message_path(company, message)))
+    end
   end
 
   defp serialize_resource(resource, path) do

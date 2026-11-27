@@ -86,6 +86,7 @@ defimpl Operately.Notifications.NotifiableResource, for: Operately.Groups.Group 
 end
 
 defimpl Operately.Notifications.NotifiableResource, for: Operately.Messages.Message do
+  def actions(%{project_id: id}) when not is_nil(id), do: ["project_discussion_submitted"]
   def actions(_), do: ["discussion_posting"]
   def field(_), do: "discussion_id"
 end

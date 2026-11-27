@@ -2,7 +2,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
   import Ecto.Query, only: [from: 2]
 
   alias Ecto.Multi
-  alias Operately.Comments.CommentThread
+  alias Operately.Messages.Message
   alias Operately.People.Person
   alias Operately.Projects.{Contributor, Project}
   alias Operately.Repo
@@ -49,8 +49,8 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
   end
 
   defp load_project_discussions(repo, project_id) do
-    from(discussion in CommentThread,
-      where: discussion.parent_id == ^project_id and discussion.parent_type == :project,
+    from(discussion in Message,
+      where: discussion.project_id == ^project_id and discussion.state == :published,
       order_by: [desc: discussion.inserted_at, desc: discussion.id],
       preload: [:author]
     )
@@ -488,7 +488,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
             project_template_id: template.id,
             author_id: planned.source.author_id,
             title: planned.source.title,
-            body: planned.source.message,
+            body: planned.source.body,
             position: planned.position
           })
         end,

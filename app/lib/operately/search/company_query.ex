@@ -18,7 +18,7 @@ defmodule Operately.Search.CompanyQuery do
 
   @limit 30
   @candidates_cte "company_search_candidates"
-  @state_validated_types ["milestone", "task", "project_check_in", "goal_check_in", "project_retrospective"]
+  @state_validated_types ["discussion", "milestone", "task", "project_check_in", "goal_check_in", "project_retrospective"]
   # Title-only matches fall back to MinWords when the query is absent from the body.
   # Keep MinWords just below MaxWords (PostgreSQL requires MinWords < MaxWords) so
   # title and body excerpts stay roughly the same length.

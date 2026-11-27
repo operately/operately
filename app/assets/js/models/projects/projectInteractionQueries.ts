@@ -5,7 +5,7 @@ import type { QueryClient, QueryKey } from "@tanstack/react-query";
 type ProjectInteractionContext = {
   projectId: string;
   resourceId: string;
-  resourceType: "project_check_in" | "project_discussion" | "project_retrospective";
+  resourceType: "project_check_in" | "project_discussion" | "project_retrospective" | "comment_thread";
   activityId?: string;
   spaceId?: string;
 };
@@ -19,7 +19,6 @@ export async function invalidateProjectInteractionQueries(
   const { resourceId, resourceType, projectId } = context;
   const commentsPrefix = Api.comments.listQueryKeyPrefix();
   const subscriptionPrefix = Api.notifications.isSubscribedQueryKeyPrefix();
-  const subscriptionType = resourceType === "project_discussion" ? "comment_thread" : resourceType;
 
   function invalidateResource(queryKey: QueryKey, field: string, id: string) {
     return client.invalidateQueries({
@@ -48,23 +47,32 @@ export async function invalidateProjectInteractionQueries(
         const input = query.queryKey[subscriptionPrefix.length] as
           | { resourceId?: string; resourceType?: string }
           | undefined;
-        return input?.resourceType === subscriptionType && compareIds(input.resourceId, resourceId);
+        return input?.resourceType === resourceType && compareIds(input.resourceId, resourceId);
       },
     }),
     invalidateResource(Api.projects.getQueryKeyPrefix(), "id", projectId),
-    ...(resourceType === "project_check_in"
-      ? [
-          invalidateResource(Api.projects.getCheckInQueryKeyPrefix(), "id", resourceId),
-          invalidateResource(Api.projects.listCheckInsQueryKeyPrefix(), "projectId", projectId),
-        ]
-      : resourceType === "project_discussion"
-        ? [
-            invalidateResource(Api.projects.getDiscussionQueryKeyPrefix(), "id", resourceId),
-            invalidateResource(Api.projects.listDiscussionsQueryKeyPrefix(), "projectId", projectId),
-          ]
-        : [invalidateResource(Api.projects.getRetrospectiveQueryKeyPrefix(), "projectId", projectId)]),
+    ...resourceQueries(),
     invalidateRelatedActivities(client, context, refetchType),
   ]);
+
+  function resourceQueries() {
+    switch (resourceType) {
+      case "project_check_in":
+        return [
+          invalidateResource(Api.projects.getCheckInQueryKeyPrefix(), "id", resourceId),
+          invalidateResource(Api.projects.listCheckInsQueryKeyPrefix(), "projectId", projectId),
+        ];
+      case "project_discussion":
+        return [
+          invalidateResource(Api.projects.getDiscussionQueryKeyPrefix(), "id", resourceId),
+          invalidateResource(Api.projects.listDiscussionsQueryKeyPrefix(), "projectId", projectId),
+        ];
+      case "project_retrospective":
+        return [invalidateResource(Api.projects.getRetrospectiveQueryKeyPrefix(), "projectId", projectId)];
+      case "comment_thread":
+        return [];
+    }
+  }
 }
 
 function invalidateRelatedActivities(
@@ -108,7 +116,7 @@ function invalidateRelatedActivities(
 
 function isRelatedActivity(activity: Activity, context: ProjectInteractionContext) {
   const { resourceId, resourceType, projectId } = context;
-  if (resourceType === "project_discussion" && compareIds(activity.commentThread?.id, resourceId)) return true;
+  if (resourceType === "comment_thread" && compareIds(activity.commentThread?.id, resourceId)) return true;
 
   const content = activity.content;
 
@@ -116,6 +124,8 @@ function isRelatedActivity(activity: Activity, context: ProjectInteractionContex
   if ("activity" in content && content.activity) return isRelatedActivity(content.activity, context);
 
   switch (resourceType) {
+    case "comment_thread":
+      return false;
     case "project_discussion":
       return "discussion" in content && compareIds(content.discussion?.id, resourceId);
     case "project_check_in":

@@ -151,7 +151,7 @@ function Subscriptions() {
     potentialSubscribers: discussion.potentialSubscribers ?? [],
     subscriptionList: discussion.subscriptionList,
     resourceName: "discussion",
-    type: "comment_thread",
+    type: "project_discussion",
     onRefresh: refresh,
   });
 

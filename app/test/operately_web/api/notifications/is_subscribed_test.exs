@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.Notifications.IsSubscribedTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Access.Binding
+  import Ecto.Query, only: [from: 2]
   import Operately.KpisFixtures
 
   describe "security" do
@@ -56,6 +57,25 @@ defmodule OperatelyWeb.Api.Notifications.IsSubscribedTest do
       end)
       |> Factory.add_space_member(:person, :default_space)
       |> Factory.log_in_person(:person)
+    end
+
+    test "project discussion subscriptions use the message while activity threads have their own type", ctx do
+      ctx = Factory.add_project_discussion(ctx, :discussion, :project1)
+      target = %{resource_id: Paths.message_id(ctx.discussion), resource_type: "project_discussion"}
+
+      assert {200, %{subscribed: false}} = query(ctx.conn, [:notifications, :is_subscribed], target)
+      assert {404, _} = query(ctx.conn, [:notifications, :is_subscribed], %{target | resource_type: "comment_thread"})
+
+      ctx = Factory.add_api_token(ctx, :token, :person, read_only: true)
+      assert {200, %{subscribed: false}} = external_query(ctx.conn, ctx.token, "notifications/is_subscribed", %{target | resource_type: "comment_thread"})
+    end
+
+    test "can read a goal thread subscription from before threads stored a parent ID", ctx do
+      ctx = Factory.add_goal_discussion(ctx, :discussion, :goal1)
+      thread = ctx.discussion
+      Repo.update_all(from(t in Operately.Comments.CommentThread, where: t.id == ^thread.id), set: [parent_id: nil, parent_type: nil])
+
+      assert {200, %{subscribed: false}} = query(ctx.conn, [:notifications, :is_subscribed], %{resource_id: Paths.comment_thread_id(thread), resource_type: "comment_thread"})
     end
 
     test "returns false when user is not subscribed to goal update", ctx do

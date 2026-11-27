@@ -106,7 +106,7 @@ it.each([false, true])(
       render();
       const options = jest.mocked(useOptimisticReactions).mock.calls.at(-1)?.[0];
       expect(options).toMatchObject({
-        entity: { id: "resource1", type: "project_discussion" },
+        entity: { id: "resource1", type: "comment_thread" },
         initialReactions: reactions,
       });
       expect(jest.mocked(Reactions).mock.calls.at(-1)?.[0]).toEqual({ ...form, size: 24, canAddReaction: canComment });
@@ -122,7 +122,7 @@ it.each([false, true])(
         expect.objectContaining({
           projectId: "project1",
           resourceId: "resource1",
-          resourceType: "project_discussion",
+          resourceType: "comment_thread",
           activityId: "activity1",
         }),
       );

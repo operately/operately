@@ -15,6 +15,8 @@ defmodule OperatelyWeb.Api.Notifications.Subscribe do
   end
 
   def call(conn, inputs) do
+    inputs = OperatelyWeb.Api.Wrappers.LegacyProjectDiscussions.normalize(conn, inputs)
+
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:access_level, fn ctx -> Notifications.get_subscription_list_access_level(inputs.subscription_list_id, inputs.type, ctx.me.id) end)
@@ -42,7 +44,7 @@ defmodule OperatelyWeb.Api.Notifications.Subscribe do
       :resource_hub_document -> ResourceHubs.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
       :resource_hub_file -> ResourceHubs.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
       :resource_hub_link -> ResourceHubs.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
-      :comment_thread -> Activities.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      type when type in [:comment_thread, :project_discussion] -> Activities.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
       :project -> Projects.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
       :project_task -> Projects.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
       :space_task -> Groups.Permissions.check(access_level, :can_view, company_read_only: company_read_only)

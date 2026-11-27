@@ -34,6 +34,17 @@ defmodule OperatelyWeb.Mcp.Tools.Comments.CreateTest do
       assert_created_comment(conn, Paths.task_id(ctx.task), "project_task", "Comment on project task")
     end
 
+    test "accepts both the explicit and legacy parent type for a project activity thread" do
+      ctx = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project(:project, :space) |> Factory.pause_project(:project)
+      pause = Repo.get_by!(Operately.Activities.Activity, action: "project_pausing", author_id: ctx.creator.id)
+      thread_id = Operately.ShortUuid.encode!(pause.comment_thread_id)
+      conn = ToolConnHelper.conn_with_assigns(ctx.account, ctx.company, ctx.creator, ["mcp:read", "mcp:write"])
+
+      for parent_type <- ["comment_thread", "project_discussion"] do
+        assert_created_comment(conn, thread_id, parent_type, "Reply using #{parent_type}")
+      end
+    end
+
     test "creates comments for goal resources" do
       ctx =
         %{}

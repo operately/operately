@@ -8,7 +8,6 @@ defmodule Operately.Search.QuickSearch do
 
   alias Operately.Goals.Goal
   alias Operately.Groups.Group, as: Space
-  alias Operately.Messages.Message
   alias Operately.People.Person
   alias Operately.Projects.{Milestone, Project}
   alias Operately.Repo
@@ -54,7 +53,7 @@ defmodule Operately.Search.QuickSearch do
         fn -> search_milestones(person, search_term) end,
         fn -> search_tasks(person, search_term, include_completed) end,
         fn -> search_people(person, search_term) end,
-        fn -> search_discussions(person, search_term) end,
+        fn -> search_discussions(person, search_term, include_completed) end,
         fn -> ResourceHubItems.search(person, search_term) end
       ]
       |> Operately.Parallel.run()
@@ -207,7 +206,7 @@ defmodule Operately.Search.QuickSearch do
   end
 
   defp maybe_exclude_completed_projects(query, true), do: query
-  defp maybe_exclude_completed_projects(query, false), do: where(query, [project], project.status != "closed")
+  defp maybe_exclude_completed_projects(query, false), do: where(query, [project: project], is_nil(project.id) or project.status != "closed")
 
   defp maybe_exclude_completed_goals(query, true), do: query
   defp maybe_exclude_completed_goals(query, false), do: where(query, [goal], is_nil(goal.closed_at))
@@ -267,17 +266,12 @@ defmodule Operately.Search.QuickSearch do
     |> Repo.all()
   end
 
-  defp search_discussions(person, search_term) do
+  defp search_discussions(person, search_term, include_completed) do
     pattern = match_pattern(search_term)
 
     ranked_discussions =
-      from(message in Message,
-        join: board in assoc(message, :messages_board),
-        join: space in assoc(board, :space),
-        as: :space,
-        where: space.company_id == ^person.company_id,
-        where: is_nil(space.deleted_at),
-        where: message.state == :published,
+      from([message, space: space] in Operately.Search.DiscussionQuery.with_owner(),
+        where: space.company_id == ^person.company_id and message.state == :published,
         where: is_nil(message.deleted_at),
         where:
           # Treats hyphens and underscores as spaces.
@@ -287,11 +281,13 @@ defmodule Operately.Search.QuickSearch do
             ^pattern
           )
       )
-      |> filter_by_view_access(person.id, named_binding: :space)
-      |> select([message, _board, space: space], %{
+      |> maybe_exclude_completed_projects(include_completed)
+      |> filter_by_view_access(person.id, existing_context: true)
+      |> select([message, project: project, space: space], %{
         id: message.id,
         title: message.title,
-        context: space.name,
+        project_id: message.project_id,
+        context: coalesce(project.name, space.name),
         search_rank:
           # Ranks matches nearer the title's start first.
           fragment(

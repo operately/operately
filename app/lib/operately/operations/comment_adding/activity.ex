@@ -2,6 +2,20 @@ defmodule Operately.Operations.CommentAdding.Activity do
   alias Operately.Activities
   alias Operately.ResourceHubs.Parent
 
+  def insert(multi, creator, :discussion_comment_submitted, %{project_id: id} = message) when not is_nil(id) do
+    project = Operately.Repo.preload(message, :project).project
+
+    Activities.insert_sync(multi, creator.id, :discussion_comment_submitted, fn %{comment: comment} ->
+      %{
+        company_id: project.company_id,
+        space_id: project.group_id,
+        project_id: id,
+        discussion_id: message.id,
+        comment_id: comment.id
+      }
+    end)
+  end
+
   def insert(multi, creator, action = :discussion_comment_submitted, entity) do
     Activities.insert_sync(multi, creator.id, action, fn changes ->
       %{

@@ -110,6 +110,7 @@ defmodule Operately.Search.CompanyQuery.ResultBuilder do
   end
 
   defp navigation_target(%{source_type: :person} = candidate), do: %{person_id: candidate.source_id}
+  defp navigation_target(%{source_type: :discussion, source_project_id: id} = candidate) when not is_nil(id), do: %{discussion_id: candidate.source_id, project_id: id}
   defp navigation_target(%{source_type: :discussion} = candidate), do: %{discussion_id: candidate.source_id}
   defp navigation_target(%{source_type: :project_check_in} = candidate), do: %{project_check_in_id: candidate.source_id}
   defp navigation_target(%{source_type: :goal_check_in} = candidate), do: %{goal_check_in_id: candidate.source_id}

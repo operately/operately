@@ -5,7 +5,6 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
   alias Operately.Activities.Activity
   alias Operately.Blobs.Blob
-  alias Operately.Comments.CommentThread
   alias Operately.ContextualDates.ContextualDate
   alias Operately.Notifications.Notification
   alias Operately.Operations.ProjectTemplateCreationFromProject
@@ -305,7 +304,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     assert {:ok, template} = create_template(ctx)
     discussions = Repo.all(from d in Discussion, where: d.project_template_id == ^template.id, order_by: [asc: d.position])
 
-    assert Enum.map(discussions, & &1.title) == ctx.source.id |> CommentThread.list_for_project() |> Enum.map(& &1.title)
+    assert Enum.map(discussions, & &1.title) == ctx.source.id |> Project.list_discussions() |> Enum.map(& &1.title)
     assert Enum.map(discussions, & &1.author_id) == [ctx.creator.id, ctx.creator.id]
     assert Enum.map(discussions, & &1.position) == [0, 1]
 

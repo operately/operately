@@ -26,6 +26,12 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     |> Multi.run(:materialized_people, fn repo, %{copy_plan: plan, project: project} ->
       PeopleCreator.insert(repo, plan, project)
     end)
+    |> Multi.merge(fn %{materialized_children: %{discussions: discussions}} ->
+      case discussions do
+        [] -> Multi.new()
+        _ -> Operately.Search.IndexUpdates.enqueue(Multi.new(), :search_discussions, "discussion", Enum.map(discussions, & &1.id))
+      end
+    end)
     |> track_workspace_activation(params)
     |> Repo.transaction()
     |> extract_result()
@@ -628,21 +634,20 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
       |> Enum.reverse()
       |> Enum.with_index()
       |> Enum.reduce_while({:ok, []}, fn {planned, position}, {:ok, inserted} ->
-        discussion = %Operately.Comments.CommentThread{
+        discussion = %Operately.Messages.Message{
           id: Ecto.UUID.generate(),
           inserted_at: NaiveDateTime.add(inserted_at, position, :second),
           updated_at: NaiveDateTime.add(inserted_at, position, :second)
         }
 
-        with {:ok, subscription_list} <- insert_subscription_list(repo, discussion.id, :comment_thread),
+        with {:ok, subscription_list} <- insert_subscription_list(repo, discussion.id, :message),
              changeset <-
-               Operately.Comments.CommentThread.changeset(discussion, %{
+               Operately.Messages.Message.changeset(discussion, %{
                  author_id: planned.author_id,
-                 parent_id: project.id,
-                 parent_type: :project,
+                 project_id: project.id,
+                 state: :published,
                  title: planned.source.title,
-                 has_title: true,
-                 message: planned.source.body,
+                 body: planned.source.body,
                  subscription_list_id: subscription_list.id
                }),
              {:ok, inserted_discussion} <- insert_child(repo, changeset, :discussion) do

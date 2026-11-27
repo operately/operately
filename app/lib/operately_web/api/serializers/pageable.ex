@@ -135,7 +135,10 @@ defimpl OperatelyWeb.Api.Pageable, for: Operately.Search.Result do
 
   defp search_path(company, %{type: :discussion, title: title, navigation_target: target}) do
     discussion_id = target[:discussion_id]
-    if discussion_id, do: Paths.message_path(company, %{id: discussion_id, title: title})
+    if discussion_id do
+      discussion = %{id: discussion_id, title: title}
+      if target[:project_id], do: Paths.project_discussion_path(company, discussion), else: Paths.message_path(company, discussion)
+    end
   end
 
   defp search_path(company, %{type: :project_check_in, inserted_at: inserted_at, navigation_target: target}) do

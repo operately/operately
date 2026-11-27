@@ -33,7 +33,7 @@ export function mapQuickSearchResult(paths: Paths, result: CompaniesQuickSearchR
       id: discussion.id,
       name: discussion.title,
       context: discussion.context,
-      link: paths.discussionPath(discussion.id),
+      link: discussion.projectId ? paths.projectDiscussionPath(discussion.id) : paths.discussionPath(discussion.id),
     })),
     folders: prepareResources(result.folders, paths.resourceHubFolderPath.bind(paths)),
     documents: prepareResources(result.documents, paths.resourceHubDocumentPath.bind(paths)),

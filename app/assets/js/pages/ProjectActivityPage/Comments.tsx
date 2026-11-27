@@ -28,7 +28,7 @@ function ActivityComments({
     projectId: project.id,
     spaceId: project.space?.id,
     resourceId: thread.id,
-    resourceType: "project_discussion" as const,
+    resourceType: "comment_thread" as const,
     activityId: activity.id,
   };
   function invalidateQueries(client: QueryClient, refetchType: "active" | "none") {
@@ -36,7 +36,7 @@ function ActivityComments({
   }
 
   const props = useCommentSection({
-    entity: { id: thread.id, type: "project_discussion" },
+    entity: { id: thread.id, type: "comment_thread" },
     mentionSearchScope: { type: "project", id: project.id },
     invalidateQueries,
     canComment: activity.permissions?.canCommentOnThread ?? false,

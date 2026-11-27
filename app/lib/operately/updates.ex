@@ -87,26 +87,22 @@ defmodule Operately.Updates do
           where: comment.id == ^id
         )
 
+      :project_discussion ->
+        from(c in Comment,
+          as: :comment,
+          join: m in Operately.Messages.Message, on: m.id == c.entity_id,
+          join: p in assoc(m, :project), as: :resource,
+          where: c.id == ^id and c.entity_type == :message and m.state == :published and is_nil(m.deleted_at)
+        )
+
       :comment_thread ->
         from(c in Comment,
           as: :comment,
           join: t in Operately.Comments.CommentThread,
           on: t.id == c.entity_id,
-          join: a in Activities.Activity,
-          on: a.comment_thread_id == t.id,
+          join: a in assoc(t, :activity),
           as: :resource,
-          where: c.id == ^id
-        )
-
-      :project_discussion ->
-        from(c in Comment,
-          as: :comment,
-          join: t in Operately.Comments.CommentThread,
-          on: t.id == c.entity_id,
-          join: a in Activities.Activity,
-          on: a.comment_thread_id == t.id,
-          as: :resource,
-          where: c.id == ^id
+          where: c.id == ^id and c.entity_type == :comment_thread and t.parent_type == :activity and t.parent_id == a.id
         )
 
       :goal_discussion ->

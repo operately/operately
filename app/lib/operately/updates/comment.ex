@@ -24,6 +24,7 @@ defmodule Operately.Updates.Comment do
     :project_check_in,
     :project_retrospective,
     :project_discussion,
+    :comment_thread,
     :goal_update,
     :goal_discussion,
     :message,

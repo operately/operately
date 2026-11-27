@@ -105,6 +105,12 @@ defmodule Operately.Notifications do
 
   alias Operately.Notifications.SubscriptionList
 
+  def get_subscription_list_with_access_level(id, :project_discussion, person_id) do
+    with {:ok, message} <- Operately.Messages.Message.get(person_id, subscription_list_id: id, opts: [getter_profile: :project_discussion, preload: :subscription_list]) do
+      {:ok, SubscriptionList.set_requester_access_level(message.subscription_list, message.request_info.access_level)}
+    end
+  end
+
   def get_subscription_list_with_access_level(id, type, person_id) when type in [:resource_hub_document, :resource_hub_file, :resource_hub_link] do
     fetch_resource_hub_subscription_list_with_access_level(id, type, person_id)
   end
@@ -180,6 +186,13 @@ defmodule Operately.Notifications do
         )
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :subscription_list)
+  end
+
+  def get_subscription_list_access_level(id, :project_discussion, person_id) do
+    case get_subscription_list_with_access_level(id, :project_discussion, person_id) do
+      {:ok, list} -> {:ok, list.requester_access_level}
+      {:error, :not_found} -> {:ok, Operately.Access.Binding.no_access()}
+    end
   end
 
   def get_subscription_list_access_level(id, type, person_id) when type in [:resource_hub_document, :resource_hub_file, :resource_hub_link] do

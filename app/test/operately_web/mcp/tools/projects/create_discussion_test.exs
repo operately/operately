@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Mcp.Tools.Projects.CreateDiscussionTest do
   use Operately.DataCase, async: true
 
-  alias Operately.Comments.CommentThread
+  alias Operately.Messages.Message
   alias Operately.Notifications.SubscriptionList
   alias Operately.Support.Factory
   alias OperatelyWeb.Mcp.Tools.Projects.CreateDiscussion
@@ -22,10 +22,10 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.CreateDiscussionTest do
                "content" => "Project discussion content"
              })
 
-    discussion = Operately.Repo.get!(CommentThread, ToolConnHelper.decode_id!(discussion.id))
+    discussion = Operately.Repo.get!(Message, ToolConnHelper.decode_id!(discussion.id))
 
     assert discussion.title == "Project discussion"
-    assert ToolConnHelper.rich_text_to_string(discussion.message) == "Project discussion content"
+    assert ToolConnHelper.rich_text_to_string(discussion.body) == "Project discussion content"
 
     list = subscription_list!(discussion.id)
 

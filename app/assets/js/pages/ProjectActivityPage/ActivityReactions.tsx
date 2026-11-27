@@ -26,14 +26,14 @@ function ThreadReactions({
 }) {
   const client = useQueryClient();
   const form = useOptimisticReactions({
-    entity: { id: thread.id, type: "project_discussion" },
+    entity: { id: thread.id, type: "comment_thread" },
     initialReactions: thread.reactions ?? undefined,
     onRefresh: () =>
       invalidateProjectInteractionQueries(client, {
         projectId: project.id,
         spaceId: project.space?.id,
         resourceId: thread.id,
-        resourceType: "project_discussion",
+        resourceType: "comment_thread",
         activityId: activity.id,
       }),
   });

@@ -19,6 +19,8 @@ defmodule OperatelyWeb.Api.Notifications.IsSubscribed do
   end
 
   def call(conn, inputs) do
+    inputs = OperatelyWeb.Api.Wrappers.LegacyProjectDiscussions.normalize(conn, inputs)
+
     Action.new()
     |> Action.run(:me, fn -> find_me(conn) end)
     |> Action.run(:resource, fn ctx -> load_resource(ctx, inputs) end)
@@ -61,6 +63,9 @@ defmodule OperatelyWeb.Api.Notifications.IsSubscribed do
 
       :resource_hub_link ->
         Operately.ResourceHubs.Link.get(ctx.me, id: resource_id)
+
+      :project_discussion ->
+        Operately.Messages.Message.get(ctx.me, id: resource_id, opts: [getter_profile: :project_discussion])
 
       :comment_thread ->
         Operately.Comments.CommentThread.get(ctx.me, id: resource_id)

@@ -68,6 +68,7 @@ defmodule Operately.Messages.Message do
 
   def getter_profile(:default), do: %Profile{access_contexts: [:access_context, :project_access_context, :goal_access_context]}
   def getter_profile(:space_discussion), do: %Profile{scope: &board_owned/1}
+  def getter_profile(:project_discussion), do: %Profile{scope: &published_project_discussions/1, access_contexts: [:project_access_context]}
   def getter_profile(_), do: nil
 
   @doc "Filters discussions by publication state and authorship. Callers must also check access to the owning resource."
@@ -76,6 +77,10 @@ defmodule Operately.Messages.Message do
 
   def visible_to(query, person_id) when is_binary(person_id) do
     from(m in query, where: not is_nil(m.messages_board_id) or m.state == :published or m.author_id == ^person_id)
+  end
+
+  def published_project_discussions(query) do
+    from(m in query, where: not is_nil(m.project_id) and m.state == :published)
   end
 
   defp board_owned(query), do: from(m in query, where: not is_nil(m.messages_board_id))

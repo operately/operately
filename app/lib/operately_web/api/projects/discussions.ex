@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
   alias OperatelyWeb.Api.Projects.Discussions.SharedMultiSteps, as: Steps
 
   alias Operately.Projects.Project
-  alias OperatelyWeb.Api.Serializer
+  alias OperatelyWeb.Api.Serializers.ProjectDiscussion
 
   defmodule Get do
     @moduledoc """
@@ -11,7 +11,6 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
 
     use TurboConnect.Query
     use OperatelyWeb.Api.Helpers
-    alias Operately.Comments.CommentThread
 
     inputs do
       field :id, :id
@@ -35,7 +34,7 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
       |> Steps.find_discussion(inputs.id, find_opts(conn, inputs))
       |> Steps.check_discussion_permissions(:can_view)
       |> Steps.respond(fn changes ->
-        %{discussion: Serializer.serialize(changes.discussion, level: :essential)}
+        %{discussion: ProjectDiscussion.serialize(changes.discussion)}
       end)
     end
 
@@ -49,40 +48,30 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
     defp preload(inputs) do
       Inputs.parse_includes(inputs,
         always_include: [:author, reactions: :person],
-        include_subscriptions_list: :subscription_list
+        include_subscriptions_list: :subscription_list,
+        include_project: :project,
+        include_space: :project,
+        include_potential_subscribers: [project: [:access_context, contributors: :person]]
       )
     end
 
     defp after_load(conn, inputs) do
       {:ok, person} = find_me(conn)
-      company_read_only = company_read_only(conn)
 
       Inputs.parse_includes(inputs,
-        include_unread_notifications: fn ct -> CommentThread.load_unread_notifications(ct, person) end,
-        include_project: &CommentThread.load_project/1,
-        include_space: fn ct -> load_space(person, ct) end,
-        include_potential_subscribers: &CommentThread.set_potential_subscribers/1,
-        include_permissions: &CommentThread.load_permissions(&1, company_read_only)
+        include_unread_notifications: Operately.Notifications.UnreadNotificationsLoader.load(person),
+        include_space: fn message ->
+          case Operately.Groups.Group.get(person, id: message.project.group_id) do
+            {:ok, space} -> %{message | space: space}
+            {:error, :not_found} -> %{message | space: nil}
+          end
+        end,
+        include_potential_subscribers: &Operately.Messages.Message.set_potential_subscribers/1,
+        include_permissions: fn message ->
+          permissions = Operately.Projects.Permissions.calculate(message.request_info.access_level, company_read_only: company_read_only(conn))
+          %{message | permissions: permissions}
+        end
       )
-    end
-
-
-    def load_space(person, thread) do
-      thread = ensure_project_loaded(thread)
-
-      case Operately.Groups.Group.get(person, id: thread.project.group_id) do
-        {:ok, space} -> Map.put(thread, :space, space)
-        {:error, _} -> Map.put(thread, :space, nil)
-      end
-    end
-
-    defp ensure_project_loaded(thread) do
-      if thread.project do
-        thread
-      else
-        thread = CommentThread.load_project(thread)
-        if thread.project, do: thread, else: raise(ArgumentError, "Project could not be loaded")
-      end
     end
   end
 
@@ -108,7 +97,7 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
       |> Steps.check_project_permissions(:can_view)
       |> Steps.list_discussions()
       |> Steps.respond(fn changes ->
-        %{discussions: Serializer.serialize(changes.discussions, level: :essential)}
+        %{discussions: Enum.map(changes.discussions, &ProjectDiscussion.serialize/1)}
       end)
     end
   end
@@ -138,19 +127,8 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_project_permissions(:can_edit)
       |> Steps.create_discussion(inputs.title, inputs.message, inputs.subscriber_ids, inputs.send_notifications_to_everyone)
-      |> Ecto.Multi.merge(fn changes ->
-        Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, :project_discussion_submitted, fn _ ->
-          %{
-            company_id: changes.project.company_id,
-            space_id: changes.project.group_id,
-            project_id: changes.project.id,
-            discussion_id: changes.thread.id,
-            title: changes.thread.title
-          }
-        end, [comment_thread_id: changes.thread.id])
-      end)
       |> Steps.respond(fn changes ->
-        %{discussion: Serializer.serialize(changes.thread, level: :essential)}
+        %{discussion: ProjectDiscussion.serialize(changes.discussion)}
       end)
     end
   end
@@ -178,9 +156,9 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
       |> Steps.start_transaction()
       |> Steps.find_discussion(inputs.id)
       |> Steps.check_discussion_permissions(:can_edit)
-      |> Steps.update_discussion(inputs.title, inputs.message, inputs.subscriber_ids)
+      |> Steps.update_discussion(inputs.title, inputs.message)
       |> Steps.respond(fn changes ->
-        %{discussion: Serializer.serialize(changes.updated_discussion, level: :essential)}
+        %{discussion: ProjectDiscussion.serialize(changes.updated_discussion)}
       end)
     end
   end
@@ -209,7 +187,7 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
 
     def find_discussion(multi, discussion_id, opts \\ []) do
       Ecto.Multi.run(multi, :discussion, fn _repo, %{me: me} ->
-        case Operately.Comments.CommentThread.get(me, id: discussion_id, opts: opts) do
+        case Operately.Messages.Message.get(me, id: discussion_id, opts: Keyword.put(opts, :getter_profile, :project_discussion)) do
           {:ok, discussion} -> {:ok, discussion}
           {:error, _} -> {:error, {:not_found, gettext("Discussion not found")}}
         end
@@ -235,46 +213,14 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
     end
 
     def create_discussion(multi, title, message, subscriber_ids, send_to_everyone) do
-      alias Operately.Operations.Notifications.SubscriptionList
-      alias Operately.Operations.Notifications.Subscription
-      alias Operately.Comments.CommentThread
-
-      Ecto.Multi.merge(multi, fn %{project: project, me: me} ->
-        Ecto.Multi.new()
-        |> SubscriptionList.insert(%{send_to_everyone: send_to_everyone, subscription_parent_type: :comment_thread})
-        |> Subscription.insert(me, %{content: message, subscriber_ids: subscriber_ids})
-        |> Ecto.Multi.insert(:thread, fn changes ->
-          CommentThread.changeset(%{
-            author_id: me.id,
-            parent_id: project.id,
-            parent_type: :project,
-            message: message,
-            title: title,
-            has_title: true,
-            subscription_list_id: changes.subscription_list.id
-          })
-        end)
-        |> SubscriptionList.update(:thread)
+      Ecto.Multi.run(multi, :discussion, fn _, %{project: project, me: me} ->
+        Operately.Operations.DiscussionPosting.run(me, project, %{title: title, content: message, subscriber_ids: subscriber_ids, send_to_everyone: send_to_everyone})
       end)
     end
 
-    def update_discussion(multi, title, message, subscriber_ids) do
-      alias Operately.Comments.CommentThread
-      alias Operately.Operations.Notifications.Subscription
-
-      multi
-      |> Ecto.Multi.update(:updated_discussion, fn changes ->
-        CommentThread.changeset(changes.discussion, %{title: title, message: message})
-      end)
-      |> Ecto.Multi.run(:subscription_list, fn _, changes ->
-        {:ok, Operately.Repo.preload(changes.discussion, subscription_list: :subscriptions).subscription_list}
-      end)
-      |> Subscription.update_mentioned_people(%{content: message, subscriber_ids: subscriber_ids})
-    end
-
-    def save_activity(multi, activity_type, callback) do
-      Ecto.Multi.merge(multi, fn changes ->
-        Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, activity_type, fn _ -> callback.(changes) end)
+    def update_discussion(multi, title, message) do
+      Ecto.Multi.run(multi, :updated_discussion, fn _, %{discussion: discussion, me: me} ->
+        Operately.Operations.DiscussionEditing.run(me, discussion, %{title: title, body: message})
       end)
     end
 
@@ -301,6 +247,9 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :not_found}
+
+        {:error, _failed_operation, %Ecto.Changeset{}, _changes} ->
+          {:error, :bad_request}
 
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Transaction failed: #{inspect(reason)}")

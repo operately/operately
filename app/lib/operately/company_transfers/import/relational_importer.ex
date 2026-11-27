@@ -62,7 +62,8 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
          {:ok, account_resolution} <- AccountResolver.resolve(package),
          plan = TranslationPlan.build(package, account_resolution.mapping),
          {:ok, deferred_updates} <- insert_tables(package, schema, plan),
-         :ok <- apply_deferred_updates(deferred_updates) do
+         :ok <- apply_deferred_updates(deferred_updates),
+         :ok <- migrate_project_threads(package, plan) do
       {:ok,
        %{
          company_id: TranslationPlan.imported_company_id(plan, package),
@@ -73,6 +74,18 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
          files_count: package.manifest["files_count"] || 0
        }}
     end
+  end
+
+  # Older company packages still store discussions as project comment threads.
+  defp migrate_project_threads(package, plan) do
+    ids = for %{"parent_type" => "project", "id" => id} <- Package.table_rows(package, "comment_threads"),
+              do: TranslationPlan.translate(plan, "comment_threads", id)
+
+    if ids != [] do
+      {:ok, :ok} = Operately.Data.Change124MigrateProjectDiscussions.run(ids)
+    end
+
+    :ok
   end
 
   defp insert_tables(%Package{} = package, %SchemaSnapshot{} = schema, %TranslationPlan{} = plan) do

@@ -20,6 +20,8 @@ defmodule OperatelyWeb.Api.Comments.Update do
   end
 
   def call(conn, inputs) do
+    inputs = OperatelyWeb.Api.Wrappers.LegacyProjectDiscussions.normalize(conn, inputs)
+
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:comment, fn ctx -> Updates.get_comment_with_access_level(inputs.comment_id, ctx.me.id, inputs.parent_type) end)

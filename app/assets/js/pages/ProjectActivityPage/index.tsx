@@ -1,3 +1,4 @@
+import { Navigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
@@ -21,6 +22,18 @@ import { loader, useLoadedData, useRefresh } from "./loader";
 export default { name: "ProjectActivityPage", loader, Page } as PageModule;
 
 function Page() {
+  const { discussionId } = Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
+  const paths = usePaths();
+  const { search, hash } = useLocation();
+
+  if (discussionId) {
+    return <Navigate replace to={{ pathname: paths.projectDiscussionPath(discussionId), search, hash }} />;
+  }
+
+  return <ActivityPage />;
+}
+
+function ActivityPage() {
   const { activity, project } = useLoadedData();
 
   const thread = activity.commentThread;
@@ -34,7 +47,7 @@ function Page() {
               projectId: project.id,
               spaceId: project.space?.id,
               resourceId: thread.id,
-              resourceType: "project_discussion",
+              resourceType: "comment_thread",
               activityId: activity.id,
             },
             "none",

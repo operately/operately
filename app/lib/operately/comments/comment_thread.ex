@@ -53,21 +53,6 @@ defmodule Operately.Comments.CommentThread do
     end
   end
 
-  def set_potential_subscribers(thread = %__MODULE__{}) do
-    thread = ensure_project_loaded(thread)
-    project = Operately.Repo.preload(thread.project, contributors: :person)
-    thread = Operately.Repo.preload(thread, :access_context)
-
-    thread = Map.put(thread, :project, project)
-
-    subs =
-      thread
-      |> Notifications.SubscribersLoader.preload_subscriptions()
-      |> Notifications.Subscriber.from_project_child()
-
-    Map.put(thread, :potential_subscribers, subs)
-  end
-
   def set_potential_subscribers(activity = %Operately.Activities.Activity{}) do
     cond do
       is_nil(activity.comment_thread) ->
@@ -106,59 +91,6 @@ defmodule Operately.Comments.CommentThread do
 
       true ->
         activity
-    end
-  end
-
-  def list_for_project(project_id) do
-    from(ct in __MODULE__,
-      where: ct.parent_type == :project and ct.parent_id == ^project_id,
-      order_by: [desc: ct.inserted_at, desc: ct.id]
-    )
-    |> Operately.Repo.all()
-  end
-
-  def load_unread_notifications(thread, person) do
-    if thread.parent_type == :project do
-      activity = Repo.preload(thread, :activity).activity
-
-      notifications =
-        from(n in Operately.Notifications.Notification,
-          where: n.activity_id == ^activity.id,
-          where: n.person_id == ^person.id and not n.read,
-          select: n
-        )
-        |> Operately.Repo.all()
-
-      Map.put(thread, :notifications, notifications)
-    else
-      raise ArgumentError, "Unread notifications can only be loaded for project comment threads"
-    end
-  end
-
-  def load_project(thread) do
-    if thread.parent_type == :project do
-      project = Operately.Projects.get_project!(thread.parent_id)
-      Map.put(thread, :project, project)
-    else
-      raise ArgumentError, "Project can only be loaded for project comment threads"
-    end
-  end
-
-  def load_permissions(thread, company_read_only \\ false) do
-    if thread.parent_type == :project do
-      permissions = Operately.Projects.Permissions.calculate(thread.request_info.access_level, company_read_only: company_read_only)
-      Map.put(thread, :project_permissions, permissions)
-    else
-      raise ArgumentError, "Permissions can only be loaded for project comment threads"
-    end
-  end
-
-  defp ensure_project_loaded(thread = %__MODULE__{}) do
-    if thread.project do
-      thread
-    else
-      thread = load_project(thread)
-      if thread.project, do: thread, else: raise(ArgumentError, "Project could not be loaded")
     end
   end
 end

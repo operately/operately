@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsList do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:attrs, fn -> parse_inputs(inputs) end)
+    |> run(:attrs, fn -> parse_inputs(conn, inputs) end)
     |> run(:list, fn ctx -> Notifications.get_subscription_list_with_access_level(ctx.attrs.id, ctx.attrs.type, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> check_permissions(ctx.attrs.type, ctx.list.requester_access_level, company_read_only(conn)) end)
     |> run(:operation, fn ctx -> SubscriptionsListEditing.run(ctx.list, ctx.attrs) end)
@@ -37,10 +37,12 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsList do
     end
   end
 
-  defp parse_inputs(inputs) do
+  defp parse_inputs(conn, inputs) do
+    inputs = OperatelyWeb.Api.Wrappers.LegacyProjectDiscussions.normalize(conn, %{inputs | type: String.to_existing_atom(inputs.type)})
+
     {:ok, %{
       id: inputs.subscription_list_id,
-      type: String.to_existing_atom(inputs.type),
+      type: inputs.type,
       send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscriber_ids: inputs[:subscriber_ids] || [],
     }}
@@ -55,7 +57,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsList do
       :resource_hub_document -> ResourceHubs.Permissions.check(access_level, :can_edit_document, company_read_only: company_read_only)
       :resource_hub_file -> ResourceHubs.Permissions.check(access_level, :can_edit_file, company_read_only: company_read_only)
       :resource_hub_link -> ResourceHubs.Permissions.check(access_level, :can_edit_link, company_read_only: company_read_only)
-      :comment_thread -> Activities.Permissions.check(access_level, :can_edit_comment_thread, company_read_only: company_read_only)
+      type when type in [:comment_thread, :project_discussion] -> Activities.Permissions.check(access_level, :can_edit_comment_thread, company_read_only: company_read_only)
     end
   end
 end

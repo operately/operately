@@ -18,6 +18,11 @@ export async function loader({ params }) {
   };
 
   const { activity } = await Api.companies.getActivityQuery(activityInput);
+  const content = activity.content;
+
+  if (activity.action === "project_discussion_submitted" && content && "discussion" in content && content.discussion) {
+    return { activityInput, discussionId: content.discussion.id, projectInput: null, subscriptionInput: null };
+  }
 
   const embeddedProject = Activities.getProject(activity);
   const projectInput = embeddedProject.id
@@ -39,7 +44,7 @@ export async function loader({ params }) {
     subscriptionInput ? Api.notifications.isSubscribedQuery(subscriptionInput) : Promise.resolve(),
   ]);
 
-  return { activityInput, projectInput: resolvedProjectInput, subscriptionInput };
+  return { activityInput, discussionId: null, projectInput: resolvedProjectInput, subscriptionInput };
 }
 
 type LoaderResult = Awaited<ReturnType<typeof loader>>;

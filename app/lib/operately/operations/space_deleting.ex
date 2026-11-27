@@ -54,7 +54,7 @@ defmodule Operately.Operations.SpaceDeleting do
 
     Multi.run(multi, :sub_resources, fn _, _ ->
       # Get all projects in the space
-      project_ids = from(p in Project, where: p.group_id == ^space.id, select: p.id) |> Repo.all()
+      project_ids = from(p in Project, where: p.group_id == ^space.id, select: p.id) |> Repo.all(with_deleted: true)
 
       # Get all goals in the space
       goal_ids = from(g in Goal, where: g.group_id == ^space.id, select: g.id) |> Repo.all()
@@ -62,8 +62,10 @@ defmodule Operately.Operations.SpaceDeleting do
       # Get all message boards in the space
       message_board_ids = from(mb in MessagesBoard, where: mb.space_id == ^space.id, select: mb.id) |> Repo.all()
 
-      # Get all messages from these message boards
-      message_ids = from(m in Message, where: m.messages_board_id in ^message_board_ids, select: m.id) |> Repo.all()
+      # Both board and project messages are deleted by the space cascade.
+      message_ids =
+        from(m in Message, where: m.messages_board_id in ^message_board_ids or m.project_id in ^project_ids, select: m.id)
+        |> Repo.all(with_deleted: true)
 
       # Get all project check-ins
       project_check_in_ids = from(c in CheckIn, where: c.project_id in ^project_ids, select: c.id) |> Repo.all()

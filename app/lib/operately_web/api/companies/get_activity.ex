@@ -59,12 +59,27 @@ defmodule OperatelyWeb.Api.Companies.GetActivity do
     Inputs.parse_includes(inputs, [
       always_include: &Activities.cast_content/1,
       always_include: &Preloader.preload/1,
+      always_include: &load_project_discussion(&1, inputs),
       include_unread_goal_notifications: load_unread_goal_notifications(person),
       include_unread_project_notifications: load_unread_project_notifications(person),
       include_permissions: &Activity.set_permissions(&1, company_read_only),
       include_potential_subscribers: &CommentThread.set_potential_subscribers/1,
     ])
   end
+
+  defp load_project_discussion(%{action: "project_discussion_submitted", content: %{discussion: %Operately.Messages.Message{} = message} = content} = activity, inputs) do
+    preloads = Inputs.parse_includes(inputs,
+      always_include: [reactions: :person],
+      include_subscriptions_list: :subscription_list,
+      include_potential_subscribers: [project: [:access_context, contributors: :person]]
+    )
+
+    message = Operately.Repo.preload(message, preloads)
+    message = if inputs[:include_potential_subscribers], do: Operately.Messages.Message.set_potential_subscribers(message), else: message
+    %{activity | content: %{content | discussion: message}}
+  end
+
+  defp load_project_discussion(activity, _inputs), do: activity
 
   defp serialize(activity) do
     OperatelyWeb.Api.Serializers.Activity.serialize(activity, [comment_thread: :full])

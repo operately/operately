@@ -25,6 +25,7 @@
         "project_check_in",
         "project_retrospective",
         "project_discussion",
+        "comment_thread",
         "goal_update",
         "goal_discussion",
         "message",
@@ -115,6 +116,7 @@
         "project_check_in",
         "project_retrospective",
         "goal_update",
+        "project_discussion",
         "message",
         "resource_hub_document",
         "resource_hub_file",
@@ -135,6 +137,7 @@
         "project_check_in",
         "project_retrospective",
         "project_discussion",
+        "comment_thread",
         "goal_update",
         "goal_discussion",
         "message",
@@ -291,6 +294,7 @@
         "project_check_in",
         "project_retrospective",
         "project_discussion",
+        "comment_thread",
         "goal_update",
         "goal_discussion",
         "message",
@@ -368,6 +372,7 @@
         "project_check_in",
         "project_retrospective",
         "project_discussion",
+        "comment_thread",
         "goal_update",
         "goal_discussion",
         "message",
@@ -418,11 +423,11 @@
         "goal",
         "milestone",
         "document",
-        "kpi",
         "space_discussion",
+        "project_discussion",
         "project_check_in",
         "project_retrospective",
-        "project_discussion",
+        "kpi",
         "goal_discussion",
         "goal_check_in",
         "comment",
@@ -2751,6 +2756,17 @@
           },
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "discussion",
             "type": {
               "name": "discussion",
@@ -2778,7 +2794,7 @@
               "name": "space",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "nullable": false,
             "has_default": false
           }
@@ -6861,6 +6877,17 @@
       },
       "quick_search_discussion": {
         "fields": [
+          {
+            "default": null,
+            "name": "project_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
           {
             "default": null,
             "name": "id",

@@ -1849,13 +1849,17 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project_retrospective(:retrospective, :project, :creator)
         |> Factory.add_project_check_in(:check_in, :project, :creator)
         |> Factory.add_project_discussion(:discussion, :project)
+        |> Factory.add_project_discussion(:archived, :project)
+        |> Factory.add_comment(:archived_reply, :archived)
         |> Factory.log_in_person(:creator)
+
+      Repo.soft_delete!(ctx.archived)
 
       assert count_activities(project_id: ctx.project.id) > 0
       assert Operately.Projects.get_check_in!(ctx.check_in.id)
       assert Operately.Projects.get_milestone!(ctx.milestone.id)
       assert Operately.Projects.get_retrospective!(ctx.retrospective.id)
-      assert Operately.Comments.get_thread!(ctx.discussion.id)
+      assert Operately.Repo.get!(Operately.Messages.Message, ctx.discussion.id)
       assert Operately.Projects.get_contributor!(ctx.contrib.id)
 
       assert {200, res} = mutation(ctx.conn, [:projects, :delete], %{
@@ -1870,6 +1874,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       # activities are deleted
       assert count_activities(project_id: ctx.project.id) == 0
 
+      refute Repo.get(Operately.Updates.Comment, ctx.archived_reply.id)
+
       # resources are deleted
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Projects.get_check_in!(ctx.check_in.id)
@@ -1881,7 +1887,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         Operately.Projects.get_retrospective!(ctx.retrospective.id)
       end
       assert_raise Ecto.NoResultsError, fn ->
-        Operately.Comments.get_thread!(ctx.discussion.id)
+        Operately.Repo.get!(Operately.Messages.Message, ctx.discussion.id)
       end
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Projects.get_contributor!(ctx.contrib.id)

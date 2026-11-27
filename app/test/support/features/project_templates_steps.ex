@@ -829,7 +829,7 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
   end
 
   step :change_source_project_discussion, ctx do
-    from(thread in Operately.Comments.CommentThread, where: thread.parent_id == ^ctx.project.id)
+    from(message in Operately.Messages.Message, where: message.project_id == ^ctx.project.id)
     |> Repo.update_all(set: [title: "Changed after copy"])
 
     ctx

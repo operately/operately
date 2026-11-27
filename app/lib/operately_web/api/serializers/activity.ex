@@ -15,12 +15,22 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(activity.inserted_at),
       action: activity.action,
       author: OperatelyWeb.Api.Serializer.serialize(activity.author, level: :essential),
-      comment_thread: activity.comment_thread && serialize_comment_thread(activity.comment_thread, comment_thread),
+      comment_thread: activity_thread(activity, comment_thread),
       content: tag_content(activity.action, serialize_content(activity.action, activity.content)),
       notifications: OperatelyWeb.Api.Serializer.serialize(activity.notifications),
       permissions: OperatelyWeb.Api.Serializer.serialize(activity.permissions, level: :full)
     })
   end
+
+  defp activity_thread(%{action: "project_discussion_submitted", content: content}, level) do
+    case content["discussion"] do
+      %Operately.Messages.Message{} = discussion ->
+        discussion |> OperatelyWeb.Api.Serializers.ProjectDiscussion.as_thread() |> serialize_comment_thread(level)
+      _ -> nil
+    end
+  end
+
+  defp activity_thread(activity, level), do: activity.comment_thread && serialize_comment_thread(activity.comment_thread, level)
 
   def serialize_comment_thread(comment_thread, :minimal) do
     TypeNames.tag_module(Operately.Comments.CommentThread, %{

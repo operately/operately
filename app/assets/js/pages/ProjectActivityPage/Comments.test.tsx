@@ -47,7 +47,7 @@ it.each([false, true])("preserves configuration and edit-mode visibility with ca
     act(() => root.render(<Comments />));
     const options = jest.mocked(useCommentSection).mock.calls[0]?.[0];
     expect(options).toMatchObject({
-      entity: { id: "resource1", type: "project_discussion" },
+      entity: { id: "resource1", type: "comment_thread" },
       mentionSearchScope: { type: "project", id: "project1" },
       canComment,
     });
@@ -60,7 +60,7 @@ it.each([false, true])("preserves configuration and edit-mode visibility with ca
         expect.objectContaining({
           projectId: "project1",
           resourceId: "resource1",
-          resourceType: "project_discussion",
+          resourceType: "comment_thread",
           activityId: "activity1",
         }),
         mode,

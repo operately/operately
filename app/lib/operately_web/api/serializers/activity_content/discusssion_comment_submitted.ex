@@ -2,10 +2,15 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Discuss
   alias OperatelyWeb.Api.Serializer
 
   def serialize(content, level: :essential) do
-    %{
-      space: Serializer.serialize(content["space"], level: :essential),
-      discussion: Serializer.serialize(content["discussion"], level: :essential),
-      comment: Serializer.serialize(content["comment"], level: :essential),
+    result = %{
+      discussion: Serializer.serialize(content.discussion, level: :essential),
+      comment: Serializer.serialize(content.comment, level: :essential)
     }
+
+    if content.project_id do
+      Map.put(result, :project, Serializer.serialize(content.project, level: :essential))
+    else
+      Map.put(result, :space, Serializer.serialize(content.space, level: :essential))
+    end
   end
 end

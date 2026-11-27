@@ -94,6 +94,12 @@ describe("comment activity paths", () => {
     ).toEqual("/discussions/discussion-1#comment-1");
 
     expect(
+      DiscussionCommentSubmitted.pagePath(paths, {
+        content: { discussion: { id: "discussion-1" }, project: { id: "project-1" }, comment },
+      } as any),
+    ).toEqual("/project-discussions/discussion-1#comment-1");
+
+    expect(
       ProjectTaskCommented.pagePath(paths, {
         content: { task: { id: "task-1", type: "project" }, project: { id: "project-1" }, comment },
       } as any),

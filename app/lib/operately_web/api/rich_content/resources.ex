@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.RichContent.Resources do
     file: {Operately.ResourceHubs.File, :description, Operately.ResourceHubs.Permissions, :can_edit_file},
     link: {Operately.ResourceHubs.Link, :description, Operately.ResourceHubs.Permissions, :can_edit_link},
     space_discussion: {Operately.Messages.Message, :body, Operately.Groups.Permissions, :can_edit},
-    project_discussion: {Operately.Comments.CommentThread, :message, Operately.Projects.Permissions, :can_edit},
+    project_discussion: {Operately.Messages.Message, :message, Operately.Projects.Permissions, :can_edit},
     goal_discussion: {Operately.Comments.CommentThread, :message, Operately.Goals.Permissions, :can_edit},
     project_check_in: {Operately.Projects.CheckIn, :description, Operately.Projects.Permissions, :can_edit},
     goal_check_in: {Operately.Goals.Update, :message, Operately.Goals.Permissions, :can_edit},
@@ -91,9 +91,7 @@ defmodule OperatelyWeb.Api.RichContent.Resources do
   end
 
   def save(conn, :project_discussion, record, content) do
-    record = Repo.preload(record, subscription_list: :subscriptions)
-    subscriber_ids = Enum.map(record.subscription_list.subscriptions, & &1.person_id)
-    Api.Projects.Discussions.Update.call(conn, %{id: record.id, title: record.title, message: content, subscriber_ids: subscriber_ids})
+    Api.Projects.Discussions.Update.call(conn, %{id: record.id, title: record.title, message: content})
   end
 
   def save(conn, :goal_discussion, record, content) do
@@ -124,13 +122,13 @@ defmodule OperatelyWeb.Api.RichContent.Resources do
     permissions.check(record.request_info.access_level, permission, company_read_only: Api.Helpers.company_read_only(conn))
   end
 
+  defp getter_profile(:project_discussion), do: :project_discussion
   defp getter_profile(:space_discussion), do: :space_discussion
   defp getter_profile(_type), do: :default
 
-  defp prepare(type, record) when type in [:project_discussion, :goal_discussion] do
+  defp prepare(:goal_discussion, record) do
     record = Repo.preload(record, :activity)
-    expected_action = if type == :project_discussion, do: "project_discussion_submitted", else: "goal_discussion_creation"
-    if record.activity && record.activity.action == expected_action, do: {:ok, record}, else: {:error, :not_found}
+    if record.activity && record.activity.action == "goal_discussion_creation", do: {:ok, record}, else: {:error, :not_found}
   end
 
   defp prepare(_, record), do: {:ok, record}
@@ -139,7 +137,12 @@ defmodule OperatelyWeb.Api.RichContent.Resources do
   defp check_draft(_, _, _), do: {:ok, :allowed}
 
   defp comment_parent_type(%{entity_type: :project_milestone}), do: :milestone
-  defp comment_parent_type(%{entity_type: :comment_thread}), do: :project_discussion
+  defp comment_parent_type(%{entity_type: :message, entity_id: id}) do
+    case Repo.get(Operately.Messages.Message, id) do
+      %{project_id: project_id} when not is_nil(project_id) -> :project_discussion
+      _ -> :message
+    end
+  end
   defp comment_parent_type(%{entity_type: :update}), do: :goal_discussion
   defp comment_parent_type(comment), do: comment.entity_type
 end

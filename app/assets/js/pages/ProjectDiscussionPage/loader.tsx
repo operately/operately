@@ -17,7 +17,7 @@ export async function loader({ params }) {
 
   const subscriptionInput = {
     resourceId: params.id,
-    resourceType: "comment_thread" as const,
+    resourceType: "project_discussion" as const,
   };
 
   await Promise.all([

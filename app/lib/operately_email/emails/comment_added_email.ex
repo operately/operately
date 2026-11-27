@@ -26,6 +26,13 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
   end
 
   defp comment_context(activity) do
+    case activity.content["discussion_id"] do
+      nil -> thread_context(activity)
+      id -> {:discussion, Repo.get!(Operately.Messages.Message, id).title}
+    end
+  end
+
+  defp thread_context(activity) do
     thread = Operately.Comments.get_thread!(activity.content["comment_thread_id"])
     parent_activity = Repo.preload(thread, :activity).activity
 
@@ -117,6 +124,13 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
   end
 
   def get_action(activity) do
+    case activity.content["discussion_id"] do
+      nil -> thread_action(activity)
+      id -> gettext("commented on: %{title}", title: Repo.get!(Operately.Messages.Message, id).title)
+    end
+  end
+
+  defp thread_action(activity) do
     comment_thread = Operately.Comments.get_thread!(activity.content["comment_thread_id"])
     activity = Operately.Repo.preload(comment_thread, :activity).activity
 
@@ -150,6 +164,13 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
   end
 
   def get_link(company, activity, comment) do
+    case activity.content["discussion_id"] do
+      nil -> thread_link(company, activity, comment)
+      id -> Paths.project_discussion_path(company, Repo.get!(Operately.Messages.Message, id), comment) |> Paths.to_url()
+    end
+  end
+
+  defp thread_link(company, activity, comment) do
     comment_thread = Operately.Comments.get_thread!(activity.content["comment_thread_id"])
     activity = Operately.Repo.preload(comment_thread, :activity).activity
     activity = Repo.preload(activity, :comment_thread)
