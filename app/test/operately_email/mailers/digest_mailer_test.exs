@@ -231,7 +231,7 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
     assert goal_pos < project_pos, "Goal 1 should appear before Project Alpha (earliest activity first)"
   end
 
-  test "uses singular English copy for one update", ctx do
+  test "describes one update using the activity and its place", ctx do
     digest_items = [
       %{
         parent_id: "goal-1",
@@ -249,10 +249,8 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
 
     email = DigestMailer.build_digest_email(ctx.person, ctx.batch, digest_items)
 
-    assert email.subject == "You have 1 new update"
-    assert email.html_body =~ "You have 1 new update"
+    assert_digest_subject(email, "Goal 1: John D. Activity 1")
     assert email.html_body =~ "View update"
-    assert email.text_body =~ "You have 1 new update"
     assert email.text_body =~ "Goal 1 (1 update)"
   end
 
@@ -292,7 +290,7 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
         DigestMailer.build_digest_email(person, ctx.batch, digest_items)
       end)
 
-    assert email.subject == "You have 2 new updates"
+    assert email.subject == "2 updates in Goal 1"
     assert email.html_body =~ "Manage email settings"
     assert email.text_body =~ "Goal 1 (2 updates)"
   end
@@ -334,12 +332,10 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
         DigestMailer.build_digest_email(person, ctx.batch, digest_items)
       end)
 
-    assert email.subject == "Você tem 2 novas atualizações"
-    assert email.html_body =~ "Você tem 2 novas atualizações"
+    assert_digest_subject(email, "2 atualizações em Goal 1")
     assert email.html_body =~ "Objetivo"
     assert email.html_body =~ "Gerenciar configurações de e-mail"
     assert email.html_body =~ "Ver atualização"
-    assert email.text_body =~ "Você tem 2 novas atualizações"
     assert email.text_body =~ "Goal 1 (2 atualizações)"
   end
 
@@ -373,11 +369,48 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
 
     email = DigestMailer.build_daily_summary_email(ctx.person, digest_items)
 
-    assert email.subject == "You have 2 new updates"
-    assert email.html_body =~ "You have 2 new updates"
+    assert_digest_subject(email, "2 updates across Goal 1 and Project Alpha")
     assert email.html_body =~ "Goal 1"
     assert email.html_body =~ "Project Alpha"
-    assert email.text_body =~ "You have 2 new updates"
+  end
+
+  test "names the two busiest places and counts the remaining places in both digests", ctx do
+    places = [
+      {:space, "People", 1},
+      {:goal, "Growth & GTM", 2},
+      {:project, "Website launch", 3},
+      {:project, "Partners", 1}
+    ]
+
+    items =
+      for {type, name, count} <- places, _ <- 1..count do
+        digest_item(%{parent_type: type, parent_id: name, parent_name: name})
+      end
+
+    for email <- [DigestMailer.build_digest_email(ctx.person, ctx.batch, items), DigestMailer.build_daily_summary_email(ctx.person, items)] do
+      assert_digest_subject(email, "7 updates across Website launch, Growth & GTM, and 2 others")
+      assert email.text_body =~ "People (1 update)"
+      assert email.text_body =~ "Partners (1 update)"
+    end
+
+    items = Enum.reject(items, &(&1.parent_name == "Partners"))
+    email = DigestMailer.build_daily_summary_email(ctx.person, items)
+    assert email.subject == "6 updates across Website launch, Growth & GTM, and 1 other"
+  end
+
+  test "uses the recipient locale for comment plurals and groups by document identity", ctx do
+    item = digest_item(%{summary: {:document_comment, "document-1", "Launch & GTM"}})
+
+    Gettext.with_locale(OperatelyWeb.Gettext, "ru", fn ->
+      for {count, words} <- [{3, "новых комментария"}, {5, "новых комментариев"}, {21, "новый комментарий"}] do
+        email = DigestMailer.build_daily_summary_email(ctx.person, List.duplicate(item, count))
+        assert_digest_subject(email, "#{count} #{words} к документу «Launch & GTM»")
+      end
+    end)
+
+    other_item = %{item | summary: {:document_comment, "document-2", "Launch & GTM"}}
+    email = DigestMailer.build_daily_summary_email(ctx.person, [item, other_item])
+    assert email.subject == "2 updates in Website launch"
   end
 
   test "empty buffered and daily digests use zero updates in translated languages and fallback", ctx do
@@ -431,5 +464,31 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
         end
       end)
     end
+  end
+
+  defp assert_digest_subject(email, subject) do
+    escaped_subject = subject |> Phoenix.HTML.html_escape() |> Phoenix.HTML.safe_to_string() |> Regex.escape()
+
+    assert email.subject == subject
+    assert email.html_body =~ ~r{<td>\s*#{escaped_subject}\s*</td>}
+    assert String.starts_with?(email.text_body, subject <> "\n")
+  end
+
+  defp digest_item(overrides) do
+    Map.merge(
+      %{
+        parent_id: "project-1",
+        parent_type: :project,
+        parent_name: "Website launch",
+        headline: "commented on a document",
+        excerpt_html: nil,
+        excerpt_text: nil,
+        item_url: "https://example.com/activity",
+        actor_name: "John D.",
+        occurred_at: ~N[2026-04-02 10:01:00],
+        coalesce_key: nil
+      },
+      overrides
+    )
   end
 end

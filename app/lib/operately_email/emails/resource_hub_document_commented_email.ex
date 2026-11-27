@@ -49,6 +49,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCommentedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
+      summary: {:document_comment, document.id, document.name},
       headline: gettext("commented on the document \"%{document_name}\"", document_name: document.name),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,

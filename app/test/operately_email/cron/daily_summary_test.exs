@@ -251,14 +251,16 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
     activity = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
     for person <- [ctx.creator, ctx.portuguese, ctx.russian, ctx.french, ctx.spanish], do: notification_at(person.id, activity.id, ~N[2026-04-08 17:00:00])
     previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
+    author = Operately.People.Person.short_name(ctx.creator)
+    place = ctx.project.name
 
     for {person, subject, headline} <- [
-          {ctx.portuguese, "Você tem 1 nova atualização", "criou o projeto"},
-          {ctx.creator, "You have 1 new update", "created the project"},
-          {ctx.russian, "У вас 1 новое обновление", "проект создан"},
-          {ctx.french, "Vous avez 1 nouvelle mise à jour", "a créé le projet"},
-          {ctx.spanish, "Tienes 1 nueva actualización", "creó el proyecto"},
-          {ctx.portuguese, "Você tem 1 nova atualização", "criou o projeto"}
+          {ctx.portuguese, "#{place}: #{author} criou o projeto", "criou o projeto"},
+          {ctx.creator, "#{place}: #{author} created the project", "created the project"},
+          {ctx.russian, "#{place}: #{author} — проект создан", "проект создан"},
+          {ctx.french, "#{place} : #{author} a créé le projet", "a créé le projet"},
+          {ctx.spanish, "#{place}: #{author} creó el proyecto", "creó el proyecto"},
+          {ctx.portuguese, "#{place}: #{author} criou o projeto", "criou o projeto"}
         ] do
       assert_daily_language(person, subject, headline)
       assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
