@@ -78,6 +78,7 @@ function Navigation({
   const props: CompanyNavigation.Props = {
     companyName: company.name,
     companyCount: companiesData?.companies.length,
+    workMapV2Enabled: company.enabledExperimentalFeatures?.includes("work_map_v2") ?? false,
     isSiteAdmin: accountData?.account.siteAdmin ?? false,
     me: {
       id: me.id,
