@@ -2898,6 +2898,8 @@
   "Show on space page": "Show on space page",
   "Show previous check-in": "Show previous check-in",
   "Show update badge": "Show update badge",
+  "Show {{count}} earlier reply_one": "Show {{count}} earlier reply",
+  "Show {{count}} earlier reply_other": "Show {{count}} earlier replies",
   "Show {{count}} more task_one": "Show {{count}} more task",
   "Show {{count}} more task_other": "Show {{count}} more tasks",
   "Shows what needs to happen next for this work to progress.": "Shows what needs to happen next for this work to progress.",

@@ -1942,6 +1942,7 @@ export interface InlineThread {
   insertedAt: string;
   anchor: InlineAnchor;
   messages: Comment[];
+  earlierReplyCount: number;
 }
 
 export interface InviteLink {
@@ -3450,12 +3451,12 @@ export type RichTextResourceType =
   | "milestone"
   | "document"
   | "kpi"
+  | "space_discussion"
   | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"
   | "goal_check_in"
-  | "space_discussion"
   | "comment"
   | "person"
   | "project_template"
@@ -3969,6 +3970,15 @@ export interface GoalsSearchParentGoalInput {
 
 export interface GoalsSearchParentGoalResult {
   goals: Goal[];
+}
+
+export interface InlineThreadsGetInput {
+  resourceId: Id;
+  threadId: Id;
+}
+
+export interface InlineThreadsGetResult {
+  thread: InlineThread;
 }
 
 export interface InlineThreadsListInput {
@@ -13525,6 +13535,24 @@ export default {
   },
 
   inline_threads: {
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/inline_threads/get"),
+    getQueryKey: (input: InlineThreadsGetInput) => buildApiQueryKey(defaultApiClient, "/inline_threads/get", input),
+    getQueryOptions: (input: InlineThreadsGetInput) =>
+      buildApiQueryOptions<InlineThreadsGetInput, InlineThreadsGetResult>(
+        defaultApiClient,
+        "/inline_threads/get",
+        input,
+      ),
+    getQuery: (input: InlineThreadsGetInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<InlineThreadsGetInput, InlineThreadsGetResult>(
+          defaultApiClient,
+          "/inline_threads/get",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
     listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/inline_threads/list"),
     listQueryKey: (input: InlineThreadsListInput) => buildApiQueryKey(defaultApiClient, "/inline_threads/list", input),
     listQueryOptions: (input: InlineThreadsListInput) =>

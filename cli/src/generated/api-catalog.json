@@ -419,12 +419,12 @@
         "milestone",
         "document",
         "kpi",
+        "space_discussion",
         "project_check_in",
         "project_retrospective",
         "project_discussion",
         "goal_discussion",
         "goal_check_in",
-        "space_discussion",
         "comment",
         "person",
         "project_template",
@@ -24409,6 +24409,17 @@
                 "kind": "named"
               },
               "kind": "list"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "earlier_reply_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
             },
             "optional": false,
             "nullable": false,

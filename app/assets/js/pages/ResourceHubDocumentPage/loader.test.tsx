@@ -2,7 +2,7 @@
 import React from "react";
 import axios from "axios";
 import Api from "@/api";
-import { queryClient } from "@/api/queryClient";
+import { queryClient, useLoadedQuery } from "@/api/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as Pages from "@/components/Pages";
 import { act, renderHook, waitFor } from "@/__tests__/renderHook";
@@ -162,7 +162,7 @@ it("refreshes the page's queries while preserving unrelated cached documents", a
   expect(queryClient.getQueryState(unrelatedKey)?.isInvalidated).toBe(false);
 });
 
-it("waits for inline comments before completing the loader", async () => {
+it("returns document data while inline comments are still loading", async () => {
   let finishThreads: (value: { data: { threads: { id: string }[] } }) => void = () => {};
   jest.mocked(axios.get).mockImplementation((url) => {
     if (url.endsWith("/inline_threads/list")) {
@@ -182,18 +182,22 @@ it("waits for inline comments before completing the loader", async () => {
   await waitFor(() =>
     expect(axios.get).toHaveBeenCalledWith(expect.stringContaining("/inline_threads/list"), expect.anything()),
   );
-  expect(finished).not.toHaveBeenCalled();
-  finishThreads({ data: { threads: [{ id: "thread1" }] } });
+  await waitFor(() => expect(finished).toHaveBeenCalledTimes(1));
   await pending;
   expect(axios.get).not.toHaveBeenCalledWith(expect.stringContaining("/resource_hubs/"), expect.anything());
-  expect(
-    queryClient.getQueryData(
-      Api.inline_threads.listQueryKey({
-        resourceType: "resource_hub_document",
-        resourceId: "doc1",
-      }),
-    ),
-  ).toEqual({ threads: [{ id: "thread1" }] });
+  const threadsOptions = Api.inline_threads.listQueryOptions({
+    resourceType: "resource_hub_document",
+    resourceId: "doc1",
+  });
+  const { result } = renderHook(() => useLoadedQuery(threadsOptions), {
+    initialProps: undefined,
+    wrapper,
+  });
+  expect(result.current.isPending).toBe(true);
+  expect(axios.get).toHaveBeenCalledTimes(3);
+
+  finishThreads({ data: { threads: [{ id: "thread1" }] } });
+  await waitFor(() => expect(result.current.data).toEqual({ threads: [{ id: "thread1" }] }));
 });
 
 it("loads new replies when revisiting a document with cached threads", async () => {
@@ -213,11 +217,13 @@ it("loads new replies when revisiting a document with cached threads", async () 
   jest.mocked(axios.get).mockResolvedValue({ data: { threads: [updatedThread] } });
   await visit();
 
-  expect(
-    queryClient.getQueryData(
-      Api.inline_threads.listQueryKey({ resourceType: "resource_hub_document", resourceId: "doc1" }),
-    ),
-  ).toEqual({ threads: [updatedThread] });
+  await waitFor(() =>
+    expect(
+      queryClient.getQueryData(
+        Api.inline_threads.listQueryKey({ resourceType: "resource_hub_document", resourceId: "doc1" }),
+      ),
+    ).toEqual({ threads: [updatedThread] }),
+  );
   expect(axios.get).toHaveBeenCalledTimes(1);
   expect(axios.get).toHaveBeenCalledWith(expect.stringContaining("/inline_threads/list"), expect.anything());
 });

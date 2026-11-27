@@ -2898,6 +2898,8 @@
   "Show on space page": "Auf der Arbeitsbereichsseite anzeigen",
   "Show previous check-in": "Vorherigen Check-in anzeigen",
   "Show update badge": "Hinweis auf neue Version anzeigen",
+  "Show {{count}} earlier reply_one": "{{count}} frühere Antwort anzeigen",
+  "Show {{count}} earlier reply_other": "{{count}} frühere Antworten anzeigen",
   "Show {{count}} more task_one": "{{count}} weitere Aufgabe anzeigen",
   "Show {{count}} more task_other": "{{count}} weitere Aufgaben anzeigen",
   "Shows what needs to happen next for this work to progress.": "Zeigt, was als Nächstes passieren muss, damit diese Arbeit vorankommt.",

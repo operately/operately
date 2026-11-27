@@ -384,7 +384,11 @@ function CommentEditMode({
   };
 
   return (
-    <div className="bg-surface-base rounded-lg border border-stroke-base p-2 mt-1" data-test-id="edit-comment-form">
+    <div
+      className="bg-surface-base rounded-lg border border-stroke-base p-2 mt-1"
+      data-test-id="edit-comment-form"
+      data-editing-comment
+    >
       <Editor editor={editor} hideBorder hideToolbar={inline} />
       <div className="flex gap-2 p-2 mt-2">
         <PrimaryButton

@@ -388,6 +388,7 @@ defmodule OperatelyWeb.Api do
 
       namespace :inline_threads do
         query :list, OperatelyWeb.Api.InlineThreads.List
+        query :get, OperatelyWeb.Api.InlineThreads.Get
         mutation :create, OperatelyWeb.Api.InlineThreads.Create
         mutation :reply, OperatelyWeb.Api.InlineThreads.Reply
         mutation :update_message, OperatelyWeb.Api.InlineThreads.UpdateMessage

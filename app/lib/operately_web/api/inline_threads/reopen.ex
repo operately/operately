@@ -20,7 +20,10 @@ defmodule OperatelyWeb.Api.InlineThreads.Reopen do
     |> run(:thread, fn ctx -> InlineThread.get(ctx.me, id: inputs.thread_id) end)
     |> run(:permissions, fn ctx -> Permissions.check(ctx.thread.request_info.access_level, :can_comment_on_document, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> InlineThreadReopening.run(ctx.me, ctx.thread) end)
-    |> run(:serialized, fn ctx -> {:ok, %{thread: Serializer.serialize(ctx.operation, level: :full)}} end)
+    |> run(:serialized, fn ctx ->
+      thread = InlineThread.preview_loaded_thread(ctx.operation)
+      {:ok, %{thread: Serializer.serialize(thread, level: :full)}}
+    end)
     |> respond()
   end
 
