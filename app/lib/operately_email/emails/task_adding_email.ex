@@ -59,6 +59,7 @@ defmodule OperatelyEmail.Emails.TaskAddingEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
+      summary: :task_created,
       headline: gettext("created the task \"%{task_name}\"", task_name: task.name),
       excerpt_html: nil,
       excerpt_text: nil,

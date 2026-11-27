@@ -21,8 +21,8 @@ defmodule Operately.I18n.DeTranslationsTest do
       end
 
       for count <- [0, 1, 2, 1_000_000] do
-        expected = if count == 1, do: "Du hast 1 neues Update", else: "Du hast #{count} neue Updates"
-        assert Gettext.dngettext(@backend, "messages", "You have 1 new update", "You have %{count} new updates", count) == expected
+        expected = if count == 1, do: "1 Update in Launch", else: "#{count} Updates in Launch"
+        assert Gettext.dngettext(@backend, "messages", "%{count} update in %{place}", "%{count} updates in %{place}", count, place: "Launch") == expected
       end
 
       assert Gettext.dgettext(@backend, "messages", "Not a cataloged message") == "Not a cataloged message"

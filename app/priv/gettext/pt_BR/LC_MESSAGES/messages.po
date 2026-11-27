@@ -1243,6 +1243,11 @@ msgid "%{author} commented on the retrospective for the %{project_name} project"
 msgstr "%{author} comentou na retrospectiva do projeto %{project_name}"
 
 #.elixir
+#: lib/operately_email/digest_subject.ex:13
+msgid "%{author} commented on “%{document_title}”"
+msgstr "%{author} comentou em “%{document_title}”"
+
+#.elixir
 #: lib/operately_email/templates/resource_hub_document_commented.html.eex:1
 #: lib/operately_email/templates/resource_hub_document_commented.text.eex:1
 #: lib/operately_email/templates/resource_hub_file_commented.html.eex:1
@@ -2917,6 +2922,13 @@ msgstr "Limite de %{count} membros"
 msgid "%{count} min. ago"
 msgstr "há %{count} min."
 
+#.elixir
+#: lib/operately_email/digest_subject.ex:24
+msgid "%{count} new comment on “%{document_title}”"
+msgid_plural "%{count} new comments on “%{document_title}”"
+msgstr[0] "%{count} novo comentário em “%{document_title}”"
+msgstr[1] "%{count} novos comentários em “%{document_title}”"
+
 #.frontend
 #: ../turboui/src/SelectLocalization/index.ts:59
 msgid "%{count} result available."
@@ -2949,6 +2961,41 @@ msgid "%{count} subgoal"
 msgid_plural "%{count} subgoals"
 msgstr[0] "%{count} subobjetivo"
 msgstr[1] "%{count} subobjetivos"
+
+#.elixir
+#: lib/operately_email/digest_subject.ex:34
+msgid "%{count} task created in %{place}"
+msgid_plural "%{count} tasks created in %{place}"
+msgstr[0] "%{count} tarefa criada em %{place}"
+msgstr[1] "%{count} tarefas criadas em %{place}"
+
+#.elixir
+#: lib/operately_email/digest_subject.ex:52
+msgid "%{count} update across %{first_place} and %{second_place}"
+msgid_plural "%{count} updates across %{first_place} and %{second_place}"
+msgstr[0] "%{count} atualização em %{first_place} e %{second_place}"
+msgstr[1] "%{count} atualizações em %{first_place} e %{second_place}"
+
+#.elixir
+#: lib/operately_email/digest_subject.ex:63
+msgid "%{count} update across %{first_place}, %{second_place}, and %{remaining_places} others"
+msgid_plural "%{count} updates across %{first_place}, %{second_place}, and %{remaining_places} others"
+msgstr[0] "%{count} atualização em %{first_place}, %{second_place} e mais %{remaining_places}"
+msgstr[1] "%{count} atualizações em %{first_place}, %{second_place} e mais %{remaining_places}"
+
+#.elixir
+#: lib/operately_email/digest_subject.ex:56
+msgid "%{count} update across %{first_place}, %{second_place}, and 1 other"
+msgid_plural "%{count} updates across %{first_place}, %{second_place}, and 1 other"
+msgstr[0] "%{count} atualização em %{first_place}, %{second_place} e mais 1"
+msgstr[1] "%{count} atualizações em %{first_place}, %{second_place} e mais 1"
+
+#.elixir
+#: lib/operately_email/digest_subject.ex:43
+msgid "%{count} update in %{place}"
+msgid_plural "%{count} updates in %{place}"
+msgstr[0] "%{count} atualização em %{place}"
+msgstr[1] "%{count} atualizações em %{place}"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:85
@@ -3202,6 +3249,11 @@ msgstr "%{person} adicionou um novo objetivo e atribuiu você como champion"
 msgid "%{person} added a new goal and assigned you as the reviewer"
 msgstr "%{person} adicionou um novo objetivo e atribuiu você como reviewer"
 
+#.elixir
+#: lib/operately_email/digest_subject.ex:17
+msgid "%{place}: %{author} %{headline}"
+msgstr "%{place}: %{author} %{headline}"
+
 #.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:26
 msgid "%{plan} %{interval}"
@@ -3288,12 +3340,12 @@ msgid "%{version} content"
 msgstr "Conteúdo da %{version}"
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:83
+#: lib/operately_email/emails/task_adding_email.ex:84
 msgid "%{who} added the task \"%{task_name}\""
 msgstr "%{who} adicionou a tarefa \"%{task_name}\""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:75
+#: lib/operately_email/emails/task_adding_email.ex:76
 msgid "%{who} mentioned you in the description for \"%{task_name}\""
 msgstr "%{who} mencionou você na descrição de \"%{task_name}\""
 
@@ -3745,12 +3797,12 @@ msgid "(%{where}) %{author} updated the description for \"%{task_name}\""
 msgstr "(%{where}) %{author} atualizou a descrição de \"%{task_name}\""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:82
+#: lib/operately_email/emails/task_adding_email.ex:83
 msgid "(%{where}) %{who} added the task \"%{task_name}\""
 msgstr "(%{where}) %{who} adicionou a tarefa \"%{task_name}\""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:74
+#: lib/operately_email/emails/task_adding_email.ex:75
 msgid "(%{where}) %{who} mentioned you in the description for \"%{task_name}\""
 msgstr "(%{where}) %{who} mencionou você na descrição de \"%{task_name}\""
 
@@ -5369,7 +5421,7 @@ msgid "A new milestone was added to %{project_name}."
 msgstr "Um novo marco foi adicionado a %{project_name}."
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:84
+#: lib/operately_email/emails/task_adding_email.ex:85
 msgid "A new task named %{task_name} was created in this project."
 msgstr "Uma nova tarefa chamada %{task_name} foi criada neste projeto."
 
@@ -14403,7 +14455,7 @@ msgid "Manage and revoke your active API tokens."
 msgstr "Gerencie e revogue seus tokens de API ativos."
 
 #.elixir
-#: lib/operately_email/mailers/digest_mailer.ex:59
+#: lib/operately_email/mailers/digest_mailer.ex:50
 msgid "Manage email settings"
 msgstr "Gerenciar configurações de e-mail"
 
@@ -15707,7 +15759,7 @@ msgid "No mission provided."
 msgstr "Nenhuma missão informada."
 
 #.elixir
-#: lib/operately_email/mailers/digest_mailer.ex:57
+#: lib/operately_email/mailers/digest_mailer.ex:48
 msgid "No new updates."
 msgstr "Nenhuma atualização nova."
 
@@ -23475,7 +23527,7 @@ msgstr "A unidade é obrigatória"
 #: lib/operately/md/task.ex:93
 #: lib/operately/md/task.ex:124
 #: lib/operately/md/task.ex:131
-#: lib/operately_email/emails/task_adding_email.ex:109
+#: lib/operately_email/emails/task_adding_email.ex:110
 #: lib/operately_email/emails/task_description_change_email.ex:55
 msgid "Unknown"
 msgstr "Desconhecido"
@@ -25116,12 +25168,12 @@ msgstr "Você não tem rascunhos nesta central de recursos."
 msgid "You have 0 new updates"
 msgstr "Você tem 0 novas atualizações"
 
-#.elixir
-#: lib/operately_email/mailers/digest_mailer.ex:66
-msgid "You have 1 new update"
-msgid_plural "You have %{count} new updates"
-msgstr[0] "Você tem 1 nova atualização"
-msgstr[1] "Você tem %{count} novas atualizações"
+#~ #.elixir
+#~ #: lib/operately_email/mailers/digest_mailer.ex:66
+#~ msgid "You have 1 new update"
+#~ msgid_plural "You have %{count} new updates"
+#~ msgstr[0] "Você tem 1 nova atualização"
+#~ msgstr[1] "Você tem %{count} novas atualizações"
 
 #.elixir
 #: lib/operately_email/templates/company_admin_added.html.eex:1
@@ -25186,7 +25238,7 @@ msgid "You were invited by %{author} to join %{company}."
 msgstr "Você foi convidado por %{author} para entrar para %{company}."
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:76
+#: lib/operately_email/emails/task_adding_email.ex:77
 msgid "You were mentioned in the description for %{task_name}."
 msgstr "Você foi mencionado na descrição de %{task_name}."
 
@@ -25258,12 +25310,12 @@ msgstr "Você receberá o pacote aqui quando o processo terminar."
 #.elixir
 #.frontend
 #: ../turboui/src/ReviewPage/index.tsx:193
-#: lib/operately_email/mailers/digest_mailer.ex:56
+#: lib/operately_email/mailers/digest_mailer.ex:47
 msgid "You're all caught up"
 msgstr "Você está em dia"
 
 #.elixir
-#: lib/operately_email/mailers/digest_mailer.ex:58
+#: lib/operately_email/mailers/digest_mailer.ex:49
 msgid "You're all caught up."
 msgstr "Você está em dia."
 
@@ -25830,7 +25882,7 @@ msgid "commented on the discussion \"%{title}\""
 msgstr "comentou na discussão \"%{title}\""
 
 #.elixir
-#: lib/operately_email/emails/resource_hub_document_commented_email.ex:52
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:53
 msgid "commented on the document \"%{document_name}\""
 msgstr "comentou no documento \"%{document_name}\""
 
@@ -25956,7 +26008,7 @@ msgid "created the project"
 msgstr "criou o projeto"
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:62
+#: lib/operately_email/emails/task_adding_email.ex:63
 msgid "created the task \"%{task_name}\""
 msgstr "criou a tarefa \"%{task_name}\""
 

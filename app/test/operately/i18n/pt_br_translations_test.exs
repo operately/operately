@@ -25,8 +25,8 @@ defmodule Operately.I18n.PtBrTranslationsTest do
 
       assert dgettext("A new task named %{task_name} was created in this project.", %{task_name: "Call leads"}) == "Uma nova tarefa chamada Call leads foi criada neste projeto."
 
-      assert dngettext("You have 1 new update", "You have %{count} new updates", 1) == "Você tem 1 nova atualização"
-      assert dngettext("You have 1 new update", "You have %{count} new updates", 2) == "Você tem 2 novas atualizações"
+      assert dngettext("%{count} update in %{place}", "%{count} updates in %{place}", 1, place: "Launch") == "1 atualização em Launch"
+      assert dngettext("%{count} update in %{place}", "%{count} updates in %{place}", 2, place: "Launch") == "2 atualizações em Launch"
       assert dpgettext("navigation", "Company") == "Empresa"
     end)
   end
@@ -41,8 +41,8 @@ defmodule Operately.I18n.PtBrTranslationsTest do
     Gettext.dgettext(@backend, "messages", msgid, bindings)
   end
 
-  defp dngettext(msgid, msgid_plural, count) do
-    Gettext.dngettext(@backend, "messages", msgid, msgid_plural, count)
+  defp dngettext(msgid, msgid_plural, count, bindings) do
+    Gettext.dngettext(@backend, "messages", msgid, msgid_plural, count, bindings)
   end
 
   defp dpgettext(msgctxt, msgid) do

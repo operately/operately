@@ -21,8 +21,8 @@ defmodule Operately.I18n.FrTranslationsTest do
       end
 
       for count <- [0, 1, 2, 21, 1_000_000] do
-        ending = if count < 2, do: "nouvelle mise à jour", else: "nouvelles mises à jour"
-        assert Gettext.dngettext(@backend, "messages", "You have 1 new update", "You have %{count} new updates", count) == "Vous avez #{count} #{ending}"
+        ending = if count < 2, do: "mise à jour", else: "mises à jour"
+        assert Gettext.dngettext(@backend, "messages", "%{count} update in %{place}", "%{count} updates in %{place}", count, place: "Launch") == "#{count} #{ending} dans Launch"
       end
 
       assert Gettext.dgettext(@backend, "messages", "Not a cataloged message") == "Not a cataloged message"
