@@ -1581,6 +1581,7 @@
   "Files not uploaded": "Files not uploaded",
   "Fill out all the required fields": "Fill out all the required fields",
   "Filter": "Filter",
+  "Filter ({{activeCount}})": "Filter ({{activeCount}})",
   "Finalizing Import": "Finalizing Import",
   "Find a KPI to pin…": "Find a KPI to pin…",
   "Find a filter…": "Find a filter…",
