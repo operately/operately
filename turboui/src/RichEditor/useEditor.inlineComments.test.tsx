@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+import { CellSelection } from "@tiptap/pm/tables";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { useEditor } from "./useEditor";
 import { inlineCommentsKey } from "./extensions/InlineComments";
@@ -9,6 +10,61 @@ const handlers = {
   uploadFile: async () => ({ id: "file", url: "https://example.com/file" }),
 };
 const content = { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Hello world" }] }] };
+const tableContent = {
+  type: "doc",
+  content: [
+    {
+      type: "table",
+      content: [
+        {
+          type: "tableRow",
+          content: ["Commented text", "Next cell"].map((text) => ({
+            type: "tableCell",
+            content: [{ type: "paragraph", content: [{ type: "text", text }] }],
+          })),
+        },
+        {
+          type: "tableRow",
+          content: ["Another cell", "Last cell"].map((text) => ({
+            type: "tableCell",
+            content: [{ type: "paragraph", content: [{ type: "text", text }] }],
+          })),
+        },
+      ],
+    },
+  ],
+};
+
+it.each([true, false])("keeps table selection and inline highlights working when editable is %s", async (editable) => {
+  const { result, rerender } = renderHook(
+    ({ threadOpen }) =>
+      useEditor({
+        handlers,
+        editable,
+        content: tableContent,
+        inlineComments: { ranges: [{ id: "thread", from: 4, to: 13 }], activeThreadId: threadOpen ? "thread" : null },
+      }),
+    { initialProps: { threadOpen: true } },
+  );
+  await waitFor(() => expect(result.current.editor).not.toBeNull());
+  const editor: Editor = result.current.editor;
+  const original = editor.getJSON();
+  const cells: number[] = [];
+  editor.state.doc.descendants((node, position) => {
+    if (node.type.name === "tableCell") cells.push(position);
+  });
+
+  expect(editor.view.dom.querySelector('[data-inline-thread="thread"]')?.textContent).toBe("Commented");
+  rerender({ threadOpen: false });
+  act(() => {
+    editor.view.dispatch(editor.state.tr.setSelection(CellSelection.create(editor.state.doc, cells[0], cells[3])));
+  });
+
+  expect(editor.state.selection).toBeInstanceOf(CellSelection);
+  expect(editor.view.dom.querySelectorAll("td.selectedCell")).toHaveLength(4);
+  expect(editor.view.dom.querySelector('[data-inline-thread="thread"]')?.textContent).toBe("Commented");
+  expect(editor.getJSON()).toEqual(original);
+});
 
 it("external content and supplied ranges replace the baseline; callback and active changes preserve local mapping", async () => {
   const onSelectionChange = jest.fn();
