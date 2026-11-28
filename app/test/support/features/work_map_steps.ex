@@ -163,10 +163,11 @@ defmodule Operately.Support.Features.WorkMapSteps do
 
   step :assign_project_reviewer, ctx do
     field = "reviewer-#{Paths.project_id(ctx.project)}"
-    ctx = ctx
+    ctx =
+      ctx
       |> UI.click(testid: field)
       |> UI.click(testid: UI.testid([field, "search-result", ctx.candidate.full_name]))
-      |> UI.wait_until_text(ctx.candidate.full_name, testid: field)
+      |> UI.assert_has(Wallaby.Query.css("[data-test-id='#{field}']", text: ctx.candidate.full_name))
 
     assert Operately.Projects.get_reviewer(ctx.project).id == ctx.candidate.id
     ctx
