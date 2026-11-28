@@ -293,21 +293,10 @@ defmodule Operately.MD.Project do
   end
 
   defp load_check_ins_with_comments(check_ins) do
-    Enum.map(check_ins, fn check_in ->
-      comments = load_comments_for_check_in(check_in.id)
-      Map.put(check_in, :comments, comments)
-    end)
-  end
-
-  defp load_comments_for_check_in(check_in_id) do
     import Ecto.Query
 
-    from(c in Operately.Updates.Comment,
-      where: c.entity_id == ^check_in_id and c.entity_type == :project_check_in,
-      order_by: [asc: c.inserted_at],
-      preload: [:author]
-    )
-    |> Operately.Repo.all()
+    ordered_comments = from(c in Operately.Updates.Comment, order_by: [asc: c.inserted_at], preload: [:author])
+    Operately.Repo.preload(check_ins, [comments: ordered_comments], force: true)
   end
 
   defp render_progress(project = %{milestones: milestones}) when is_list(milestones), do: "#{Operately.Projects.Project.progress_percentage(project)}%"
